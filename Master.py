@@ -101,7 +101,7 @@ class Master:
 
         # consulta informacion del usuario logueado
         usuario = self.UTI.decodeRot13(QSettings().value('usuario'))
-        usuario = 'admin'
+        # usuario = 'admin'
         resultado = self.consumeWSGeneral(url_cons = self.CFG.url_MA_getInfoUser + str(usuario))
 
         if not resultado:
