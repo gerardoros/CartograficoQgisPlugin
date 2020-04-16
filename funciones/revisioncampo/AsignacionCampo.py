@@ -214,7 +214,7 @@ class AsignacionCampo:
                 try:
                     headers = {'Content-Type': 'application/json', 'Authorization' : self.UTI.obtenerToken()}
                     respuesta = requests.get(self.CFG.urlSectores + idSector + '/sector/', headers = headers)
-                    print (respuesta, "sector por localidad")
+                    print (self.CFG.urlSectores + idSector + '/sector/', "sector por localidad")
                 except requests.exceptions.RequestException:
                     self.UTI.mostrarAlerta("Error de servidor SEC01", QMessageBox().Critical, "Cargar Sectores")
                     print('ERROR: SEC000')
@@ -517,7 +517,9 @@ class AsignacionCampo:
 #--------------------------------------------------------------------------------------------------------------
 
     def completarLocalidad(self, text):
-        
+        print('entra', text)
+        pass
+        '''
         #print('entro al de afuera')
         if text:
             #print('entro al de adentro con ', text)
@@ -525,7 +527,7 @@ class AsignacionCampo:
             self.indexCompLocalidad = index
             #print('indice a completa', index)
             self.dlg.cmbLocalidad.setCurrentIndex(index)
-
+        '''
 #----------------------------------------------------------------------------------------------------------------------
 
     def completarSector(self, text):

@@ -314,6 +314,7 @@ class Utilidad:
 		combo.completer.setPopup( combo.completer.popup() )
 		combo.setCompleter( combo.completer )
 		combo.lineEdit().textEdited.connect( combo.pFilterModel.setFilterFixedString )
+		combo.lineEdit().setCursorPosition(0)
 		combo.completer.activated.connect(signal)
 
 		combo.setModel( modelo )
@@ -323,7 +324,33 @@ class Utilidad:
 		combo.pFilterModel.setFilterKeyColumn( 0 )
 		combo.setModelColumn( 0 )
 
-	################################################################################################################
+	def extenderCombo_actualizado(self, combo, modelo, listaIds):
+
+		combo.setFocusPolicy( Qt.StrongFocus )
+		combo.setEditable( True )
+		combo.completer = QCompleter(combo )
+
+		# always show all completions
+		combo.completer.setCompletionMode( QCompleter.UnfilteredPopupCompletion )
+		combo.pFilterModel = QSortFilterProxyModel( combo)
+		combo.pFilterModel.setFilterCaseSensitivity( Qt.CaseInsensitive )
+		combo.completer.setPopup( combo.completer.popup() )
+		combo.setCompleter( combo.completer )
+		combo.lineEdit().textEdited.connect( combo.pFilterModel.setFilterFixedString )
+		combo.lineEdit().setCursorPosition(0)
+
+		combo.setModel( modelo )
+		combo.pFilterModel.setSourceModel( modelo )
+		combo.completer.setModel(combo.pFilterModel)
+		combo.completer.setCompletionColumn( 0 )
+		combo.pFilterModel.setFilterKeyColumn( 0 )
+		combo.setModelColumn( 0 )
+		combo.setInsertPolicy(0)
+
+		for i, temp in enumerate( listaIds ): 
+			combo.setItemData(i, temp)
+
+################################################################################################################
 	def strechtTabla(self, tabla):
 		header = tabla.horizontalHeader()
 

@@ -12,6 +12,7 @@ class Configuracion():
         self.urlLocalidades = self.servidorIP + 'busquedasimplewkn/api/combo/001/localidades/'
         self.urlSectores = self.servidorIP +  'busquedasimplewkn/api/combo/localidades/'
         self.urlManzanas = self.servidorIP +  'busquedasimplewkn/api/combo/sector/'
+        self.urlPredios = self.servidorIP + 'busquedasimplewkn/api/combo/manzana/'
 
         #Urls para capas de consulta
         self.urlConsultaManzana = self.servidorIP + 'busquedasimplewkn/api/manzana/'
@@ -133,3 +134,10 @@ class Configuracion():
 
         # Master
         self.url_MA_getInfoUser = self.servidorIP + 'autentificacion/api/users/'
+
+        # Asignacion de Tareas
+        self.url_procesos = self.servidorIP + 'autentificacion/api/cat-procesos'
+        self.url_actByProceso = self.servidorIP + 'autentificacion/api/actividades/proceso/'
+        self.url_tareasByActividad = self.servidorIP + 'autentificacion/api/tareas/actividad/'
+        self.url_usuarioByTarea = self.servidorIP + 'autentificacion/api/users/tarea-actividad/'
+        self.url_asignaTarea = self.servidorIP + 'autentificacion/api/asignar-tarea-user/nueva'

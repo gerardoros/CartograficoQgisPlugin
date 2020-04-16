@@ -47,6 +47,7 @@ from .funciones.revisioncampo import CedulaPadron
 from .funciones.revisioncampo import AsignacionPadron
 from .funciones.revisioncampo import IntermedioCedulaRevision
 
+from .funciones.asignatareas import AsignaTareas
 from .funciones.adminusers import AdminUsers
 
 class Master:
@@ -115,13 +116,19 @@ class Master:
         #self.CFG = Configuracion
         
 
+        # Asignacion de tareas
+        self.AST = AsignaTareas.AsignaTareas(iface)
+        self.AST.CFG = self.CFG
+        self.AST.UTI = self.UTI
 
+        #Administracion de usuarios
         self.ADU = AdminUsers.AdminUsers(iface)
 
         self.ACA = ActualizacionCatastralV3.ActualizacionCatastralV3(iface)
         self.UTI.ACA = self.ACA
+
         self.DFS = DivisionFusion.DivisionFusion(iface, self.ACA)
-        
+
         self.DBJ = DibujoV3.DibujoV3(iface)
         
         self.ELM = EliminacionV3.EliminacionV3(iface)           
@@ -201,7 +208,7 @@ class Master:
         self.CMS.ACA = self.ACA
         
 
-
+        self.dlg.btnAsigTareas.clicked.connect(self.irAAsignaTareas)
         self.dlg.btnConsulta.clicked.connect(self.irAConsulta)
         self.dlg.btnDibujo.clicked.connect(self.irADibujo)
         self.dlg.btnEliminar.clicked.connect(self.irAEliminar)
@@ -385,6 +392,10 @@ class Master:
             
             pass
 
+#-----------------------------------------------------------------------
+
+    def irAAsignaTareas(self):
+        self.AST.run()
 
 #-----------------------------------------------------------------------
 
