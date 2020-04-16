@@ -274,7 +274,7 @@ class Startup():
         headers = {'Content-Type': 'application/json', 'Authorization' : self.obtenerToken()}
 
 
-        urlSrid = 'http://192.168.0.21:8080/busquedasimplewkn/api/cat/municipio/'
+        urlSrid = 'http://192.168.0.100:8080/busquedasimplewkn/api/cat/municipio/'
         
         respuesta = requests.get(urlSrid, headers = headers)
 
@@ -397,7 +397,7 @@ class Startup():
         cabecera = {'Content-type': 'application/json', 'Authorization' : token}
 
             #url del service
-        url = 'http://192.168.0.21:8080/configuracion/api/adm-capas/getAllCapasConfiguration'
+        url = 'http://192.168.0.100:8080/configuracion/api/adm-capas/getAllCapasConfiguration'
 
         respuesta = requests.get(url, headers = cabecera)
 
@@ -504,7 +504,7 @@ class Startup():
 
         # se compara para verificar que se haya caducado el token
         if currentDate > exp:
-            url= 'http://192.168.0.21:8080/auth/login'
+            url= 'http://192.168.0.100:8080/auth/login'
             payload = {"username" : self.decodeRot13(var.value('usuario')), "password" : self.decodeRot13(var.value('clave'))}
             payload = json.dumps(payload)
             headers = {'Content-Type': 'application/json'}
@@ -776,8 +776,8 @@ class Startup():
 
         else:
             stringTabla = diccionarioTabla[capaParam]
-            urlCapas = 'http://192.168.0.21:8080/busquedasimplewkn/api/thematics/lista/campos/' + stringTabla + '/' + 'false'
-            #urlCapas = 'http://192.168.0.21:8080/busquedasimplewkn/api/thematics/lista/campos/' + stringTabla
+            urlCapas = 'http://192.168.0.100:8080/busquedasimplewkn/api/thematics/lista/campos/' + stringTabla + '/' + 'false'
+            #urlCapas = 'http://192.168.0.100:8080/busquedasimplewkn/api/thematics/lista/campos/' + stringTabla
             respuesta = requests.post(urlCapas, headers = headers)
             
             stringCapa = tipoGeom + "?crs=epsg:" + str(QSettings().value('srid'))

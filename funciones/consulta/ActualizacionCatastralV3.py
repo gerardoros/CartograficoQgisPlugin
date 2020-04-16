@@ -95,7 +95,8 @@ class ActualizacionCatastralV3:
         'Codigo Postal' : 'e_cp',
         'Zona Uno' : 'e_zona_uno',
         'Zona Dos' : 'e_zona_dos',
-        'Area de Valor' : 'e_area_valor'
+        'Area de Valor' : 'e_area_valor',
+        'Construcciones': 'e_construccion'
         }
 
         # -- evento boton de abrir cedula --
@@ -274,8 +275,8 @@ class ActualizacionCatastralV3:
                     self.idManzana = ' '
 
                     #Modo desarrollor
-                    self.modoDesarrollo = True
-                    self.cargaRapida = True
+                    self.modoDesarrollo = False
+                    self.cargaRapida = False
                     #01001001020004054011
                     #01001001020004027003
                     #01001001020004063010
@@ -446,6 +447,7 @@ class ActualizacionCatastralV3:
         self.dockwidget.comboCapaReferencia.addItem('Zona Uno', 'e_zona_uno')
         self.dockwidget.comboCapaReferencia.addItem('Zona Dos', 'e_zona_dos')
         self.dockwidget.comboCapaReferencia.addItem('Area de Valor', 'e_area_valor')
+        self.dockwidget.comboCapaReferencia.addItem('Construcciones', 'e_construccion')
 
 
 #################################################################################################################################

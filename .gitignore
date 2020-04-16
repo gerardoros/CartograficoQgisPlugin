@@ -10,7 +10,7 @@ ext-libs/
 
 # C extensions
 *.so
-
+.vscode/
 # Distribution / packaging
 .Python
 env/
