@@ -199,7 +199,7 @@ background : rgb(250,238,224);
      <property name="geometry">
       <rect>
        <x>200</x>
-       <y>100</y>
+       <y>90</y>
        <width>111</width>
        <height>31</height>
       </rect>
@@ -255,7 +255,7 @@ Manzana</string>
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>140</y>
+       <y>130</y>
        <width>241</width>
        <height>201</height>
       </rect>
@@ -413,10 +413,10 @@ height:24px
     <widget class="QWidget" name="widget_2" native="true">
      <property name="geometry">
       <rect>
-       <x>280</x>
-       <y>150</y>
-       <width>221</width>
-       <height>181</height>
+       <x>260</x>
+       <y>130</y>
+       <width>241</width>
+       <height>201</height>
       </rect>
      </property>
      <property name="styleSheet">
@@ -467,7 +467,7 @@ background : rgb(255,255,255);
       <property name="geometry">
        <rect>
         <x>25</x>
-        <y>80</y>
+        <y>70</y>
         <width>181</width>
         <height>20</height>
        </rect>
@@ -484,8 +484,8 @@ background : rgb(255,255,255);
      <widget class="QPushButton" name="botonCargarReferencia">
       <property name="geometry">
        <rect>
-        <x>60</x>
-        <y>120</y>
+        <x>10</x>
+        <y>100</y>
         <width>101</width>
         <height>41</height>
        </rect>
@@ -517,6 +517,82 @@ background: rgb(217, 217, 217)
       <property name="text">
        <string>Cargar capa
 de Referencia</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btnLimpiar">
+      <property name="geometry">
+       <rect>
+        <x>130</x>
+        <y>100</y>
+        <width>101</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="accessibleDescription">
+       <string>1</string>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QPushButton{
+background : rgb(174, 116, 0);
+color : rgb(255, 255, 255);
+border-radius : 4px;
+}
+QPushButton::hover{
+background : rgb(104, 69, 13);
+color : rgb(255, 255, 255);
+border-radius : 4px;
+}
+QPushButton:disabled {
+background: rgb(217, 217, 217)
+}</string>
+      </property>
+      <property name="text">
+       <string>Limpiar
+referencias</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btnLimpiaArea">
+      <property name="geometry">
+       <rect>
+        <x>70</x>
+        <y>150</y>
+        <width>101</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="accessibleDescription">
+       <string>1</string>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QPushButton{
+background : rgb(174, 116, 0);
+color : rgb(255, 255, 255);
+border-radius : 4px;
+}
+QPushButton::hover{
+background : rgb(104, 69, 13);
+color : rgb(255, 255, 255);
+border-radius : 4px;
+}
+QPushButton:disabled {
+background: rgb(217, 217, 217)
+}</string>
+      </property>
+      <property name="text">
+       <string>Limpiar área
+de trabajo</string>
       </property>
      </widget>
     </widget>

@@ -50,10 +50,10 @@ class Startup():
 
         self.modoDesarrollo = True
 
-        clickFuga = QAction(QIcon("/home/jeather/AplicacionQGIS/reload.png"), QCoreApplication.translate("Groundwater Modeling", "Cerrar Sesion"), iface.mainWindow())
-        clickCerrar = QAction(QIcon("/home/jeather/AplicacionQGIS/cerrar.png"), QCoreApplication.translate("Groundwater Modeling", "Cerrar Sesion"), iface.mainWindow())
-        clickBorrarTodoAlv = QAction(QIcon("/home/jeather/AplicacionQGIS/borrartodoalv.png"), QCoreApplication.translate("Groundwater Modeling", "Cerrar Sesion"), iface.mainWindow())
-        clickGuardar = QAction(QIcon("/home/jeather/AplicacionQGIS/guardar.png"), QCoreApplication.translate("Groundwater Modeling", "Guardar Cambios"), iface.mainWindow())
+        clickFuga = QAction(QIcon("C:/AplicacionQGIS/reload.png"), QCoreApplication.translate("Groundwater Modeling", "Cerrar Sesion"), iface.mainWindow())
+        clickCerrar = QAction(QIcon("C:/AplicacionQGIS/cerrar.png"), QCoreApplication.translate("Groundwater Modeling", "Cerrar Sesion"), iface.mainWindow())
+        clickBorrarTodoAlv = QAction(QIcon("C:/AplicacionQGIS/borrartodoalv.png"), QCoreApplication.translate("Groundwater Modeling", "Cerrar Sesion"), iface.mainWindow())
+        clickGuardar = QAction(QIcon("C:/AplicacionQGIS/guardar.png"), QCoreApplication.translate("Groundwater Modeling", "Guardar Cambios"), iface.mainWindow())
 
         clickFuga.triggered.connect(self.cerrarSinPreguntar)
         clickCerrar.triggered.connect(self.preguntarCerrarSesion)
@@ -92,7 +92,7 @@ class Startup():
 
     def checarLogin(self):
         
-        archivo = open('/home/jeather/AplicacionQGIS/start.det', 'r') #Abrimos el archivo generado por C#
+        archivo = open('C:/AplicacionQGIS/start.det', 'r') #Abrimos el archivo generado por C#
         
         self.var.setValue("usoLogin", archivo.readline().replace('\n', ''))
 
@@ -111,7 +111,7 @@ class Startup():
 
         #DESCOMENTAR LO SIGUIENTE
         if(self.var.value("usoLogin") == "True"):
-            archivo = open('/home/jeather/AplicacionQGIS/start.det', 'r+')
+            archivo = open('C:/AplicacionQGIS/start.det', 'r+')
             archivo.truncate()
             archivo.close()
         
@@ -229,7 +229,7 @@ class Startup():
             headers = {'Content-Type': 'application/json', 'Authorization' : self.obtenerToken()}
 
 
-            urlSrid = 'http://192.168.0.100:8080/busquedasimplewkn/api/cat/municipio/'
+            urlSrid = 'http://192.168.0.40:8080/busquedasimplewkn/api/cat/municipio/'
             
             respuesta = requests.get(urlSrid, headers = headers)
 
@@ -352,7 +352,7 @@ class Startup():
         cabecera = {'Content-type': 'application/json', 'Authorization' : token}
 
             #url del service
-        url = 'http://192.168.0.100:8080/configuracion/api/adm-capas/getAllCapasConfiguration'
+        url = 'http://192.168.0.50:8080/configuracion/api/adm-capas/getAllCapasConfiguration'
 
         respuesta = requests.get(url, headers = cabecera)
 
@@ -438,7 +438,7 @@ class Startup():
 ##########################################################################################################################
 
     def obtenerToken(self):
-        url= 'http://192.168.0.100:8080/auth/login'
+        url= 'http://192.168.0.40:8080/auth/login'
         payload = {"username" : "user", "password" : "user"}
         payload = json.dumps(payload)
         headers = {'Content-Type': 'application/json'}
@@ -452,7 +452,7 @@ class Startup():
             self.createAlert('No se ha conseguido token de startup', QMessageBox().Critical, 'Autenticacion')
             return
 
-        return 'bearer ' + json.loads(data.decode('utf-8'))['access_token']
+        return 'bearer ' + json.loads(data)['access_token']
 
 
 
@@ -700,8 +700,8 @@ class Startup():
 
         else:
             stringTabla = diccionarioTabla[capaParam]
-            urlCapas = 'http://192.168.0.100:8080/busquedasimplewkn/api/thematics/lista/campos/' + stringTabla + '/' + 'false'
-            #urlCapas = 'http://192.168.0.100:8080/busquedasimplewkn/api/thematics/lista/campos/' + stringTabla
+            urlCapas = 'http://192.168.0.40:8080/busquedasimplewkn/api/thematics/lista/campos/' + stringTabla + '/' + 'false'
+            #urlCapas = 'http://192.168.0.40:8080/busquedasimplewkn/api/thematics/lista/campos/' + stringTabla
             respuesta = requests.post(urlCapas, headers = headers)
             
             stringCapa = tipoGeom + "?crs=epsg:" + str(QSettings().value('srid'))

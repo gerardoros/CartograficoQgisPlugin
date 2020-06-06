@@ -310,7 +310,7 @@ class Integracion:
 
             print (jsonParaGuardarAtributos)
             
-            url='http://192.168.0.100:8080/featureswkn/api/manzana/'
+            url='http://192.168.0.40:8080/featureswkn/api/manzana/'
             payload = jsonParaGuardarAtributos
             headers = {'Content-Type': 'application/json', 'Authorization' : self.obtenerToken()}
             try:
@@ -501,7 +501,7 @@ class Integracion:
         headers = {'Content-Type': 'application/json', 'Authorization' : self.obtenerToken()}
         print(payload)
         try:
-            response = requests.post('http://192.168.0.100:6543/api/etables/', headers = headers, data = payload)
+            response = requests.post('http://192.168.0.40:6543/api/etables/', headers = headers, data = payload)
         
         except requests.exceptions.RequestException:
             #self.UTI.mostrarAlerta("No se ha podido conectar al servidor v1", QMessageBox.Critical, "Guardar Cambios v1")#Error en la peticion de consulta
@@ -534,7 +534,7 @@ class Integracion:
             self.UTI.mostrarAlerta('No se ha conseguido token del plugin de integracion', QMessageBox().Critical, 'Autenticacion')
             return
 
-        return 'bearer ' + json.loads(data.decode('utf-8'))['access_token']
+        return 'bearer ' + json.loads(data)['access_token']
 
 
 #############################################################################################################

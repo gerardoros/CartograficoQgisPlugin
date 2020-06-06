@@ -234,4 +234,4 @@ class IntermedioCedulaRevision:
             #self.createAlert('Error en peticion "consumeWSGeneral()":\n' + response.text, QMessageBox().Critical, "Error de servidor")
             return
 
-        return json.loads(data.decode('utf-8'))
+        return json.loads(data)

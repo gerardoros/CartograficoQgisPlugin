@@ -18,7 +18,7 @@ class Referencias:
 
     def consultar(self, egName):
 
-        url='http://192.168.0.100:8080/busquedasimplewkn/api/busqueda/simple'
+        url='http://192.168.0.40:8080/busquedasimplewkn/api/busqueda/simple'
         token = self.obtenerToken()
 
         pagina = None
@@ -35,7 +35,7 @@ class Referencias:
         response = requests.post(url, headers = headers, data = payload)
         if response.status_code == 200:
             data = response.content
-            data = json.loads(data.decode('utf-8'))
+            data = json.loads(data)
 
             return data
 
@@ -133,7 +133,7 @@ class Referencias:
 #####################################################################################################################
 
     def obtenerToken(self):
-        url= 'http://192.168.0.100:8080/auth/login'
+        url= 'http://192.168.0.40:8080/auth/login'
         payload = {"username" : "user", "password" : "user"}
         payload = json.dumps(payload)
         headers = {'Content-Type': 'application/json'}
@@ -147,8 +147,8 @@ class Referencias:
             return
             ##print('no se arma el token')
 
-        #print(json.loads(data.decode('utf-8'))['access_token'])
-        return 'bearer ' + json.loads(data.decode('utf-8'))['access_token']
+        #print(json.loads(data)['access_token'])
+        return 'bearer ' + json.loads(data)['access_token']
 
 
 ####################################################################################################################

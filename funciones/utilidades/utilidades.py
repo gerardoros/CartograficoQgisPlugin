@@ -64,24 +64,24 @@ class Utilidad:
 
 			response = requests.post(url, headers = headers, data = payload)
 			if response.status_code == 200:
-				data = json.loads(response.content.decode('utf-8'))
+				data = response.content
 			else:
 				self.mostrarAlerta('No se ha conseguido token', QMessageBox().Critical, 'Autenticacion')
 				return
 
-			var.setValue('token', data['access_token'])
+			var.setValue('token', json.loads(data)['access_token'])
 
-			t = data['access_token']
+			t = json.loads(data)['access_token']
 			d = jwt.decode(t, verify=False)
 			t1 = d['exp']
 			e = dt.fromtimestamp(t1).strftime('%Y-%m-%d %H:%M:%S')
 			e = dt.strptime(e,'%Y-%m-%d %H:%M:%S')
 
-			print('nuevoooooooooooo', e, currentDate)
-			return 'bearer ' + data['access_token']
+			#print('nuevoooooooooooo', e, currentDate)
+			return 'bearer ' + json.loads(data.decode('utf-8'))['access_token']
 
 		else:
-			print('el mismo', exp, currentDate)
+			#print('el mismo', exp, currentDate)
 			return 'bearer ' + token
 
 	#-----------------------------------------------------------------------------------------------------
@@ -106,7 +106,7 @@ class Utilidad:
 			return True
 		except ValueError:
 			return False
-    
+	
 	#---------------------------------------------------------------------------------
 
 	def limpiarCanvas(self):
@@ -314,7 +314,7 @@ class Utilidad:
 		combo.completer.setPopup( combo.completer.popup() )
 		combo.setCompleter( combo.completer )
 		combo.lineEdit().textEdited.connect( combo.pFilterModel.setFilterFixedString )
-		combo.lineEdit().setCursorPosition(0)
+		combo.lineEdit().setCursorPosition(0);
 		combo.completer.activated.connect(signal)
 
 		combo.setModel( modelo )
@@ -337,7 +337,7 @@ class Utilidad:
 		combo.completer.setPopup( combo.completer.popup() )
 		combo.setCompleter( combo.completer )
 		combo.lineEdit().textEdited.connect( combo.pFilterModel.setFilterFixedString )
-		combo.lineEdit().setCursorPosition(0)
+		combo.lineEdit().setCursorPosition(0);
 
 		combo.setModel( modelo )
 		combo.pFilterModel.setSourceModel( modelo )
@@ -350,12 +350,286 @@ class Utilidad:
 		for i, temp in enumerate( listaIds ): 
 			combo.setItemData(i, temp)
 
-################################################################################################################
+	################################################################################################################
 	def strechtTabla(self, tabla):
 		header = tabla.horizontalHeader()
 
 		for x in range(0, tabla.columnCount()):
 			header.setSectionResizeMode(x, QtWidgets.QHeaderView.Stretch)
 			header.setStretchLastSection(True)
+
+	def formatoCapa(self, capaParam, nuevaCapa):
+
+		# C A P A S   D E   C O N S U L T A 
+		if capaParam == 'manzana':
+			QSettings().setValue('xManzana', nuevaCapa.id())
+			render = nuevaCapa.renderer()
+			symbol = QgsFillSymbol.createSimple({'color':'255,0,0,0', 'color_border':'#F5A9F2', 'width_border':'0.5'})
+			render.setSymbol(symbol)
+		
+		elif capaParam == 'predios.geom':
+			QSettings().setValue('xPredGeom', nuevaCapa.id())
+			render = nuevaCapa.renderer()
+			symbol = QgsFillSymbol.createSimple({'color':'255,0,0,0', 'color_border':'#00ff00', 'width_border':'0.5'})
+			render.setSymbol(symbol)
+
+		elif capaParam == 'predios.num':
+			QSettings().setValue('xPredNum', nuevaCapa.id())
+			props = nuevaCapa.renderer().symbol().symbolLayer(0).properties()
+			props['color'] = '#00FF00'
+			nuevaCapa.renderer().setSymbol(QgsMarkerSymbol.createSimple(props))
+
+		elif capaParam.lower() == 'construcciones':
+			if capaParam != 'Construcciones':
+				QSettings().setValue('xConst', nuevaCapa.id())
+			
+			road_rules = (
+				('Const_Esp',  'NOT "cve_const_esp" is NULL '),
+				('Construccion', ' "cve_const_esp" is NULL '),
+			)
+
+			symbolConst = QgsSymbol.defaultSymbol(nuevaCapa.geometryType())
+			rendererConst = QgsRuleBasedRenderer(symbolConst)
+			fillConst = QgsFillSymbol.createSimple({'color':'255,0,0,0', 'color_border':'#000000', 'width_border':'0.5'})
+			fillEsp = QgsFillSymbol.createSimple({'color':'255,0,0,0', 'color_border':'#00FFFF', 'width_border':'0.5'})
+
+			# get the "root" rule
+			root_rule = rendererConst.rootRule()
+			for label, expression in road_rules:
+				# create a clone (i.e. a copy) of the default rule
+				rule = root_rule.children()[0].clone()
+				# set the label, expression and color
+				rule.setLabel(label)
+				rule.setFilterExpression(expression)
+
+				if label == "Const_Esp":
+					rule.setSymbol(fillEsp)
+				else:
+					rule.setSymbol(fillConst)
+
+				root_rule.appendChild(rule)
+			root_rule.removeChildAt(0)
+			#apply the renderer to the layer
+			nuevaCapa.setRenderer(rendererConst)
+
+		elif capaParam == 'horizontales.geom':
+			QSettings().setValue('xHoriGeom', nuevaCapa.id())
+			render = nuevaCapa.renderer()
+			symbol = QgsFillSymbol.createSimple({'color':'255,0,0,0', 'color_border':'#C68C21', 'width_border':'0.5'})
+			render.setSymbol(symbol)
+
+		elif capaParam == 'areas_inscritas':
+			QSettings().setValue('xAreasInscritas', nuevaCapa.id())
+			render = nuevaCapa.renderer()
+			symbol = QgsFillSymbol.createSimple({'color':'255,0,0,0', 'color_border':'#F646F3', 'width_border':'0.5'})
+			render.setSymbol(symbol)
+
+		elif capaParam == 'horizontales.num':
+			QSettings().setValue('xHoriNum', nuevaCapa.id())
+			props = nuevaCapa.renderer().symbol().symbolLayer(0).properties()
+			props['color'] = '#C68C21'
+			nuevaCapa.renderer().setSymbol(QgsMarkerSymbol.createSimple(props))
+
+		elif capaParam == 'verticales':
+			QSettings().setValue('xVert', nuevaCapa.id())
+			render = nuevaCapa.renderer()
+			symbol = QgsFillSymbol.createSimple({'color':'255,0,0,0', 'color_border':'#ff9900', 'width_border':'0.5'})
+			render.setSymbol(symbol)
+			
+		elif capaParam == 'cves_verticales':
+			QSettings().setValue('xCvesVert', nuevaCapa.id())
+			props = nuevaCapa.renderer().symbol().symbolLayer(0).properties()
+			props['color'] = '#ff9900'
+			nuevaCapa.renderer().setSymbol(QgsMarkerSymbol.createSimple(props))
+
+		# C A P A S   D E   R E F E R E N C I A 
+		elif capaParam == 'Estado':
+			render = nuevaCapa.renderer()
+			symbol = QgsFillSymbol.createSimple({'color':'255,0,0,0', 'color_border':'#a0e000', 'width_border':'0.5'})
+			render.setSymbol(symbol)
+
+		elif capaParam == 'Region Catastral':
+			render = nuevaCapa.renderer()
+			symbol = QgsFillSymbol.createSimple({'color':'255,0,0,0', 'color_border':'#00b4b4', 'width_border':'0.5'})
+			render.setSymbol(symbol)
+
+		elif capaParam == 'Municipios':
+			render = nuevaCapa.renderer()
+			symbol = QgsFillSymbol.createSimple({'color':'255,0,0,0', 'color_border':'#3579b1', 'width_border':'0.5'})
+			render.setSymbol(symbol)
+
+		elif capaParam == 'Secciones':
+			render = nuevaCapa.renderer()
+			symbol = QgsFillSymbol.createSimple({'color':'255,0,0,0', 'color_border':'#d20000', 'width_border':'0.5'})
+			render.setSymbol(symbol)
+
+		elif capaParam == 'Localidades':
+			render = nuevaCapa.renderer()
+			symbol = QgsFillSymbol.createSimple({'color':'255,0,0,0', 'color_border':'#00ffff', 'width_border':'0.5'})
+			render.setSymbol(symbol)
+
+		elif capaParam == 'Sectores':
+			render = nuevaCapa.renderer()
+			symbol = QgsFillSymbol.createSimple({'color':'255,0,0,0', 'color_border':'#83C7FF', 'width_border':'0.5'})
+			render.setSymbol(symbol)
+
+		elif capaParam == 'Manzanas':
+			render = nuevaCapa.renderer()
+			symbol = QgsFillSymbol.createSimple({'color':'255,0,0,0', 'color_border':'#C15ABC', 'width_border':'0.5'})
+			render.setSymbol(symbol)
+
+		elif capaParam == 'Predios':
+			render = nuevaCapa.renderer()
+			symbol = QgsFillSymbol.createSimple({'color':'255,0,0,0', 'color_border':'#09DE66', 'width_border':'0.5'})
+			render.setSymbol(symbol)
+
+		elif capaParam == 'Calles':
+			render = nuevaCapa.renderer()
+			symbol = QgsLineSymbol.createSimple({'line_style':'SimpleLine', 'color':'#ff00ff', 'width_border':'0.5'})
+			render.setSymbol(symbol)
+
+		elif capaParam == 'Colonias':
+			render = nuevaCapa.renderer()
+			symbol = QgsFillSymbol.createSimple({'color':'255,0,0,0', 'color_border':'#0000b4', 'width_border':'0.5'})
+			render.setSymbol(symbol)
+
+		elif capaParam == 'Codigo Postal':
+			render = nuevaCapa.renderer()
+			symbol = QgsFillSymbol.createSimple({'color':'255,0,0,0', 'color_border':'#ff7f00', 'width_border':'0.5'})
+			render.setSymbol(symbol)
+
+		elif capaParam == 'Zona Uno':
+			render = nuevaCapa.renderer()
+			symbol = QgsFillSymbol.createSimple({'color':'255,0,0,0', 'color_border':'#C383FF', 'width_border':'0.5'})
+			render.setSymbol(symbol)
+
+		elif capaParam == 'Zona Dos':
+			render = nuevaCapa.renderer()
+			symbol = QgsFillSymbol.createSimple({'color':'255,0,0,0', 'color_border':'#7800E8', 'width_border':'0.5'})
+			render.setSymbol(symbol)
+
+		elif capaParam == 'Area de Valor':
+			render = nuevaCapa.renderer()
+			symbol = QgsFillSymbol.createSimple({'color':'255,0,0,0', 'color_border':'#00ADAD', 'width_border':'0.5'})
+			render.setSymbol(symbol)
+
+	def etiquetarCapa(self, nombreCapa, capa):
+
+		if capa == None:
+			capa = QgsProject.instance().mapLayersByName(nombreCapa)[0]
+		
+		etiquetaField = ""
+		colorCapa = ""
+		esExpresion = False
+		if nombreCapa == "manzana":
+			etiquetaField = "clave"
+			colorCapa = QColor(255,0,0)
+		elif nombreCapa == "predios.geom":
+			etiquetaField = "clave"
+			colorCapa = QColor(0,255,0)
+		elif nombreCapa == "predios.num":
+			etiquetaField = "numExt"
+			colorCapa = QColor(0,255,0)
+		elif nombreCapa.lower() == "construcciones":
+			etiquetaField = " if( cve_const_esp is null, concat(nom_volumen, '\n', num_niveles), concat(nom_volumen, '\n', cve_const_esp))"
+			esExpresion = True
+			colorCapa = QColor(0,0,255)
+		elif nombreCapa == "horizontales.geom":
+			etiquetaField = "clave"
+			colorCapa = QColor(198,140,33)
+		elif nombreCapa == "horizontales.num":
+			etiquetaField = "num_ofi"
+			colorCapa = QColor(198,140,33)
+		elif nombreCapa == "verticales":
+			etiquetaField = "clave"
+			colorCapa = QColor(255,153,0)
+		elif nombreCapa == "cves_verticales":
+			etiquetaField = "clave"
+			colorCapa = QColor(255,153,0)
+		elif nombreCapa == "areas_inscritas":
+			etiquetaField = "clave"
+			colorCapa = QColor(255,153,0)
+		else:
+			etiquetaField = "mensaje"
+			colorCapa = QColor(255,153,0)
+		
+		settings = QgsPalLayerSettings()
+		settings.fieldName = etiquetaField
+		settings.enabled = True
+		settings.isExpression = esExpresion
+		
+		settings.centroidWhole = True
+
+		textFormat = QgsTextFormat()
+		textFormat.setColor(colorCapa)
+		textFormat.setSize(8)
+		textFormat.setNamedStyle('Bold')
+
+		settings.setFormat(textFormat)
+
+		#settings.placement= QgsPalLayerSettings.OverPoint
+		labeling = QgsVectorLayerSimpleLabeling(settings)
+
+		capa.setLabeling(labeling)
+		capa.setLabelsEnabled(True)
+		capa.triggerRepaint()
+
+	def cargarCapaVacio(self):
+
+		# valida si ya se ha agregado el grupo
+		root = QgsProject.instance().layerTreeRoot()
+		group = root.findGroup('consulta')
+		if group is None:
+
+			root = QgsProject.instance().layerTreeRoot() 
+			root.addGroup('consulta')
+			root.addGroup('referencia') 
+
+
+		# Se crea una lista de vectores a partir de una fuente de datos
+		# ejemplo. 'point?crs=epsg:4326&field=id:integer'
+		listNC = []
+		if QgsProject.instance().mapLayer(QSettings().value('xAreasInscritas')) is None:
+			listNC.append(QgsVectorLayer(QSettings().value('sAreasInscritas'), 'areas_inscritas', 'memory'))
+
+		if QgsProject.instance().mapLayer(QSettings().value('xCvesVert')) is None:
+			listNC.append(QgsVectorLayer(QSettings().value('sCvesVert'), 'cves_verticales', 'memory'))
+
+		if QgsProject.instance().mapLayer(QSettings().value('xVert')) is None:
+			listNC.append(QgsVectorLayer(QSettings().value('sVert'), 'verticales', 'memory'))
+
+		if QgsProject.instance().mapLayer(QSettings().value('xHoriNum')) is None:
+			listNC.append(QgsVectorLayer(QSettings().value('sHoriNum'), 'horizontales.num', 'memory'))
+
+		if QgsProject.instance().mapLayer(QSettings().value('xHoriGeom')) is None:
+			listNC.append(QgsVectorLayer(QSettings().value('sHoriGeom'), 'horizontales.geom', 'memory'))
+
+		if QgsProject.instance().mapLayer(QSettings().value('xConst')) is None:
+			listNC.append(QgsVectorLayer(QSettings().value('sConst'), 'construcciones', 'memory'))
+
+		if QgsProject.instance().mapLayer(QSettings().value('xPredNum')) is None:
+			listNC.append(QgsVectorLayer(QSettings().value('sPredNum'), 'predios.num', 'memory'))
+
+		if QgsProject.instance().mapLayer(QSettings().value('xPredGeom')) is None:
+			listNC.append(QgsVectorLayer(QSettings().value('sPredGeom'), 'predios.geom', 'memory'))
+
+		if QgsProject.instance().mapLayer(QSettings().value('xManzana')) is None:
+			listNC.append(QgsVectorLayer(QSettings().value('sManzana'), 'manzana', 'memory'))
+
+		root = QgsProject.instance().layerTreeRoot()
+		group = root.findGroup('consulta')
+		
+		for capa in listNC:
+
+			# valida si la capa ya se tiene agregada
+			
+			self.formatoCapa(capa.name(), capa)
+
+			self.etiquetarCapa(capa.name(), capa)
+
+			QgsProject.instance().addMapLayers([capa], False)
+
+			capaArbol = QgsLayerTreeLayer(capa)
+			group.insertChildNode(0, capaArbol)
 
 #------------------------------------------------------------------------------------------------------------------------

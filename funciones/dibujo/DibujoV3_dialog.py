@@ -29,7 +29,6 @@ from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt
 from qgis.utils import iface
 
-
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'DibujoV3_dialog_base.ui'))
 

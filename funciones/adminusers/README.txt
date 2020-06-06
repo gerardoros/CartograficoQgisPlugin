@@ -1,10 +1,10 @@
 Plugin Builder Results
 
 Your plugin AdminUsers was created in:
-    /home/jeather/Users/cianet45/AppData/Roaming/QGIS/QGIS3/profiles/default/python/plugins\adminusers
+    C:/Users/cianet45/AppData/Roaming/QGIS/QGIS3/profiles/default/python/plugins\adminusers
 
 Your QGIS plugin directory is located at:
-    /home/jeather/Users/cianet45/AppData/Roaming/QGIS/QGIS3/profiles/default/python/plugins
+    C:/Users/cianet45/AppData/Roaming/QGIS/QGIS3/profiles/default/python/plugins
 
 What's Next:
 

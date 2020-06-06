@@ -102,7 +102,7 @@ class Master:
 
         # consulta informacion del usuario logueado
         usuario = self.UTI.decodeRot13(QSettings().value('usuario'))
-        # usuario = 'admin'
+
         resultado = self.consumeWSGeneral(url_cons = self.CFG.url_MA_getInfoUser + str(usuario))
 
         if not resultado:
@@ -115,99 +115,35 @@ class Master:
         #self.dlg.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
         #self.CFG = Configuracion
         
-
-        # Asignacion de tareas
-        self.AST = AsignaTareas.AsignaTareas(iface)
-        self.AST.CFG = self.CFG
-        self.AST.UTI = self.UTI
-
-        #Administracion de usuarios
-        self.ADU = AdminUsers.AdminUsers(iface)
-
+        # Consulta de cartografia
         self.ACA = ActualizacionCatastralV3.ActualizacionCatastralV3(iface)
         self.UTI.ACA = self.ACA
-
+        
+        # Division y fusion
         self.DFS = DivisionFusion.DivisionFusion(iface, self.ACA)
-
+        
+        # Dibujo
         self.DBJ = DibujoV3.DibujoV3(iface)
         
-        self.ELM = EliminacionV3.EliminacionV3(iface)           
+        # Eliminacion de geometrias
+        self.ELM = EliminacionV3.EliminacionV3(iface)
+
+        # Verificacion de Topologias
         self.TPG = TopologiaV3.TopologiaV3(iface, self.ACA)
+
+        # Integracion (Carga masiva)
         self.CMS = Integracion.Integracion(iface)
         
+        # Asignaciones de campo, revision y padron
         self.ASCM = AsignacionCampo.AsignacionCampo(iface, self.UTI)
         self.ASRV = AsignacionRevision.AsignacionRevision(iface, self.UTI)
         self.ASPA = AsignacionPadron.AsignacionPadron(iface, self.UTI)
 
+        # Intermediarios de asignaciones para Padron y gabinete
         self.INTEPAD = IntermedioCedulaRevision.IntermedioCedulaRevision(iface, self, 'PAD')
         self.INTEREV = IntermedioCedulaRevision.IntermedioCedulaRevision(iface, self, 'REV')
 
-        self.ADU.CFG = self.CFG
-        self.ADU.UTI = self.UTI
-        self.INTEPAD.CFG = self.CFG
-        self.INTEPAD.ACA = self.ACA
-        self.INTEPAD.UTI = self.UTI
-
-        self.INTEREV.CFG = self.CFG
-        self.INTEREV.ACA = self.ACA
-        self.INTEREV.UTI = self.UTI
-
-        self.ASCM.CFG = self.CFG
-        self.ASCM.ACA = self.ACA
-
-        self.ASRV.CFG = self.CFG
-        self.ASRV.ACA = self.ACA
-
-        self.ASPA.CFG = self.CFG
-        self.ASPA.ACA = self.ACA
-
-        
-
-        self.ACA.CFG = self.CFG
-        self.ACA.UTI = self.UTI
-        self.ACA.DFS = self.DFS
-        self.ACA.DBJ = self.ACA
-        self.ACA.ELM = self.ELM
-        self.ACA.DFS = self.DFS
-        self.ACA.TPG = self.TPG
-        self.ACA.CMS = self.CMS
-
-        self.DFS.CFG = self.CFG
-        self.DFS.UTI = self.UTI
-        self.DFS.DFS = self.DFS
-        self.DFS.DBJ = self.DBJ
-        self.DFS.ELM = self.ELM
-        self.DFS.ACA = self.ACA
-        self.DFS.TPG = self.TPG
-
-        self.DBJ.CFG = self.CFG
-        self.DBJ.UTI = self.UTI
-        self.DBJ.DFS = self.DFS
-        self.DBJ.ACA = self.ACA
-        self.DBJ.ELM = self.ELM
-        self.DBJ.DFS = self.DFS
-        self.DBJ.TPG = self.TPG
-
-        self.ELM.CFG = self.CFG
-        self.ELM.UTI = self.UTI
-        self.ELM.DFS = self.DFS
-        self.ELM.DBJ = self.DBJ
-        self.ELM.ACA = self.ACA
-        self.ELM.DFS = self.DFS
-        self.ELM.TPG = self.TPG
-
-        self.TPG.CFG = self.CFG
-        self.TPG.UTI = self.UTI
-        self.TPG.DFS = self.DFS
-        self.TPG.DBJ = self.DBJ
-        self.TPG.ELM = self.ELM
-        self.TPG.DFS = self.DFS
-        self.TPG.CMS = self.CMS
-
-        self.CMS.UTI = self.UTI
-        self.CMS.ACA = self.ACA
-        
-
+        # ------------ EVENTO DE BOTONES -------------
         self.dlg.btnAsigTareas.clicked.connect(self.irAAsignaTareas)
         self.dlg.btnConsulta.clicked.connect(self.irAConsulta)
         self.dlg.btnDibujo.clicked.connect(self.irADibujo)
@@ -226,9 +162,44 @@ class Master:
         
         #self.dlg.btnAsigCampo.setEnabled(False)
         #self.dlg.btnAsigRev.setEnabled(False)
-        
 
-#-----------------------------------------------------
+
+#------------------ no se hace nada con este metodo -----------------------------------
+    def borrar (self):
+
+        # valida si ya se ha agregado el grupo
+        root = QgsProject.instance().layerTreeRoot()
+        group = root.findGroup('consulta')
+        if group is None:
+
+            root = QgsProject.instance().layerTreeRoot() 
+            root.addGroup('consulta')
+            root.addGroup('referencia') 
+
+        # nuevaCapa = QgsVectorLayer(QSettings().value('sAreasInscritas'), 'areas_inscritas', 'memory')
+
+        listNC = []
+        listNC.append(QgsVectorLayer(QSettings().value('sAreasInscritas'), 'areas_inscritas', 'memory'))
+        listNC.append(QgsVectorLayer(QSettings().value('sCvesVert'), 'cves_verticales', 'memory'))
+        listNC.append(QgsVectorLayer(QSettings().value('sVert'), 'verticales', 'memory'))
+        listNC.append(QgsVectorLayer(QSettings().value('sHoriNum'), 'horizontales.num', 'memory'))
+        listNC.append(QgsVectorLayer(QSettings().value('sHoriGeom'), 'horizontales.geom', 'memory'))
+        listNC.append(QgsVectorLayer(QSettings().value('sConst'), 'construcciones', 'memory'))
+        listNC.append(QgsVectorLayer(QSettings().value('sPredNum'), 'predios.num', 'memory'))
+        listNC.append(QgsVectorLayer(QSettings().value('sPredGeom'), 'predios.geom', 'memory'))
+        listNC.append(QgsVectorLayer(QSettings().value('sManzana'), 'manzana', 'memory'))
+
+        root = QgsProject.instance().layerTreeRoot()
+        group = root.findGroup('consulta')
+
+        for l in listNC:
+            
+            self.UTI.formatoCapa(l.name(), l)
+
+            QgsProject.instance().addMapLayers([l], False)
+
+            capaArbol = QgsLayerTreeLayer(l)
+            group.insertChildNode(0, capaArbol)
 
     # noinspection PyMethodMayBeStatic
     def tr(self, message):
@@ -355,7 +326,7 @@ class Master:
         #self.irAConsulta()
         #self.ACA.pintarCapas()
         #self.irAFusionDivision()
-        
+        '''
         if self.banderaInicial:
             capaManzana = QgsProject.instance().mapLayer(self.ACA.obtenerIdCapa('manzana'))
             capaPredsG = QgsProject.instance().mapLayer(self.ACA.obtenerIdCapa('predios.geom'))
@@ -367,7 +338,7 @@ class Master:
             capaCvert = QgsProject.instance().mapLayer(self.ACA.obtenerIdCapa('cves_verticales'))
             
             self.banderaInicial = False
-            
+            '' '
             capaManzana.selectionChanged.connect(self.ELM.cargarEliminar)
             capaPredsG.selectionChanged.connect(self.ELM.cargarEliminar)
             capaPredN.selectionChanged.connect(self.ELM.cargarEliminar)
@@ -376,7 +347,7 @@ class Master:
             capaHoriN.selectionChanged.connect(self.ELM.cargarEliminar)
             capaVert.selectionChanged.connect(self.ELM.cargarEliminar)
             capaCvert.selectionChanged.connect(self.ELM.cargarEliminar)
-        
+            '''
         # show the dialog
         #self.irAConsulta()
         #self.ACA.pintarCapas()
@@ -395,66 +366,151 @@ class Master:
 #-----------------------------------------------------------------------
 
     def irAAsignaTareas(self):
+
+        # Asignacion de tareas
+        self.AST = AsignaTareas.AsignaTareas(iface)
+        self.AST.CFG = self.CFG
+        self.AST.UTI = self.UTI
+
         self.AST.run()
 
 #-----------------------------------------------------------------------
 
     def irAConsulta(self):
+
+        self.ACA.CFG = self.CFG
+        self.ACA.UTI = self.UTI
+        self.ACA.DFS = self.DFS
+        self.ACA.DBJ = self.ACA
+        self.ACA.ELM = self.ELM
+        self.ACA.DFS = self.DFS
+        self.ACA.TPG = self.TPG
+        self.ACA.CMS = self.CMS
+
         self.ACA.run()
 
 #--------------------------------------------------------------------------
 
     def irADibujo(self):
+
+        self.DBJ.CFG = self.CFG
+        self.DBJ.UTI = self.UTI
+        self.DBJ.DFS = self.DFS
+        self.DBJ.ACA = self.ACA
+        self.DBJ.ELM = self.ELM
+        self.DBJ.DFS = self.DFS
+        self.DBJ.TPG = self.TPG
+
         self.DBJ.run()
 
 #------------------------------------------------------------------------
 
     def irAEliminar(self):
+
+        self.ELM.CFG = self.CFG
+        self.ELM.UTI = self.UTI
+        self.ELM.DFS = self.DFS
+        self.ELM.DBJ = self.DBJ
+        self.ELM.ACA = self.ACA
+        self.ELM.DFS = self.DFS
+        self.ELM.TPG = self.TPG
+
         self.ELM.run()
 
 #-----------------------------------------------------------------------------
 
     def irATopologia(self):
+
+        self.TPG.CFG = self.CFG
+        self.TPG.UTI = self.UTI
+        self.TPG.DFS = self.DFS
+        self.TPG.DBJ = self.DBJ
+        self.TPG.ELM = self.ELM
+        self.TPG.DFS = self.DFS
+        self.TPG.CMS = self.CMS
+
         self.TPG.run()
 
 #--------------------------------------------------------------------------
 
     def irAFusionDivision(self):
+
+        self.DFS.CFG = self.CFG
+        self.DFS.UTI = self.UTI
+        self.DFS.DFS = self.DFS
+        self.DFS.DBJ = self.DBJ
+        self.DFS.ELM = self.ELM
+        self.DFS.ACA = self.ACA
+        self.DFS.TPG = self.TPG
+
         self.DFS.run()
 
 ##############################################################################
 
     def irACargaMasiva(self):
+
+        self.CMS.UTI = self.UTI
+        self.CMS.ACA = self.ACA
+
         self.CMS.run()
 
 ###############################################################################
 
     def irAAsignacionCampo(self):
+
+        self.ASCM.CFG = self.CFG
+        self.ASCM.ACA = self.ACA
+
         self.ASCM.run()
 
 ####################################################################################
 
     def irAAsignacionRevision(self):
+
+        self.ASRV.CFG = self.CFG
+        self.ASRV.ACA = self.ACA
+
         self.ASRV.run()
 
 ####################################################################################
 
     def irAAsignacionPadron(self):
+
+        self.ASPA.CFG = self.CFG
+        self.ASPA.ACA = self.ACA
+
         self.ASPA.run()
 
 ####################################################################################
 
     def irAIntermediarioPad(self):
+
+        self.INTEPAD.CFG = self.CFG
+        self.INTEPAD.ACA = self.ACA
+        self.INTEPAD.UTI = self.UTI
+
         self.INTEPAD.run()
 
 ####################################################################################
 
     def irAIntermediarioRev(self):
+
+        self.INTEREV.CFG = self.CFG
+        self.INTEREV.ACA = self.ACA
+        self.INTEREV.UTI = self.UTI
+
         self.INTEREV.run()
 
 ####################################################################################
     
     def irAAdminUsuarios(self):
+
+        #Administracion de usuarios
+        self.ADU = AdminUsers.AdminUsers(iface)
+
+        self.ADU.CFG = self.CFG
+        self.ADU.UTI = self.UTI
+
         self.ADU.run()
 
 
@@ -474,9 +530,8 @@ class Master:
             return
 
         if response.status_code == 200:
-
-            data = json.loads(response.content.decode('utf-8'))
-
+            data = response.content
+            
         elif response.status_code == 403:
             self.UTI.mostrarAlerta('Sin Permisos para ejecutar la accion', QMessageBox().Critical, "Sistema Cartográfico")
             return None
@@ -485,6 +540,6 @@ class Master:
             self.UTI.mostrarAlerta('Error en peticion "consumeWSGeneral(Master)":\n' + response.text, QMessageBox().Critical, "Error de servidor")
             return
 
-        return data
+        return json.loads(data)
 
     # --- S E R V I C I O S   W E B   CIERRA ---

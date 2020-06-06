@@ -2096,7 +2096,7 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
             self.createAlert('Error en peticion "consumeWSConstr()":\n' + response.text)
             return
 
-        return json.loads(data.decode('utf-8'))
+        return json.loads(data)
 
     # - consume ws para informacion de predios
     def consumeWSCedula(self, cveCatastral):
@@ -2123,7 +2123,7 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
             self.createAlert('Error en peticion "consumeWSCedula()":\n' + response.text)
             return
 
-        return json.loads(data.decode('utf-8'))
+        return json.loads(data)
        
 
     # - consume ws que verifica si una construccion tiene geometria
@@ -2144,7 +2144,7 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
             self.createAlert('Error en peticion "guardaConstrPredWS()":\n' + response.text, QMessageBox().Critical, "Error de servidor")
             return response.text
 
-        return json.loads(data.decode('utf-8'))
+        return json.loads(data)
 
     # - consume ws para informacion de catalogos
     def consumeWSGeneral(self, url_cons = ""):
@@ -2166,7 +2166,7 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
             self.createAlert('Error en peticion "consumeWSGeneral()":\n' + response.text, QMessageBox().Critical, "Error de servidor")
             return
 
-        return json.loads(data.decode('utf-8'))
+        return json.loads(data)
 
     def consumeWSGuardadoIndiv(self, listaInd, url):
 

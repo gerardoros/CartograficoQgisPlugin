@@ -56,15 +56,26 @@ class AsignaTareas:
         self.dlg = AsignaTareasDialog()
         self.UTI = None
         self.CFG = None
+        self.currentPredios = None
 
         # ------- inicializacion de comportamientos
-        '''
+        self.dlg.cmbCvesSector.clear()
+        self.dlg.cmbCvesManzana.clear()
+        self.vaciarTabla(self.dlg.twPredios)
+        self.vaciarTabla(self.dlg.twMazPred)
+
         self.dlg.gbClaves.hide()
         self.dlg.lComentarios.setGeometry(10, 110, 111, 16)
         self.dlg.pteComentarios.setGeometry(10, 133, 586, 151)
-        '''
+        self.dlg.pbAsignar.setGeometry(453, 302, 142, 41)
+
+        self.dlg.setMinimumSize(624, 370)
+        self.dlg.setMaximumSize(625, 371)
+        self.dlg.resize(625, 371)
+        
         # ocultar 
-        # self.dlg.twMazPred.hideColumn(0)
+        self.dlg.twPredios.hideColumn(1)
+        self.dlg.twMazPred.hideColumn(0)
 
         # ------- Conexion de EVENTOS
         self.dlg.cmbProcesos.currentIndexChanged.connect(self.event_cambioProceso)
@@ -77,6 +88,8 @@ class AsignaTareas:
         self.dlg.pbAsignar.clicked.connect(self.evet_asignarTarea)
         self.dlg.btnMas.clicked.connect(self.event_btnMas)
         self.dlg.btnMenos.clicked.connect(self.event_btnMenos)
+        self.dlg.chkTodoClaves.stateChanged.connect(self.marcarTodoClaves)
+        self.dlg.chkTodoMazPred.stateChanged.connect(self.marcarTodoMazPred)
 
     def run(self):
         """Run method that performs all the real work"""
@@ -282,6 +295,7 @@ class AsignaTareas:
 
         # consulta WS
         data = self.consultaWS(self.CFG.urlPredios + str(idManzana) + '/predios/')
+        self.currentPredios = data
 
         self.vaciarTabla(self.dlg.twPredios)
 
@@ -293,6 +307,10 @@ class AsignaTareas:
             item.setFlags( QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled)
             item.setCheckState(QtCore.Qt.Unchecked)
             self.dlg.twPredios.setItem(x, 0 , item)
+
+            item = QtWidgets.QTableWidgetItem(str(data[x]['other']))
+            item.setFlags( QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            self.dlg.twPredios.setItem(x, 1 , item)
 
     # llena con informacion consultada de los WS los combos utilizados y tambien define comportamientos del mismo
     def llenaCombos(self, data, combo):
@@ -333,9 +351,28 @@ class AsignaTareas:
     def vaciarTabla(self, tabla):
         tabla.clearContents()
         tabla.setRowCount(0)
-            
-        for row in range(0, tabla.rowCount()):        
-            tabla.removeRow(row) 
+
+    def marcarTodoClaves(self):
+        if self.dlg.chkTodoClaves.checkState() == QtCore.Qt.Checked:
+            if self.dlg.twPredios.rowCount() > 0:
+                for c in range(0, self.dlg.twPredios.rowCount()):
+                    self.dlg.twPredios.item(c, 0 ).setCheckState(QtCore.Qt.Checked)
+            else:
+                self.dlg.chkTodoClaves.setCheckState(QtCore.Qt.Unchecked)
+        else:
+            for c in range(0, self.dlg.twPredios.rowCount()):
+                self.dlg.twPredios.item(c, 0 ).setCheckState(QtCore.Qt.Unchecked)
+
+    def marcarTodoMazPred(self):
+        if self.dlg.chkTodoMazPred.checkState() == QtCore.Qt.Checked:
+            if self.dlg.twMazPred.rowCount() > 0:
+                for c in range(0, self.dlg.twMazPred.rowCount()):
+                    self.dlg.twMazPred.item(c, 1 ).setCheckState(QtCore.Qt.Checked)
+            else:
+                self.dlg.chkTodoMazPred.setCheckState(QtCore.Qt.Unchecked)
+        else:
+            for c in range(0, self.dlg.twMazPred.rowCount()):
+                self.dlg.twMazPred.item(c, 1 ).setCheckState(QtCore.Qt.Unchecked)                
 
     # -------- M E T O D O S   F I N A L --------
 
@@ -393,7 +430,6 @@ class AsignaTareas:
 
             # carga informacion de los USUARIOS
             self.obtenerUsuarios(tarea['id'])
-        
 
     def event_cambioUsuarios(self):
         # se obtiene el usuario
@@ -455,8 +491,23 @@ class AsignaTareas:
 
         # validaciones
         tarea = self.dlg.cmbTareas.itemData(self.dlg.cmbTareas.currentIndex())
+        print('tareaaaaaaaaaaaa', tarea)
         if not tarea:
             self.UTI.mostrarAlerta("Selecciona una tarea", QMessageBox().Information, "Asignación de tareas")
+            return
+
+        if tarea == -1:
+            self.UTI.mostrarAlerta("Selecciona una tarea", QMessageBox().Information, "Asignación de tareas")
+            return
+
+        usuario = self.dlg.cmbUsuarios.itemData(self.dlg.cmbUsuarios.currentIndex())
+        print('usuarioooo', usuario)
+        if not usuario:
+            self.UTI.mostrarAlerta("Selecciona un usuario", QMessageBox().Information, "Asignación de tareas")
+            return
+
+        if usuario == -1:
+            self.UTI.mostrarAlerta("Selecciona un usuario", QMessageBox().Information, "Asignación de tareas")
             return
 
         manzana = ""
@@ -467,50 +518,54 @@ class AsignaTareas:
             if not mza:
                 self.UTI.mostrarAlerta("Selecciona una manzana", QMessageBox().Information, "Asignación de tareas")
                 return
-            else:
-                manzana = mza['other']
+            if mza  == -1:
+                self.UTI.mostrarAlerta("Selecciona una manzana", QMessageBox().Information, "Asignación de tareas")
+                return
 
-        usuario = self.dlg.cmbUsuarios.itemData(self.dlg.cmbUsuarios.currentIndex())
+            print('manzanaaaaaa' ,mza)
+            manzana = mza['other']
 
-        if not usuario:
-            self.UTI.mostrarAlerta("Selecciona un usuario", QMessageBox().Information, "Asignación de tareas")
-            return
 
         # prepara peticion
+        data = {}
         data['comentario'] = self.dlg.pteComentarios.toPlainText()
         data['idTareaProcAct'] = tarea['id']
         data['idUsuarioAsignado'] = usuario['id']
-        data['idUsuarioAsignado'] = usuario['id']
 
         print(data, '++++++++++++++++++++++++++++++++++++++++++++++++++++')
+        if tarea['datosCartograficos']:
+            pass
+            
 
         # self.asignaTareaWS(data, url)
 
     def event_btnMas(self):
 
-        print('9999999999999999999999999', self.dlg.twPredios.rowCount())
-
         # validaciones
         if self.dlg.twPredios.rowCount() == 0:
-            self.UTI.mostrarAlerta("Selecciona una manzana con predios", QMessageBox().Information, "Asignación de tareas")
+            self.UTI.mostrarAlerta("Selecciona una manzana", QMessageBox().Information, "Asignación de tareas")
             return
 
         items = []
+        itemsT = []
         indexs = []
 
         # obtiene los items seleccionados por los checks
         for c in range(0, self.dlg.twPredios.rowCount()):
             if self.dlg.twPredios.item(c, 0 ).checkState() == QtCore.Qt.Checked:
-                items.append(self.dlg.twPredios.model().index(c, 0 ).data())
+                iT = {}
+                iT['clave'] = self.dlg.twPredios.model().index(c, 1).data()
+                iT['predio'] = self.dlg.twPredios.model().index(c, 0).data()
+
+                # items.append(self.dlg.twPredios.model().index(c).data())
+                itemsT.append(iT)
                 indexs.append(c)
 
+        '''
         if len(indexs) == 0:
             self.UTI.mostrarAlerta("Selecciona al menos un predio", QMessageBox().Information, "Asignación de tareas")
             return
-
-        # eliminar los items del tableWidget
-        for i in indexs:
-            self.dlg.twPredios.removeRow(i)
+        '''
 
         # llenar el otro table widget
         mza = self.dlg.cmbCvesManzana.itemData(self.dlg.cmbCvesManzana.currentIndex())
@@ -518,91 +573,116 @@ class AsignaTareas:
         manzana = mza['label']
         cveMza = mza['other']
 
+        # leer los items dentro de twMazPred para obtener los predios
+        lt = []
+        for c in range(0, self.dlg.twMazPred.rowCount()):
+            lt.append(self.dlg.twMazPred.model().index(c, 0).data() + self.dlg.twMazPred.model().index(c, 2).data())
+
+        print(lt)
+
+        for it in itemsT:
+            if it['clave'] not in lt:
+                items.append(it)
+
+        indexs.sort(reverse = True)
+        # eliminar los items del tableWidget
+        for i in indexs:
+            self.dlg.twPredios.removeRow(i)
+
         for x in range(0, len(items)):
 
-            # NO pasar los repetidos
-            '''
-            for x in range(0, len(data)):
+            # se agrega la fila completa
+            rowCount = self.dlg.twMazPred.rowCount()
+            self.dlg.twMazPred.insertRow(rowCount)
+            rowCount = self.dlg.twMazPred.rowCount()
+
+            # se define cada item de la fila con su propio contenido y comportamiento
+            item = QtWidgets.QTableWidgetItem(str(cveMza))
+            item.setFlags( QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            self.dlg.twMazPred.setItem(rowCount - 1, 0 , item)
+
+            item = QtWidgets.QTableWidgetItem(str(manzana))
+            item.setFlags( QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled)
+            item.setCheckState(QtCore.Qt.Unchecked)
+            self.dlg.twMazPred.setItem(rowCount - 1, 1 , item)
+
+            item = QtWidgets.QTableWidgetItem(str(items[x]['predio']))
+            item.setFlags( QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            self.dlg.twMazPred.setItem(rowCount - 1, 2 , item)
+
+        # cuando se selecciona unicament la manzana
+        if len(items) == 0:
+            print(cveMza, manzana)
+            
+            rowCount = self.dlg.twMazPred.rowCount()
+
+            self.dlg.twMazPred.insertRow(rowCount)
+            rowCount = self.dlg.twMazPred.rowCount()
+            # se define cada item de la fila con su propio contenido y comportamiento
+            item = QtWidgets.QTableWidgetItem(str(cveMza))
+            item.setFlags( QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            self.dlg.twMazPred.setItem(rowCount - 1, 0 , item)
+
+            item = QtWidgets.QTableWidgetItem(str(manzana))
+            item.setFlags( QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled)
+            item.setCheckState(QtCore.Qt.Unchecked)
+            self.dlg.twMazPred.setItem(rowCount - 1, 1 , item)
+
+            item = QtWidgets.QTableWidgetItem('')
+            item.setFlags( QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            self.dlg.twMazPred.setItem(rowCount - 1, 2 , item)
+            
+            
+    def event_btnMenos(self):
+        
+        if not self.currentPredios:
+            return
+
+        print('predios------', self.currentPredios)
+        mza = self.dlg.cmbCvesManzana.itemData(self.dlg.cmbCvesManzana.currentIndex())
+        print(mza)
+
+
+        indexs = []
+        lt = []
+        # obtiene los items seleccionados por los checks
+        for c in range(0, self.dlg.twMazPred.rowCount()):
+            # False
+            if self.dlg.twMazPred.item(c, 1 ).checkState() != QtCore.Qt.Checked:
+                lt.append(self.dlg.twMazPred.model().index(c, 0).data() + self.dlg.twMazPred.model().index(c, 2).data())
+            else:
+                # True
+                indexs.append(c)
+
+        if len(indexs) == 0:
+            self.UTI.mostrarAlerta("Selecciona al menos una clave", QMessageBox().Information, "Asignación de tareas")
+            return
+
+        data = []
+        for x in range(0, len(self.currentPredios)):
+            if self.currentPredios[x]['other'] not in lt:
+                data.append(self.currentPredios[x])
+
+        self.vaciarTabla(self.dlg.twPredios)
+
+        # llenar tabla
+        for x in range(0, len(data)):
             self.dlg.twPredios.insertRow(x)
 
             item = QtWidgets.QTableWidgetItem(str(data[x]['label']))
             item.setFlags( QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled)
             item.setCheckState(QtCore.Qt.Unchecked)
             self.dlg.twPredios.setItem(x, 0 , item)
-            '''
 
-            print('------------------', cveMza, manzana, str(items[x]), '------------------')
-            
-
-            '''
-            rowCount = self.dlg.twMazPred.rowCount()
-
-            self.dlg.twMazPred.insertRow(rowCount)
-            rowCount = self.dlg.twMazPred.rowCount()
-
-            item = QtWidgets.QTableWidgetItem(str(cveMza))
-            item.setFlags( QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled)
-            item.setCheckState(QtCore.Qt.Unchecked)
-            self.dlg.twPredios.setItem(rowCount - 1, 0 , item)
-
-            item = QtWidgets.QTableWidgetItem(str(manzana))
-            item.setFlags( QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled)
-            item.setCheckState(QtCore.Qt.Unchecked)
-            self.dlg.twPredios.setItem(rowCount - 1, 1 , item)
-
-            print('itemmmm', items[x])
-            item = QtWidgets.QTableWidgetItem(str(items[x]))
-            item.setFlags( QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled)
-            item.setCheckState(QtCore.Qt.Unchecked)
-            self.dlg.twPredios.setItem(rowCount - 1, 2 , item)
-            '''
+            item = QtWidgets.QTableWidgetItem(str(data[x]['other']))
+            item.setFlags( QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            self.dlg.twPredios.setItem(x, 1 , item)
 
 
-        '''
-        if len(indexSel) > 0:
-            listaQuitados = []
-            for index in indexSel:
-                item = self.clavesIzq[index]
-                listaQuitados.append(item)
-                self.clavesDer[self.llaveManzana].append(item)
-            
-            for quitado in listaQuitados:
-                self.clavesIzq.remove(quitado)
-                
-            self.clavesDer[self.llaveManzana].sort()
-            self.dlg.chkTodoClaves.setCheckState(QtCore.Qt.Unchecked)
-            self.actualizarTablas()
-        '''
-
-    def event_btnMenos(self):
-
-        self.dlg.setMinimumSize(1000, 1000)
-        self.dlg.setMaximumSize(1000, 1000)
-        self.dlg.resize(1000, 1000)
-        '''
-        self.dlg.twPredios.removeRow(0)
-        self.dlg.twPredios.removeRow(1)
-        pass
-        '' '
-        indexSel = []
-        for c in range(0, self.dlg.tablaMazPred.rowCount()):
-            if self.dlg.tablaMazPred.item(c, 1 ).checkState() == QtCore.Qt.Checked:
-                indexSel.append(c)
-
-        if len(indexSel) >0:
-
-            for index in indexSel:
-                key = str(self.dlg.tablaMazPred.item(index, 0).text())
-                data = str(self.dlg.tablaMazPred.item(index, 2).text())
-                self.clavesDer[str(key)].remove(str(data))
-            
-                if key == self.llaveManzana:
-                    self.clavesIzq.append(data)
-
-            self.dlg.chkTodoMazPred.setCheckState(QtCore.Qt.Unchecked)
-            self.clavesIzq.sort()
-            self.actualizarTablas()
-        '''
-
+        # eliminar los registros activos en twMazPred
+        indexs.sort(reverse = True)
+        # eliminar los items del tableWidget
+        for i in indexs:
+            self.dlg.twMazPred.removeRow(i)
 
     # -------- E V E N T O S   f I N A L--------

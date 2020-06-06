@@ -419,4 +419,4 @@ class ImagenCedula:
             self.pluginM.pluginM.pluginM.UTI.mostrarAlerta('No se pudo consultar imagen', QMessageBox().Critical, "Consulta de imagenes")
             return
 
-        return json.loads(data.decode('utf-8'))
+        return json.loads(data)

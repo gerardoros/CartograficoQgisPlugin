@@ -1,10 +1,10 @@
 Plugin Builder Results
 
 Your plugin Master was created in:
-    /home/jeather/Users/Charro/AppData/Roaming/QGIS/QGIS3/profiles/default/python/plugins\master
+    C:/Users/Charro/AppData/Roaming/QGIS/QGIS3/profiles/default/python/plugins\master
 
 Your QGIS plugin directory is located at:
-    /home/jeather/Users/Charro/AppData/Roaming/QGIS/QGIS3/profiles/default/python/plugins
+    C:/Users/Charro/AppData/Roaming/QGIS/QGIS3/profiles/default/python/plugins
 
 What's Next:
 

@@ -48,7 +48,7 @@ class Utilidad:
 			return
 		##print('no se arma el token')
 
-		#print(json.loads(data.decode('utf-8'))['access_token'])
+		#print(json.loads(data)['access_token'])
 		return 'bearer ' + json.loads(data.decode('utf-8'))['access_token']
 	
 	#-----------------------------------------------------------------------------------------------------

@@ -412,7 +412,7 @@ class AdminUsers:
             self.createAlert('Error en peticion "consumeWSGeneral()":\n' + response.text, QMessageBox().Critical, "Error de servidor")
             return
 
-        return json.loads(data.decode('utf-8'))
+        return json.loads(data)
 
     # --- S E R V I C I O S   W E B   CIERRA ---
 

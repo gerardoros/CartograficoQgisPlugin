@@ -251,7 +251,6 @@ class DivisionFusion:
                 x.trigger()
 
         self.dlg.show()
-        self.UTI.strechtTabla(self.VentanaFusion.dlg.tabComp)
         # Run the dialog event loop
         iface.mapCanvas().setMapTool(self.eventos)
         result = self.dlg.exec_()
@@ -401,6 +400,8 @@ class DivisionFusion:
             capaConstru.updateFeature(construccion)
             cuentaConstruccion += 1
             supConst += (geomConstru.area() * niveles)
+
+        capaConstru.commitChanges()
         #----------------------------------------------
 
         #Estableer atributos del predio fusionado

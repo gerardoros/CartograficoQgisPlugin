@@ -81,13 +81,14 @@ class DibujoV3:
 
         
         var = QSettings()
+        '''
         if var.value('logeado') == 'True':
             self.eventos = Evento(iface.mapCanvas(), self)
             
             self.dockwidget.botonDibujar.clicked.connect(self.eventos.alternarModoDibujo)
             iface.currentLayerChanged.connect(self.eventos.actualizarCapaActiva)
             self.eventos.deactivated.connect(self.eventos.recargarQgsMapTool)
-        
+        '''
 
 
         # Declare instance attributes
@@ -238,12 +239,12 @@ class DibujoV3:
             
             iface.mapCanvas().setMapTool(self.eventos)
             
-
+            '''
             if self.eventos.dibujando:
                 self.eventos.canvas.setCursor(self.eventos.cursorRedondo)
             else:
                 self.eventos.canvas.setCursor(self.eventos.cursorCruz)
-
+            '''
 
         result = self.dockwidget.exec_()
         # See if OK was pressed

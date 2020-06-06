@@ -371,9 +371,9 @@ background : rgb(250,238,224);
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>75</y>
+         <y>95</y>
          <width>231</width>
-         <height>201</height>
+         <height>181</height>
         </rect>
        </property>
        <property name="font">
@@ -392,11 +392,16 @@ height:24px
 }</string>
        </property>
        <property name="columnCount">
-        <number>1</number>
+        <number>2</number>
        </property>
        <column>
         <property name="text">
          <string>Predios</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>OCULTA</string>
         </property>
        </column>
       </widget>
@@ -476,9 +481,9 @@ background: rgb(217, 217, 217)
        <property name="geometry">
         <rect>
          <x>343</x>
-         <y>75</y>
+         <y>95</y>
          <width>231</width>
-         <height>201</height>
+         <height>181</height>
         </rect>
        </property>
        <property name="font">
@@ -511,6 +516,42 @@ height:24px
          <string>Predio</string>
         </property>
        </column>
+      </widget>
+      <widget class="QCheckBox" name="chkTodoClaves">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>70</y>
+         <width>211</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Century Gothic</family>
+        </font>
+       </property>
+       <property name="text">
+        <string>Seleccionar Todo</string>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="chkTodoMazPred">
+       <property name="geometry">
+        <rect>
+         <x>343</x>
+         <y>70</y>
+         <width>211</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Century Gothic</family>
+        </font>
+       </property>
+       <property name="text">
+        <string>Seleccionar Todo</string>
+       </property>
       </widget>
      </widget>
      <widget class="QPlainTextEdit" name="pteComentarios">

@@ -528,6 +528,7 @@ class AsignacionCampo:
             #print('indice a completa', index)
             self.dlg.cmbLocalidad.setCurrentIndex(index)
         '''
+
 #----------------------------------------------------------------------------------------------------------------------
 
     def completarSector(self, text):

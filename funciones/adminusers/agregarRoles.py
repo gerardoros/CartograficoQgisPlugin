@@ -8,7 +8,6 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
@@ -38,14 +37,14 @@ class Ui_Dialog(object):
         font.setWeight(75)
         self.btnNuevoRol.setFont(font)
         self.btnNuevoRol.setStyleSheet("QPushButton{\n"
-                                       "background : rgb(174, 116, 0);\n"
-                                       "color : rgb(255, 255, 255)\n"
-                                       "}\n"
-                                       "QPushButton::disabled {\n"
-                                       "background : rgb(187, 129, 13);\n"
-                                       "color : rgb(245,245,245);\n"
-                                       "border: 1px solid #adb2b5;\n"
-                                       "}")
+"background : rgb(174, 116, 0);\n"
+"color : rgb(255, 255, 255)\n"
+"}\n"
+"QPushButton::disabled {\n"
+"background : rgb(187, 129, 13);\n"
+"color : rgb(245,245,245);\n"
+"border: 1px solid #adb2b5;\n"
+"}")
         self.btnNuevoRol.setObjectName("btnNuevoRol")
         self.gridLayout_2.addWidget(self.btnNuevoRol, 0, 2, 1, 1)
         self.btnAceptar = QtWidgets.QPushButton(self.scrollAreaWidgetContents)
@@ -58,14 +57,14 @@ class Ui_Dialog(object):
         font.setWeight(75)
         self.btnAceptar.setFont(font)
         self.btnAceptar.setStyleSheet("QPushButton{\n"
-                                      "background : rgb(174, 116, 0);\n"
-                                      "color : rgb(255, 255, 255)\n"
-                                      "}\n"
-                                      "QPushButton::disabled {\n"
-                                      "background : rgb(187, 129, 13);\n"
-                                      "color : rgb(245,245,245);\n"
-                                      "border: 1px solid #adb2b5;\n"
-                                      "}")
+"background : rgb(174, 116, 0);\n"
+"color : rgb(255, 255, 255)\n"
+"}\n"
+"QPushButton::disabled {\n"
+"background : rgb(187, 129, 13);\n"
+"color : rgb(245,245,245);\n"
+"border: 1px solid #adb2b5;\n"
+"}")
         self.btnAceptar.setObjectName("btnAceptar")
         self.gridLayout_2.addWidget(self.btnAceptar, 3, 1, 1, 1)
         self.btnCancelar = QtWidgets.QPushButton(self.scrollAreaWidgetContents)
@@ -78,29 +77,29 @@ class Ui_Dialog(object):
         font.setWeight(75)
         self.btnCancelar.setFont(font)
         self.btnCancelar.setStyleSheet("QPushButton{\n"
-                                       "background : rgb(174, 116, 0);\n"
-                                       "color : rgb(255, 255, 255)\n"
-                                       "}\n"
-                                       "QPushButton::disabled {\n"
-                                       "background : rgb(187, 129, 13);\n"
-                                       "color : rgb(245,245,245);\n"
-                                       "border: 1px solid #adb2b5;\n"
-                                       "}")
+"background : rgb(174, 116, 0);\n"
+"color : rgb(255, 255, 255)\n"
+"}\n"
+"QPushButton::disabled {\n"
+"background : rgb(187, 129, 13);\n"
+"color : rgb(245,245,245);\n"
+"border: 1px solid #adb2b5;\n"
+"}")
         self.btnCancelar.setObjectName("btnCancelar")
         self.gridLayout_2.addWidget(self.btnCancelar, 3, 2, 1, 1)
         self.twRoles = QtWidgets.QTableWidget(self.scrollAreaWidgetContents)
         self.twRoles.setMinimumSize(QtCore.QSize(0, 150))
         self.twRoles.setMaximumSize(QtCore.QSize(16777215, 250))
         self.twRoles.setStyleSheet("QTableWidget {background-color: white;}\n"
-                                   "QHeaderView::section\n"
-                                   "{\n"
-                                   "background-color: rgb(238,225,200);\n"
-                                   "color : rgb(52, 42, 24 );\n"
-                                   "text-align: right;\n"
-                                   "font-size:12px;\n"
-                                   "height:24px\n"
-                                   "}\n"
-                                   "QHeaderView {background-color: white;}")
+"QHeaderView::section\n"
+"{\n"
+"background-color: rgb(238,225,200);\n"
+"color : rgb(52, 42, 24 );\n"
+"text-align: right;\n"
+"font-size:12px;\n"
+"height:24px\n"
+"}\n"
+"QHeaderView {background-color: white;}")
         self.twRoles.setObjectName("twRoles")
         self.twRoles.setColumnCount(1)
         self.twRoles.setRowCount(0)
@@ -145,3 +144,4 @@ class Ui_Dialog(object):
         item = self.twRoles.horizontalHeaderItem(0)
         item.setText(_translate("Dialog", "Rol"))
         self.label_5.setText(_translate("Dialog", "Roles:"))
+

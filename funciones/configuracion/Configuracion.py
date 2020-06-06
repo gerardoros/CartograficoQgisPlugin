@@ -5,7 +5,7 @@ class Configuracion():
     def __init__(self):
         
         #Direccion IP del servidor
-        self.servidorIP = 'http://192.168.0.100:8080/'
+        self.servidorIP = 'http://192.168.0.21:8080/'
         #self.servidorIP = 'http://127.0.0.1:8080/'
 
         #Combos de localidades, sectores y manzanas
@@ -41,14 +41,14 @@ class Configuracion():
         self.urlAutenticacion= self.servidorIP + 'auth/login'
         
         #Guardado
-        self.urlGuardadoRef = 'http://192.168.0.100:6543/api/etables/'
+        self.urlGuardadoRef = 'http://192.168.0.21:6543/api/etables/'
         self.urlGuardadoCon = self.servidorIP + 'featureswkn/api/manzana/'
         
         #SRID
         self.urlMunicipio = self.servidorIP + 'busquedasimplewkn/api/cat/municipio/'
         
         #Cargar capas con web service
-        self.urlCargarCapa = 'http://192.168.0.100:8080/configuracion/api/adm-capas/getAllCapasConfiguration'
+        self.urlCargarCapa = 'http://192.168.0.50:8080/configuracion/api/adm-capas/getAllCapasConfiguration'
 
         #Urls para cedula
         self.urlCedPredio = self.servidorIP + 'busquedasimplewkn/api/cedula/predio/'
