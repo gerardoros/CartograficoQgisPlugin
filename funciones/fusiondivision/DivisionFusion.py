@@ -470,6 +470,20 @@ class DivisionFusion:
     def pasarAModoDivision(self):
         clave = self.dlg.comboPredios.currentText() #Obtenemos la clave del predio a editar
 
+        if clave != '':
+            print()
+            print('-----------------------------------------------------------------------')
+            print()
+            print()
+            print(self.UTI.esto)
+            print()
+            print()
+            print('-----------------------------------------------------------------------')
+            print()
+            return
+
+
+
         if clave == '':
             self.UTI.mostrarAlerta('Primero debes cargar una manzana de la seccion de consulta', QMessageBox().Critical, 'Error de cargado de predio')
             return

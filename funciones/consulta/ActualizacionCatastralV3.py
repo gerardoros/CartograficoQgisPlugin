@@ -3396,6 +3396,18 @@ class ActualizacionCatastralV3:
 
         return vertices
 
+    def obtenerVertices2(self, geom):
+        polygon = geom.asPolygon()
+        vertices = []
+
+        n = len(polygon[0])
+
+        for i in range(n):
+            vertices.append(polygon[0][i])
+
+        return vertices
+
+
 #----------------------------------------------------------------------
 
     def crearNuevoMarcaVert(self, color):
@@ -3421,8 +3433,8 @@ class ActualizacionCatastralV3:
         for vertice in listaVertices:
             marcador = self.crearNuevoMarcaVert(color)
             listaMarcadores.append(marcador)
-            verticeXY = QgsPointXY(vertice.x(), vertice.y())
-            marcador.setCenter(verticeXY)
+            #verticeXY = QgsPointXY(vertice.x(), vertice.y())
+            marcador.setCenter(vertice)
 
 #-------------------------------------------------------------------
 
@@ -3434,16 +3446,15 @@ class ActualizacionCatastralV3:
         if self.dockwidget.checkVertManzana.isChecked():
             for feat in capaManzana.getFeatures():
                 geom = feat.geometry()
-                vertices = self.obtenerVertices(geom)
-                self.pintarMarcador(vertices,self.verticesManzana, QColor(255,0,0))
+                vertices = self.obtenerVertices2(geom)
+                self.pintarMarcador(vertices, self.verticesManzana, QColor(255,0,0))
         else:
             self.vaciarMarcador(self.verticesManzana)
-
 
         if self.dockwidget.checkVertPredio.isChecked():
             for feat in capaPredios.getFeatures():
                 geom = feat.geometry()
-                vertices = self.obtenerVertices(geom)
+                vertices = self.obtenerVertices2(geom)
                 self.pintarMarcador(vertices, self.verticesPredio, QColor(0,255,0))
         else:
             self.vaciarMarcador(self.verticesPredio)
@@ -3452,8 +3463,14 @@ class ActualizacionCatastralV3:
         if self.dockwidget.checkVertConst.isChecked():
             for feat in capaConst.getFeatures():
                 geom = feat.geometry()
-                vertices = self.obtenerVertices(geom)
-                self.pintarMarcador(vertices, self.verticesConst, QColor(0,0,0))
+                color = QColor(0,0,0)
+
+                # validacion para que pinte los colores del las construcciones especiales
+                if isinstance(feat['cve_const_esp'], str):
+                    color = QColor(0,255,255)
+
+                vertices = self.obtenerVertices2(geom)
+                self.pintarMarcador(vertices, self.verticesConst, color)
         else:
             self.vaciarMarcador(self.verticesConst)
             

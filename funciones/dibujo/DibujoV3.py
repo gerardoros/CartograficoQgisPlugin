@@ -80,16 +80,16 @@ class DibujoV3:
         self.pluginIsActive = False
 
         
-        var = QSettings()
+        #var = QSettings()
         '''
-        if var.value('logeado') == 'True':
-            self.eventos = Evento(iface.mapCanvas(), self)
-            
+        #if var.value('logeado') == 'True':
+        #    self.eventos = Evento(iface.mapCanvas(), self)
+            '' '
             self.dockwidget.botonDibujar.clicked.connect(self.eventos.alternarModoDibujo)
             iface.currentLayerChanged.connect(self.eventos.actualizarCapaActiva)
             self.eventos.deactivated.connect(self.eventos.recargarQgsMapTool)
+            ' ''
         '''
-
 
         # Declare instance attributes
         '''
@@ -114,7 +114,6 @@ class DibujoV3:
         """
         # noinspection PyTypeChecker,PyArgumentList,PyCallByClass
         return QCoreApplication.translate('DibujoV3', message)
-
 
     def add_action(
         self,
@@ -218,6 +217,14 @@ class DibujoV3:
     def run(self):
         """Run method that performs all the real work"""
         # show the dialog
+
+        var = QSettings()
+        if var.value('logeado') == 'True':
+            self.eventos = Evento(iface.mapCanvas(), self)
+            self.dockwidget.botonDibujar.clicked.connect(self.eventos.alternarModoDibujo)
+            iface.currentLayerChanged.connect(self.eventos.actualizarCapaActiva)
+            self.eventos.deactivated.connect(self.eventos.recargarQgsMapTool)
+
         for x in iface.mapNavToolToolBar().actions():
             if x.objectName() == 'mActionPan':
                 x.trigger()
