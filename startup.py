@@ -68,10 +68,10 @@ class Startup():
 
         self.modoDesarrollo = False
 
-        clickSalir = QAction(QIcon("C:/AplicacionQGIS/reload.png"), QCoreApplication.translate("Groundwater Modeling", "Cerrar Sesion"), iface.mainWindow())
-        clickCerrar = QAction(QIcon("C:/AplicacionQGIS/cerrar.png"), QCoreApplication.translate("Groundwater Modeling", "Cerrar Sesion"), iface.mainWindow())
-        clickBorrarTodo = QAction(QIcon("C:/AplicacionQGIS/notify_off.png"), QCoreApplication.translate("Groundwater Modeling", "btnPrueba"), iface.mainWindow())
-        clickGuardar = QAction(QIcon("C:/AplicacionQGIS/guardar.png"), QCoreApplication.translate("Groundwater Modeling", "Guardar Cambios"), iface.mainWindow())
+        clickSalir = QAction(QIcon("/home/oliver/AplicacionQGIS/reload.png"), QCoreApplication.translate("Groundwater Modeling", "Cerrar Sesion"), iface.mainWindow())
+        clickCerrar = QAction(QIcon("/home/oliver/AplicacionQGIS/cerrar.png"), QCoreApplication.translate("Groundwater Modeling", "Cerrar Sesion"), iface.mainWindow())
+        clickBorrarTodo = QAction(QIcon("/home/oliver/AplicacionQGIS/notify_off.png"), QCoreApplication.translate("Groundwater Modeling", "btnPrueba"), iface.mainWindow())
+        clickGuardar = QAction(QIcon("/home/oliver/AplicacionQGIS/guardar.png"), QCoreApplication.translate("Groundwater Modeling", "Guardar Cambios"), iface.mainWindow())
 
         clickSalir.triggered.connect(self.cerrarSinPreguntar)
         clickCerrar.triggered.connect(self.preguntarCerrarSesion)
@@ -168,11 +168,11 @@ class Startup():
     '''
     def checarLogin(self):
         
-        file = Path("C:/AplicacionQGIS/start.det")
+        file = Path("/home/oliver/AplicacionQGIS/start.det")
         # verifica si el archivo de inicializacion existe
         if file.is_file():
             # se abre el archivo de inicializacion
-            archivo = open('C:/AplicacionQGIS/start.det', 'r')
+            archivo = open('/home/oliver/AplicacionQGIS/start.det', 'r')
 
             # el archivo contiene cinco lineas
             self.var.setValue("usoLogin", archivo.readline().replace('\n', ''))
@@ -196,7 +196,7 @@ class Startup():
 
         # borra el contenido del archivo
         if(self.var.value("usoLogin") == "True"):
-            archivo = open('C:/AplicacionQGIS/start.det', 'r+')
+            archivo = open('/home/oliver/AplicacionQGIS/start.det', 'r+')
             archivo.truncate()
             archivo.close()
         

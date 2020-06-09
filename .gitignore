@@ -95,3 +95,7 @@ ENV/
 
 # plugin settings page (build automatically)
 +docs/settingsconf.rst
+
+#IDEA Pycharm
+.idea/
+
