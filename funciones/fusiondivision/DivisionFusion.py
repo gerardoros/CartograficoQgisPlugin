@@ -128,6 +128,8 @@ class DivisionFusion:
         self.dlg.btnLlamarCalcular.clicked.connect(self.irAreas)
         self.dlg.btnEditarCortes.clicked.connect(self.encenderModoEditar)
 
+        self.dlg.btnDeshacerTodo.hide()
+
 
         self.geomsAreas = []
         #self.p
@@ -469,28 +471,13 @@ class DivisionFusion:
     #Activamos el modo de division
     def pasarAModoDivision(self):
         clave = self.dlg.comboPredios.currentText() #Obtenemos la clave del predio a editar
-
-        if clave != '':
-            print()
-            print('-----------------------------------------------------------------------')
-            print()
-            print()
-            print(self.UTI.esto)
-            print()
-            print()
-            print('-----------------------------------------------------------------------')
-            print()
-            return
-
-
-
         if clave == '':
             self.UTI.mostrarAlerta('Primero debes cargar una manzana de la seccion de consulta', QMessageBox().Critical, 'Error de cargado de predio')
             return
 
         capaPredios = QgsProject.instance().mapLayer(self.ACA.obtenerIdCapa('predios.geom'))
         #capaPredios.setReadOnly(False)
-        capaPredios.startEditing()
+        #capaPredios.startEditing()
 
         
         self.predioEnDivision = None
@@ -509,22 +496,19 @@ class DivisionFusion:
             self.UTI.mostrarAlerta("Dibuja las lineas de corte sobre el predio indicado.\nRecuerda que los cortes no pueden estar sobre construcciones o condiminios.\nAsegurate que las lineas atraviesen el predio por completo\nNOTA: Las lineas solo afectaran al predio seleccionado.", QMessageBox().Information, "Subdivision de predios")
             self.cargoPredio = True
             self.encenderModoDividir() #Encendemos modo dividir
-            capaPredios.commitChanges()
-            self.geomEnDivision = self.predioEnDivision.geometry()
-            n   = 0 #Obtenemos todos los vertices de la geometria en division
-            ver = self.geomEnDivision.vertexAt(0)
-            listaVertices = []
-            while(ver != QgsPoint(0,0)):
-                n +=1
-                ver=self.geomEnDivision.vertexAt(n)
-                listaVertices.append(ver)
 
-            listaVertices.append(listaVertices[0])
-            rangoVertices = len(listaVertices)
-            for x in range(0, rangoVertices-2):
-                vertice = listaVertices[x]
-                self.rubberMarca.addPoint(QgsPointXY(vertice.x(), vertice.y()), True)
-            self.rubberMarca.show() #Aqui pintamos de amarillito la geometria en division
+            # marca de amarillo el poligono del predio a subdividir
+            self.geomEnDivision = self.predioEnDivision.geometry()
+            self.pintarAreaPredioSubdiv()
+
+            # zoom al predio a subdividir
+            geometria = self.geomEnDivision
+
+            bbox = geometria.boundingBox()
+            iface.mapCanvas().setExtent(bbox)
+            iface.mapCanvas().refresh()
+
+            # comportamiento de botones
             self.dlg.btnFusionar.setEnabled(False)
             self.dlg.btnCancelarSub.setEnabled(True)
             self.dlg.btnCargarPredio.setEnabled(False)
@@ -534,6 +518,7 @@ class DivisionFusion:
             self.dlg.btnDeshacerTodo.setEnabled(True)
             self.dlg.btnDeshacerCortes.setEnabled(True)
             self.dlg.btnLlamarCalcular.setEnabled(True)
+
         else:
             self.UTI.mostrarAlerta('El predio no fue encontrado', QMessageBox().Critical, 'Error de cargado de predio')
         
@@ -763,7 +748,8 @@ class DivisionFusion:
         self.dlg.btnConfirmarCortes.setEnabled(True)
         self.dlg.btnDeshacerTodo.setEnabled(True)
         self.dlg.btnCargarPredio.setEnabled(False)
-        iface.mapCanvas().setCursor(self.DBJ.eventos.cursorRedondo)
+        #iface.mapCanvas().setCursor(self.DBJ.eventos.cursorRedondo)
+        iface.mapCanvas().setCursor(self.UTI.cursorRedondo)
 
 #----------------------------------------------------------------------------
 
@@ -779,7 +765,8 @@ class DivisionFusion:
         self.dlg.btnConfirmarCortes.setEnabled(True)
         self.dlg.btnDeshacerTodo.setEnabled(True)
         self.dlg.btnCargarPredio.setEnabled(False)
-        iface.mapCanvas().setCursor(self.DBJ.eventos.cursorRedondo)
+        #iface.mapCanvas().setCursor(self.DBJ.eventos.cursorRedondo)
+        iface.mapCanvas().setCursor(self.UTI.cursorRedondo)
 
 #----------------------------------------------------------------------------
 
@@ -793,7 +780,8 @@ class DivisionFusion:
         self.dlg.btnApagarHerramientas.setEnabled(True)
         self.dlg.btnConfirmarCortes.setEnabled(True)
         self.dlg.btnCargarPredio.setEnabled(False)
-        iface.mapCanvas().setCursor(self.DBJ.eventos.cursorCuadro)
+        #iface.mapCanvas().setCursor(self.DBJ.eventos.cursorCuadro)
+        iface.mapCanvas().setCursor(self.UTI.cursorCuadro)
 
 #----------------------------------------------------------------------------
 
@@ -808,7 +796,8 @@ class DivisionFusion:
         self.dlg.btnApagarHerramientas.setEnabled(False)
         self.dlg.btnConfirmarCortes.setEnabled(True)
         self.dlg.btnCargarPredio.setEnabled(False)
-        iface.mapCanvas().setCursor(self.DBJ.eventos.cursorCruz)
+        #iface.mapCanvas().setCursor(self.DBJ.eventos.cursorCruz)
+        iface.mapCanvas().setCursor(self.UTI.cursorCruz)
 
 #-----------------------------------------------------------------
 
@@ -935,7 +924,6 @@ class DivisionFusion:
         self.VentanaClaves.rellenarClaves()
         self.VentanaClaves.llenar(False)
         self.VentanaClaves.dlg.show()
-        #self.dlg.close()
         self.dlg.btnDibujarCortes.setEnabled(False)
         self.dlg.btnEditarCortes.setEnabled(False)
         self.dlg.btnEliminarCortes.setEnabled(False)
@@ -955,6 +943,15 @@ class DivisionFusion:
         self.limpiarAreas()
         self.rubberMarca.reset(QgsWkbTypes.PolygonGeometry)
         geoTemp = QgsGeometry.fromWkt(self.geomEnDivision.asWkt())
+
+        print('------------------')
+        print()
+        print()
+        print(geoTemp)
+        print()
+        print()
+        print('------------------')
+
         self.subdividirPredio(geoTemp, True)
         self.listaColores = []
         for geom in self.geomsAreas:
@@ -962,25 +959,18 @@ class DivisionFusion:
                 continue
             newRub = self.eventos.crearNuevoRubberPoly()
             
-            n   = 0 #Obtenemos todos los vertices de la geometria en division
-            ver = geom.vertexAt(0)
-            listaVertices = []
-            while(ver != QgsPoint(0,0)):
-                n +=1
-                ver=geom.vertexAt(n)
-                listaVertices.append(ver)
+            # obtener una lista de vertices del tipo QgsPointXY
+            listaVertices = self.UTI.obtenerVerticesPoligono(geom)
 
             listaVertices.append(listaVertices[0])
             rangoVertices = len(listaVertices)
             for x in range(0, rangoVertices-2):
-                vertice = listaVertices[x]
-                newRub.addPoint(QgsPointXY(vertice.x(), vertice.y()), True)
+                newRub.addPoint(listaVertices[x], True)
 
             newRub.show()
             self.rubbersAreas.append(newRub)
 
         self.VentanaAreas.mostrarAreas()
-        #for geom in self.geomsAreas:
             
 #--------------------------------------------------------------------
 
@@ -994,9 +984,13 @@ class DivisionFusion:
 
     def quitarAreas(self):
         self.limpiarAreas()
+
         n   = 0 #Obtenemos todos los vertices de la geometria en division
         if self.geomEnDivision == None:
             return
+        
+        self.pintarAreaPredioSubdiv()
+        '''
         ver = self.geomEnDivision.vertexAt(0)
         listaVertices = []
         while(ver != QgsPoint(0,0)):
@@ -1004,15 +998,36 @@ class DivisionFusion:
             ver=self.geomEnDivision.vertexAt(n)
             listaVertices.append(ver)
 
+
         listaVertices.append(listaVertices[0])
         rangoVertices = len(listaVertices)
         for x in range(0, rangoVertices-2):
             vertice = listaVertices[x]
             self.rubberMarca.addPoint(QgsPointXY(vertice.x(), vertice.y()), True)
         self.rubberMarca.show() #Aqui pintamos de amarillito la geometria en division
+        '''
 
 
 #--------------------------------------------------------------------------
+
+    def pintarAreaPredioSubdiv(self, geom = None):
+
+        if geom is None:
+            geom = self.geomEnDivision
+
+        polygon = geom.asPolygon()
+        listaVertices = []
+
+        n = len(polygon[0])
+
+        for i in range(n):
+            listaVertices.append(polygon[0][i])
+
+        listaVertices.append(listaVertices[0])
+        rangoVertices = len(listaVertices)
+        for x in range(0, rangoVertices-2):
+            self.rubberMarca.addPoint(listaVertices[x], True)
+        self.rubberMarca.show() #Aqui pintamos de amarillito la geometria en division
 
     def closeEvent(self, evnt):
         if self.enClaves:

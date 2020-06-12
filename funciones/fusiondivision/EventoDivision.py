@@ -45,6 +45,8 @@ class EventoDivision(QgsMapTool):
 #--------------------------------------------------------------------------------------------
 
     def canvasPressEvent(self, event):
+        print('canvasPressEvent')
+        
         x = event.pos().x()
         y = event.pos().y()
         startingPoint = QtCore.QPoint(x,y)
@@ -94,13 +96,14 @@ class EventoDivision(QgsMapTool):
                     
                     geometriaR = QgsGeometry( self.relaciones[self.punteroRelaciones].rubber.asGeometry()) #Ponemos la geometria en la relacion
                     self.relaciones[self.punteroRelaciones].geom = geometriaR
-                    
-                    vertices = self.obtenerVertices(geometriaR) #Obtenemos los vertices de la geometria
-                    
+
+                    vertices = self.obtenerVerticesLinea(geometriaR) #Obtenemos los vertices de la geometria
+
                     self.relaciones[self.punteroRelaciones].rubber.reset(QgsWkbTypes.LineGeometry) #Vaciamos el rubber
 
                     for vertice in vertices: #Ponemos los vertices en el rubber
-                        self.relaciones[self.punteroRelaciones].rubber.addPoint(QgsPointXY(vertice.x(), vertice.y()), True)
+                        #self.relaciones[self.punteroRelaciones].rubber.addPoint(QgsPointXY(vertice.x(), vertice.y()), True)
+                        self.relaciones[self.punteroRelaciones].rubber.addPoint(vertice, True)
                         
 
                     self.relaciones[self.punteroRelaciones].rubber.show()
@@ -108,7 +111,7 @@ class EventoDivision(QgsMapTool):
                     
                     self.punteroRelaciones += 1 #Agregamos otro Rubber
                     self.relaciones[self.punteroRelaciones] = RelacionRubberGeom(self.crearNuevoRubberLinea(), None)
-
+                    
                 else:
                     self.relaciones[self.punteroRelaciones].rubber.reset(QgsWkbTypes.LineGeometry)
                     self.listaPuntosLineaTemp = []
@@ -127,6 +130,7 @@ class EventoDivision(QgsMapTool):
                     relacion.vaciarMarcadores()
 
         elif self.modoEditar: #--------------Modo Editar---------#
+            print('un clic')
             geomClick = QgsGeometry(QgsGeometry.fromPointXY(posTemp))
             bufferClick = geomClick.buffer(0.25, 1)
             relacion = self.obtenerRelacionCercana(bufferClick)
@@ -134,38 +138,50 @@ class EventoDivision(QgsMapTool):
             if event.buttons() == Qt.LeftButton: #---------Click Izquierdo ------#
                 
                 if not self.moviendoVertice: #Cuando NO estamos moviendo un vertice y buscamos mover uno
+                    print('moviendoVertice')
                     
                     if relacion != None:
 
+                        print('relacion')
+
                         relacion.rubber.setStrokeColor(QColor(255,170,0,255))
                         iface.mapCanvas().refresh()
-                        vertices = self.obtenerVertices(relacion.geom)
+                        vertices = self.obtenerVerticesLinea(relacion.geom)
                         verticeSeleccionado = None
                         for vertice in vertices: #Aqui buscamos el vertice cercano al click
-                            puntoXY = QgsPointXY(vertice.x(), vertice.y())
-                            geomVertice = QgsGeometry(QgsGeometry.fromPointXY(puntoXY)).buffer(2.25, 1)
+                            geomVertice = QgsGeometry(QgsGeometry.fromPointXY(vertice)).buffer(2.25, 1)
                             if geomVertice.intersects(bufferClick):
                                 verticeSeleccionado = vertice
                                 break
 
                         if verticeSeleccionado != None: #aqui tenemos ya un vertice jalando para arrastrase
+
+                            print('verticeSeleccionado')
+
                             self.listaPuntosLineaTemp = []
                             self.indiceSeleccionado = vertices.index(vertice)
                             self.moviendoVertice = True
                             for vertice in vertices:
-                                puntoXY = QgsPointXY(vertice.x(), vertice.y())
-                                self.listaPuntosLineaTemp.append(puntoXY)
+                                self.listaPuntosLineaTemp.append(vertice)
                                 
-                            print(self.indiceSeleccionado)
                 else: #Cuando estamos moviendo un vertice y queremos soltarlo
+                    print('moviendoVertice else')
+
                     self.moviendoVertice = False
                     rel = self.relaciones[self.relacionEnEdicion]
                     rel.geom = rel.rubber.asGeometry()
                     rel.rubber.setStrokeColor(QColor(0,62,240,255))
+
                     self.punteroRelaciones = len(self.relaciones)
                     self.relaciones[self.punteroRelaciones] = RelacionRubberGeom(self.crearNuevoRubberLinea(), None)
                     self.listaPuntosLineaTemp = []
-                    self.pluginM.VentanaAreas.close()
+
+                    print('///////////////////////////////////')
+                    print(self.pluginM.VentanaAreas, type(self.pluginM.VentanaAreas))
+                    print(self.pluginM, type(self.pluginM))
+                    print('///////////////////////////////////')
+
+                    #self.pluginM.VentanaAreas.close()
                     iface.mapCanvas().refresh()
 
             elif event.buttons() == Qt.RightButton: #--------Click Derecho -----# Para agregar vertices personales
@@ -174,7 +190,7 @@ class EventoDivision(QgsMapTool):
                     inter = bufferClick.intersection(relacion.geom.buffer(0.000004, 1)) #Checamos la interseccion con la linea a editar
                     c = inter.centroid().asPoint() #Obtenemos el centroide, aqui se pintara el vertice
 
-                    vertices1 = self.obtenerVertices(relacion.geom) #Obtenemos todos los vertices acutales
+                    vertices1 = self.obtenerVerticesLinea(relacion.geom) #Obtenemos todos los vertices acutales
 
                     rango = len(vertices1)
 
@@ -238,7 +254,7 @@ class EventoDivision(QgsMapTool):
                         relacion.rubber.addPoint(puntoXY, True)
 
                     relacion.geom = relacion.rubber.asGeometry()
-
+        
 #-----------------------------------------------------------------------
 
 
@@ -306,7 +322,6 @@ class EventoDivision(QgsMapTool):
                 
                 
                 self.relaciones[self.relacionEnEdicion].rubber.show()
-
     
 #-------------------------------------------------------------------------------------#
 
@@ -426,6 +441,7 @@ class EventoDivision(QgsMapTool):
 #-----------------------------------------------------------------------------------
 
     def obtenerVertices(self, geom):
+
         n  = 0
         ver = geom.vertexAt(0)
         vertices=[]
@@ -436,6 +452,10 @@ class EventoDivision(QgsMapTool):
             ver=geom.vertexAt(n)
 
         return vertices
+
+    def obtenerVerticesLinea(self, geom):
+
+        return geom.asPolyline()
 
     def crearNuevoMarcaVert(self):
         marcador = QgsVertexMarker(iface.mapCanvas())

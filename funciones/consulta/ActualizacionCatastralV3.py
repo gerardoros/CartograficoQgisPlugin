@@ -284,7 +284,7 @@ class ActualizacionCatastralV3:
                     self.idManzana = ' '
 
                     #Modo desarrollor
-                    self.modoDesarrollo = True
+                    self.modoDesarrollo = False
                     self.cargaRapida = True
                     #01001001020004054011
                     #01001001020004027003
@@ -977,13 +977,10 @@ class ActualizacionCatastralV3:
             return
 
         geometria = listaManzanas[0].geometry()
-        final = QgsGeometry()
 
         for i in range(0, rango):
             geometria = geometria.combine(listaManzanas[i].geometry())
 
-        features = list(mem_layer.getFeatures())
-        f = features[0]
         bbox = geometria.boundingBox()
         iface.mapCanvas().setExtent(bbox)
         iface.mapCanvas().refresh()

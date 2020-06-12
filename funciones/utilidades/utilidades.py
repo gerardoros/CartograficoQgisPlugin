@@ -16,9 +16,72 @@ class Utilidad:
 		self.tablas = {'manzana': 'e_manzana', 'predios.geom': 'e_predio', 'construcciones': 'e_construccion',  'horizontales.geom':'e_condominio_horizontal', 'verticales':'e_condominio_vertical', 'cves_verticales':'e_condominio_vert_clave'}
 		self.rot13 = str.maketrans("ABCDEFGHIJKLMabcdefghijklmNOPQRSTUVWXYZnopqrstuvwxyz", "NOPQRSTUVWXYZnopqrstuvwxyzABCDEFGHIJKLMabcdefghijklm")
 
-		self.esto = 'me pelan la verga todos'
-		#pass
-		
+		#Cursor Redondo
+		self.cursorRedondo = QCursor(QPixmap(["16 16 3 1",
+										"      c None",
+										".     c #FF0000",
+										"+     c #FFFFFF",
+										"                ",
+										"       +.+      ",
+										"      ++.++     ",
+										"     +.....+    ",
+										"    +.     .+   ",
+										"   +.   .   .+  ",
+										"  +.    .    .+ ",
+										" ++.    .    .++",
+										" ... ...+... ...",
+										" ++.    .    .++",
+										"  +.    .    .+ ",
+										"   +.   .   .+  ",
+										"   ++.     .+   ",
+										"    ++.....+    ",
+										"      ++.++     ",
+										"       +.+      "]))
+
+		#Cursor Cruz
+		self.cursorCruz = QCursor(QPixmap(["16 16 3 1",
+										"      c None",
+										".     c #FF0000",
+										"+     c #FFFFFF",
+										"                ",
+										"       +++       ",
+										"       +.+      ",
+										"       +.+      ",
+										"       +.+     ",
+										"       +.+     ",
+										"       +.+      ",
+										"++++++++.+++++++",
+										"+..............+",
+										"++++++++.+++++++",
+										"       +.+      ",
+										"       +.+      ",
+										"       +.+      ",
+										"       +.+      ",
+										"       +.+      ",
+										"       +++      "]))
+
+		#Cursor Cruz
+		self.cursorCuadro = QCursor(QPixmap(["16 16 3 1",
+										"      c None",
+										".     c #FF0000",
+										"+     c #FFFFFF",
+										"                ",
+										"+++++++++++++++",
+										"+..............+",
+										"+.+++++++++++.+",
+										"+.+++++++++++.+",
+										"+.+++++++++++.+",
+										"+.+++++++++++.+",
+										"+.+++++++++++.+",
+										"+++++++++++++++",
+										"+.+++++++++++.+",
+										"+.+++++++++++.+",
+										"+.+++++++++++.+",
+										"+.+++++++++++.+",
+										"+.+++++++++++.+",
+										"+.............+",
+										"+++++++++++++++",
+										"       +++      "]))
 
 	#---------------------------------------------------------------------------------
 
@@ -634,3 +697,20 @@ class Utilidad:
 			group.insertChildNode(0, capaArbol)
 
 #------------------------------------------------------------------------------------------------------------------------
+	
+	# regresa una lista de puntos de tipo QgsPointXY
+	def obtenerVerticesLinea(self, geom):
+
+		return geom.asPolyline()
+
+	# regresa una lista de puntos de tipo QgsPointXY
+	def obtenerVerticesPoligono(self, geom):
+		polygon = geom.asPolygon()
+		listaVertices = []
+
+		n = len(polygon[0])
+
+		for i in range(n):
+			listaVertices.append(polygon[0][i])
+
+		return listaVertices
