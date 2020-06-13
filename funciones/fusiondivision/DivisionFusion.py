@@ -560,12 +560,7 @@ class DivisionFusion:
         
         #cuentaCortes = 0
         rango = len(self.eventos.relaciones) - 1
-        #for i in range(0, rango):
-        #    geom = self.eventos.relaciones[i].geom
-        #    if geom != None:
-        #        cuentaCortes += 1
-        #Obtenemos la cantidad de corte
-        #print('cuentaCortes ', cuentaCortes)
+
         geoTemp = QgsGeometry.fromWkt(self.geomEnDivision.asWkt())
         cuentaSalida = self.subdividirPredio(geoTemp, True) - 1 #Aqui enviamos una geomtria temporal, para ven en cuantos cortes quedara
             
@@ -623,6 +618,8 @@ class DivisionFusion:
                         self.eventos.relaciones[i].rubber.reset(QgsWkbTypes.LineGeometry)
                         self.eventos.relaciones[i].vaciarMarcadores()
                     self.eventos.recargarRelaciones()
+
+                    print('si entro aquiiiiiiiiiiiiiiiiiiiiiii',self.predioEnDivision.id() )
 
                     capaPredios.startEditing()
                     capaPredios.dataProvider().deleteFeatures([self.predioEnDivision.id()])
@@ -698,7 +695,6 @@ class DivisionFusion:
 ##################################################################################
 
     #Metodo para filetear los predios con lineas
-    #OJO: Ni se te ocurra moverle aqui karnal, seguramente la vas a pifiar :)
     def filetear(self, poligono, lineas):
         listaActuales = [] #Lista de las geometrias en espera de ser cortadas
         listaActuales.append(poligono) #Agregamos el poligono a cortar en la lista de espera
@@ -711,7 +707,7 @@ class DivisionFusion:
             
             for actual in listaActuales: #Checamos cada geometria en espera
                 
-                partida = actual.splitGeometry(linea, True) #Aplicamos el split geometry de qgis, vamos partiendo el poligono, tut, tut, tut
+                partida = actual.splitGeometry(linea, True) #Aplicamos el split geometry de qgis, vamos partiendo el poligono
                 if len(partida[1]) == 0: #Esto ocurre cuando el corte no hizo nada
                     listaSiguiente.append(actual) #Asi que nos quedamos con la geometria tal cual esta
                 else: #Cuando si hubo corte
@@ -729,7 +725,6 @@ class DivisionFusion:
 
         for geomSal in listaSiguiente: #Obtenemos las diferencia respeto a los poligonos obtenidos y el entrante, lo que resulte, tambien es parte del corte
             temporal = temporal.difference(geomSal.buffer(0.0000001,1))
-            #El buffer tu sabes por que es, si llegaste hasta aqui y no sabes por que le ponemos buffer, mejor quita los cambios que hiciste colega, seguramente la pifiaste :)
 
         listaSiguiente.append(temporal) #Aqui ponemos todas las geometrias
         return listaSiguiente #Retornamos la lista
@@ -915,15 +910,20 @@ class DivisionFusion:
             capaConstru.updateFeature(construccion)
             cuentaConstruccion += 1
             supConst += (geomConstru.area() * niveles)
-        
+
+
+        capaConstru.triggerRepaint()
+        capaConstru.commitChanges()
+
         return supConst
         
 #--------------------------------------------------------------------------------------------------
 
     def irAClaves(self): #Pintamos la ventanita de asignar clavees
-        self.VentanaClaves.rellenarClaves()
-        self.VentanaClaves.llenar(False)
+        self.VentanaClaves.predioOriginal = self.predioEnDivision
+        self.VentanaClaves.obtieneCapaPredios()
         self.VentanaClaves.dlg.show()
+
         self.dlg.btnDibujarCortes.setEnabled(False)
         self.dlg.btnEditarCortes.setEnabled(False)
         self.dlg.btnEliminarCortes.setEnabled(False)

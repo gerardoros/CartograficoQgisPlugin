@@ -91,6 +91,7 @@ class Utilidad:
 		msg.setText(mensaje)
 		msg.setIcon(icono)
 		msg.setWindowTitle(titulo)
+		msg.setFixedSize(500, 500)
 		msg.show()
 		msg.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
 		result = msg.exec_()

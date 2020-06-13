@@ -284,7 +284,7 @@ class ActualizacionCatastralV3:
                     self.idManzana = ' '
 
                     #Modo desarrollor
-                    self.modoDesarrollo = False
+                    self.modoDesarrollo = True
                     self.cargaRapida = True
                     #01001001020004054011
                     #01001001020004027003
@@ -371,7 +371,8 @@ class ActualizacionCatastralV3:
             #self.idManzana = '01 001 001 02 0004 060 004' 
                              #01001001020  4026040
             #self.idManzana = '01001001020004060004'  #La larga
-            self.idManzana = '01001001020004020001'  #La larga
+            #self.idManzana = '01001001020004020001'
+            self.idManzana = '01001001020004026039'
             
             #01001001020004026039
             #01001001020  4026039
@@ -843,7 +844,6 @@ class ActualizacionCatastralV3:
         feats = [ QgsFeature() for i in range(len(geoms)) ]
 
         for i, feat in enumerate(feats):
-
             feat.setAttributes(properties[i])
             feat.setGeometry(QgsGeometry.fromWkt(geoms[i]))
 
