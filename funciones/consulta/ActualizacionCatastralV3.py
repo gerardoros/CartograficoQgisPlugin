@@ -284,7 +284,7 @@ class ActualizacionCatastralV3:
                     self.idManzana = ' '
 
                     #Modo desarrollor
-                    self.modoDesarrollo = False
+                    self.modoDesarrollo = True
                     self.cargaRapida = True
                     #01001001020004054011
                     #01001001020004027003
@@ -316,7 +316,6 @@ class ActualizacionCatastralV3:
                     #Acciones iniciales
                     if self.modoDesarrollo:
                         self.obtenerIdManzana()
-                        #self.pintarCapas()
 
                     else:
                         try:
@@ -371,7 +370,8 @@ class ActualizacionCatastralV3:
             #self.idManzana = '01 001 001 02 0004 060 004' 
                              #01001001020  4026040
             #self.idManzana = '01001001020004060004'  #La larga
-            self.idManzana = '01001001020004020001'  #La larga
+            #self.idManzana = '01001001020004020001'
+            self.idManzana = '01001001020004026039'
             
             #01001001020004026039
             #01001001020  4026039
@@ -3373,6 +3373,7 @@ class ActualizacionCatastralV3:
         
         self.DFS.dlg.comboPredios.clear()
         lista = []
+        # lista de features
         for predio in listaPredios:
             lista.append(str(predio.attributes()[1]))
 

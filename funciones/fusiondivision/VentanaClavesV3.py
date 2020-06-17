@@ -25,9 +25,7 @@ from PyQt5.QtCore import QSettings, QTranslator, qVersion, QCoreApplication
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QAction
 
-# Initialize Qt resources from file resources.py
 from .resources import *
-# Import the code for the dialog
 from .VentanaClavesV3_dialog import VentanaClavesV3Dialog
 import os.path
 
@@ -52,103 +50,81 @@ class VentanaClavesV3:
     def __init__(self, iface, pluginDFS):
         
         self.dlg = VentanaClavesV3Dialog(pluginV=self, parent = iface.mainWindow())
-        self.entradaLibre = False
         self.DFS = pluginDFS
-        self.listaQuitada = []
-        self.listaClaves = []
+        self.capaPredio = None
+
+        self.predioOriginal = None
+
+        self.seleccion = None
 
         self.primeraVez = True
         self.dlg.btnAutomatico.clicked.connect(self.asignacionAutomatica)
 
-        self.dlg.txtClave.setEnabled(False)
-        self.capaPredio = QgsProject.instance().mapLayer(self.DFS.ACA.obtenerIdCapa('predios.geom'))
-        if self.capaPredio:
-            self.capaPredio.selectionChanged.connect(self.cargarAsignacionManual)
-        #self.dlg.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
-        
         self.dlg.btnClave.clicked.connect(self.asignacionDesManual)
         self.dlg.btnCompletar.clicked.connect(self.completarSubdivision)
-        self.dlg.cmbClaves.currentIndexChanged.connect(self.cargarDelCombo)
         self.dlg.btnDesasignarTodo.clicked.connect(self.desasignarTodasClaves)
         self.subCompleta = False
-        #self.btnRollback.clicked.connect(self.DFS.rollBack)
-
-        self.dlg.txtClave.setEnabled(False)
-        self.dlg.cmbClaves.setEnabled(False)
-        self.dlg.btnClave.setEnabled(False)
-
-    def llenar(self, apagarInput):
-
-        self.dlg.cmbClaves.clear()
-
-        #self.rellenarClaves()
-        #lista.sort()
-        for elemento in self.listaClaves:
-            self.dlg.cmbClaves.addItem(elemento)
-
-        if apagarInput:
-            self.dlg.txtClave.setEnabled(False)
 
 #------------------------------------------------------------------
     
     def asignacionAutomatica(self):
         
-        #cuentaNueva = 49999
+        # inicializa la capa de predios
+        self.obtieneCapaPredios()
+
         self.capaPredio.startEditing()
         
-        rango = len(self.listaClaves)
-        listaTrunca = self.listaClaves[1:rango-1]
-        rango = len(listaTrunca)
-
-        #totalPredios = [list(self.capaPredio.getFeatures())]
+        # predios a asignar clave
         totalPredios = []
+        cvesPredios = []
         for predio in self.capaPredio.getFeatures():
             if predio['clave'] == '':
                 totalPredios.append(predio)
+            else:
+                cvesPredios.append(int(predio['clave']))
 
+        cvesPredios.sort(reverse=True)
+        nCve = cvesPredios[0] + 1
+        primera = True
 
-        cuantosPredios = len(totalPredios)
-        listaPredios = []
-        if cuantosPredios >= rango:
-            listaPredios = totalPredios[0:rango-1]
-        else:
-            listaPredios = totalPredios
-            rango = len(totalPredios)
-
-        for i in range(0, rango):
+        for i in range(0, len(totalPredios)):
             feat = totalPredios[i]
-            nuevaClave = listaTrunca[i]
-            feat['clave'] = nuevaClave
-            print('asignamos', nuevaClave)
-            if nuevaClave == self.DFS.predioEnDivision['clave']:
-                feat['id'] = self.DFS.predioEnDivision['id']
-                feat['cve_cat'] = self.DFS.predioEnDivision['cve_cat']
 
-            if nuevaClave in self.listaClaves:
-                self.listaClaves.remove(nuevaClave)
-                self.listaQuitada.append(nuevaClave)
+            if primera:
+                clave = self.predioOriginal['clave']
+                feat['clave'] = f'{int(clave):05}'
+
+                if int(clave) == nCve:
+                    nCve = nCve + 1
+
+                primera = False
+            else:
+                feat['clave'] = f'{nCve:05}'
+
+                # clave anterior
+                feat['cve_cat_ant'] = self.predioOriginal['cve_cat']
+                nCve = nCve + 1
+
+            feat['cve_cat'] = self.predioOriginal['cve_cat'][0:20] + feat['clave']
 
             self.capaPredio.updateFeature(feat)
 
         
         self.capaPredio.removeSelection()
         self.DFS.UTI.mostrarAlerta('Claves asignadas', QMessageBox().Information, 'Claves asignadas')
-        #seleccion = self.capaPredio.selectedFeatures()
-        #if len (seleccion) == 1:
-        #    self.dlg.txtClave.setText(self.seleccion[0]['clave'])
-        #else:
-        #    self.dlg.txtClave.setText('')
-            
+
         self.capaPredio.triggerRepaint()
         self.capaPredio.commitChanges()
-        self.dlg.txtClave.setEnabled(False)
-        self.dlg.cmbClaves.setEnabled(False)
-        self.dlg.btnClave.setEnabled(False)
 
 #------------------------------------------------------------------
 
     def cargarAsignacionManual(self):
+
+        # inicializa la capa de predios
+        self.obtieneCapaPredios()
+
         self.seleccion = self.capaPredio.selectedFeatures()
+        self.dlg.txtClave.setText('')
 
         if len(self.seleccion) == 1:
 
@@ -157,144 +133,81 @@ class VentanaClavesV3:
             
             
             if seleccion.geometry().asWkt() in self.DFS.listaNuevosPredios: #Cuando es predio nuevo
-               
+
                 #self.dlg.btnClave.setEnabled(True)
                 if claveAsignada == '':
-                    #print('es aquiiii')
-                    self.dlg.txtClave.setEnabled(self.entradaLibre)
+                    self.dlg.txtClave.setEnabled(True)
                     self.dlg.btnClave.setEnabled(True)
-                    self.dlg.cmbClaves.setEnabled(True)
-                    self.dlg.txtClave.setText('')
-                    self.dlg.btnClave.setText('Asignar Clave')
                 else:
-                    self.dlg.txtClave.setEnabled(False)
+                    self.dlg.txtClave.setEnabled(True)
                     self.dlg.btnClave.setEnabled(True)
-                    self.dlg.cmbClaves.setEnabled(False)
                     self.dlg.txtClave.setText(claveAsignada)
-                    self.dlg.btnClave.setText('Desasignar Clave')
             else: #Cuando NO es predio nuevo
+
                 self.dlg.txtClave.setEnabled(False)
-                self.dlg.cmbClaves.setEnabled(False)
                 self.dlg.btnClave.setEnabled(False)
                 
         else: #Cuando la seleccion esta vacia
+
             self.dlg.txtClave.setEnabled(False)
-            self.dlg.cmbClaves.setEnabled(False)
             self.dlg.btnClave.setEnabled(False)
 
 #--------------------------------------------------------------
 
     def asignacionDesManual(self):
         
+        # inicializa la capa de predios
+        self.obtieneCapaPredios()
+
+        # valida la seleccion de un predio
+        if self.seleccion is None:
+            self.DFS.UTI.mostrarAlerta('Seleccione un predio', QMessageBox().Information, 'Aviso')
+            return
+
         clave = self.seleccion[0]['clave']
-        bandera = True
 
-        if clave == '':   #Asignacion
+        # valida clave a asignar
+        if self.dlg.txtClave.text() == '':
+            self.DFS.UTI.mostrarAlerta('Defina la clave a asignar', QMessageBox().Information, 'Clave asignada')
+            return
 
-            if self.entradaLibre:      
-                texto = self.dlg.txtClave.text()
-                mensaje = "Clave asignada: " + texto
-                #print('1', texto)
-                bandera = False
+        texto = self.dlg.txtClave.text()
 
-                pre = ''
-                sting = str(texto)
-                if len(sting) == 1:
-                    pre = '0000'
-                elif len(sting) == 2:
-                    pre = '000'
-                elif len(sting) == 3:
-                    pre = '00'
-                elif len(sting) == 4:
-                    pre = '0'
-                
-                post = pre + texto
+        # valida que sean solo numeros
+        if not self.DFS.UTI.esEntero(texto):
+            self.DFS.UTI.mostrarAlerta('La clave a asignar debe contener solo números', QMessageBox().Information, 'Clave asignada')
+            return
 
-                texto = post
-                self.dlg.txtClave.setText(texto)
-                #print('2', texto)
-                if self.DFS.UTI.esEntero(texto):
-                    if len(texto) == 5:
-                        bandera = True
-            else: #Sin clave libre
-                bandera = True
-                texto = self.dlg.cmbClaves.currentText()
-                mensaje = "Clave asignada: " + texto
-                #p#rint('3', texto)
-            apagarInput = True
+        # prepara la clave
+        clave = f'{int(texto):05}'
 
-            
-        else:    #Desasignacion
-            #texto = ''
-            texto = self.dlg.txtClave.text()
-            mensaje = "Clave desasignada: " + texto
-            if texto in self.listaQuitada:
-                self.listaClaves.append(texto)
-                self.listaQuitada.remove(texto)
-            texto = ''
-            apagarInput = False
+        # validar claves repetidas
+        for feat in self.capaPredio.getFeatures():
+            if feat['clave'] == clave:
+                self.DFS.UTI.mostrarAlerta('La clave se encuentra repetida', QMessageBox().Information, 'Clave asignada')
+                return
 
-            
+        # asigna la clave al predio 
+        self.capaPredio.startEditing()
+        self.seleccion[0]['clave'] = clave
+        self.seleccion[0]['cve_cat'] = self.predioOriginal['cve_cat'][0:20] + clave
+        self.seleccion[0]['cve_cat_ant'] = self.predioOriginal['cve_cat']
 
-        if bandera:
+        self.capaPredio.updateFeature(self.seleccion[0])
+        self.capaPredio.triggerRepaint()
+        self.capaPredio.commitChanges()
 
-            noRepetida = True
+        self.dlg.txtClave.setText(clave)
 
-            for feat in self.capaPredio.getFeatures():
-                if texto == '':
-                    break
-                if feat['clave'] == '':
-                    continue
-                if feat['clave'] == texto:
-                    noRepetida = False
-                    break
+        self.DFS.UTI.mostrarAlerta("Proceso correcto", QMessageBox().Information, 'Clave asignada')
 
-            if noRepetida:
-                self.capaPredio.startEditing()
-                self.seleccion[0]['clave'] = texto
-                
-
-                if texto == self.DFS.predioEnDivision['clave']:
-                    self.seleccion[0]['id'] = self.DFS.predioEnDivision['id']
-                    self.seleccion[0]['cve_cat'] = self.DFS.predioEnDivision['cve_cat']
-                else:
-                    self.seleccion[0]['id'] = None
-                    self.seleccion[0]['cve_cat'] = ''
-
-                self.capaPredio.updateFeature(self.seleccion[0])
-                self.capaPredio.triggerRepaint()
-                self.capaPredio.commitChanges()
-                if texto != '':
-                    if texto in self.listaClaves:
-                        self.listaClaves.remove(texto)
-                        self.listaQuitada.append(texto)
-
-                self.DFS.UTI.mostrarAlerta(mensaje, QMessageBox().Information, 'Clave asignada')
-
-                #self.capaPredio.removeSelection()
-
-                if clave == '':
-                    self.dlg.txtClave.setEnabled(False)
-                    self.dlg.cmbClaves.setEnabled(False)
-                    self.dlg.txtClave.setText(texto)
-                    self.dlg.btnClave.setText('Desasignar Clave')
-                else:
-
-                    self.dlg.txtClave.setEnabled(True)
-                    self.dlg.cmbClaves.setEnabled(True)
-                    self.dlg.btnClave.setEnabled(True)
-                    self.dlg.btnClave.setText('Asignar Clave')
-
-                self.llenar(apagarInput)
-            else:
-                self.DFS.UTI.mostrarAlerta('La clave ya ha sido asignada', QMessageBox().Critical, 'Error de asignacion')
-        else:
-            self.DFS.UTI.mostrarAlerta('La clave debe constar de 5 numeros', QMessageBox().Information, 'Clave asignada')
 
 #---------------------------------------------------------------------------------
 
     def completarSubdivision(self):
 
+        # inicializa la capa de predios
+        self.obtieneCapaPredios()
         bandera = True
 
         for feat in self.capaPredio.getFeatures():
@@ -315,6 +228,10 @@ class VentanaClavesV3:
             if bandera:
                 self.DFS.UTI.mostrarAlerta('Subdivision completa', QMessageBox().Information, 'Subdivision completa, Parte 2 de 2')
                 self.dlg.close()
+
+                self.DFS.enClaves = False
+                self.DFS.enSubdivision = False
+
                 self.DFS.dlg.close()
                 self.primeraVez = True
                 self.DFS.enClaves = False
@@ -323,8 +240,6 @@ class VentanaClavesV3:
                 self.subCompleta = False
                 self.DFS.VentanaAreas.close()
                 self.DFS.vaciarRubbers()
-                #self.rellenarClaves()
-                #self.llenar(
             else:
                 self.DFS.UTI.mostrarAlerta('No puedes continuar hasta que un predio contenga la clave: ' + str(self.DFS.predioEnDivision['clave']), QMessageBox().Critical, 'Error al completar subdivision')
         else:
@@ -333,6 +248,10 @@ class VentanaClavesV3:
 #--------------------------------------------------------------------------------------
 
     def desasignarTodasClaves(self):
+
+        # inicializa la capa de predios
+        self.obtieneCapaPredios()
+
         for feat in self.capaPredio.getFeatures():
             if feat.geometry().asWkt() in self.DFS.listaNuevosPredios:
                 self.capaPredio.startEditing()
@@ -342,9 +261,11 @@ class VentanaClavesV3:
                 self.capaPredio.updateFeature(feat)
                 self.capaPredio.triggerRepaint()
                 self.capaPredio.commitChanges()
+                self.dlg.txtClave.setText('')
 
 #----------------------------------------------------------------------------------------------
 
+    '''
     def cargarDelCombo(self):
 
         #if len(self.seleccion) == 1:
@@ -355,10 +276,10 @@ class VentanaClavesV3:
         if self.primeraVez:
             self.dlg.txtClave.setEnabled(False)
             self.primeraVez = False
-
+    '''
     
 #----------------------------------------------------------
-
+    '''
     def rellenarClaves(self):
 
         try:
@@ -366,3 +287,16 @@ class VentanaClavesV3:
             self.listaClaves = [ 'ENTRADA MANUAL', str(idp), '10101', '20202', '30303']
         except:
             return
+    '''
+
+    def obtieneCapaPredios(self):
+
+        '''
+        if self.capaPredio is not None:
+            return
+        '''
+
+        self.capaPredio = QgsProject.instance().mapLayer(self.DFS.ACA.obtenerIdCapa('predios.geom'))
+
+        if self.capaPredio:
+            self.capaPredio.selectionChanged.connect(self.cargarAsignacionManual)

@@ -53,7 +53,7 @@ class VentanaFusionV3:
     def __init__(self, iface, pluginFD):
         
         self.pluginFD = pluginFD
-        self.dlg = VentanaFusionV3Dialog(parent = iface.mainWindow())
+        self.dlg = VentanaFusionV3Dialog(parent = iface.mainWindow(), DIV = pluginFD)
         #self.dlg.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
         # Create the dialog (after translation) and keep reference
         
@@ -62,7 +62,6 @@ class VentanaFusionV3:
 
         self.dlg.btnConfirmar.clicked.connect(self.confirmarFusion)
         self.dlg.btnCancelar.clicked.connect(self.cancelarFusion)
-        #self.dlg.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
         self.dlg.tableWidget.setEditTriggers(QtWidgets.QTableWidget.NoEditTriggers)
         self.dlg.tableWidget.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
         self.dlg.tableWidget.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
@@ -83,12 +82,8 @@ class VentanaFusionV3:
 #---------------------------------------------------------------------------
 
     def cancelarFusion(self):
+        self.pluginFD.enFusion = False
         self.dlg.close()
-        self.pluginFD.dlg.btnCargarPredio.setEnabled(True)
-
-#------------------------------------------------------
-
-    def closeEvent(self, evnt):
         self.pluginFD.dlg.btnCargarPredio.setEnabled(True)
 
 #----------------------------------------------------------------------
@@ -111,26 +106,10 @@ class VentanaFusionV3:
 
     def llenarTablaComp(self, predio1, predio2):
         
-        print()
-        print()
-        print()
-        print()
-        print(predio1)
-        print()
-        print()
-        print()
-        print(predio1)
-        print()
-        print()
-        print('888888888888')
-
         self.vaciarTabla()
         self.dlg.tableWidget.setRowCount(2)
 
         for x in range(0, len(self.listaCampos)):
-
-            print(str(predio1[self.listaCampos[x]]), type(predio1[self.listaCampos[x]]))
-            print(str(predio2[self.listaCampos[x]]), type(predio1[self.listaCampos[x]]))
 
             valItem1 = ''
             valItem2 = ''
@@ -143,10 +122,6 @@ class VentanaFusionV3:
 
             self.dlg.tableWidget.setItem(0, x , item1)
             self.dlg.tableWidget.setItem(1, x , item2)
-
-            #item1.setFlags( QtCore.Qt.ItemIsSelectable |  QtCore.Qt.ItemIsEnabled )
-            #item2.setFlags( QtCore.Qt.ItemIsSelectable |  QtCore.Qt.ItemIsEnabled )
-        
 
 #------------------------------------------------------
     def vaciarTabla(self): #Vaciar tabla
