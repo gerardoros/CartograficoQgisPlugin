@@ -25,9 +25,7 @@ from PyQt5.QtCore import QSettings, QTranslator, qVersion, QCoreApplication
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QAction
 
-# Initialize Qt resources from file resources.py
 from .resources import *
-# Import the code for the dialog
 from .VentanaClavesV3_dialog import VentanaClavesV3Dialog
 import os.path
 
@@ -91,10 +89,14 @@ class VentanaClavesV3:
 
         for i in range(0, len(totalPredios)):
             feat = totalPredios[i]
-            #nuevaClave = listaTrunca[i]
+
             if primera:
                 clave = self.predioOriginal['clave']
                 feat['clave'] = f'{int(clave):05}'
+
+                if int(clave) == nCve:
+                    nCve = nCve + 1
+
                 primera = False
             else:
                 feat['clave'] = f'{nCve:05}'
@@ -206,16 +208,10 @@ class VentanaClavesV3:
 
         # inicializa la capa de predios
         self.obtieneCapaPredios()
-
         bandera = True
-
-        print(self.DFS.listaNuevosPredios)
 
         for feat in self.capaPredio.getFeatures():
             if feat.geometry().asWkt() in self.DFS.listaNuevosPredios:
-
-                print(feat['clave'])
-
                 if feat['clave'] == '':
                     bandera = False
                     break
@@ -232,6 +228,10 @@ class VentanaClavesV3:
             if bandera:
                 self.DFS.UTI.mostrarAlerta('Subdivision completa', QMessageBox().Information, 'Subdivision completa, Parte 2 de 2')
                 self.dlg.close()
+
+                self.DFS.enClaves = False
+                self.DFS.enSubdivision = False
+
                 self.DFS.dlg.close()
                 self.primeraVez = True
                 self.DFS.enClaves = False
@@ -291,8 +291,10 @@ class VentanaClavesV3:
 
     def obtieneCapaPredios(self):
 
+        '''
         if self.capaPredio is not None:
             return
+        '''
 
         self.capaPredio = QgsProject.instance().mapLayer(self.DFS.ACA.obtenerIdCapa('predios.geom'))
 

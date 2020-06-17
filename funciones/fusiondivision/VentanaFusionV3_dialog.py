@@ -34,7 +34,7 @@ FORM_CLASS, _ = uic.loadUiType(os.path.join(
 
 
 class VentanaFusionV3Dialog(QtWidgets.QDialog, FORM_CLASS):
-    def __init__(self, parent=iface.mainWindow()):
+    def __init__(self, parent=iface.mainWindow(), DIV = None):
         """Constructor."""
         super(VentanaFusionV3Dialog, self).__init__(parent, \
             flags=Qt.WindowMinimizeButtonHint|Qt.WindowCloseButtonHint)
@@ -44,3 +44,8 @@ class VentanaFusionV3Dialog(QtWidgets.QDialog, FORM_CLASS):
         # http://qt-project.org/doc/qt-4.8/designer-using-a-ui-file.html
         # #widgets-and-dialogs-with-auto-connect
         self.setupUi(self)
+        self.division = DIV
+
+    def closeEvent(self, event):
+        self.division.enFusion = False
+        self.division.dlg.btnCargarPredio.setEnabled(True)

@@ -465,10 +465,8 @@ class Startup():
                     group = root.findGroup(dependencia)
                     group.insertChildNode(0, capaReinst)
 
-                #print QSettings().value("reglasTopologicas", [])
                 reglas = QSettings().value("reglasTopologicas") #obtenemos las reglas ya almacenadas en qgis
 
-                #print reglas
                 reglasObjeto = objeto["topologias"]
                 
                 for regla in reglasObjeto:
@@ -520,7 +518,6 @@ class Startup():
             return 'bearer ' + json.loads(data)['access_token']
         else:
             return 'bearer ' + token
-
 
     def decodeRot13(self, cadena):
         return str.translate(cadena, self.rot13)

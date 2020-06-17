@@ -77,8 +77,9 @@ class DivisionFusion:
                 QCoreApplication.installTranslator(self.translator)
 
         # Create the dialog (after translation) and keep reference
-        self.dlg = DivisionFusionDialog(parent = iface.mainWindow())
-        #self.dlg.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
+        self.dlg = DivisionFusionDialog(parent = iface.mainWindow(), DIV = self)
+
+
         # Declare instance attributes
         '''
         self.actions = []
@@ -87,11 +88,6 @@ class DivisionFusion:
         self.toolbar = self.iface.addToolBar(u'DivisionFusion')
         self.toolbar.setObjectName(u'DivisionFusion')
         '''
-
-        #self.dlg.setMinimumSize(QSize(464, 465))
-        #self.dlg.setMaximumSize(QSize(371, 372))
-        #print(self.dlg.size())
-        #self.dlg.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
         self.eventos = EventoDivision(iface.mapCanvas(), self)
         self.VentanaAreas = VentanaAreas(self)
 
@@ -129,10 +125,12 @@ class DivisionFusion:
         self.dlg.btnEditarCortes.clicked.connect(self.encenderModoEditar)
 
         self.dlg.btnDeshacerTodo.hide()
+        self.enClaves = False
+        self.enSubdivision = False
+        self.enFusion = False
 
 
         self.geomsAreas = []
-        #self.p
 
     # noinspection PyMethodMayBeStatic
     def tr(self, message):
@@ -266,6 +264,24 @@ class DivisionFusion:
         self.dlg.btnApagarHerramientas.setEnabled(False)
         self.dlg.btnConfirmarCortes.setEnabled(False)
         self.dlg.btnDeshacerTodo.setEnabled(False)
+
+        # llena los predios en el combo
+        self.dlg.comboPredios.clear()
+        lista = []
+
+        capaPredios = QgsProject.instance().mapLayer(self.ACA.obtenerIdCapa('predios.geom'))
+
+        if capaPredios is None:
+            return
+
+        # lista de features
+        for predio in capaPredios.getFeatures():
+            lista.append(str(predio['clave']))
+
+        lista.sort()
+        for elemento in lista:
+            self.dlg.comboPredios.addItem(elemento)
+
         if result:
             # Do something useful here - delete the line containing pass and
             # substitute with your code.
@@ -280,6 +296,7 @@ class DivisionFusion:
             self.VentanaFusion.dlg.close()
             if self.validarCuentaSeleccion(): #Si la seleccion es valida
                 
+                self.enFusion = True
                 self.VentanaFusion.dlg.show()
                 self.VentanaFusion.llenarTablaComp(seleccion[0], seleccion[1])
                 self.dlg.btnCargarPredio.setEnabled(False)
@@ -374,7 +391,6 @@ class DivisionFusion:
             else:
                 if self.contarIntegraciones( geomConstru.buffer(-0.0000001, 1), 'predios.geom' ) == 0: #Obtenemos los aleros del predio fusionado
                     if geomConstru.buffer(0.0000001, 1).intersection(geomFusion).area() > 0.000000001:
-                        #print(geomConstru.buffer(0.0000001, 1).intersection(geomFusion).area())
                         listaPrimera.append(construccion)
 
 
@@ -419,6 +435,7 @@ class DivisionFusion:
         capaPredios.commitChanges()
 
         self.UTI.mostrarAlerta('Fusion completada con exito', QMessageBox().Information, 'Fusion de predios')
+        self.enFusion = False
         self.dlg.close()
         
 
@@ -519,6 +536,8 @@ class DivisionFusion:
             self.dlg.btnDeshacerCortes.setEnabled(True)
             self.dlg.btnLlamarCalcular.setEnabled(True)
 
+            self.enSubdivision = True
+
         else:
             self.UTI.mostrarAlerta('El predio no fue encontrado', QMessageBox().Critical, 'Error de cargado de predio')
         
@@ -550,6 +569,8 @@ class DivisionFusion:
             self.dlg.btnDibujarCortes.setEnabled(False)
             self.dlg.btnEditarCortes.setEnabled(False)
             self.dlg.btnDeshacerTodo.setEnabled(False)
+
+            self.enSubdivision = False
 #-----------------------------------------------------------------------------------
 
 
@@ -619,8 +640,6 @@ class DivisionFusion:
                         self.eventos.relaciones[i].vaciarMarcadores()
                     self.eventos.recargarRelaciones()
 
-                    print('si entro aquiiiiiiiiiiiiiiiiiiiiiii',self.predioEnDivision.id() )
-
                     capaPredios.startEditing()
                     capaPredios.dataProvider().deleteFeatures([self.predioEnDivision.id()])
                     capaPredios.triggerRepaint()
@@ -637,7 +656,6 @@ class DivisionFusion:
                 self.UTI.mostrarAlerta("Las lineas de division no deben atravesar construcciones ni condominios\nLas lineas rojas presentan un corte invalido", QMessageBox().Critical, "Error en subdivision")
         
         else:
-            print('cuentasalida ', cuentaSalida)
             self.UTI.mostrarAlerta("Primero debes dibujar las lineas de corte\nAsegurate que las lineas atraviesen por completo el predio", QMessageBox().Critical, "Error en subdivision")
 
 ##################################################################################
@@ -664,6 +682,7 @@ class DivisionFusion:
         for i in range(0, rango):
 
             geom = self.eventos.relaciones[i].geom
+
             if geom != None:
                 listaParam.append(geom.asPolyline()) #Generamos los polyline van a partir
 
@@ -676,6 +695,10 @@ class DivisionFusion:
             return len(salida)
         else: #Si no, efectuamos realmente el corte
             for cadaUno in salida:
+
+                if cadaUno.isEmpty():
+                    continue
+
                 nuevoFeat = QgsFeature()
                 nuevoFeat.setGeometry(cadaUno)
                 #Agregamos cada predio a la capa y le ponemos sus atributos
@@ -850,6 +873,8 @@ class DivisionFusion:
                 attr = ''
             elif nombre == 'id':
                 attr = ''
+            elif nombre == 'cve_usuario':
+                attr = self.UTI.decodeRot13(QSettings().value('usuario'))
             else:
                 attr = self.predioEnDivision.attributes()[idx]
             listaAsignacion.append(attr)
@@ -884,7 +909,6 @@ class DivisionFusion:
             else:
                 if self.contarIntegraciones( geomConstru.buffer(-0.0000001, 1), 'predios.geom' ) == 0: #Obtenemos los aleros del predio fusionado
                     if geomConstru.buffer(0.0000001, 1).intersection(geomFeat).area() > 0.000000001:
-                        #print(geomConstru.buffer(0.0000001, 1).intersection(geomFusion).area())
                         listaPrimera.append(construccion)
 
 
@@ -943,14 +967,6 @@ class DivisionFusion:
         self.limpiarAreas()
         self.rubberMarca.reset(QgsWkbTypes.PolygonGeometry)
         geoTemp = QgsGeometry.fromWkt(self.geomEnDivision.asWkt())
-
-        print('------------------')
-        print()
-        print()
-        print(geoTemp)
-        print()
-        print()
-        print('------------------')
 
         self.subdividirPredio(geoTemp, True)
         self.listaColores = []
@@ -1029,6 +1045,5 @@ class DivisionFusion:
             self.rubberMarca.addPoint(listaVertices[x], True)
         self.rubberMarca.show() #Aqui pintamos de amarillito la geometria en division
 
-    def closeEvent(self, evnt):
-        if self.enClaves:
-            evnt.ignore()
+
+

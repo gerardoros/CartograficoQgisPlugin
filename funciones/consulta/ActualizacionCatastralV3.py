@@ -316,7 +316,6 @@ class ActualizacionCatastralV3:
                     #Acciones iniciales
                     if self.modoDesarrollo:
                         self.obtenerIdManzana()
-                        #self.pintarCapas()
 
                     else:
                         try:
@@ -3372,6 +3371,7 @@ class ActualizacionCatastralV3:
         
         self.DFS.dlg.comboPredios.clear()
         lista = []
+        # lista de features
         for predio in listaPredios:
             lista.append(str(predio.attributes()[1]))
 

@@ -34,7 +34,7 @@ FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'DivisionFusion_dialog_base.ui'))
 
 class DivisionFusionDialog(QtWidgets.QDialog, FORM_CLASS):
-    def __init__(self, parent=iface.mainWindow()):
+    def __init__(self, parent=iface.mainWindow(), DIV = None):
         """Constructor."""
         super(DivisionFusionDialog, self).__init__(parent, \
             flags=Qt.WindowMinimizeButtonHint|Qt.WindowCloseButtonHint)
@@ -44,3 +44,12 @@ class DivisionFusionDialog(QtWidgets.QDialog, FORM_CLASS):
         # http://qt-project.org/doc/qt-4.8/designer-using-a-ui-file.html
         # #widgets-and-dialogs-with-auto-connect
         self.setupUi(self)
+        self.division = DIV
+
+    def closeEvent(self, event):
+
+        if self.division.enClaves or self.division.enSubdivision or self.division.enFusion:
+            event.ignore()
+        else:
+            event.accept()
+            return
