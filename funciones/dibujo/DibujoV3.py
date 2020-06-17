@@ -26,6 +26,7 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QAction
 
 # Initialize Qt resources from file resources.py
+
 from .resources import *
 # Import the code for the dialog
 from .DibujoV3_dialog import DibujoV3Dialog
@@ -38,7 +39,7 @@ from PyQt5 import QtWidgets
 
 from qgis.core import *
 from qgis.utils import iface, loadPlugin, startPlugin, reloadPlugin
-from qgis.gui import QgsLayerTreeView, QgsMapToolEmitPoint, QgsMapTool, QgsRubberBand, QgsVertexMarker
+from qgis.gui import QgsLayerTreeView, QgsMapToolEmitPoint, QgsMapTool, QgsRubberBand, QgsVertexMarker, QgsMapToolAdvancedDigitizing
 
 import os.path
 import os, json, requests, sys
@@ -220,7 +221,7 @@ class DibujoV3:
 
         var = QSettings()
         if var.value('logeado') == 'True':
-            self.eventos = Evento(iface.mapCanvas(), self)
+            self.eventos = Evento(iface.mapCanvas(), iface.cadDockWidget(), self)
             self.dockwidget.botonDibujar.clicked.connect(self.eventos.alternarModoDibujo)
             iface.currentLayerChanged.connect(self.eventos.actualizarCapaActiva)
             self.eventos.deactivated.connect(self.eventos.recargarQgsMapTool)
@@ -229,6 +230,7 @@ class DibujoV3:
             if x.objectName() == 'mActionPan':
                 x.trigger()
 
+            # print(f"{x.objectName()} : {x.text()}")
         if not self.pluginIsActive:
             self.pluginIsActive = True
 
@@ -262,13 +264,19 @@ class DibujoV3:
     
     ######################################################################################################
 
-class Evento(QgsMapTool):   
-    def __init__(self, canvas, pluginM):
-        QgsMapTool.__init__(self, canvas)
+class Evento(QgsMapToolAdvancedDigitizing):
+    def __init__(self, canvas, cadDockWidget, pluginM):
+        QgsMapToolAdvancedDigitizing.__init__(self, canvas, cadDockWidget)
         #Asignacion inicial
         self.canvas = canvas    
         self.pluginM = pluginM
         self.ventana = VentanaDibujoV3(iface, self)
+        self.setAutoSnapEnabled(True)
+        self.activate()
+        for x in iface.advancedDigitizeToolBar().actions():
+            if x.objectName() == 'mEnableAction':
+                x.trigger()
+        #iface.cadDockWidget().enable()
         
         #Creacion de Rubber Band para Poligonos
         self.rubberPoli = QgsRubberBand(self.canvas, QgsWkbTypes.PolygonGeometry)
@@ -486,6 +494,7 @@ class Evento(QgsMapTool):
     def actualizarCapaActiva(self):
         self.capaActiva = iface.activeLayer()
         if self.capaActiva == None:
+            print("NO CAPA")
             return
         self.nombreCapaActiva = self.pluginM.ACA.traducirIdCapa(iface.activeLayer().id())
         self.pluginM.primerClick = False
@@ -494,14 +503,16 @@ class Evento(QgsMapTool):
             if self.esCapaValida():
 
                 self.tipoCapa = self.capaActiva.wkbType()
+                print("actualizarCapaActiva : True")
                 self.pluginM.dockwidget.botonDibujar.setEnabled(True)
                 self.cambiarColorRubber()
                 self.ventana.ultimo = 0
             else:
                 self.dibujando = False
                 self.canvas.setCursor(self.cursorCruz)
+                print("actualizarCapaActiva : False")
                 self.pluginM.dockwidget.labelStatus.setText("DESACTIVADO")
-                estilo = 'color: rgb(255, 0, 0);';
+                estilo = 'color: rgb(255, 0, 0);'
                 self.pluginM.dockwidget.labelStatus.setStyleSheet(estilo)
                 self.pluginM.dockwidget.botonDibujar.setEnabled(False)
         else: #Cuando no, deshabilitamos el boton
@@ -511,7 +522,7 @@ class Evento(QgsMapTool):
 ######################################################################################################
 
     def recargarQgsMapTool(self):
-
+        print("RECARGANDO...")
         self.puntoPoliTemp = None
         self.listaPuntosPoliTemp = []
         self.creandoPoli = False
@@ -520,7 +531,7 @@ class Evento(QgsMapTool):
         self.listaPuntosLineaTemp = []
         self.creandoLinea = False
         
-        self.cuentaClickLinea = 0;
+        self.cuentaClickLinea = 0
         self.cuentaClickPoli = 0
 
         if self.dibujando:
@@ -539,7 +550,7 @@ class Evento(QgsMapTool):
             idCapa = self.capaActiva.id()
             if self.dibujando: #Apagar modo dibujo cuano esta prendido
                 self.dibujando = False
-
+                self.deactivate()
                 self.canvas.setCursor(self.cursorCruz)
                 self.pluginM.dockwidget.labelStatus.setText("DESACTIVADO")
                 estilo = """color: rgb(255, 0, 0);
@@ -561,6 +572,7 @@ class Evento(QgsMapTool):
             else: #Al reves
                 if self.ventana.posibleMostar and ( (not self.pluginM.ACA.esCapaReferencia(idCapa)) or idCapa == self.pluginM.ACA.capaEnEdicion ):
                     self.dibujando = True
+                    self.activate()
                     self.canvas.setCursor(self.cursorRedondo)
                     self.pluginM.dockwidget.labelStatus.setText("ACTIVADO")
                     self.pluginM.dockwidget.labelStatus.setAlignment(QtCore.Qt.AlignCenter | QtCore.Qt.AlignVCenter)
@@ -571,10 +583,10 @@ class Evento(QgsMapTool):
 
 ##################################################################################################################
 
-    def canvasPressEvent(self, event):
-        
+    def cadCanvasPressEvent(self, event):
+        print("ENTRANDO A cadCanvasPressEvent")
         if self.dibujando :
-
+            print("cadCanvasPressEvent validacion")
             self.capaActiva = iface.activeLayer()
 
             if self.capaActiva != None:
@@ -586,7 +598,7 @@ class Evento(QgsMapTool):
                 trans = self.canvas.getCoordinateTransform().toMapCoordinates(x, y)
 
                 #Click Izquiedo
-                if event.buttons() == Qt.LeftButton: 
+                if event.buttons() == Qt.LeftButton:
 
                     #Con puntos
                     if self.tipoCapa == 1 or self.tipoCapa == 4:
@@ -665,7 +677,7 @@ class Evento(QgsMapTool):
                 self.pluginM.UTI.mostrarAlerta("El modo dibujo no podra usarse sin una capa seleccionada", QMessageBox().Information, 'Modo dibujo')
 
             if event.buttons() == Qt.RightButton:
-
+                print("CLICK SECUNDARIO")
                 self.primerClick = False
 
                 if self.tipoCapa == 2 or self.tipoCapa == 5:
@@ -676,10 +688,10 @@ class Evento(QgsMapTool):
                         self.capaActiva.startEditing() 
                         linea = QgsFeature()
                         linea.setGeometry(QgsGeometry.fromWkt(self.stringLinea)) 
-                        self.capaActiva.dataProvider().addFeatures([linea])
+                        #self.capaActiva.dataProvider().addFeatures([linea])
                         self.capaActiva.triggerRepaint()
-                        self.capaActiva.commitChanges()
-                        self.ventana.mostrarTabla()
+                        #self.capaActiva.commitChanges()
+                        # self.ventana.mostrarTabla()
                     
                     self.listaPuntosLineaTemp = []
                     self.rubberPoli.reset(QgsWkbTypes.LineGeometry)
@@ -697,10 +709,10 @@ class Evento(QgsMapTool):
                         self.capaActiva.startEditing() 
                         poli = QgsFeature()
                         poli.setGeometry(QgsGeometry.fromWkt(self.stringPoli)) 
-                        self.capaActiva.dataProvider().addFeatures([poli])
+                        #self.capaActiva.dataProvider().addFeatures([poli])
                         self.capaActiva.triggerRepaint()
-                        self.capaActiva.commitChanges()
-                        self.ventana.mostrarTabla()
+                        #self.capaActiva.commitChanges()
+                        #self.ventana.mostrarTabla()
 
                     self.listaPuntosPoliTemp = []
                     self.cuentaClickPoli = 0
@@ -714,7 +726,7 @@ class Evento(QgsMapTool):
 
 ############################################################################################################
 
-    def canvasMoveEvent(self, event):
+    def cadCanvasMoveEvent(self, event):
 
         x = event.pos().x()
         y = event.pos().y()
@@ -722,7 +734,7 @@ class Evento(QgsMapTool):
         startingPoint = QtCore.QPoint(x,y)
         
         posTemp = self.canvas.getCoordinateTransform().toMapCoordinates(x, y)
-        
+        cadWidget = self.cadDockWidget()
         #Creando un poligono
         if self.creandoPoli and (self.tipoCapa == 3 or self.tipoCapa == 6):
             
