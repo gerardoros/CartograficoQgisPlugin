@@ -403,6 +403,8 @@ class ActualizacionCatastralV3:
             self.UTI.mostrarAlerta("Error de servidor loc2", QMessageBox().Critical, "Cargar Localidades")
             print('ERROR: LOC000')
 
+        print("Respuesta obtenerLocalidades: {}".format(respuesta.json()))
+
         lenJson = len(list(respuesta.json()))
 
         if lenJson > 0:
@@ -821,7 +823,7 @@ class ActualizacionCatastralV3:
         varKeys = data['features'][0]['properties']
 
         keys = list(varKeys.keys())
-
+        print("{} : {}".format(self.traducirIdCapa(mem_layer.id()), keys))
         properties = []
         geoms = []
 
@@ -1062,7 +1064,7 @@ class ActualizacionCatastralV3:
         else:
             self.UTI.mostrarAlerta('Error en peticion:\n' + response.text, QMessageBox().Critical, "Cargar capa")
             print('ERROR: CAP001')
-
+        #print("{} : {}".format(self.traducirIdCapa(idCapa), data.decode('utf-8')))
         return json.loads(data.decode('utf-8'))
 
 
