@@ -69,6 +69,8 @@ class ActualizacionCatastralV3:
         self.dockwidget = ActualizacionCatastralV3Dialog(parent = iface.mainWindow())
         #self.dockwidget.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
 
+        self.dockwidget.labelStatusEdicion.setText('')
+        self.dockwidget.labelCapaEdicion.setText('')
 
         self.dockwidget.botonCargar.clicked.connect(self.pintarCapas)
         self.dockwidget.botonCargarReferencia.clicked.connect(self.intermediarioReferencia)
@@ -258,9 +260,9 @@ class ActualizacionCatastralV3:
             self.CMS.dlg.close()
             self.dockwidget.show()
             
-            self.UTI.strechtTabla(self.dockwidget.tablaEdicion)
-            self.UTI.strechtTabla(self.dockwidget.tablaEdicionRef)
-            self.UTI.strechtTabla(self.dockwidget.tablaServiciosCalles)
+            #self.UTI.strechtTabla(self.dockwidget.tablaEdicion)
+            #self.UTI.strechtTabla(self.dockwidget.tablaEdicionRef)
+            #self.UTI.strechtTabla(self.dockwidget.tablaServiciosCalles)
 
             if self.capasCompletas():
 
@@ -1076,7 +1078,14 @@ class ActualizacionCatastralV3:
         self.vaciarTablita()
         
         self.comboConstEsp = QtWidgets.QComboBox()
+        self.comboConstEsp.setStyleSheet("QComboBox QAbstractItemView::item { min-height: 25; font-family: 'Century Gothic';}\n"
+                                        "QListView{color: black ; font-size: 16px; outline:none; font-weight:bold; font-family: 'Century Gothic';}\n"
+                                        "QListView::item:selected { color: white; background-color:  rgb(250,238,224); font-family: 'Century Gothic';}\n"
+                                        "QComboBox{\nbackground : rgb(255,255,255);\n}")
 
+
+        
+        
         header = self.dockwidget.tablaEdicion.horizontalHeader()
         #header.setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeToContents)
         #header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeToContents)
@@ -1126,10 +1135,10 @@ class ActualizacionCatastralV3:
 
                     if  self.tipConst != None:
                         self.listaAtributos = ['nom_volumen', 'cve_const_esp']
-                        self.listaEtiquetas = ['Nombre de volumen', 'Tipo de construccion']
+                        self.listaEtiquetas = ['Volumen', 'Tipo de construccion']
                     else:
                         self.listaAtributos = ['nom_volumen', 'num_niveles']
-                        self.listaEtiquetas = ['Nombre de volumen', 'Numero de niveles']
+                        self.listaEtiquetas = ['Volumen', 'Niveles']
                 elif self.capaActiva.id() == self.obtenerIdCapa('horizontales.geom'):
                     self.listaAtributos = ['clave']
                     self.listaEtiquetas = ['Clave']
@@ -1312,7 +1321,7 @@ class ActualizacionCatastralV3:
             header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeToContents)
             #header.setStretchLastSection(True)
             
-            self.dockwidget.labelCapaEdicionRef.setText('---')
+            #self.dockwidget.labelCapaEdicionRef.setText('---')
 
 
 
@@ -1320,7 +1329,7 @@ class ActualizacionCatastralV3:
 
                 self.seleccion = self.capaActiva.selectedFeatures()
                 self.listaEtiquetas = []
-                self.dockwidget.labelCapaEdicionRef.setText( self.traducirIdCapa( self.capaActiva.id()))
+                #self.dockwidget.labelCapaEdicionRef.setText( self.traducirIdCapa( self.capaActiva.id()))
                 
                 if (len(self.seleccion) == 1):
 
@@ -1571,7 +1580,6 @@ class ActualizacionCatastralV3:
 
         self.dockwidget.labelStatusEdicion.setText(texto)
 
-        self.dockwidget.labelStatusEdicion.setAlignment(QtCore.Qt.AlignCenter | QtCore.Qt.AlignVCenter)
         
         if estado == "ok":
             estilo = """color: rgb(1, 230, 1);
@@ -1775,7 +1783,7 @@ class ActualizacionCatastralV3:
                 bandera1 = False
 
             if not bandera1:
-                self.UTI.mostrarAlerta('El nombre de volumen no debe exceder los 3 caracteres', QMessageBox().Critical, 'Error de entrada')
+                self.UTI.mostrarAlerta('El volumen no debe exceder los 3 caracteres', QMessageBox().Critical, 'Error de entrada')
             
             bandera2 = True
 
@@ -2809,7 +2817,7 @@ class ActualizacionCatastralV3:
         #self.vaciarCapa(self.capaEnEdicion);
         traduccion = self.traducirIdCapa(self.capaEnEdicion)
         self.pintarCapasReferencia(traduccion, self.obtenerBoundingBox().asWkt(), False)
-        self.dockwidget.labelCapaEdicionRef.setText('---')
+        #self.dockwidget.labelCapaEdicionRef.setText('---')
         self.dockwidget.comboCapasEdicion.setEnabled(True)
         self.dockwidget.botonActivarEdicion.setEnabled(True)
         self.dockwidget.botonActualizarRef.setEnabled(False)
