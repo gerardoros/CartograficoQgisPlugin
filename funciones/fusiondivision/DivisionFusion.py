@@ -88,7 +88,7 @@ class DivisionFusion:
         self.toolbar = self.iface.addToolBar(u'DivisionFusion')
         self.toolbar.setObjectName(u'DivisionFusion')
         '''
-        self.eventos = EventoDivision(iface.mapCanvas(), self)
+        self.eventos = EventoDivision(iface.mapCanvas(), self, iface.cadDockWidget())
         self.VentanaAreas = VentanaAreas(self)
 
         self.VentanaFusion = VentanaFusionV3(iface, self)
@@ -249,7 +249,9 @@ class DivisionFusion:
         for x in iface.mapNavToolToolBar().actions():
             if x.objectName() == 'mActionPan':
                 x.trigger()
-
+        for x in iface.advancedDigitizeToolBar().actions():
+            if x.objectName() == 'mEnableAction':
+                x.trigger()
         self.dlg.show()
         # Run the dialog event loop
         iface.mapCanvas().setMapTool(self.eventos)

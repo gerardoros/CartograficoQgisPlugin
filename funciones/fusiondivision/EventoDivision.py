@@ -5,6 +5,7 @@ from PyQt5.QtWidgets import QAction, QWidget,QVBoxLayout, QPushButton, QMessageB
 from PyQt5 import QtWidgets
 from PyQt5 import QtCore
 # Initialize Qt resources from file resources.py
+from qgis._gui import QgsMapToolAdvancedDigitizing
 from qgis.core import *
 from qgis.utils import iface, loadPlugin, startPlugin, reloadPlugin
 from qgis.gui import QgsLayerTreeView, QgsMapToolEmitPoint, QgsMapTool, QgsRubberBand, QgsVertexMarker
@@ -14,9 +15,9 @@ import os, json, requests, sys
 from osgeo import ogr, osr
 from random import randint
 
-class EventoDivision(QgsMapTool):   
-    def __init__(self, canvas, pluginM):
-        QgsMapTool.__init__(self, canvas)
+class EventoDivision(QgsMapToolAdvancedDigitizing):
+    def __init__(self, canvas, pluginM, cadDockWidget):
+        QgsMapToolAdvancedDigitizing.__init__(self, canvas, cadDockWidget)
         #Asignacion inicial
         self.canvas = canvas
         self.pluginM = pluginM
@@ -24,6 +25,7 @@ class EventoDivision(QgsMapTool):
         self.modoEliminar = False
         self.modoEditar = False
         self.moviendoVertice = False
+        self.activate()
 
         self.relaciones = {}
         self.punteroRelaciones = 0
