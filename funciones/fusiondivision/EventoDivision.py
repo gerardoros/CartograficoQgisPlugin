@@ -54,6 +54,22 @@ class EventoDivision(QgsMapToolAdvancedDigitizing):
         startingPoint = QtCore.QPoint(x,y)
         trans = self.canvas.getCoordinateTransform().toMapCoordinates(x, y)
         posTemp = self.canvas.getCoordinateTransform().toMapCoordinates(x, y)
+
+        toAdvanced = (
+                self.cadDockWidget().constraintAngle().isLocked() or self.cadDockWidget().constraintDistance().isLocked()
+                or self.cadDockWidget().constraintX().isLocked() or self.cadDockWidget().constraintY().isLocked())
+
+        puntoSnap = self.snapCompleto(startingPoint, toAdvanced)
+
+        if not toAdvanced:
+            if puntoSnap != None:
+                self.cadDockWidget().setX(str(puntoSnap.x()), 2)
+                self.cadDockWidget().setY(str(puntoSnap.y()), 2)
+            else:
+                self.cadDockWidget().setX(str(x), 2)
+                self.cadDockWidget().setY(str(y), 2)
+
+
         if self.modoDividir: # ----- Modo Dividir ---- #
             if event.buttons() == Qt.LeftButton: 
                 
@@ -61,7 +77,6 @@ class EventoDivision(QgsMapToolAdvancedDigitizing):
                 geoTemp = QgsPoint(trans.x(),trans.y())
                 self.cuentaClickLinea += 1
 
-                puntoSnap = self.snapCompleto(startingPoint)
                 if puntoSnap != None: #Cuando tenemos snap ------------#
                     
                     self.listaPuntosLineaTemp.append(puntoSnap)
@@ -266,11 +281,24 @@ class EventoDivision(QgsMapToolAdvancedDigitizing):
         y = event.pos().y()
         startingPoint = QtCore.QPoint(x,y)
         posTemp = self.canvas.getCoordinateTransform().toMapCoordinates(x, y)
+
+        toAdvanced = (
+                self.cadDockWidget().constraintAngle().isLocked() or self.cadDockWidget().constraintDistance().isLocked()
+                or self.cadDockWidget().constraintX().isLocked() or self.cadDockWidget().constraintY().isLocked())
+
+        puntoSnap = self.snapCompleto(startingPoint, toAdvanced)
+
+        if not toAdvanced:
+            if puntoSnap != None:
+                self.cadDockWidget().setX(str(puntoSnap.x()), 2)
+                self.cadDockWidget().setY(str(puntoSnap.y()), 2)
+            else:
+                self.cadDockWidget().setX(str(x), 2)
+                self.cadDockWidget().setY(str(y), 2)
         
         if self.modoDividir:
             self.relaciones[self.punteroRelaciones].rubber.reset(QgsWkbTypes.LineGeometry)
             self.rubberPunto.reset(QgsWkbTypes.PointGeometry)
-            puntoSnap = self.snapCompleto(startingPoint)
 
             if puntoSnap != None:
 
@@ -303,7 +331,6 @@ class EventoDivision(QgsMapToolAdvancedDigitizing):
             if self.moviendoVertice: #Arrastrando un vertice
 
                 self.rubberPunto.reset(QgsWkbTypes.PointGeometry)
-                puntoSnap = self.snapCompleto(startingPoint)
 
                 if puntoSnap != None:
 
@@ -351,7 +378,12 @@ class EventoDivision(QgsMapToolAdvancedDigitizing):
 
 #-----------------------------------------------------------------------------------
 
-    def snapCompleto(self, startingPoint):
+    def snapCompleto(self, startingPoint, toAdvanced):
+
+        # Si obedeceremos la herramienta de digitalizacion avanzada...
+        if toAdvanced:
+            cadWidget = self.cadDockWidget()
+            return cadWidget.currentPoint()[0]
         snap = self.snapVertice(startingPoint, 'predios.geom') #----vertices -----#
         if snap != None:
             return snap
