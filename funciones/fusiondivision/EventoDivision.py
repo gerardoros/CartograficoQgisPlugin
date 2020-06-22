@@ -46,7 +46,7 @@ class EventoDivision(QgsMapToolAdvancedDigitizing):
 
 #--------------------------------------------------------------------------------------------
 
-    def canvasPressEvent(self, event):
+    def cadCanvasPressEvent(self, event):
         print('canvasPressEvent')
         
         x = event.pos().x()
@@ -260,7 +260,7 @@ class EventoDivision(QgsMapToolAdvancedDigitizing):
 #-----------------------------------------------------------------------
 
 
-    def canvasMoveEvent(self, event):
+    def cadCanvasMoveEvent(self, event):
 
         x = event.pos().x()
         y = event.pos().y()
