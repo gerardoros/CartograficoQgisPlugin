@@ -806,6 +806,8 @@ class DivisionFusion:
         self.dlg.btnCargarPredio.setEnabled(False)
         #iface.mapCanvas().setCursor(self.DBJ.eventos.cursorCuadro)
         iface.mapCanvas().setCursor(self.UTI.cursorCuadro)
+        if self.eventos.botonAD.isChecked():
+            self.eventos.botonAD.trigger()
 
 #----------------------------------------------------------------------------
 
@@ -822,6 +824,9 @@ class DivisionFusion:
         self.dlg.btnCargarPredio.setEnabled(False)
         #iface.mapCanvas().setCursor(self.DBJ.eventos.cursorCruz)
         iface.mapCanvas().setCursor(self.UTI.cursorCruz)
+        if self.eventos.botonAD.isChecked():
+            self.eventos.botonAD.trigger()
+
 
 #-----------------------------------------------------------------
 

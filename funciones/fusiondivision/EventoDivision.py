@@ -102,8 +102,6 @@ class EventoDivision(QgsMapToolAdvancedDigitizing):
             if event.buttons() == Qt.RightButton: #Click derecho
                 self.primerClick = False
 
-                if self.eventos.botonAD.isChecked():
-                    self.eventos.botonAD.trigger()
 
                 if self.cuentaClickLinea >= 2: #Cuando son mas de dos puntos
                     
@@ -280,8 +278,7 @@ class EventoDivision(QgsMapToolAdvancedDigitizing):
 
                     relacion.geom = relacion.rubber.asGeometry()
 
-                    if self.eventos.botonAD.isChecked():
-                        self.eventos.botonAD.trigger()
+
         
 #-----------------------------------------------------------------------
 
