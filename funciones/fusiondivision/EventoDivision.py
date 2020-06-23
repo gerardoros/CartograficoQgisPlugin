@@ -27,6 +27,10 @@ class EventoDivision(QgsMapToolAdvancedDigitizing):
         self.moviendoVertice = False
         self.activate()
 
+        for x in iface.advancedDigitizeToolBar().actions():
+            if x.objectName() == 'mEnableAction':
+                self.botonAD = x
+
         self.relaciones = {}
         self.punteroRelaciones = 0
 
@@ -97,6 +101,9 @@ class EventoDivision(QgsMapToolAdvancedDigitizing):
 
             if event.buttons() == Qt.RightButton: #Click derecho
                 self.primerClick = False
+
+                if self.eventos.botonAD.isChecked():
+                    self.eventos.botonAD.trigger()
 
                 if self.cuentaClickLinea >= 2: #Cuando son mas de dos puntos
                     
@@ -202,6 +209,7 @@ class EventoDivision(QgsMapToolAdvancedDigitizing):
                     iface.mapCanvas().refresh()
 
             elif event.buttons() == Qt.RightButton: #--------Click Derecho -----# Para agregar vertices personales
+
                 
                 if relacion != None:
                     inter = bufferClick.intersection(relacion.geom.buffer(0.000004, 1)) #Checamos la interseccion con la linea a editar
@@ -271,6 +279,9 @@ class EventoDivision(QgsMapToolAdvancedDigitizing):
                         relacion.rubber.addPoint(puntoXY, True)
 
                     relacion.geom = relacion.rubber.asGeometry()
+
+                    if self.eventos.botonAD.isChecked():
+                        self.eventos.botonAD.trigger()
         
 #-----------------------------------------------------------------------
 
