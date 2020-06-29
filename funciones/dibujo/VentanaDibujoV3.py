@@ -918,6 +918,10 @@ class VentanaDibujoV3:
             self.capaActiva.triggerRepaint()
             self.capaActiva.commitChanges()
 
+            # instrucciones para detectar el ultimo feature agregad a la capa
+            feature = list(self.capaActiva.getFeatures())[self.capaActiva.featureCount() - 1]
+            QSettings().setValue('ultIdAgregado', int(feature.id()))
+
 ##################################################################################################
 
     def cancelarFeature(self):

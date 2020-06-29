@@ -30,16 +30,8 @@ class Reglas:
         
         self.valorInteresado = -1
 
-        #print(QSettings().value('capaEnEdicion'))
         if tipoConsulta == 'objeto' and QSettings().value('capaRefEdicion') == self.ACA.obtenerIdCapa( nameCapa):
-            print('namecapa', nameCapa)
             return QgsProject.instance().mapLayer(self.ACA.obtenerIdCapa( nameCapa)).getFeatures()
-
-        self.manzanaPrincipal = QgsProject.instance().mapLayer(self.ACA.obtenerIdCapa('manzana'))
-
-        if self.manzanaPrincipal == None:
-            self.createAlert("Debes cargar una manzana primero", QMessageBox().Critical, "Pintar capas de referencia")
-            return
 
         data = self.ACA.obtenerCapasDeReferencia(self.ACA.tablasReferencias[nameCapa], None)
         
@@ -117,7 +109,6 @@ class Reglas:
 
         nombreCapa1 = capa1.name()
         nombreCapa2 = capa2.name()
-        print("Validando intersecciones: " + nombreCapa1 + " - " + nombreCapa2)
 
         #Operaciones realizadas cuando las capas son distintas
         if (capa1.id() != capa2.id()):
@@ -184,7 +175,6 @@ class Reglas:
 
         nombreBase = capaBase.name()
         nombreCobertura = capaCobertura.name()
-        print("Validando cobertura: " + nombreBase + " - " + nombreCobertura)
         
         #Checamos ls errores
         for i in range(0, rangoBase):
@@ -230,7 +220,6 @@ class Reglas:
 
         nombreObjetos = capaObjeto.name()
         nombreContenedor = capaContenedor.name()
-        print("Validando inclusion: " + nombreObjetos + " - " + nombreContenedor)
 
         for featObj in listaObjeto: #Para cada contenedor...
             objeto = featObj.geometry()
@@ -280,7 +269,6 @@ class Reglas:
         geoms = []
 
         nombreCapa = capa.name()
-        print("Validando poligonos invalidos: " + nombreCapa)
 
         for s in features:
             geom = s.geometry()
@@ -321,7 +309,6 @@ class Reglas:
         rango = len(listaFeatures)
 
         nombreCapa = capa.name()
-        print("Validando duplicados: " + nombreCapa)
 
         for i in range(0, rango-1):
             geometria1 = listaFeatures[i].geometry()
@@ -369,7 +356,6 @@ class Reglas:
         rango = len(listaFeatures)
 
         nombreCapa = capa.name()
-        print("Validando lineas solapadas: " + nombreCapa)
 
         for i in range(0, rango-1):
             geometria1 = listaFeatures[i].geometry()
@@ -408,7 +394,6 @@ class Reglas:
         self.stringError = ""
 
         nombreCapa = capa.name()
-        print("Validando multipartes: " + nombreCapa)
 
         geoms = []
         for f in features:
@@ -444,7 +429,6 @@ class Reglas:
         self.stringError = ""
 
         nombreCapa = capa.name()
-        print("Validando anillos: " + nombreCapa)
         geoms = []
         for f in features:
             geom = f.geometry()
@@ -488,7 +472,6 @@ class Reglas:
 
         nombrePunto = capaPunto.name()
         nombrePoligono = capaPoligono.name()
-        print("Validando puntos incluidos: " + nombrePunto + " - " + nombrePoligono)
 
         for punto in featuresPunto:
             cuentaPunto = 0
@@ -527,7 +510,6 @@ class Reglas:
         listaToque = [] 
         nombreObj = capaObjeto.name()
         nombreBase = capaBase.name()   
-        print("Validando toque compartido: " + nombreObj + " - " + nombreBase)
 
         listaSemi = []
 
@@ -574,7 +556,6 @@ class Reglas:
                 base = feat2.geometry()
 
                 if(objeto.buffer(0.0000001, 1).intersects(base)): #Checamos predios compartidos
-                    self.deb(feat1, 10, 'tenemos un compartido ' + str(feat2.id()))
                     listaCompartida.append(feat2)
 
             if len(listaCompartida) > 1: #Cuando se comparte mas de 1
@@ -595,7 +576,6 @@ class Reglas:
                     self.checarMalos(capaObjeto, feat1)
             #De aqui para abajo esta bien
             if len(listaCompartida) == 0:
-                #print("Le falto - "  "id: " + str(feat1.id()) + " - Lista compartida: " + str(len(listaCompartida)))
                 listaError.append(objeto.asWkt())
                 self.checarMalos(capaObjeto, feat1)
         self.cuentaError = len(listaError)
@@ -685,7 +665,6 @@ class Reglas:
         rango = len(listaFeatures)
 
         nombreCapa = capa.name()
-        print("Validando duplicados: " + nombreCapa)
 
         for i in range(0, rango-1):
             geometria1 = listaFeatures[i].geometry()
@@ -733,7 +712,6 @@ class Reglas:
 
         nombrePunto = capaPunto.name()
         nombrePoligono = capaPoligono.name()
-        print("Validando sol un punto: " + nombrePunto + " - " + nombrePoligono)
 
         for poli in featuresPoligono:
             cuentaPunto = 0
@@ -886,7 +864,6 @@ class Reglas:
 
         nombrePunto = capaPunto.name()
         nombrePoligono = capaPoligono.name()
-        print("Validando sol un punto: " + nombrePunto + " - " + nombrePoligono)
 
         for poli in featuresPoligono:
             cuentaPunto = 0
@@ -916,7 +893,6 @@ class Reglas:
         listaObjeto = self.obtenerSoloFeaturesRef(nombreObjeto, 'objeto')
         listaContenedor = self.obtenerSoloFeaturesRef(nombreContenedor, 'contenedor')
 
-        #print(len(listaContenedor))
         capaObjeto = QgsProject.instance().mapLayer(self.ACA.obtenerIdCapa( nombreObjeto))
         capaContenedor = QgsProject.instance().mapLayer(self.ACA.obtenerIdCapa( nombreContenedor))
 
@@ -975,21 +951,16 @@ class Reglas:
         if features == None:
             return
 
-        #features = capa.getFeatures()
-        
         self.cuentaError = 0
         self.stringError = "None"
         self.poligonosValidos = True
 
         geoms = []
 
-        print("Validando poligonos invalidos: " + nombreCapa)
-
         for s in features:
             geom = s.geometry()
 
             if not geom.isGeosValid():
-                print('tenemos un error mano')
                 geoms.append(geom.asWkt())
 
         self.cuentaError = len(geoms)
@@ -1038,8 +1009,6 @@ class Reglas:
         self.stringError = "None"
 
         geoms = []
-
-        print("Validando campos: " + nombreCapa)
 
         listaCampos = diccCampos[nombreCapa]
 
@@ -1102,7 +1071,6 @@ class Reglas:
             tamanoBuffer1 = 0.1
             tamanoBuffer2 = 0.1
 
-        print("Validando intersecciones: " + nombreCapa1 + " - " + nombreCapa2)
         featuresCapa1 = list(featuresCapa1)
         featuresCapa2 = list(featuresCapa2)
 
@@ -1130,10 +1098,7 @@ class Reglas:
                     feat2 = featuresCapa1[j]
                     if (feat1.geometry().intersects(feat2.geometry())):
                         interseccion = feat1.geometry().buffer(tamanoBuffer1,1).intersection(feat2.geometry().buffer(tamanoBuffer2,1))
-                        #print(feat1.id(), feat2.id())
-                        #print(interseccion.area())
                         if(interseccion.area() > tolerancia):
-                            #print( str(feat1['id']) + ' - ' + str(feat2['id']) + ' = ' + str(interseccion.area()) )
                             listaErrores.append(interseccion.asWkt()) 
 
         self.cuentaError = len(listaErrores)
@@ -1298,18 +1263,6 @@ class Reglas:
             temp = QgsVectorLayer('Point?crs=epsg:32614','('+ capaObjeto.name() +')'  +  ' Campo repetido: ' + campo, 'memory')
         self.pintarErrores(temp, listaError)
 
-
-
-
-
-#########################################################################################
-    def deb(self, feat, id, mensaje):
-        if feat.id() == id:
-            print(mensaje)
-
-    def deb2(self, feat1, feat2, id1, id2, mensaje):
-        if feat1.id() == id1 and feat2.id() == id2:
-            print(mensaje)
 
 #########################################################################################
 

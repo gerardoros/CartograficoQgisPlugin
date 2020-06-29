@@ -187,9 +187,6 @@ class Utilidad:
 	#----------------------------------------------------------------------------------
 
 	def guardarCambios(self):
-
-		print('entro al guardar')
-
 		
 		root = QgsProject.instance().layerTreeRoot()
 
@@ -418,7 +415,7 @@ class Utilidad:
 	################################################################################################################
 	def strechtTabla(self, tabla):
 		header = tabla.horizontalHeader()
-
+		
 		for x in range(0, tabla.columnCount()):
 			header.setSectionResizeMode(x, QtWidgets.QHeaderView.Stretch)
 			header.setStretchLastSection(True)

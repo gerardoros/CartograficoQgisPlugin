@@ -32,8 +32,8 @@ from .ActualizacionCatastralV3_dialog import ActualizacionCatastralV3Dialog
 import os.path
 
 from PyQt5.QtCore import QSettings, QTranslator, qVersion, QCoreApplication, Qt, QSettings, QSize
-from PyQt5.QtGui import QIcon, QColor, QCursor, QPixmap
-from PyQt5.QtWidgets import QAction, QMessageBox, QTableWidgetItem
+from PyQt5.QtGui import QIcon, QColor, QCursor, QPixmap, QStandardItemModel
+from PyQt5.QtWidgets import QAction, QMessageBox, QTableWidgetItem, QListView, QCompleter
 from PyQt5 import QtWidgets
 # Initialize Qt resources from file resources.py
 from qgis.core import *
@@ -41,7 +41,7 @@ from qgis.utils import iface
 from qgis.gui import QgsLayerTreeView, QgsVertexMarker
 from PyQt5 import QtGui
 # Import the code for the DockWidget
-import os, json, requests, datetime
+import os, json, requests, datetime, qgis.core
 from datetime import datetime as dt
 from osgeo import ogr, osr
 from .Cedula_MainWindow import CedulaMainWindow
@@ -86,6 +86,23 @@ class ActualizacionCatastralV3:
         self.dockwidget.comboManzana.currentIndexChanged.connect(self.obtenerIdManzana)
         self.dockwidget.botonActivarEdicion.clicked.connect(self.activarEdicion)
         self.dockwidget.botonActualizarServiciosCalles.clicked.connect(self.actualizarServiciosCalles)
+
+        '''
+        view = QListView()
+        view.setFixedHeight(200)
+        self.dockwidget.comboSector.setView(view)
+        '''
+        '''
+        m = QStandardItemModel()
+
+        p = QCompleter(self.dockwidget.comboSector)
+        p.setMaxVisibleItems(20)
+
+        p.setPopup( p.popup() )
+        self.dockwidget.comboSector.setModel(m)
+        self.dockwidget.comboSector.setCompleter(p)
+        '''
+
 
         self.diccServiciosCalle = {}
 
@@ -142,6 +159,9 @@ class ActualizacionCatastralV3:
         # -- lista -- 
         self.dockwidget.lista = {}
         self.actions = []
+
+        # listas edicion de capas de referencia
+        self.featuresId = []
         
         #Marcadores
         self.verticesManzana = []
@@ -149,6 +169,8 @@ class ActualizacionCatastralV3:
         self.verticesConst = []
 
         self.dockwidget.btnActMarc.clicked.connect(self.actualizarMarcadores)
+
+        self.dockwidget.tablaServiciosCalles.setEditTriggers(QtWidgets.QTableWidget.NoEditTriggers)
 
     # noinspection PyMethodMayBeStatic
     def tr(self, message):
@@ -261,8 +283,7 @@ class ActualizacionCatastralV3:
             self.dockwidget.show()
             
             #self.UTI.strechtTabla(self.dockwidget.tablaEdicion)
-            #self.UTI.strechtTabla(self.dockwidget.tablaEdicionRef)
-            #self.UTI.strechtTabla(self.dockwidget.tablaServiciosCalles)
+            self.UTI.strechtTabla(self.dockwidget.tablaEdicionRef)
 
             if self.capasCompletas():
 
@@ -310,6 +331,7 @@ class ActualizacionCatastralV3:
                         self.dockwidget.tablaServiciosCalles.setVisible(True)
                         self.dockwidget.botonActualizarServiciosCalles.setVisible(True)
                         self.dockwidget.tituloServiciosCalles.setVisible(True)
+                        self.UTI.strechtTabla(self.dockwidget.tablaServiciosCalles)
                     else:
                         self.dockwidget.tablaServiciosCalles.setVisible(False)
                         self.dockwidget.botonActualizarServiciosCalles.setVisible(False)
@@ -373,7 +395,8 @@ class ActualizacionCatastralV3:
                              #01001001020  4026040
             #self.idManzana = '01001001020004060004'  #La larga
             #self.idManzana = '01001001020004020001'
-            self.idManzana = '01001001020004026039'
+            #self.idManzana = '01001001020004020001'
+            self.idManzana = '01001001020004015001'
             
             #01001001020004026039
             #01001001020  4026039
@@ -402,8 +425,6 @@ class ActualizacionCatastralV3:
         except requests.exceptions.RequestException:
             self.UTI.mostrarAlerta("Error de servidor loc2", QMessageBox().Critical, "Cargar Localidades")
             print('ERROR: LOC000')
-
-        print("Respuesta obtenerLocalidades: {}".format(respuesta.json()))
 
         lenJson = len(list(respuesta.json()))
 
@@ -637,14 +658,18 @@ class ActualizacionCatastralV3:
     def obtenerBoundingBox(self):
         
         self.manzanaPrincipal = self.xManzana
+        xManzana = QgsProject.instance().mapLayer(self.obtenerIdCapa('manzana'))
 
-        if self.manzanaPrincipal == None:
+        if xManzana is None:
             return
 
         listaManzanas = list(self.manzanaPrincipal.getFeatures())
         geometria = QgsGeometry()
 
         rango = len(listaManzanas)
+        if rango == 0:
+            return None
+
         geometria = listaManzanas[0].geometry()
 
         for i in range(0, rango):
@@ -823,11 +848,8 @@ class ActualizacionCatastralV3:
         varKeys = data['features'][0]['properties']
 
         keys = list(varKeys.keys())
-        print("{} : {}".format(self.traducirIdCapa(mem_layer.id()), keys))
         properties = []
         geoms = []
-
-        
 
         for feature in data['features']:
 
@@ -1064,7 +1086,7 @@ class ActualizacionCatastralV3:
         else:
             self.UTI.mostrarAlerta('Error en peticion:\n' + response.text, QMessageBox().Critical, "Cargar capa")
             print('ERROR: CAP001')
-        #print("{} : {}".format(self.traducirIdCapa(idCapa), data.decode('utf-8')))
+
         return json.loads(data.decode('utf-8'))
 
 
@@ -1499,26 +1521,30 @@ class ActualizacionCatastralV3:
 
                             self.dockwidget.tablaServiciosCalles.clearContents()
                             self.dockwidget.tablaServiciosCalles.setRowCount(0)
-                            if idCalle != None:
-                                idCalle = str(idCalle)
-                                respuesta = requests.get(self.CFG.urlServCalle + idCalle, headers = headers)
 
-                                if respuesta.status_code == 200:
-                                    datos = respuesta.json()
+                            if idCalle == qgis.core.NULL or idCalle is None:
+                                idCalle = 0
 
-                                    for x in range(0, len(list(datos))):
+                            idCalle = str(idCalle)
 
-                                        self.dockwidget.tablaServiciosCalles.insertRow(x)
-                                        check = QTableWidgetItem(datos[x]['descripcion'])
-                                        check.setFlags(QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled)
-                                        if datos[x]['disponible'] == False:
-                                            check.setCheckState(QtCore.Qt.Unchecked)
-                                        else:
-                                            check.setCheckState(QtCore.Qt.Checked)
-                                        self.dockwidget.tablaServiciosCalles.setItem(x,0,check)
+                            respuesta = requests.get(self.CFG.urlServCalle + idCalle, headers = headers)
 
-                                        item2 = QTableWidgetItem(datos[x]['servicio'])
-                                        self.dockwidget.tablaServiciosCalles.setItem(x,1,item2)
+                            if respuesta.status_code == 200:
+                                datos = respuesta.json()
+
+                                for x in range(0, len(list(datos))):
+
+                                    self.dockwidget.tablaServiciosCalles.insertRow(x)
+                                    check = QTableWidgetItem(datos[x]['descripcion'])
+                                    check.setFlags(QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled)
+                                    if datos[x]['disponible'] == False:
+                                        check.setCheckState(QtCore.Qt.Unchecked)
+                                    else:
+                                        check.setCheckState(QtCore.Qt.Checked)
+                                    self.dockwidget.tablaServiciosCalles.setItem(x,0,check)
+
+                                    item2 = QTableWidgetItem(datos[x]['servicio'])
+                                    self.dockwidget.tablaServiciosCalles.setItem(x,1,item2)
                         
                         else:
                             listaServicios = self.diccServiciosCalle[str(idCalle)]
@@ -1538,6 +1564,13 @@ class ActualizacionCatastralV3:
 
                                 self.dockwidget.tablaServiciosCalles.setItem(x,0,check)
                                 self.dockwidget.tablaServiciosCalles.setItem(x,1,item2)
+
+
+
+                        header = self.dockwidget.tablaServiciosCalles.horizontalHeader()
+                        
+                        header.setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeToContents)
+                        header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeToContents)
 
 
                 else:
@@ -1868,7 +1901,7 @@ class ActualizacionCatastralV3:
                 feat['cve_vus'] = self.comboCveVus.itemData(indexCveVus)
 
         
-        #----------------------Area de valor------------------#
+        #----------------------Zona Uno------------------#
         elif nombreCapa == 'Zona Uno':
 
             texto = "Nada"
@@ -1886,7 +1919,7 @@ class ActualizacionCatastralV3:
             if not banderaCompleta:
                 self.UTI.mostrarAlerta('La descripcion no debe exceder 50 caracteres', QMessageBox().Critical, 'Error de entrada')
 
-        #----------------------Area de valor------------------#
+        #----------------------Zona Dos------------------#
         elif nombreCapa == 'Zona Dos':
 
             texto = "Nada"
@@ -1924,7 +1957,7 @@ class ActualizacionCatastralV3:
             if not banderaCompleta:
                 self.UTI.mostrarAlerta('El codigo postal debe estar compuesto por 5 numeros', QMessageBox().Critical, 'Error de entrada')
 
-        #----------------------Codigo Postal------------------#
+        #----------------------Colonias------------------#
         elif nombreCapa == 'Colonias':
 
             texto = "Nada"
@@ -1963,7 +1996,6 @@ class ActualizacionCatastralV3:
                 indexComboAs = self.comboTipoAs.currentIndex()
                 feat['id_tipo_asentamiento'] = self.comboTipoAs.itemData(indexComboAs)
                 
-         #----------------------Codigo Postal------------------#
         
         #-------------------------Calles------------------------#
         elif nombreCapa == 'Calles':
@@ -1974,7 +2006,7 @@ class ActualizacionCatastralV3:
             banderaCalle = True
             banderaValor = True
 
-            #Comparar la clave
+            # V A L O R 
             try:
                 texto = self.dockwidget.tablaEdicionRef.item(0, 1).text()
             except: #Error al obtenre texto
@@ -1990,7 +2022,7 @@ class ActualizacionCatastralV3:
             else: #Cuando no es numerico
                 banderaValor = False
 
-
+            # Nombre de la calle
             try:
                 texto = self.dockwidget.tablaEdicionRef.item(4, 1).text()
             except: #Error al obtenre texto
@@ -2000,7 +2032,7 @@ class ActualizacionCatastralV3:
             else:
                 banderaCalle = False
 
-            
+            # Tipo de vector
             try:
                 texto = self.dockwidget.tablaEdicionRef.item(3, 1).text()
             except: #Error al obtenre texto
@@ -2009,7 +2041,6 @@ class ActualizacionCatastralV3:
                 feat['tipo_vector_calle'] = texto
             else:
                 banderaTipo = False
-
 
             if not banderaValor:
                 self.UTI.mostrarAlerta('El valor debe ser decimal y no exceder los 12 caracteres de longitud', QMessageBox().Critical, 'Error de entrada')
@@ -2379,7 +2410,15 @@ class ActualizacionCatastralV3:
             else:
                 mem_layer = capaAPintar
 
+            # EVENTOS
             mem_layer.selectionChanged.connect(self.cargarTablitaRef)
+
+            mem_layer.committedFeaturesAdded.connect(self.committedFeaturesAdded)
+            mem_layer.committedAttributeValuesChanges.connect(self.committedAttributeValuesChanges)
+            mem_layer.committedGeometriesChanges.connect(self.committedGeometriesChanges)
+
+            mem_layer.beforeCommitChanges.connect(self.beforeCommitChanges)
+            mem_layer.editingStopped.connect(self.editingStopped)
 
             self.setearIdReferencia(nameCapa, mem_layer.id())
 
@@ -2443,10 +2482,10 @@ class ActualizacionCatastralV3:
                 etiquetaField = 'cve_cp'
                 colorCapa = QColor(255,127,0)
             elif nameCapa == 'Zona Uno':
-                etiquetaField = 'clave'
+                etiquetaField = 'descripcion'
                 colorCapa = QColor(195,131,255)
             elif nameCapa == 'Zona Dos':
-                etiquetaField = 'clave'
+                etiquetaField = 'descripcion'
                 colorCapa = QColor(120,0,232)
             elif nameCapa == 'Area de Valor':
                 etiquetaField = 'valor'
@@ -2513,6 +2552,77 @@ class ActualizacionCatastralV3:
                 # se agrega el grupo de referencia en caso de que no se tenga
                 grupo.insertChildNode(0, mzaNL)
 
+######################################################################################################
+
+    # SE EJECUTA ANTES DE QUE SE HAGA EL COMMIT A LOS CAMBIOS (DE TODO TIPO) REALIZADOS
+    def beforeCommitChanges(self):
+        layer = QgsProject.instance().mapLayer(self.capaEnEdicion)
+
+        if layer is None:
+            return
+
+        # CUANDO HUBO UNA EDICION EN ALGUN ELEMENTO DE LA CAPA
+        if layer.editBuffer():
+            # del data provider obtiene todas las features eliminadas
+            # N O T A * en el DATA PROVIDER se encuentran todaos los features antes de ser eliminados
+            #           si se consultan los features directamente del layer ya se encontraran con los cambios realizados
+            ids = layer.editBuffer().deletedFeatureIds()
+
+            listaEliminadaCompletaRef = []
+            for feat in layer.dataProvider().getFeatures( QgsFeatureRequest().setFilterFids(ids)):
+
+                campos = {}
+                campos['geomWKT'] = feat.geometry().asWkt()
+                campos['srid'] = 32614
+                campos['nombre'] = self.tablasReferencias[layer.name()]
+                atributos = {}
+                nombresAtrbutos = layer.fields()   
+
+                nombres = [campo.name() for campo in nombresAtrbutos]
+
+                for x in range(0, len(nombres)):
+                    atributo = feat.attributes()[x]
+                    if str(feat.attributes()[x]) == "NULL":
+                        atributo = None
+                    atributos[str(nombres[x])] = atributo
+                    
+                campos['propiedades'] = atributos
+                campos['accion'] = 'delete'
+
+                if campos['propiedades']['id'] != None:
+                    listaEliminadaCompletaRef.append(campos)
+
+
+            listaTempRef = QSettings().value('listaEliminadaRef')
+            for feat in listaEliminadaCompletaRef:
+                listaTempRef.append(feat)
+            QSettings().setValue('listaEliminadaRef', listaTempRef)
+
+    # CUANDO SE TERMINO LA EDICION DE UNA CAPA SE OBTIENE EL ULTIMO FEATURE QUE SE AGREGO 
+    # MEDIANTE LA HERRAMIENTA DE DIBUJO DEL MASTER
+    def editingStopped (self):
+        idF = QSettings().value('ultIdAgregado')
+        if idF is None or idF != 0:
+            return
+
+        self.featuresId.append(int(idF))
+        # quita los repetidos
+        self.featuresId = list(set(self.featuresId))
+        QSettings().setValue('ultIdAgregado', 0)
+
+
+    # SE AGREGA UNA FEATURE por fuera de la herramienta del MASTER
+    def committedFeaturesAdded(self, layerId, features):
+        for f in features:
+            self.featuresId.append(f.id())
+
+    # SE MODIFICA UN ATRIBUTO por fuera de la herramienta del MASTER
+    def committedAttributeValuesChanges(self, layerId, changedAttributesValues):
+        self.featuresId.extend(list(changedAttributesValues.keys()))
+
+    # CUANDO SE MODIFICA UNA GEOMETRIA por fuera de la herramienta del MASTER
+    def committedGeometriesChanges(self, layerId, changedGeometries):
+        self.featuresId.extend(list(changedGeometries.keys()))
 
 ######################################################################################################
 
@@ -2653,11 +2763,13 @@ class ActualizacionCatastralV3:
     
     def activarEdicion(self):
         
+        ''' se usa para validar que haya una manzana cargada antes de proceder
         try:
             bound = self.obtenerBoundingBox().asWkt()
         except:
             self.UTI.mostrarAlerta('No se ha cargado ninguna Manzana', QMessageBox().Critical, 'Cargar referencia')
             return
+        '''
 
         nombreCapa = self.dockwidget.comboCapasEdicion.currentText()
         
@@ -2679,7 +2791,7 @@ class ActualizacionCatastralV3:
         self.dockwidget.botonCancelarReferencia.setEnabled(True)
 
         if nombreCapa == 'Calles':
-            self.dockwidget.tablaServiciosCalles.clear()
+            self.dockwidget.tablaServiciosCalles.clearContents()
             self.dockwidget.tablaServiciosCalles.setVisible(True)
             self.dockwidget.botonActualizarServiciosCalles.setVisible(True)
             self.dockwidget.tituloServiciosCalles.setVisible(True)
@@ -2726,8 +2838,9 @@ class ActualizacionCatastralV3:
             capa = QgsProject.instance().mapLayer(self.capaEnEdicion)
             listaAGuardar = []
 
-            for feat in capa.getFeatures():
+            features = [x for x in capa.getFeatures() if x.id() in self.featuresId]
 
+            for feat in features:
 
                 campos = {}
                 campos['geomWKT'] = feat.geometry().asWkt()
@@ -2737,12 +2850,6 @@ class ActualizacionCatastralV3:
                 nombresAtrbutos = capa.fields()   
 
                 nombres = []
-
-                #for campo in nombresAtrbutos:
-                #    if self.traducirIdCapa(idCapa) == 'Calles' and campo.name() == 'c_tipo_vialidad':
-                #        continue
-                #    nombres.append(campo.name())
-
                 nombres = [campo.name() for campo in nombresAtrbutos]
 
                 for x in range(0, len(nombres)):
@@ -2764,15 +2871,15 @@ class ActualizacionCatastralV3:
 
                     campos['propiedades']['catServicios'] = listaServicios
                 
-                
                 if campos['propiedades']['id'] == None:
                     campos['accion'] = 'new'
                 else:
                     campos['accion'] = 'update'
                 listaAGuardar.append(campos)
 
+            # considera las eliminadas
+            listaTempRef = QSettings().value('listaEliminadaRef')
 
-            listaTempRef = QSettings().value('listaEliminadaRef')   
             for feat in listaTempRef:
                 listaAGuardar.append(feat)
 
@@ -2781,7 +2888,6 @@ class ActualizacionCatastralV3:
             payload = jsonParaGuardarAtributos
             headers = {'Content-Type': 'application/json', 'Authorization' : self.UTI.obtenerToken()}
             
-            
             try:
                 response = requests.post(self.CFG.urlGuardadoRef, headers = headers, data = payload)
             
@@ -2789,7 +2895,6 @@ class ActualizacionCatastralV3:
                 self.UTI.mostrarAlerta("No se ha podido conectar al servidor v1", QMessageBox.Critical, "Guardar Cambios v1")#Error en la peticion de consulta
             
             if response.status_code == 200:
-                self.UTI.mostrarAlerta("Cambios guardados con exito", QMessageBox.Information, "Guardar Cambios")
                 QSettings().setValue('listaEliminadaRef', [])
                 QSettings().setValue('posibleGuardarRef', 'False') 
                 self.dockwidget.comboCapasEdicion.setEnabled(True)
@@ -2797,7 +2902,15 @@ class ActualizacionCatastralV3:
                 self.dockwidget.botonActualizarRef.setEnabled(False)
                 self.dockwidget.botonCancelarReferencia.setEnabled(False)
                 self.quitarDeGrupo(self.capaEnEdicion, 'edicion')
-                self.pintarCapasReferencia(self.traducirIdCapa( self.capaEnEdicion), self.obtenerBoundingBox().asWkt(), False)
+
+                xCapa = self.traducirIdCapa(self.capaEnEdicion)
+                bBox = self.obtenerBoundingBox()
+
+                if bBox is None:
+                    self.pintarCapasReferencia(xCapa, None, False)
+                else:
+                    self.pintarCapasReferencia(xCapa, bBox.asWkt(), False)
+
                 self.capaEnEdicion = ''
                 QSettings().setValue('capaRefEdicion', self.capaEnEdicion)
                 self.dockwidget.tablaServiciosCalles.setVisible(False)
@@ -2805,18 +2918,43 @@ class ActualizacionCatastralV3:
                 self.dockwidget.tituloServiciosCalles.setVisible(False)
                 if self.traducirIdCapa(idCapa) == 'Calles':
                     self.diccServiciosCalle = {}
+
+                # se reinicia la variable que contiene los identificadores de los features modificados o agregados
+                self.featuresId = []
+
+                self.UTI.mostrarAlerta("Cambios guardados con exito", QMessageBox.Information, "Guardar Cambios")
+
+            else:
+                self.UTI.mostrarAlerta("Problemas al guardar la información", QMessageBox.Critical, "Guardar Cambios")
             
         else:
-            self.UTI.mostrarAlerta("Se debe validar la topologia de las capas de referencia antes de guardar", QMessageBox.Critical, "Guardar Cambios v1")#Error en la peticion de consulta
+            # Error en la peticion de consulta
+            self.UTI.mostrarAlerta("Se debe validar la topología de las capas de referencia antes de guardar", QMessageBox.Critical, "Guardar Cambios")
             
 
 #####################################################################################################################
 
     def rollbackCapa(self):
+
+        # preguntar por la cancelacion
+        mensaje = "¿Desea detener la edición de la capa de referencia?"
+        respuesta = QMessageBox.question(iface.mainWindow(), "Advertencia", mensaje, QMessageBox.Yes, QMessageBox.No)
+        
+        if respuesta == QMessageBox.No:
+            return
+
         self.quitarDeGrupo(self.capaEnEdicion, 'edicion')
-        #self.vaciarCapa(self.capaEnEdicion);
+
         traduccion = self.traducirIdCapa(self.capaEnEdicion)
-        self.pintarCapasReferencia(traduccion, self.obtenerBoundingBox().asWkt(), False)
+
+        xCapa = self.traducirIdCapa(self.capaEnEdicion)
+        bBox = self.obtenerBoundingBox()
+
+        if bBox is None:
+            self.pintarCapasReferencia(xCapa, None, False)
+        else:
+            self.pintarCapasReferencia(xCapa, bBox.asWkt(), False)
+
         #self.dockwidget.labelCapaEdicionRef.setText('---')
         self.dockwidget.comboCapasEdicion.setEnabled(True)
         self.dockwidget.botonActivarEdicion.setEnabled(True)

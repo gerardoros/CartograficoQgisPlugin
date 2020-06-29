@@ -305,7 +305,7 @@ class TopologiaV3:
 #############################################################################################################
 
     def preguntarGuardar(self):
-        mensaje = "La topologia es correcta, deseas guardar los cambios de las capas de consulta?"
+        mensaje = "La topologia es correcta, ¿deseas guardar los cambios de las capas de consulta?"
         respuesta = QMessageBox.question(iface.mainWindow(), "Guardar Cambios", mensaje, QMessageBox.Yes, QMessageBox.No)
 
         if respuesta == QMessageBox.Yes:
@@ -314,7 +314,7 @@ class TopologiaV3:
 ################################################################################################################
     
     def preguntarGuardarRef(self):
-        mensaje = "La topologia es correcta, deseas guardar los cambios de la capa de referencia?"
+        mensaje = "La topologia es correcta, ¿deseas guardar los cambios de la capa de referencia?"
         respuesta = QMessageBox.question(iface.mainWindow(), "Guardar Cambios", mensaje, QMessageBox.Yes, QMessageBox.No)
 
         if respuesta == QMessageBox.Yes:
@@ -323,7 +323,7 @@ class TopologiaV3:
 ####################################################################################################################
 
     def preguntarGuardarInte(self):
-        mensaje = "La topologia es correcta, deseas integrar la carta a la base de datos?"
+        mensaje = "La topologia es correcta, ¿deseas integrar la carta a la base de datos?"
         respuesta = QMessageBox.question(iface.mainWindow(), "Integrar carta", mensaje, QMessageBox.Yes, QMessageBox.No)
 
         if respuesta == QMessageBox.Yes:
@@ -358,11 +358,9 @@ class TopologiaV3:
             root.insertGroup(0, 'ERRORES DE TOPOLOGIA')
 
             if self.siendoEditada('Estado'):
-                
                 self.validarPoligonosInvalidosRef('Estado')
 
-            elif self.siendoEditada('Region Catastral'):
-                
+            elif self.siendoEditada('Region Catastral'):                
                 self.validarPoligonosInvalidosRef('Region Catastral')
                 self.validarPoligonosInvalidosRef('Estado')
 
@@ -400,6 +398,7 @@ class TopologiaV3:
             elif self.siendoEditada('Area de Valor'):
                 self.validarPoligonosInvalidosRef('Area de Valor')
 
+
             if self.todoEnOrdenRef:
                 self.reglasManualesRef()
 
@@ -415,7 +414,10 @@ class TopologiaV3:
                             id = dump.split("=")[-1].strip()
                             QgsProject.instance().removeMapLayer(id)
                         root.removeChildNode(group)
+
+                    # se manda a guardar a los servicios
                     self.preguntarGuardarRef()
+
                 else: #Cuando hay errrpres
                     self.UTI.mostrarAlerta("Se han detectado errores de topologia", QMessageBox().Critical, "Comprobador de topologia")
             else:
@@ -829,19 +831,13 @@ class TopologiaV3:
             self.validarInclusionRef('Region Catastral', 'Estado')
         
         capaTraducida = self.ACA.traducirIdCapa(self.ACA.capaEnEdicion)
-        #print('capatraducida: ', capaTraducida.name())
+
         self.validarCamposRef(capaTraducida)
         self.validarInterseccionesRef(capaTraducida, capaTraducida)
-
-        #else:
-        #    QSettings().setValue('posibleGuardarRef', 'True')
-        #    self.UTI.mostrarAlerta("No tienes cargada ninguna capa de referencia", QMessageBox().Information, "Comprobador de topologia")
 
 ################################################################################################
 
     def siendoEditada(self, nombreCapa):
-        #print('nombreCapa', self.ACA.obtenerIdCapa(nombreCapa))
-        #print('refedicion', QSettings().value("capaRefEdicion"))
         return self.ACA.obtenerIdCapa(nombreCapa) == QSettings().value("capaRefEdicion")
 
 
@@ -940,20 +936,6 @@ class TopologiaV3:
         item = QtWidgets.QTableWidgetItem(str(construMalas))
         item.setFlags( QtCore.Qt.ItemIsSelectable |  QtCore.Qt.ItemIsEnabled )
         self.dockwidget.tablaComp.setItem(2, 3 , item)
-
-
-        #print('----TOTALES----')
-        #print('Manzanas totales', manzanasTotales)
-        #print('predios totales', prediosTotales)
-        #rint('constru totales', constTotales)
-        #print('----BUENOS----')
-        #print('Manzanas buenos', manzanasBuenas)
-        #print('predios buenos', prediosBuenos)
-        #print('constru buenos', constBuenas)
-        #print('----MALOS----')
-        #print('Manzanas malas', manzanasMalas)
-        #print('predios malas', prediosMalos)
-        #print('constru malas', construMalas)
 
         self.reglas.manzanasMalas = []
         self.reglas.prediosMalos = []

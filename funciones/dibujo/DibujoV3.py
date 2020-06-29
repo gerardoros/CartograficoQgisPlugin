@@ -507,7 +507,7 @@ class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
     def actualizarCapaActiva(self):
         self.capaActiva = iface.activeLayer()
         if self.capaActiva == None:
-            print("NO CAPA")
+            #print("NO CAPA")
             return
         if self.capaActiva != None: #Cuando la capa es seleccionada habilitamos
             self.nombreCapaActiva = self.pluginM.ACA.traducirIdCapa(iface.activeLayer().id())
@@ -515,13 +515,13 @@ class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
             if self.esCapaValida():
 
                 self.tipoCapa = self.capaActiva.wkbType()
-                print("actualizarCapaActiva : True")
+                #print("actualizarCapaActiva : True")
                 self.pluginM.dockwidget.botonDibujar.setEnabled(True)
                 self.cambiarColorRubber()
                 self.ventana.ultimo = 0
                 #self.activate()
             else:
-                print("actualizarCapaActiva : False")
+                #print("actualizarCapaActiva : False")
                 self.dibujando = False
                 self.canvas.setCursor(self.cursorCruz)
                 self.pluginM.dockwidget.labelStatus.setText("DESACTIVADO")
@@ -529,7 +529,7 @@ class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
                 self.pluginM.dockwidget.labelStatus.setStyleSheet(estilo)
                 self.pluginM.dockwidget.botonDibujar.setEnabled(False)
         else: #Cuando no, deshabilitamos el boton
-            print("actualizarCapaActiva : Dunno")
+            #print("actualizarCapaActiva : Dunno")
             self.pluginM.dockwidget.botonDibujar.setEnabled(False)
 
 
@@ -537,7 +537,7 @@ class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
 ######################################################################################################
 
     def recargarQgsMapTool(self):
-        print("RECARGANDO...")
+        #print("RECARGANDO...")
         self.puntoPoliTemp = None
         self.listaPuntosPoliTemp = []
         self.creandoPoli = False
@@ -564,7 +564,7 @@ class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
         if self.capaActiva != None:
             idCapa = self.capaActiva.id()
             if self.dibujando: #Apagar modo dibujo cuano esta prendido
-                print("DESACTIVANDO")
+                #print("DESACTIVANDO")
 
                 if self.botonAD.isChecked():
                     self.botonAD.trigger()
@@ -594,7 +594,7 @@ class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
                     if not self.botonAD.isChecked():
                         self.botonAD.trigger()
 
-                    print("ACTIVANDO")
+                    #print("ACTIVANDO")
                     self.dibujando = True
                     self.canvas.setCursor(self.cursorRedondo)
                     self.pluginM.dockwidget.labelStatus.setText("ACTIVADO")
@@ -603,7 +603,8 @@ class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
 """
                     self.pluginM.dockwidget.labelStatus.setStyleSheet(estilo)
                 else:
-                    print("no paso :(")
+                    #print("no paso :(")
+                    pass
 
 
 ##################################################################################################################
@@ -721,13 +722,14 @@ class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
                 self.pluginM.UTI.mostrarAlerta("El modo dibujo no podra usarse sin una capa seleccionada", QMessageBox().Information, 'Modo dibujo')
 
             if event.buttons() == Qt.RightButton:
-                print("CLICK SECUNDARIO")
+                #print("CLICK SECUNDARIO")
                 self.primerClick = False
 
                 if self.botonAD.isChecked():
-                    print("A DESCHECHAR")
+                    #print("A DESCHECHAR")
                     self.botonAD.toggle()
 
+                # L I N E A S
                 if self.tipoCapa == 2 or self.tipoCapa == 5:
                     
                     if self.cuentaClickLinea >= 2:
@@ -748,6 +750,7 @@ class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
                     self.cuentaClickLinea = 0
                     self.primerClick = False
 
+                # P O L I G O N O
                 elif self.tipoCapa == 3 or self.tipoCapa == 6:
                     
                     if self.cuentaClickPoli >= 3: 
@@ -1278,7 +1281,7 @@ background : rgb(255,255,255);
 
 
             respuesta = requests.get(self.pluginE.pluginM.CFG.urlTipoConst, headers = headers)
-            print(respuesta)
+            #print(respuesta)
             diccionarioConst = {}
             if respuesta.status_code == 200:
                 for clave in respuesta.json():
@@ -1303,7 +1306,7 @@ background : rgb(255,255,255);
                     comboTemp.addItem(str(resp['cTipoVialidad']), str(resp['id']))
 
             else:
-                print(respuesta.status_code)
+                #print(respuesta.status_code)
                 self.pluginE.pluginM.UTI.mostrarAlerta("No se han podido cargar los tipos de asentamiento\nError de servidor", QMessageBox().Critical, "Cargar tipos de vialidad")
 
 
@@ -1331,7 +1334,7 @@ background : rgb(255,255,255);
                     comboTemp.addItem(str(resp['descripcion']), str(resp['id']))
 
             else:
-                print(respuesta.status_code)
+                #print(respuesta.status_code)
                 self.pluginE.pluginM.UTI.mostrarAlerta("No se han podido cargar los tipos de asentamiento\nError de servidor", QMessageBox().Critical, "Cargar tipos de asentamiento")
 
 
@@ -1347,7 +1350,7 @@ background : rgb(255,255,255);
                     comboTemp.addItem(str(resp['descripcion']), str(resp['cveVus']))
 
             else:
-                print(respuesta.status_code)
+                #print(respuesta.status_code)
                 self.pluginE.pluginM.UTI.mostrarAlerta("No se han podido cargar los tipos de cvevus\nError de servidor", QMessageBox().Critical, "Cargar tipos de asentamiento")
 
 
