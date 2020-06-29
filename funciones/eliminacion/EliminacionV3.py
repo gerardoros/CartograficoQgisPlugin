@@ -266,7 +266,7 @@ class EliminacionV3:
         self.dockwidget.show()
         if not self.pluginIsActive:
             self.pluginIsActive = True
-
+            self.agregarFuncionEliminar()
             #print "** STARTING EliminarPoligonos"
 
             # dockwidget may not exist if:
@@ -294,15 +294,18 @@ class EliminacionV3:
     ########################################################################################################
 
     def agregarFuncionEliminar(self):
-        
+
         if iface.activeLayer() != None and self.esCapaChida:
+            nombreCapa = self.ACA.traducirIdCapa(iface.activeLayer().id())
+            self.dockwidget.labelCapa.setText(nombreCapa)
+            self.dockwidget.labelCapa.setAlignment(QtCore.Qt.AlignCenter | QtCore.Qt.AlignVCenter)
             if not iface.activeLayer() in self.capasConFuncion:
                 if not iface.activeLayer().id() == self.ACA.traducirIdCapa('Predios') and not iface.activeLayer().id() == self.ACA.traducirIdCapa('Manzanas'):
                     #nombreCapa = self.ACA.traducirIdCapa( iface.activeLayer().id())
-                    if self.ACA.esCapaReferencia(iface.activeLayer().id()):
-                        print('entra aquiiii vato')
-                        iface.activeLayer().selectionChanged.connect(self.cargarEliminar)
-                        self.capasConFuncion.append(iface.activeLayer())
+                    #if self.ACA.esCapaReferencia(iface.activeLayer().id()):
+                    print('entra aquiiii vato')
+                    iface.activeLayer().selectionChanged.connect(self.cargarEliminar)
+                    self.capasConFuncion.append(iface.activeLayer())
 
 
 #########################################################################

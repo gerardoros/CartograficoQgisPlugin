@@ -50,8 +50,8 @@ background : rgb(255,255,255);
    <widget class="QLabel" name="labelStatus">
     <property name="geometry">
      <rect>
-      <x>150</x>
-      <y>60</y>
+      <x>140</x>
+      <y>80</y>
       <width>111</width>
       <height>21</height>
      </rect>
@@ -127,7 +127,7 @@ background : rgb(255,255,255);
     <property name="geometry">
      <rect>
       <x>120</x>
-      <y>30</y>
+      <y>60</y>
       <width>111</width>
       <height>21</height>
      </rect>
@@ -146,6 +146,31 @@ background : rgb(255,255,255);
     </property>
     <property name="text">
      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Modo Dibujo:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelCapa">
+    <property name="geometry">
+     <rect>
+      <x>120</x>
+      <y>20</y>
+      <width>111</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Century Gothic</family>
+      <pointsize>10</pointsize>
+      <weight>75</weight>
+      <italic>false</italic>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(255, 0, 0)</string>
+    </property>
+    <property name="text">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;No capa&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
    </widget>
   </widget>
