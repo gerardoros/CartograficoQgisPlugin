@@ -225,24 +225,15 @@ class DibujoV3:
             self.mapTool = AdvancedMapTool(iface.mapCanvas(), iface.cadDockWidget(), self)
             self.dockwidget.botonDibujar.clicked.connect(self.mapTool.alternarModoDibujo)
             iface.currentLayerChanged.connect(self.mapTool.actualizarCapaActiva)
-            #self.eventos.activated.connect(self.eventos.activaDigitalizacionAvanzada)
-            self.mapTool.deactivated.connect(self.mapTool.recargarQgsMapTool)
 
-            # for x in iface.advancedDigitizeToolBar().actions():
-            #     if x.objectName() == 'mEnableAction':
-            #         print("hey!")
-            #         self.cadAction = x
-            #         x.setChecked(True)
-            # self.cadAction.toggled.connect(self.foo)
 
-        for x in iface.mapNavToolToolBar().actions():
-             if x.objectName() == 'mActionPan':
-                 x.trigger()
-
+        # for x in iface.mapNavToolToolBar().actions():
+        #      if x.objectName() == 'mActionPan':
+        #          x.trigger()
 
         if not self.pluginIsActive:
+            print("---------- Inicializacio de plugin ------------")
             self.pluginIsActive = True
-
             #print "** STARTING HerramientasPoligono"
 
             # dockwidget may not exist if:
@@ -252,11 +243,9 @@ class DibujoV3:
 
             # show the dockwidget
             # TODO: fix to allow choice of dock location
-            
-            self.dockwidget.show()
-            
             iface.mapCanvas().setMapTool(self.mapTool)
-            
+            self.dockwidget.show()
+            self.mapTool.actualizarCapaActiva()
             '''
             if self.eventos.dibujando:
                 self.eventos.canvas.setCursor(self.eventos.cursorRedondo)
@@ -279,11 +268,11 @@ class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
     def __init__(self, canvas, cadDockWidget, pluginM):
         QgsMapToolAdvancedDigitizing.__init__(self, canvas, cadDockWidget)
         #Asignacion inicial
-        self.canvas = canvas    
+        self.canvas = canvas
+        print("-------- INICIALIZADO")
         self.pluginM = pluginM
         self.ventana = VentanaDibujoV3(iface, self)
         self.setAutoSnapEnabled(True)
-        self.activate()
         #self.cadDockWidget().lockAngleChanged.connect(self.foo)
         #iface.cadDockWidget().enable()
 
@@ -291,6 +280,9 @@ class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
         for x in iface.advancedDigitizeToolBar().actions():
             if x.objectName() == 'mEnableAction':
                 self.botonAD = x
+        for x in iface.mapNavToolToolBar().actions():
+            if x.objectName() == 'mActionPan':
+                self.botonPan = x
         
         #Creacion de Rubber Band para Poligonos
         self.rubberPoli = QgsRubberBand(self.canvas, QgsWkbTypes.PolygonGeometry)
@@ -418,10 +410,11 @@ class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
 
         #Checamos la capa activa
         if self.capaActiva.id() == self.pluginM.ACA.obtenerIdCapa('manzana'):
-            color = QColor(255,0,0)
+            color = QColor(245,169,242)
             self.creandoPoli = True
         elif self.capaActiva.id() == self.pluginM.ACA.obtenerIdCapa('predios.geom'):
             color = QColor(0,255,0)
+            print("CREANDO POLI VIEJA")
             self.creandoPoli = True
         elif self.capaActiva.id() == self.pluginM.ACA.obtenerIdCapa('predios.num'):
             color = QColor(0,255,0)
@@ -442,7 +435,10 @@ class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
             color = QColor(255,153,0) 
             self.creandoPoli = False
         elif self.capaActiva.id() == self.pluginM.ACA.obtenerIdCapa('Calles'):
-            color = QColor(255,153,0) 
+            color = QColor(255,0,255)
+            self.creandoLinea = True
+        elif self.capaActiva.id() == self.pluginM.ACA.obtenerIdCapa('Sectores'):
+            color = QColor(131,199,255)
             self.creandoLinea = True
         else:
             color = QColor(255,0,0)
@@ -506,11 +502,15 @@ class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
     #Cambiar capa seleccionada
     def actualizarCapaActiva(self):
         self.capaActiva = iface.activeLayer()
-        if self.capaActiva == None:
+        print(f"---- Entrando Maptool: {type(iface.mapCanvas().mapTool())}")
+        if self.capaActiva is None:
             print("NO CAPA")
             return
-        if self.capaActiva != None: #Cuando la capa es seleccionada habilitamos
+        if self.capaActiva is not None: #Cuando la capa es seleccionada habilitamos
             self.nombreCapaActiva = self.pluginM.ACA.traducirIdCapa(iface.activeLayer().id())
+            self.pluginM.dockwidget.labelCapa.setText(self.nombreCapaActiva)
+            self.pluginM.dockwidget.labelCapa.setAlignment(QtCore.Qt.AlignCenter | QtCore.Qt.AlignVCenter)
+
             self.pluginM.primerClick = False
             if self.esCapaValida():
 
@@ -519,7 +519,7 @@ class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
                 self.pluginM.dockwidget.botonDibujar.setEnabled(True)
                 self.cambiarColorRubber()
                 self.ventana.ultimo = 0
-                #self.activate()
+                print(f"---- Saliendo Maptool: {type(iface.mapCanvas().mapTool())}")
             else:
                 print("actualizarCapaActiva : False")
                 self.dibujando = False
@@ -536,8 +536,11 @@ class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
 
 ######################################################################################################
 
-    def recargarQgsMapTool(self):
-        print("RECARGANDO...")
+    def deactivate(self):
+
+        if self.botonPan.isChecked():
+            self.botonPan.trigger()
+
         self.puntoPoliTemp = None
         self.listaPuntosPoliTemp = []
         self.creandoPoli = False
@@ -545,7 +548,7 @@ class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
         self.puntoLineaTemp = None
         self.listaPuntosLineaTemp = []
         self.creandoLinea = False
-        
+
         self.cuentaClickLinea = 0
         self.cuentaClickPoli = 0
 
@@ -560,7 +563,7 @@ class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
     def alternarModoDibujo(self):
         
         self.actualizarCapaActiva()
-        #print('modoDibujo ', self.dibujando)
+        print('modoDibujo ', self.dibujando)
         if self.capaActiva != None:
             idCapa = self.capaActiva.id()
             if self.dibujando: #Apagar modo dibujo cuano esta prendido
@@ -590,7 +593,6 @@ class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
 
             else: #Al reves
                 if self.ventana.posibleMostar and ( (not self.pluginM.ACA.esCapaReferencia(idCapa)) or idCapa == self.pluginM.ACA.capaEnEdicion ):
-                    iface.mapCanvas().setMapTool(self)
                     if not self.botonAD.isChecked():
                         self.botonAD.trigger()
 
@@ -599,8 +601,7 @@ class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
                     self.canvas.setCursor(self.cursorRedondo)
                     self.pluginM.dockwidget.labelStatus.setText("ACTIVADO")
                     self.pluginM.dockwidget.labelStatus.setAlignment(QtCore.Qt.AlignCenter | QtCore.Qt.AlignVCenter)
-                    estilo = """color: rgb(1, 230, 1);
-"""
+                    estilo = """color: rgb(1, 230, 1);"""
                     self.pluginM.dockwidget.labelStatus.setStyleSheet(estilo)
                 else:
                     print("no paso :(")
@@ -615,22 +616,22 @@ class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
 
         startingPoint = QtCore.QPoint(x, y)
 
+        toAdvanced = (
+                self.cadDockWidget().constraintAngle().isLocked() or self.cadDockWidget().constraintDistance().isLocked()
+                or self.cadDockWidget().constraintX().isLocked() or self.cadDockWidget().constraintY().isLocked())
+
+        puntoSnap = self.snapCompleto(startingPoint, toAdvanced)
+
+        if not toAdvanced:
+            if puntoSnap is not None:
+                self.cadDockWidget().setX(str(puntoSnap.x()), 2)
+                self.cadDockWidget().setY(str(puntoSnap.y()), 2)
+            else:
+                self.cadDockWidget().setX(str(x), 2)
+                self.cadDockWidget().setY(str(y), 2)
+
         if self.dibujando :
             self.capaActiva = iface.activeLayer()
-
-            toAdvanced = (
-                        self.cadDockWidget().constraintAngle().isLocked() or self.cadDockWidget().constraintDistance().isLocked()
-                        or self.cadDockWidget().constraintX().isLocked() or self.cadDockWidget().constraintY().isLocked())
-
-            puntoSnap = self.snapCompleto(startingPoint, toAdvanced)
-
-            if not toAdvanced:
-                if puntoSnap is not None:
-                    self.cadDockWidget().setX(str(puntoSnap.x()), 2)
-                    self.cadDockWidget().setY(str(puntoSnap.y()), 2)
-                else:
-                    self.cadDockWidget().setX(str(x), 2)
-                    self.cadDockWidget().setY(str(y), 2)
 
             if self.capaActiva != None:
                 self.tipoCapa = self.capaActiva.wkbType()
@@ -696,11 +697,6 @@ class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
                         if not self.primerClick:
                             self.stringLinea = 'LINESTRING ('
 
-                        puntoSnap = self.snapCompleto(startingPoint, toAdvanced)
-                        if not toAdvanced:
-                            self.cadDockWidget().setX(str(puntoSnap.x()), 2)
-                            self.cadDockWidget().setY(str(puntoSnap.y()), 2)
-
                         if puntoSnap != None:
                             
                             self.stringLinea += str(puntoSnap.x()) + ' ' + str(puntoSnap.y()) + ', '
@@ -729,6 +725,7 @@ class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
                     self.botonAD.toggle()
 
                 if self.tipoCapa == 2 or self.tipoCapa == 5:
+                    print("------- AQUI1 --------")
                     
                     if self.cuentaClickLinea >= 2:
                         self.stringLinea += ')'
@@ -749,7 +746,7 @@ class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
                     self.primerClick = False
 
                 elif self.tipoCapa == 3 or self.tipoCapa == 6:
-                    
+                    print("------- AQUI2 --------")
                     if self.cuentaClickPoli >= 3: 
 
                         self.stringPoli += str(self.cierrePoli.x()) + " " + str(self.cierrePoli.y()) + '))'
@@ -796,7 +793,8 @@ class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
             else:
                 self.cadDockWidget().setX(str(x), 2)
                 self.cadDockWidget().setY(str(y), 2)
-
+        #print(f"TIpo de capa: {self.tipoCapa}")
+        print(f"creandoPoli: {self.creandoPoli}")
         #Creando un poligono
         if self.creandoPoli and (self.tipoCapa == 3 or self.tipoCapa == 6):
             
@@ -808,8 +806,8 @@ class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
 
                 puntoSnapXY = QgsPointXY(puntoSnap.x(),puntoSnap.y())
                 self.rubberPunto.addPoint(puntoSnapXY, True)
+                print("SHOWING SNAP POINT LINEA 802")
                 self.rubberPunto.show()
-
             if self.primerClick:
                 if (len(self.listaPuntosPoliTemp) > 1):
 
@@ -822,6 +820,7 @@ class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
                         self.rubberPoli.addPoint(punto, False)
                     self.rubberPoli.addPoint(self.listaPuntosPoliTemp[-1], True)
                     #cadWidget.setDistance(str(self.listaPuntosPoliTemp[-2].distance(self.listaPuntosPoliTemp[-1])), 2)
+                    print("PRIMER POINT SHOWING RUBBER LINEA 817")
                     self.rubberPoli.show()
                 else:
                     if puntoSnap != None:
@@ -829,6 +828,7 @@ class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
                     else:
                         self.listaPuntosPoliTemp.append(posTemp)
                     self.rubberPoli.addPoint(self.listaPuntosPoliTemp[0], True)
+                    print("PRIMER POINT SHOWING RUBBER ELSE LINEA 825")
                     self.rubberPoli.show()
     
         #Creando una linea
@@ -841,8 +841,8 @@ class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
 
                 puntoSnapXY = QgsPointXY(puntoSnap.x(),puntoSnap.y())
                 self.rubberPunto.addPoint(puntoSnapXY, True)
+                print("SHOWING SNAP POINT LINEA 832")
                 self.rubberPunto.show()
-
             if self.primerClick:
                 if (len(self.listaPuntosLineaTemp) > 1):
 
@@ -854,6 +854,7 @@ class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
                     for punto in self.listaPuntosLineaTemp[:-1]:
                         self.rubberLinea.addPoint(punto, False)
                     self.rubberLinea.addPoint(self.listaPuntosLineaTemp[-1], True)
+                    print("PRIMER POINT SHOWING RUBBER LINEA 852")
                     self.rubberLinea.show()
                 else:
                     if puntoSnap != None:
@@ -861,6 +862,7 @@ class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
                     else:
                         self.listaPuntosLineaTemp.append(posTemp)
                     self.rubberLinea.addPoint(self.listaPuntosLineaTemp[0], True)
+                    print("PRIMER POINT SHOWING RUBBER ELSE LINEA 860")
                     self.rubberLinea.show()
 
 ####################################################################################################################
