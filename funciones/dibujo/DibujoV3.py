@@ -770,8 +770,8 @@ class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
                     self.isEmittingPoint = False
                     self.primerClick = False
 
-                if not self.esCapaConsulta():
-                    self.capaActiva.setReadOnly(True)
+                # if not self.esCapaConsulta():
+                #     self.capaActiva.setReadOnly(True)
 
 ############################################################################################################
 
