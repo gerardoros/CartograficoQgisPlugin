@@ -248,7 +248,7 @@ class VentanaDibujoV3:
     def mostrarTabla(self): #Mostrar tabla
         if self.posibleMostar and not self.dlg.isVisible():
             self.posibleMostar = False
-            self.pluginE.alternarModoDibujo()
+            self.pluginE.pluginM.alternarModoDibujo()
             self.llenarTabla()
             self.dlg.show()        
 
