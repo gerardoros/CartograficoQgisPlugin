@@ -359,7 +359,7 @@ class EliminacionV3:
     
 
 
-
+    # E V E N T O   Q U E   E L I M I N A  L A   G E O M E T R I A 
     def cargarEliminar(self):
 
         self.capaActiva = iface.activeLayer()
@@ -582,9 +582,7 @@ class EliminacionV3:
             capa = QgsProject.instance().mapLayer(self.ACA.obtenerIdCapa('predios.geom'))
 
         
-        #print(capa.name())
-
-        #print('tumbamos' + str(capa.name()))
+        # Si no es capa de referencia
         if not self.ACA.esCapaReferencia(capa.id()):
             campos = {}
             campos['wkt'] = feat.geometry().asWkt()
@@ -617,7 +615,7 @@ class EliminacionV3:
             
                 self.listaEliminadaCompleta.append(campos)
 
-        else:
+        else: # si es capa de referencia|
             capa.setReadOnly(False)
 
             campos = {}

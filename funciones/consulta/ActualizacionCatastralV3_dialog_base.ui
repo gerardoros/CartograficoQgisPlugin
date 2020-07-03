@@ -47,8 +47,17 @@ background : rgb(255, 255, 255);
 }
 
 QWidget{
-background : rgb(255,255,255)
-}</string>
+background : rgb(255,255,255);
+}
+
+/*
+QWidget:item:selected
+{
+	color: black; background-color:  rgb(250,238,224);
+}
+*/
+
+</string>
      </property>
      <property name="currentIndex">
       <number>1</number>
@@ -90,9 +99,12 @@ background : rgb(255,255,255)
        <property name="styleSheet">
         <string notr="true">QComboBox QAbstractItemView::item { min-height: 25; font-family: &quot;Century Gothic&quot;;}
 QListView{color: black ; font-size: 16px; outline:none; font-weight:bold; font-family: &quot;Century Gothic&quot;;}
-QListView::item:selected { color: white; background-color:  rgb(250,238,224); font-family: &quot;Century Gothic&quot;;}
+
 QComboBox{
 background : rgb(250,238,224);
+}
+QComboBox:item:selected {
+color: black ;
 }</string>
        </property>
       </widget>
@@ -106,11 +118,15 @@ background : rgb(250,238,224);
         </rect>
        </property>
        <property name="styleSheet">
-        <string notr="true">QComboBox QAbstractItemView::item { min-height: 25; font-family: &quot;Century Gothic&quot;;}
-QListView{color: black ; font-size: 16px; outline:none; font-weight:bold; font-family: &quot;Century Gothic&quot;;}
-QListView::item:selected { color: white; background-color:  rgb(250,238,224); font-family: &quot;Century Gothic&quot;;}
+        <string notr="true">QComboBox QAbstractItemView::item { max-height: 200; font-family: &quot;Century Gothic&quot;;}
+
+QListView{color: black ; font-family: &quot;Century Gothic&quot;;}
+
 QComboBox{
 background : rgb(250,238,224);
+}
+QComboBox:item:selected {
+color: black ;
 }</string>
        </property>
       </widget>
@@ -126,9 +142,12 @@ background : rgb(250,238,224);
        <property name="styleSheet">
         <string notr="true">QComboBox QAbstractItemView::item { min-height: 25; font-family: &quot;Century Gothic&quot;;}
 QListView{color: black ; font-size: 16px; outline:none; font-weight:bold; font-family: &quot;Century Gothic&quot;;}
-QListView::item:selected { color: white; background-color:  rgb(250,238,224); font-family: &quot;Century Gothic&quot;;}
+
 QComboBox{
 background : rgb(250,238,224);
+}
+QComboBox:item:selected {
+color: black ;
 }</string>
        </property>
       </widget>
@@ -454,9 +473,12 @@ background : rgb(250,238,224);
         <property name="styleSheet">
          <string notr="true">QComboBox QAbstractItemView::item { min-height: 25; font-family: &quot;Century Gothic&quot;;}
 QListView{color: black ; font-size: 16px; outline:none; font-weight:bold; font-family: &quot;Century Gothic&quot;;}
-QListView::item:selected { color: white; background-color:  rgb(250,238,224); font-family: &quot;Century Gothic&quot;;}
+
 QComboBox{
-background : rgb(255,255,255);
+background : rgb(250,238,224);
+}
+QComboBox:item:selected {
+color: black ;
 }</string>
         </property>
        </widget>
@@ -831,14 +853,14 @@ marcadores</string>
         </font>
        </property>
        <property name="text">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Edicion de Capas de Referencia&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Edicion de Capas de Referencia&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
       </widget>
       <widget class="QLabel" name="label_11">
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>40</y>
+         <y>45</y>
          <width>111</width>
          <height>20</height>
         </rect>
@@ -856,9 +878,9 @@ marcadores</string>
       <widget class="QPushButton" name="botonActivarEdicion">
        <property name="geometry">
         <rect>
-         <x>191</x>
-         <y>75</y>
-         <width>131</width>
+         <x>340</x>
+         <y>40</y>
+         <width>149</width>
          <height>31</height>
         </rect>
        </property>
@@ -891,10 +913,10 @@ Referencia</string>
       <widget class="QTableWidget" name="tablaServiciosCalles">
        <property name="geometry">
         <rect>
-         <x>140</x>
-         <y>310</y>
-         <width>256</width>
-         <height>131</height>
+         <x>61</x>
+         <y>280</y>
+         <width>391</width>
+         <height>111</height>
         </rect>
        </property>
        <property name="styleSheet">
@@ -909,21 +931,21 @@ height:24px
        </property>
        <column>
         <property name="text">
-         <string>Servicios</string>
+         <string>Servicio</string>
         </property>
        </column>
        <column>
         <property name="text">
-         <string>Servicios</string>
+         <string>Clave</string>
         </property>
        </column>
       </widget>
       <widget class="QTableWidget" name="tablaEdicionRef">
        <property name="geometry">
         <rect>
-         <x>140</x>
-         <y>120</y>
-         <width>256</width>
+         <x>128</x>
+         <y>80</y>
+         <width>257</width>
          <height>111</height>
         </rect>
        </property>
@@ -951,9 +973,9 @@ height:24px
       <widget class="QPushButton" name="botonActualizarRef">
        <property name="geometry">
         <rect>
-         <x>120</x>
-         <y>240</y>
-         <width>131</width>
+         <x>94</x>
+         <y>200</y>
+         <width>149</width>
          <height>31</height>
         </rect>
        </property>
@@ -985,9 +1007,9 @@ background: rgb(217, 217, 217)
       <widget class="QPushButton" name="botonCancelarReferencia">
        <property name="geometry">
         <rect>
-         <x>290</x>
-         <y>240</y>
-         <width>121</width>
+         <x>270</x>
+         <y>200</y>
+         <width>149</width>
          <height>31</height>
         </rect>
        </property>
@@ -1019,9 +1041,9 @@ background: rgb(217, 217, 217)
       <widget class="QPushButton" name="botonActualizarServiciosCalles">
        <property name="geometry">
         <rect>
-         <x>200</x>
-         <y>520</y>
-         <width>141</width>
+         <x>182</x>
+         <y>410</y>
+         <width>149</width>
          <height>31</height>
         </rect>
        </property>
@@ -1054,7 +1076,7 @@ background: rgb(217, 217, 217)
        <property name="geometry">
         <rect>
          <x>20</x>
-         <y>280</y>
+         <y>250</y>
          <width>181</width>
          <height>20</height>
         </rect>
@@ -1066,39 +1088,14 @@ background: rgb(217, 217, 217)
         </font>
        </property>
        <property name="text">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Servicios de Calles&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="labelCapaEdicionRef">
-       <property name="geometry">
-        <rect>
-         <x>360</x>
-         <y>80</y>
-         <width>121</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>0</height>
-        </size>
-       </property>
-       <property name="font">
-        <font>
-         <family>Century Gothic</family>
-         <pointsize>10</pointsize>
-        </font>
-       </property>
-       <property name="text">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;---&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Servicios de Calles&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
       </widget>
       <widget class="QLabel" name="labelStatusEdicionRef">
        <property name="geometry">
         <rect>
          <x>340</x>
-         <y>40</y>
+         <y>10</y>
          <width>161</width>
          <height>20</height>
         </rect>
@@ -1117,17 +1114,20 @@ background: rgb(217, 217, 217)
        <property name="geometry">
         <rect>
          <x>130</x>
-         <y>40</y>
-         <width>171</width>
+         <y>45</y>
+         <width>191</width>
          <height>22</height>
         </rect>
        </property>
        <property name="styleSheet">
         <string notr="true">QComboBox QAbstractItemView::item { min-height: 25; font-family: &quot;Century Gothic&quot;;}
 QListView{color: black ; font-size: 16px; outline:none; font-weight:bold; font-family: &quot;Century Gothic&quot;;}
-QListView::item:selected { color: white; background-color:  rgb(250,238,224); font-family: &quot;Century Gothic&quot;;}
+
 QComboBox{
 background : rgb(250,238,224);
+}
+QComboBox:item:selected {
+color: black ;
 }</string>
        </property>
        <item>

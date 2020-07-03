@@ -574,15 +574,13 @@ class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
         else:
             return False
 
-###########################################################################################################
-
-
 
 
 ######################################################################################################
 
     def deactivate(self):
         print(f"------- Deactivate event ---------- {self.dibujando}")
+
         self.puntoPoliTemp = None
         self.listaPuntosPoliTemp = []
         self.creandoPoli = False
@@ -598,7 +596,6 @@ class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
 
         self.activate()
         self.pluginM.pluginIsActive = False
-
 
 
 
@@ -718,9 +715,10 @@ class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
                 self.pluginM.UTI.mostrarAlerta("El modo dibujo no podra usarse sin una capa seleccionada", QMessageBox().Information, 'Modo dibujo')
 
             if event.buttons() == Qt.RightButton:
+
                 self.primerClick = False
 
-
+                # L I N E A S
                 if self.tipoCapa == 2 or self.tipoCapa == 5:
 
                     if self.cuentaClickLinea >= 2:
@@ -746,6 +744,7 @@ class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
                     self.cuentaClickLinea = 0
                     self.primerClick = False
 
+                # P O L I G O N O
                 elif self.tipoCapa == 3 or self.tipoCapa == 6:
 
                     if self.cuentaClickPoli >= 3:
@@ -1281,7 +1280,7 @@ background : rgb(255,255,255);
 
 
             respuesta = requests.get(self.pluginE.pluginM.CFG.urlTipoConst, headers = headers)
-            print(respuesta)
+            #print(respuesta)
             diccionarioConst = {}
             if respuesta.status_code == 200:
                 for clave in respuesta.json():
@@ -1306,7 +1305,7 @@ background : rgb(255,255,255);
                     comboTemp.addItem(str(resp['cTipoVialidad']), str(resp['id']))
 
             else:
-                print(respuesta.status_code)
+                #print(respuesta.status_code)
                 self.pluginE.pluginM.UTI.mostrarAlerta("No se han podido cargar los tipos de asentamiento\nError de servidor", QMessageBox().Critical, "Cargar tipos de vialidad")
 
 
@@ -1334,7 +1333,7 @@ background : rgb(255,255,255);
                     comboTemp.addItem(str(resp['descripcion']), str(resp['id']))
 
             else:
-                print(respuesta.status_code)
+                #print(respuesta.status_code)
                 self.pluginE.pluginM.UTI.mostrarAlerta("No se han podido cargar los tipos de asentamiento\nError de servidor", QMessageBox().Critical, "Cargar tipos de asentamiento")
 
 
@@ -1350,7 +1349,7 @@ background : rgb(255,255,255);
                     comboTemp.addItem(str(resp['descripcion']), str(resp['cveVus']))
 
             else:
-                print(respuesta.status_code)
+                #print(respuesta.status_code)
                 self.pluginE.pluginM.UTI.mostrarAlerta("No se han podido cargar los tipos de cvevus\nError de servidor", QMessageBox().Critical, "Cargar tipos de asentamiento")
 
 
