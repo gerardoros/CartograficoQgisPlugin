@@ -21,7 +21,7 @@
  *                                                                         *
  ***************************************************************************/
 """
-from PyQt5.QtCore import QSettings, QTranslator, qVersion, QCoreApplication
+from PyQt5.QtCore import QSettings, QTranslator, qVersion, QCoreApplication, QPoint
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QAction
 
@@ -404,7 +404,6 @@ class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
         
         #Creacion del Snapper
         self.snapper = self.canvas.snappingUtils()
-        print(f" TYPE OF SNAPPER: {type(self.snapper)}")
         config = QgsSnappingConfig()
         config.setTolerance(240)
         self.snapper.setConfig(config)
@@ -603,7 +602,6 @@ class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
 
     def cadCanvasPressEvent(self, event):
 
-
         if self.dibujando :
 
             self.capaActiva = iface.activeLayer()
@@ -613,28 +611,32 @@ class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
 
             startingPoint = QtCore.QPoint(x, y)
 
+            trans = self.canvas.getCoordinateTransform().toMapCoordinates(x, y)
+
             toAdvanced = (
                     self.cadDockWidget().constraintAngle().isLocked() or self.cadDockWidget().constraintDistance().isLocked()
                     or self.cadDockWidget().constraintX().isLocked() or self.cadDockWidget().constraintY().isLocked())
 
             puntoSnap = self.snapCompleto(startingPoint, toAdvanced)
 
-            if not toAdvanced:
-                if puntoSnap is not None:
-                    self.cadDockWidget().setX(str(puntoSnap.x()), 1)
-                    self.cadDockWidget().setY(str(puntoSnap.y()), 1)
+            if puntoSnap != None:
+                self.cadDockWidget().constraintX().setValue(puntoSnap.x())
+                self.cadDockWidget().constraintY().setValue(puntoSnap.y())
 
-                else:
-                    self.cadDockWidget().setX(str(x), 1)
-                    self.cadDockWidget().setY(str(y), 1)
-                    self.cadDockWidget().setPoints([QgsPointXY(x, y)])
-                    self.cadDockWidget().updateCadPaintItem()
+            # if not toAdvanced:
+            #     if puntoSnap is not None:
+            #         self.cadDockWidget().setX(str(puntoSnap.x()), 1)
+            #         self.cadDockWidget().setY(str(puntoSnap.y()), 1)
+            #
+            #     else:
+            #         self.cadDockWidget().setX(str(x), 1)
+            #         self.cadDockWidget().setY(str(y), 1)
+            #         self.cadDockWidget().setPoints([QgsPointXY(x, y)])
+            #         self.cadDockWidget().updateCadPaintItem()
 
 
             if self.capaActiva != None:
                 self.tipoCapa = self.capaActiva.wkbType()
-
-                trans = self.canvas.getCoordinateTransform().toMapCoordinates(x, y)
 
                 #Click Izquiedo
                 if event.buttons() == Qt.LeftButton:
@@ -664,6 +666,10 @@ class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
 
                         if puntoSnap != None:
 
+                            # global_point = self.canvas.getCoordinateTransform().transform(puntoSnap)
+                            # cursor = QCursor()
+                            # cursor.setPos(global_point.x(), global_point.y())
+
 
                             if not self.primerClick:
                                 self.cierrePoli = puntoSnap
@@ -672,6 +678,8 @@ class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
                             self.marcador.setCenter(puntoSnap)
                             self.listaPuntosPoliTemp.append(puntoSnap)
                             self.isEmittingPoint = True
+                            print("AQUIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII")
+                            self.cadDockWidget().addPoint(puntoSnap)
                         else:
                             
                             if not self.primerClick:
@@ -681,10 +689,13 @@ class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
                             self.marcador.setCenter(self.puntoPoliTemp)
                             self.listaPuntosPoliTemp.append(self.puntoPoliTemp)
                             self.isEmittingPoint = True
+                            print("AQUIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII X2")
+                            self.cadDockWidget().addPoint(self.puntoPoliTemp)
 
                         if not self.primerClick:
                             self.primerClick = True
 
+                        self.cadDockWidget().updateCadPaintItem()
 
                     #Con Lineas
                     elif self.tipoCapa == 2 or self.tipoCapa == 5:
@@ -696,7 +707,11 @@ class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
                             self.stringLinea = 'LINESTRING ('
 
                         if puntoSnap != None:
-                            
+
+                            # global_point = self.canvas.getCoordinateTransform().transform(puntoSnap)
+                            # cursor = QCursor()
+                            # cursor.setPos(global_point.x(), global_point.y())
+
                             self.stringLinea += str(puntoSnap.x()) + ' ' + str(puntoSnap.y()) + ', '
                             self.marcador.setCenter(puntoSnap)
                             self.listaPuntosLineaTemp.append(puntoSnap)
@@ -710,6 +725,9 @@ class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
 
                         if not self.primerClick:
                             self.primerClick = True
+
+                        self.cadDockWidget().setPoints(self.listaPuntosLineaTemp)
+                        self.cadDockWidget().updateCadPaintItem()
 
             else:
                 self.pluginM.UTI.mostrarAlerta("El modo dibujo no podra usarse sin una capa seleccionada", QMessageBox().Information, 'Modo dibujo')
@@ -790,15 +808,33 @@ class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
 
         puntoSnap = self.snapCompleto(startingPoint, toAdvanced)
 
-        if not toAdvanced:
-            if puntoSnap is not None:
-                self.cadDockWidget().setX(str(puntoSnap.x()), 1)
-                self.cadDockWidget().setY(str(puntoSnap.y()), 1)
-            else:
-                self.cadDockWidget().setX(str(x), 1)
-                self.cadDockWidget().setY(str(y), 1)
+        if puntoSnap != None:
+
+            print(
+                f"snapX: {puntoSnap.x()}, snapY: {puntoSnap.y()}")
+            self.cadDockWidget().constraintX().setValue(puntoSnap.x())
+            self.cadDockWidget().constraintY().setValue(puntoSnap.y())
+            print(
+                f"constraintX: {self.cadDockWidget().constraintX().value()}, onstraintY: {self.cadDockWidget().constraintY().value()}")
+
+        #print(f"isSnapped:{event.isSnapped()}, mapPoint:{event.mapPoint()}, mapPointMatch:{event.mapPointMatch()}, originalMapPoint:{event.originalMapPoint()}, "
+         #     f"originalPixelPoint:{event.originalPixelPoint()}, pixelPoint:{event.pixelPoint()}")
+
+
+        # if puntoSnap != None:
+        #     global_point = self.canvas.getCoordinateTransform().transform(puntoSnap)
+        #     print(f"OgX: {x}, OgY: {y}, TmpX:{posTemp.x()}, TmpY:{posTemp.y()}, SnX: {puntoSnap.x()}, SnY: {puntoSnap.y()}, GlX:{global_point.x()}, GlY:{global_point.y()}")
+        # else:
+        #     print(f"OgX: {x}, OgY: {y}, TmpX:{posTemp.x()}, TmpY:{posTemp.y()}")
+
+        # if not toAdvanced:
+        #     if puntoSnap is not None:
+        #         self.cadDockWidget().setX(str(puntoSnap.x()), 1)
+        #         self.cadDockWidget().setY(str(puntoSnap.y()), 1)
+        #     else:
+        #         self.cadDockWidget().setX(str(x), 1)
+        #         self.cadDockWidget().setY(str(y), 1)
         #print(f"TIpo de capa: {self.tipoCapa}")
-        print(f"creandoPoli: {self.creandoPoli}")
         #Creando un poligono
         if self.creandoPoli and (self.tipoCapa == 3 or self.tipoCapa == 6):
             
@@ -807,6 +843,7 @@ class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
 
             
             if puntoSnap != None:
+
 
                 puntoSnapXY = QgsPointXY(puntoSnap.x(),puntoSnap.y())
                 self.rubberPunto.addPoint(puntoSnapXY, True)
@@ -822,7 +859,6 @@ class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
                     for punto in self.listaPuntosPoliTemp[:-1]:
                         self.rubberPoli.addPoint(punto, False)
                     self.rubberPoli.addPoint(self.listaPuntosPoliTemp[-1], True)
-                    #cadWidget.setDistance(str(self.listaPuntosPoliTemp[-2].distance(self.listaPuntosPoliTemp[-1])), 2)
                     self.rubberPoli.show()
                 else:
                     if puntoSnap != None:
@@ -839,6 +875,7 @@ class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
             self.rubberPunto.reset(QgsWkbTypes.PointGeometry)
 
             if puntoSnap != None:
+
 
                 puntoSnapXY = QgsPointXY(puntoSnap.x(),puntoSnap.y())
                 self.rubberPunto.addPoint(puntoSnapXY, True)
@@ -864,6 +901,11 @@ class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
                     self.rubberLinea.addPoint(self.listaPuntosLineaTemp[0], True)
                     print("PRIMER POINT SHOWING RUBBER ELSE LINEA 860")
                     self.rubberLinea.show()
+
+    def mousePressEvent(self, event):
+        print("ENTRANDO AL PRESS EVENT DEL WIDGET")
+
+
 
 ####################################################################################################################
 
