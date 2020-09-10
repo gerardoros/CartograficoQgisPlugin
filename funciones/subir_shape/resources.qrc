@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/plugins/subir_shape" >
+        <file>icon.png</file>
+    </qresource>
+</RCC>
