@@ -219,7 +219,18 @@ class SubirShape:
 
         jsonParaGuardarAtributos = json.dumps(self.listaAGuardar)
 
-        print(jsonParaGuardarAtributos)
+        url = 'http://localhost:8080/featureswkn/api/manzana/'
+        payload = jsonParaGuardarAtributos
+        headers = {'Content-Type': 'application/json', 'Authorization': self.obtenerToken()}
+        try:
+            response = requests.post(url, headers=headers, data=payload)
+
+        except requests.exceptions.RequestException:
+            self.UTI.mostrarAlerta("No se ha podido conectar al servidor v1", QMessageBox.Critical,
+                                   "Guardar Cambios v1")  # Error en la peticion de consulta
+
+        print(response.json())
+        print(response.status_code)
 
 
     def agregarALista(self, idCapa, capa):
