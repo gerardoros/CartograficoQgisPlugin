@@ -102,14 +102,14 @@ class Master:
         self.headers = {'Content-Type': 'application/json'}
 
         # consulta informacion del usuario logueado
-        usuario = self.UTI.decodeRot13(QSettings().value('usuario'))
+        # usuario = self.UTI.decodeRot13(QSettings().value('usuario'))
 
-        resultado = self.consumeWSGeneral(url_cons = self.CFG.url_MA_getInfoUser + str(usuario))
+        # resultado = self.consumeWSGeneral(url_cons = self.CFG.url_MA_getInfoUser + str(usuario))
 
-        if not resultado:
-            return
+        #if not resultado:
+            #return
 
-        var.setValue("datoUsuario", resultado)
+        var.setValue("datoUsuario", None)
         # obtiene todos los permisos del usuario
         # ----- P E N D I E N T E ----
 

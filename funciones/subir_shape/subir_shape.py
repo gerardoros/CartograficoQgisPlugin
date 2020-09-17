@@ -32,6 +32,7 @@ from .resources import *
 # Import the code for the dialog
 from .subir_shape_dialog import SubirShapeDialog
 import os.path
+import json
 
 
 class SubirShape:
@@ -201,6 +202,64 @@ class SubirShape:
             pass
 
     def cargar(self):
+        xMan = QSettings().value('xManzana')
+        print(xMan)
+        xPredG = QSettings().value('xPredGeom')
+        print(xPredG)
+
+
+        path = "/home/oliver/Downloads/CAPAS_A_SUBIR/Nuevo Archivo WinRAR ZIP_1/Manzanas.shp"
+        vlayer = QgsVectorLayer(path, "manzana", "ogr")
+        if not vlayer.isValid():
+            print("Layer failed to load!")
+        else:
+            QgsProject.instance().addMapLayer(vlayer)
+        self.listaAGuardar = []
+        self.agregarALista("manzana", vlayer)
+
+        jsonParaGuardarAtributos = json.dumps(self.listaAGuardar)
+
+        print(jsonParaGuardarAtributos)
+
+
+    def agregarALista(self, idCapa, capa):
+
+        for feat in capa.getFeatures():
+            campos = {}
+            campos['wkt'] = feat.geometry().asWkt()
+            campos['srid'] = QSettings().value('srid')
+            campos['tabla'] = self.UTI.tablas[capa.name()]
+            atributos = {}
+            nombresAtrbutos = capa.fields()
+
+            nombres = [campo.name() for campo in nombresAtrbutos]
+
+            for x, campo in enumerate(nombresAtrbutos):
+                atributo = feat.attributes()[x]
+                if str(atributo) == "NULL":
+                    atributo = None
+                atributos[str(campo)] = atributo
+
+                if idCapa == 'predios.geom':
+                    punto = self.exteriorPredio(feat.geometry())
+                    if punto != None:
+                        atributos['numExt'] = punto['numExt']
+                        atributos['geom_num'] = punto.geometry().asWkt()
+
+                elif idCapa == 'horizontales.geom':
+                    punto = self.exteriorCondom(feat.geometry())
+                    if punto != None:
+                        atributos['num_ofi'] = punto['num_ofi']
+                        atributos['geom_num'] = punto.geometry().asWkt()
+
+                campos['nuevo'] = True
+                campos['eliminado'] = False
+
+            campos['attr'] = atributos
+            self.listaAGuardar.append(campos)
+
+
+    def cargar_old(self):
 
         xMan = QSettings().value('xManzana')
         print(xMan)
@@ -208,7 +267,6 @@ class SubirShape:
         print(xPredG)
 
 
-        # TODO: Esta bandera se debe setear diferente
         ALTA_LAYER = 0
 
         path = "/home/oliver/Downloads/fwdpoligono(1)/limitemuni_poo.shp"
@@ -262,7 +320,6 @@ class SubirShape:
                     f = QgsFeature()
                     f.setGeometry(feature.geometry())
                     f.setAttributes([100, "", clave, ""])
-                    # """"dbname='spatial-mete-oliver' host='177.225.106.243' port='5432' user='sigemun' password='sigemun' key=id type=MULTIPOLYGON table="public"."e_municipio" (geom)"""
                     data_provider = QgsProviderRegistry.instance().createProvider("postgres",
                                                                                   u'dbname=\'spatial-mete-oliver\' host=177.225.106.243 port=5432 user=\'sigemun\' password=\'sigemun\' key=\'id\' table="public"."e_municipio" (geom) sql=')
                     print("Data Provider: ", type(data_provider))
