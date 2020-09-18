@@ -274,7 +274,7 @@ class Startup():
         headers = {'Content-Type': 'application/json', 'Authorization' : self.obtenerToken()}
 
 
-        urlSrid = 'http://192.168.0.40:8080/busquedasimplewkn/api/cat/municipio/'
+        urlSrid = 'http://localhost:8080/busquedasimplewkn/api/cat/municipio/'
         
         respuesta = requests.get(urlSrid, headers = headers)
 

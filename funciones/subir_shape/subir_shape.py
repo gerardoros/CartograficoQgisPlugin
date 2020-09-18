@@ -208,7 +208,7 @@ class SubirShape:
         print(xPredG)
 
 
-        path = "/home/oliver/Downloads/CAPAS_A_SUBIR/Nuevo Archivo WinRAR ZIP_1/Manzanas.shp"
+        path = "/home/oliver/CAPAS A SUBIR/Nuevo Archivo WinRAR ZIP_1/Manzanas.shp"
         vlayer = QgsVectorLayer(path, "manzana", "ogr")
         if not vlayer.isValid():
             print("Layer failed to load!")
