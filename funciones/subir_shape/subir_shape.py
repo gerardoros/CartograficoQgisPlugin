@@ -336,3 +336,21 @@ class SubirShape:
                     print("Data Provider: ", type(data_provider))
                     print(data_provider.errors())
                     data_provider.addFeatures([f])
+
+
+    def obtenerToken(self):
+        url= 'http://localhost:8080/auth/login'
+        payload = {"username" : "user", "password" : "user"}
+        payload = json.dumps(payload)
+        headers = {'Content-Type': 'application/json'}
+
+        response = requests.post(url, headers = headers, data = payload)
+        if response.status_code == 200:
+            #print('habemus token')
+            data = response.content
+        else:
+            print(response)
+            self.UTI.mostrarAlerta('No se ha conseguido token del plugin de integracion', QMessageBox().Critical, 'Autenticacion')
+            return
+
+        return 'bearer ' + json.loads(data)['access_token']
