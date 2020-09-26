@@ -33,6 +33,7 @@ from .resources import *
 from .subir_shape_dialog import SubirShapeDialog
 import os.path
 import json
+import requests
 
 
 class SubirShape:
@@ -214,30 +215,35 @@ class SubirShape:
             print("Layer failed to load!")
         else:
             QgsProject.instance().addMapLayer(vlayer)
-        self.listaAGuardar = []
-        self.agregarALista("manzana", vlayer)
 
-        jsonParaGuardarAtributos = json.dumps(self.listaAGuardar)
+        idCapa = self.ACA.obtenerIdCapa("Municipios")
 
-        url = 'http://localhost:8080/featureswkn/api/manzana/'
-        payload = jsonParaGuardarAtributos
-        headers = {'Content-Type': 'application/json', 'Authorization': self.obtenerToken()}
-        try:
-            response = requests.post(url, headers=headers, data=payload)
+        jsonParaGuardarAtributos = self.genera_json("manzana", vlayer)
+        #jsonParaGuardarAtributos = self.genera_json_ref("municipios", vlayer)
 
-        except requests.exceptions.RequestException:
-            self.UTI.mostrarAlerta("No se ha podido conectar al servidor v1", QMessageBox.Critical,
-                                   "Guardar Cambios v1")  # Error en la peticion de consulta
+        print(jsonParaGuardarAtributos)
 
-        print(response.json())
-        print(response.status_code)
+        #alta_capa(jsonParaGuardarAtributos)
 
 
-    def agregarALista(self, idCapa, capa):
 
-        for feat in capa.getFeatures():
+    def genera_json(self, idCapa, capa):
+
+        listaAGuardar = []
+        features  = [f for f in capa.getFeatures()]
+        print(f"NUMERO DE FEATURES: {len(features)}")
+        for i, feat in enumerate(features):
+
+            # poly = QgsGeometry.polygonize([feat.geometry()])
+            # for i, sub in enumerate(poly.asMultiPolygon()):
+            #     print(f"{i} - {sub}")
+
+            geom = feat.geometry()
+            parts = [p for p in geom.parts()]
+            poly = parts[0]
+
             campos = {}
-            campos['wkt'] = feat.geometry().asWkt()
+            campos['wkt'] = poly.asWkt()
             campos['srid'] = QSettings().value('srid')
             campos['tabla'] = self.UTI.tablas[capa.name()]
             atributos = {}
@@ -267,8 +273,117 @@ class SubirShape:
                 campos['eliminado'] = False
 
             campos['attr'] = atributos
-            self.listaAGuardar.append(campos)
+            listaAGuardar.append(campos)
+        return json.dumps(listaAGuardar)
 
+
+    def alta_capa(self, payload):
+
+        url = 'http://localhost:8080/featureswkn/api/manzana/'
+        headers = {'Content-Type': 'application/json', 'Authorization': self.obtenerToken()}
+        try:
+            response = requests.post(url, headers=headers, data=payload)
+            print(response.json())
+            print(response.status_code)
+
+        except requests.exceptions.RequestException:
+            self.UTI.mostrarAlerta("No se ha podido conectar al servidor v1", QMessageBox.Critical,
+                                   "Guardar Cambios v1")  # Error en la peticion de consulta
+
+
+
+
+    def genera_json_ref(self, idCapa, capa):
+
+        listaAGuardar = []
+
+        for feat in capa.getFeatures():
+
+            campos = {}
+            campos['geomWKT'] = feat.geometry().asWkt()
+            campos['srid'] = str(QSettings().value('srid'))
+            campos['nombre'] = self.UTI.tablas[capa.name()]
+            atributos = {}
+
+            nombres = [campo.name() for campo in capa.fields()]
+
+            for x, nombre in enumerate(nombres):
+                if self.ACA.traducirIdCapa(idCapa) == 'Calles' and nombre == 'c_tipo_vialidad':
+                    continue
+                atributo = feat.attributes()[x]
+
+                if str(atributo) == "NULL":
+                    atributo = None
+                atributos[str(nombre)] = atributo
+
+            campos['propiedades'] = atributos
+
+            if self.ACA.traducirIdCapa(idCapa) == 'Calles':
+            #if self.ACA.traducirIdCapa(idCapa) == 'Calles' and str(feat['id']) in self.diccServiciosCalle.keys():
+                listaServicios = []
+                for lista in self.diccServiciosCalle[str(feat['id'])]:
+                    if lista[0] == '2':
+                        listaServicios.append(lista[2])
+
+                campos['propiedades']['catServicios'] = listaServicios
+
+            if campos['propiedades']['id'] == None:
+                campos['accion'] = 'new'
+            else:
+                campos['accion'] = 'update'
+            listaAGuardar.append(campos)
+
+        # considera las eliminadas
+        listaTempRef = QSettings().value('listaEliminadaRef')
+
+        for feat in listaTempRef:
+            listaAGuardar.append(feat)
+
+        jsonParaGuardarAtributos = json.dumps(listaAGuardar)
+
+        payload = jsonParaGuardarAtributos
+        headers = {'Content-Type': 'application/json', 'Authorization': self.UTI.obtenerToken()}
+
+        print(payload)
+        # try:
+        #     response = requests.post(self.CFG.urlGuardadoRef, headers=headers, data=payload)
+        #
+        # except requests.exceptions.RequestException:
+        #     self.UTI.mostrarAlerta("No se ha podido conectar al servidor v1", QMessageBox.Critical,
+        #                            "Guardar Cambios v1")  # Error en la peticion de consulta
+        #
+        # if response.status_code == 200:
+        #     QSettings().setValue('listaEliminadaRef', [])
+        #     QSettings().setValue('posibleGuardarRef', 'False')
+        #     self.dockwidget.comboCapasEdicion.setEnabled(True)
+        #     self.dockwidget.botonActivarEdicion.setEnabled(True)
+        #     self.dockwidget.botonActualizarRef.setEnabled(False)
+        #     self.dockwidget.botonCancelarReferencia.setEnabled(False)
+        #     self.quitarDeGrupo(self.capaEnEdicion, 'edicion')
+        #
+        #     xCapa = self.traducirIdCapa(self.capaEnEdicion)
+        #     bBox = self.obtenerBoundingBox()
+        #
+        #     if bBox is None:
+        #         self.pintarCapasReferencia(xCapa, None, False)
+        #     else:
+        #         self.pintarCapasReferencia(xCapa, bBox.asWkt(), False)
+        #
+        #     self.capaEnEdicion = ''
+        #     QSettings().setValue('capaRefEdicion', self.capaEnEdicion)
+        #     self.dockwidget.tablaServiciosCalles.setVisible(False)
+        #     self.dockwidget.botonActualizarServiciosCalles.setVisible(False)
+        #     self.dockwidget.tituloServiciosCalles.setVisible(False)
+        #     if self.traducirIdCapa(idCapa) == 'Calles':
+        #         self.diccServiciosCalle = {}
+        #
+        #     # se reinicia la variable que contiene los identificadores de los features modificados o agregados
+        #     self.featuresId = []
+        #
+        #     self.UTI.mostrarAlerta("Cambios guardados con exito", QMessageBox.Information, "Guardar Cambios")
+        #
+        # else:
+        #     self.UTI.mostrarAlerta("Problemas al guardar la información", QMessageBox.Critical, "Guardar Cambios")
 
     def cargar_old(self):
 

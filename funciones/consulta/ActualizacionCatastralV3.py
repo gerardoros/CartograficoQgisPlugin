@@ -3130,6 +3130,7 @@ class ActualizacionCatastralV3:
         elif nombreCapa == "Secciones":
             return QSettings().value('xSeccion')
         elif nombreCapa == "Municipios":
+            print(f"QSettings().value('xMunicipio') : {QSettings().value('xMunicipio')}")
             return QSettings().value('xMunicipio')
         elif nombreCapa == "Region Catastral":
             return QSettings().value('xRegion')
