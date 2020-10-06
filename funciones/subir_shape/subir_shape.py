@@ -209,21 +209,37 @@ class SubirShape:
         print(xPredG)
 
 
-        path = "/home/oliver/CAPAS A SUBIR/Nuevo Archivo WinRAR ZIP_1/Manzanas.shp"
-        vlayer = QgsVectorLayer(path, "manzana", "ogr")
-        if not vlayer.isValid():
+        path_pred = "/home/oliver/CAPAS A SUBIR/Nuevo Archivo WinRAR ZIP/Predios.shp"
+        vlayer_pred = QgsVectorLayer(path_pred, "predios.geom", "ogr")
+        if not vlayer_pred.isValid():
             print("Layer failed to load!")
         else:
-            QgsProject.instance().addMapLayer(vlayer)
+            QgsProject.instance().addMapLayer(vlayer_pred)
 
-        idCapa = self.ACA.obtenerIdCapa("Municipios")
+        path_manz = "/home/oliver/CAPAS A SUBIR/Nuevo Archivo WinRAR ZIP_1/Manzanas.shp"
+        vlayer_manz = QgsVectorLayer(path_manz, "manzana", "ogr")
+        if not vlayer_manz.isValid():
+            print("Layer failed to load!")
+        else:
+            QgsProject.instance().addMapLayer(vlayer_manz)
 
-        jsonParaGuardarAtributos = self.genera_json("manzana", vlayer)
+        layerList = QgsProject.instance().layerTreeRoot().findLayers()
+
+        list_to_json = []
+        for layer in layerList:
+            res = self.genera_json(layer.name(), layer.layer())
+            list_to_json.extend(res)
+
+        jsonParaGuardarAtributos = json.dumps(list_to_json)
+
+        #jsonParaGuardarAtributos = self.genera_json("predios.geom", vlayer)
         #jsonParaGuardarAtributos = self.genera_json_ref("municipios", vlayer)
 
         print(jsonParaGuardarAtributos)
 
-        #alta_capa(jsonParaGuardarAtributos)
+        self.alta_capa(jsonParaGuardarAtributos)
+
+        QgsProject.instance().removeAllMapLayers()
 
 
 
@@ -249,32 +265,49 @@ class SubirShape:
             atributos = {}
             nombresAtrbutos = capa.fields()
 
-            nombres = [campo.name() for campo in nombresAtrbutos]
+
+
+            if idCapa == 'horizontales.geom':
+                punto = self.exteriorCondom(feat.geometry())
+                if punto != None:
+                    atributos['num_ofi'] = punto['num_ofi']
+                    atributos['geom_num'] = punto.geometry().asWkt()
+
+            # elif idCapa == 'predios.geom':
+      #     punto = self.exteriorPredio(feat.geometry())
+            #     if punto != None:
+            #         atributos['numExt'] = punto['numExt']
+            #         atributos['geom_num'] = punto.geometry().asWkt()
+
 
             for x, campo in enumerate(nombresAtrbutos):
                 atributo = feat.attributes()[x]
                 if str(atributo) == "NULL":
                     atributo = None
-                atributos[str(campo)] = atributo
 
-                if idCapa == 'predios.geom':
-                    punto = self.exteriorPredio(feat.geometry())
-                    if punto != None:
-                        atributos['numExt'] = punto['numExt']
-                        atributos['geom_num'] = punto.geometry().asWkt()
+                if idCapa == 'manzana':
+                    if campo.name() == "MZN":
+                        atributos["clave"] = atributo
+                    elif campo.name() == "Clave":
+                        atributos["cve_cat"] = atributo
+                    else:
+                        atributos[campo.name()] = atributo
+                elif idCapa == "predios.geom":
+                    if campo.name() == "Fecha":
+                        continue
+                    else:
+                        atributos[campo.name()] = atributo
 
-                elif idCapa == 'horizontales.geom':
-                    punto = self.exteriorCondom(feat.geometry())
-                    if punto != None:
-                        atributos['num_ofi'] = punto['num_ofi']
-                        atributos['geom_num'] = punto.geometry().asWkt()
+                else:
+                    atributos[campo.name()] = atributo
+
 
                 campos['nuevo'] = True
                 campos['eliminado'] = False
 
             campos['attr'] = atributos
             listaAGuardar.append(campos)
-        return json.dumps(listaAGuardar)
+        return listaAGuardar
 
 
     def alta_capa(self, payload):
