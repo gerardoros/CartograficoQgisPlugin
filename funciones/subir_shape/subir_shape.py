@@ -202,42 +202,69 @@ class SubirShape:
             # substitute with your code.
             pass
 
+    def load_no_ref(self, info_capas):
+
+        for capa in info_capas:
+            vlayer = QgsVectorLayer(info_capas["path"], info_capas["name"], "ogr")
+            if not vlayer.isValid():
+                print(f"La capa {info_capas['name']} no se pudo cargar!")
+            else:
+                QgsProject.instance().addMapLayer(vlayer_pred)
+
+
+
     def cargar(self):
-        xMan = QSettings().value('xManzana')
-        print(xMan)
-        xPredG = QSettings().value('xPredGeom')
-        print(xPredG)
 
+        # TODO: La bandera de abajo deberia poderlo definir el usuario en la interfaz
+        referencia = True
 
-        path_pred = "/home/oliver/CAPAS A SUBIR/Nuevo Archivo WinRAR ZIP/Predios.shp"
-        vlayer_pred = QgsVectorLayer(path_pred, "predios.geom", "ogr")
-        if not vlayer_pred.isValid():
-            print("Layer failed to load!")
+        capas_no_ref = [{
+                "path" : "/home/oliver/CAPAS A SUBIR/Nuevo Archivo WinRAR ZIP/Predios.shp",
+                "name" : "predios.geom"
+            },
+            {
+                "path": "/home/oliver/CAPAS A SUBIR/Nuevo Archivo WinRAR ZIP_1/Manzanas.shp",
+                "name": "manzana"
+            }]
+
+        capas_ref = [{
+            "path": "/home/oliver/CAPAS A SUBIR/AH_ZC/ZonaCatastral.shp",
+            "name": "sectores"
+        }]
+
+        if not referencia:
+            self.load_no_ref(capas_no_ref)
+
+            layerList = QgsProject.instance().layerTreeRoot().findLayers()
+
+            list_to_json = []
+
+            for layer in layerList:
+                res = self.genera_json(layer.name(), layer.layer())
+                list_to_json.extend(res)
+
+            jsonParaGuardarAtributos = json.dumps(list_to_json)
+
+            print(jsonParaGuardarAtributos)
+
+            self.alta_capa(jsonParaGuardarAtributos)
+
         else:
-            QgsProject.instance().addMapLayer(vlayer_pred)
+            self.load_no_ref(capas_ref)
 
-        path_manz = "/home/oliver/CAPAS A SUBIR/Nuevo Archivo WinRAR ZIP_1/Manzanas.shp"
-        vlayer_manz = QgsVectorLayer(path_manz, "manzana", "ogr")
-        if not vlayer_manz.isValid():
-            print("Layer failed to load!")
-        else:
-            QgsProject.instance().addMapLayer(vlayer_manz)
+            layerList = QgsProject.instance().layerTreeRoot().findLayers()
 
-        layerList = QgsProject.instance().layerTreeRoot().findLayers()
+            list_to_json = []
 
-        list_to_json = []
-        for layer in layerList:
-            res = self.genera_json(layer.name(), layer.layer())
-            list_to_json.extend(res)
+            for layer in layerList:
+                res = self.genera_json_ref(layer.name(), layer.layer())
+                list_to_json.extend(res)
 
-        jsonParaGuardarAtributos = json.dumps(list_to_json)
+            jsonParaGuardarAtributos = json.dumps(list_to_json)
 
-        #jsonParaGuardarAtributos = self.genera_json("predios.geom", vlayer)
-        #jsonParaGuardarAtributos = self.genera_json_ref("municipios", vlayer)
+            print(jsonParaGuardarAtributos)
 
-        print(jsonParaGuardarAtributos)
-
-        self.alta_capa(jsonParaGuardarAtributos)
+            #self.alta_capa_ref(jsonParaGuardarAtributos)
 
         QgsProject.instance().removeAllMapLayers()
 
@@ -274,7 +301,7 @@ class SubirShape:
                     atributos['geom_num'] = punto.geometry().asWkt()
 
             # elif idCapa == 'predios.geom':
-      #     punto = self.exteriorPredio(feat.geometry())
+            #     punto = self.exteriorPredio(feat.geometry())
             #     if punto != None:
             #         atributos['numExt'] = punto['numExt']
             #         atributos['geom_num'] = punto.geometry().asWkt()
@@ -324,6 +351,20 @@ class SubirShape:
                                    "Guardar Cambios v1")  # Error en la peticion de consulta
 
 
+    def alta_capa_ref(self, payload):
+
+        url = self.CFG.urlGuardadoRef
+        headers = {'Content-Type': 'application/json', 'Authorization': self.UTI.obtenerToken()}
+        try:
+            response = requests.post(url, headers=headers, data=payload)
+            print(response.json())
+            print(response.status_code)
+
+        except requests.exceptions.RequestException:
+            self.UTI.mostrarAlerta("No se ha podido conectar al servidor v1", QMessageBox.Critical,
+                                   "Guardar Cambios v1")  # Error en la peticion de consulta
+
+
 
 
     def genera_json_ref(self, idCapa, capa):
@@ -332,8 +373,13 @@ class SubirShape:
 
         for feat in capa.getFeatures():
 
+            geom = feat.geometry()
+            parts = [p for p in geom.parts()]
+            poly = parts[0]
+
+
             campos = {}
-            campos['geomWKT'] = feat.geometry().asWkt()
+            campos['geomWKT'] = poly.asWkt()
             campos['srid'] = str(QSettings().value('srid'))
             campos['nombre'] = self.UTI.tablas[capa.name()]
             atributos = {}
@@ -347,7 +393,7 @@ class SubirShape:
 
                 if str(atributo) == "NULL":
                     atributo = None
-                atributos[str(nombre)] = atributo
+                atributos[nombre] = atributo
 
             campos['propiedades'] = atributos
 
@@ -366,18 +412,9 @@ class SubirShape:
                 campos['accion'] = 'update'
             listaAGuardar.append(campos)
 
-        # considera las eliminadas
-        listaTempRef = QSettings().value('listaEliminadaRef')
-
-        for feat in listaTempRef:
-            listaAGuardar.append(feat)
-
+        return listaAGuardar
         jsonParaGuardarAtributos = json.dumps(listaAGuardar)
 
-        payload = jsonParaGuardarAtributos
-        headers = {'Content-Type': 'application/json', 'Authorization': self.UTI.obtenerToken()}
-
-        print(payload)
         # try:
         #     response = requests.post(self.CFG.urlGuardadoRef, headers=headers, data=payload)
         #
