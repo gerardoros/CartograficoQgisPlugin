@@ -42,7 +42,7 @@ class Configuracion():
         self.urlAutenticacion= self.servidorIP + 'auth/login'
         
         #Guardado
-        self.urlGuardadoRef = self.servidorIP + 'api/etables/'
+        self.urlGuardadoRef = 'http://localhost:6543/api/etables/'
         self.urlGuardadoCon = self.servidorIP + 'featureswkn/api/manzana/'
         
         #SRID

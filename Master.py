@@ -465,6 +465,7 @@ class Master:
     def irASubirShape(self):
         self.SHP.UTI = self.UTI
         self.SHP.ACA = self.ACA
+        self.SHP.CFG = self.CFG
 
         self.SHP.run()
 

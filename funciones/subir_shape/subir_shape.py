@@ -205,11 +205,11 @@ class SubirShape:
     def load_no_ref(self, info_capas):
 
         for capa in info_capas:
-            vlayer = QgsVectorLayer(info_capas["path"], info_capas["name"], "ogr")
+            vlayer = QgsVectorLayer(capa["path"], capa["name"], "ogr")
             if not vlayer.isValid():
-                print(f"La capa {info_capas['name']} no se pudo cargar!")
+                print(f"La capa {capa['name']} no se pudo cargar!")
             else:
-                QgsProject.instance().addMapLayer(vlayer_pred)
+                QgsProject.instance().addMapLayer(vlayer)
 
 
 
@@ -264,7 +264,7 @@ class SubirShape:
 
             print(jsonParaGuardarAtributos)
 
-            #self.alta_capa_ref(jsonParaGuardarAtributos)
+            self.alta_capa_ref(jsonParaGuardarAtributos)
 
         QgsProject.instance().removeAllMapLayers()
 
@@ -406,7 +406,7 @@ class SubirShape:
 
                 campos['propiedades']['catServicios'] = listaServicios
 
-            if campos['propiedades']['id'] == None:
+            if not campos['propiedades'].get("id"):
                 campos['accion'] = 'new'
             else:
                 campos['accion'] = 'update'
