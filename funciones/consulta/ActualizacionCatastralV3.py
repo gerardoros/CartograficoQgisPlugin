@@ -307,7 +307,7 @@ class ActualizacionCatastralV3:
                     self.idManzana = ' '
 
                     #Modo desarrollor
-                    self.modoDesarrollo = True
+                    self.modoDesarrollo = False
                     self.cargaRapida = True
                     #01001001020004054011
                     #01001001020004027003
