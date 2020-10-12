@@ -143,6 +143,11 @@ class Master:
         self.INTEPAD = IntermedioCedulaRevision.IntermedioCedulaRevision(iface, self, 'PAD')
         self.INTEREV = IntermedioCedulaRevision.IntermedioCedulaRevision(iface, self, 'REV')
 
+
+        #------------ DESACTIVAMOS LAS OPERACIONES Y MANDAMOS A VERIFICAR SUS ROLES
+        self.comproveRoles()
+        self.asignActionsByRoles(iface)
+
         # ------------ EVENTO DE BOTONES -------------
         self.dlg.btnAsigTareas.clicked.connect(self.irAAsignaTareas)
         self.dlg.btnConsulta.clicked.connect(self.irAConsulta)
@@ -163,7 +168,60 @@ class Master:
         #self.dlg.btnAsigCampo.setEnabled(False)
         #self.dlg.btnAsigRev.setEnabled(False)
 
+    #---------METODO QUE DESABILITA TODAS LAS ACCIONES DE LOS BOTONES
+    def comproveRoles(self):
 
+        # ------------ PRUEBA PARA DESHABILITAR LOS BOTONES -------
+        self.dlg.btnAsigTareas.setEnabled(False)
+        self.dlg.btnConsulta.setEnabled(False)
+        self.dlg.btnDibujo.setEnabled(False)
+        self.dlg.btnEliminar.setEnabled(False)
+        self.dlg.btnTopologia.setEnabled(False)
+        self.dlg.btnFusDiv.setEnabled(False)
+        self.dlg.btnCargaMasiva.setEnabled(False)
+        self.dlg.btnAsigCampo.setEnabled(False)
+        self.dlg.btnAsigRev.setEnabled(False)
+        self.dlg.btnAsigPad.setEnabled(False)
+        self.dlg.btnInterPad.setEnabled(False)
+        self.dlg.btnInterRev.setEnabled(False)
+        self.dlg.btnAdminUsers.setEnabled(False)
+
+    #--------MEOTOD QUE COMPRUEBA LAS VERIIFCACIONES DE LOS BOTONES
+    def asignActionsByRoles(self, iface):
+        var = QSettings()
+        print('EStado del user: '+ var.value('logeado'))
+        if var.value('logeado') == 'True':
+            response = self.consumeWSGeneral("http://192.168.0.21:8080/autentificacion/api/account/permisos-carto")
+            print(response)
+            for rol in response["roles"]:
+                if rol == 'ASIGNACION_TAREAS':
+                    self.dlg.btnAsigTareas.setEnabled(True)
+                if rol == 'CONSULTA':
+                    self.dlg.btnConsulta.setEnabled(True)
+                if rol == 'DIBUJO':
+                    self.dlg.btnDibujo.setEnabled(True)
+                if rol == 'ELIMINAR':
+                    self.dlg.btnEliminar.setEnabled(True)
+                if rol == 'TOPOLOGIA':
+                    self.dlg.btnTopologia.setEnabled(True)
+                if rol == 'FUSION_SUBDIVISION':
+                    self.dlg.btnFusDiv.setEnabled(True)
+                if rol == 'CARGA_MASIVA':
+                    self.dlg.btnCargaMasiva.setEnabled(True)
+                if rol == 'ASIGNACION_CAMPO':
+                    self.dlg.btnAsigCampo.setEnabled(True)
+                if rol == 'ASIGNACION_REVISION':
+                    self.dlg.btnAsigRev.setEnabled(True)
+                if rol == 'ASIGNACION_PADRON':
+                    self.dlg.btnAsigPad.setEnabled(True)
+                if rol == 'INTERMEDIO_REVISION':
+                    self.dlg.btnInterPad.setEnabled(True)
+                if rol == 'INTERMEDIO_PADRON':
+                    self.dlg.btnInterRev.setEnabled(True)
+                if rol == 'ADMIN_USERS':
+                    self.dlg.btnAdminUsers.setEnabled(True)
+        else:
+            self.comproveRoles()
 #------------------ no se hace nada con este metodo -----------------------------------
     def borrar (self):
 
