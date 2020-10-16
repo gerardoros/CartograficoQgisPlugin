@@ -60,7 +60,7 @@ QWidget:item:selected
 </string>
      </property>
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
@@ -830,6 +830,32 @@ marcadores</string>
        </property>
        <property name="text">
         <string>Marcador de Vertices</string>
+       </property>
+      </widget>
+      <widget class="QRadioButton" name="rb16">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>100</y>
+         <width>41</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>&amp;16</string>
+       </property>
+      </widget>
+      <widget class="QRadioButton" name="rb25">
+       <property name="geometry">
+        <rect>
+         <x>70</x>
+         <y>100</y>
+         <width>41</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>&amp;25</string>
        </property>
       </widget>
      </widget>

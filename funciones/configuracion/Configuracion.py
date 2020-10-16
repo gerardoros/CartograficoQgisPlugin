@@ -9,9 +9,12 @@ class Configuracion():
         self.servidorIP = 'http://localhost:8080/'
         #self.servidorIP = 'http://127.0.0.1:8080/'
 
-        #Combos de localidades, sectores y manzanas
+        #Combos de localidades, sectores y manzanas/combo/municipios/
+        self.urlMunicipios = self.servidorIP + 'busquedasimplewkn/api/combo/municipios/'
         self.urlLocalidades = self.servidorIP + 'busquedasimplewkn/api/combo/001/localidades/'
         self.urlSectores = self.servidorIP +  'busquedasimplewkn/api/combo/localidades/'
+
+        self.urlSectoresMuni = self.servidorIP + 'busquedasimplewkn/api/combo/municipios/'
         self.urlManzanas = self.servidorIP +  'busquedasimplewkn/api/combo/sector/'
         self.urlPredios = self.servidorIP + 'busquedasimplewkn/api/combo/manzana/'
 

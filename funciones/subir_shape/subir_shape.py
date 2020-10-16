@@ -190,8 +190,6 @@ class SubirShape:
     def run(self):
         """Run method that performs all the real work"""
 
-        print("GREEC")
-
         # show the dialog
         self.dlg.show()
         # Run the dialog event loop
@@ -230,7 +228,12 @@ class SubirShape:
         capas_ref = [{
             "path": "/home/oliver/CAPAS A SUBIR/AH_ZC/ZonaCatastral.shp",
             "name": "sectores"
-        }]
+            },
+            {
+                "path": "/home/oliver/CAPAS A SUBIR/Nuevo Archivo WinRAR ZIP_1/Limite_Cuautitlan.shp",
+                "name": "municipio"
+            }
+        ]
 
         if not referencia:
             self.load_no_ref(capas_no_ref)
@@ -374,9 +377,19 @@ class SubirShape:
         for feat in capa.getFeatures():
 
             geom = feat.geometry()
-            parts = [p for p in geom.parts()]
-            poly = parts[0]
 
+            if geom.isMultipart():
+                parts = []
+                for p in geom.constParts():
+                    if QgsWkbTypes.hasZ(p.wkbType()):
+                        p.dropZValue()
+                        parts.append(p)
+                    else:
+                        parts.append(p)
+
+                poly = parts[0]
+            else:
+                poly = geom
 
             campos = {}
             campos['geomWKT'] = poly.asWkt()
