@@ -87,6 +87,9 @@ class ActualizacionCatastralV3:
         self.dockwidget.botonActivarEdicion.clicked.connect(self.activarEdicion)
         self.dockwidget.botonActualizarServiciosCalles.clicked.connect(self.actualizarServiciosCalles)
 
+        self.dockwidget.rb16.pressed.connect(self.obtenerMunicipios)
+        self.dockwidget.rb25.pressed.connect(self.obtenerLocalidades)
+
         '''
         view = QListView()
         view.setFixedHeight(200)
@@ -255,6 +258,7 @@ class ActualizacionCatastralV3:
         self.dockwidget.tabWidget.setCurrentIndex(0)
 
         self.obtenerXCapas()
+
         if QSettings().value('integrando') == 'True':
             
             mensaje = "Tienes cambios de carga masiva que aun no se han integrado, si procedes se perderan los cambios..."
@@ -410,12 +414,41 @@ class ActualizacionCatastralV3:
         else:
             index = self.dockwidget.comboManzana.currentIndex()
             self.idManzana = self.dockwidget.comboManzana.itemData(index)
-            
+
+
+
+
         
 ########################################################################################################################
 
+    def obtenerMunicipios(self):
+
+        self.cve_cat_len = 16
+
+        self.dockwidget.comboLocalidad.clear()
+
+        try:
+            headers = {'Content-Type': 'application/json', 'Authorization' : self.UTI.obtenerToken()}
+            respuesta = requests.get(self.CFG.urlMunicipios, headers = headers)
+        except requests.exceptions.RequestException:
+            self.UTI.mostrarAlerta("Error de servidor loc2", QMessageBox().Critical, "Cargar Municipios")
+            print('ERROR: MUN0000')
+
+        lenJson = len(list(respuesta.json()))
+
+        if lenJson > 0:
+            for localidad in respuesta.json():
+                self.dockwidget.comboLocalidad.addItem(str(localidad['label']) + " " + localidad['other'], str(localidad['value']) )
+        else:
+            self.UTI.mostrarAlerta("No existen Municipios registrados", QMessageBox().Information, "Cargar Municipios")
+
+
+
+
     #Llenar primer combo
     def obtenerLocalidades(self):
+
+        self.cve_cat_len = 25
 
         self.dockwidget.comboLocalidad.clear()
 
@@ -437,6 +470,8 @@ class ActualizacionCatastralV3:
 #################################################################################################################################
 
     #Llenar segundo combo
+    #urlSectoresMuni
+
     def obtenerSectoresPorLocalidad(self):
 
         if self.dockwidget.comboLocalidad.count() > 0:
@@ -446,9 +481,12 @@ class ActualizacionCatastralV3:
             
             self.dockwidget.comboSector.clear()
 
+            #Si es una clave de 16, buscaremos sectores por municipio, de lo contrario sera por localidad
+            url = self.CFG.urlSectoresMuni if self.cve_cat_len == 16 else self.CFG.urlSectores
+
             try:
                 headers = {'Content-Type': 'application/json', 'Authorization' : self.UTI.obtenerToken()}
-                respuesta = requests.get(self.CFG.urlSectores + idSector + '/sector/', headers = headers)
+                respuesta = requests.get(url + idSector + '/sector/', headers = headers)
             except requests.exceptions.RequestException:
                 self.UTI.mostrarAlerta("Error de servidor sec1", QMessageBox().Critical, "Cargar Sectores")
                 print('ERROR: SEC000')
@@ -1052,6 +1090,7 @@ class ActualizacionCatastralV3:
             url = self.CFG.urlConsultaManzana
         elif self.traducirIdCapa(idCapa) == 'predios.geom':
             url = self.CFG.urlConsultaPrediosGeom
+            print(f"\n\n\n\n ENTRO A CONSULTAR PREDIOS {self.idManzana}\n  Payload: {self.payload}, URL: {url}\n\n\n")
         elif self.traducirIdCapa(idCapa) == 'predios.num':
             url = self.CFG.urlConsultaPrediosNum
         elif self.traducirIdCapa(idCapa) == 'construcciones':
@@ -1271,16 +1310,17 @@ class ActualizacionCatastralV3:
 
                 feat = features[0]
 
-                if len(feat['cve_cat']) < 25:
+                if len(feat['cve_cat']) < self.cve_cat_len:
                     self.UTI.mostrarAlerta('La clave catastral tiene un formato incorrecto, guarde la manzana e intente de nuevo', QMessageBox().Warning, 'Cedula Catastral')
                     return
 
                 
+                cve_recortada =  str(feat['cve_cat'][0: self.cve_cat_len])
 
                 #validar si la clave ya existe
                 for key, value in self.dockwidget.lista.items():
-                    if str(key) == str(feat['cve_cat'][0:25]):
-                        self.UTI.mostrarAlerta('La Clave: \'' + str(feat['cve_cat'][0:25]) + '\' se encuentra abierta', QMessageBox().Information, 'Cedula Catastral')
+                    if str(key) == cve_recortada:
+                        self.UTI.mostrarAlerta('La Clave: \'' + cve_recortada + '\' se encuentra abierta', QMessageBox().Information, 'Cedula Catastral')
                         self.cancelaAperturaCedula()
                         return
 
@@ -1290,8 +1330,8 @@ class ActualizacionCatastralV3:
                     return
 
                 # abrir Cedula
-                self.dockwidget.lista[str(feat['cve_cat'])[0:25]] = CedulaMainWindow(str(feat['cve_cat']), cond = cond, CFG = self.CFG, UTI = self.UTI, cargandoRevision = False)
-                self.dockwidget.lista[str(feat['cve_cat'])[0:25]].show()
+                self.dockwidget.lista[cve_recortada] = CedulaMainWindow(str(feat['cve_cat']), cond = cond, CFG = self.CFG, UTI = self.UTI, cargandoRevision = False, cve_len = self.cve_cat_len)
+                self.dockwidget.lista[cve_recortada].show()
                 
             self.cancelaAperturaCedula()
 
@@ -3130,6 +3170,7 @@ class ActualizacionCatastralV3:
         elif nombreCapa == "Secciones":
             return QSettings().value('xSeccion')
         elif nombreCapa == "Municipios":
+            print(f"QSettings().value('xMunicipio') : {QSettings().value('xMunicipio')}")
             return QSettings().value('xMunicipio')
         elif nombreCapa == "Region Catastral":
             return QSettings().value('xRegion')

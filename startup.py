@@ -316,7 +316,12 @@ class Startup():
         # Solicitar SRID para el municipio
         headers = {'Content-Type': 'application/json', 'Authorization' : self.obtenerToken()}
 
+<<<<<<< HEAD
+
+        urlSrid = 'http://localhost:8080/busquedasimplewkn/api/cat/municipio/'
+=======
         urlSrid = 'http://192.168.0.21:8080/busquedasimplewkn/api/cat/municipio/'
+>>>>>>> origin/master
         
         respuesta = requests.get(urlSrid, headers = headers)
 

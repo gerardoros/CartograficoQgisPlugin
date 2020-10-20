@@ -21,7 +21,7 @@ FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'mainWindow.ui'))
 
 class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
-    def __init__(self, cveCatas = "0", cond = False, parent=None, CFG=None, UTI = None, cargandoRevision = False):
+    def __init__(self, cveCatas = "0", cond = False, parent=None, CFG=None, UTI = None, cargandoRevision = False, cve_len = 25):
         """Constructor."""
         super(CedulaMainWindow, self).__init__(parent, \
             flags=Qt.WindowMinimizeButtonHint|Qt.WindowMaximizeButtonHint|Qt.WindowCloseButtonHint)
@@ -32,12 +32,13 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
         # #widgets-and-dialogs-with-auto-connect
 
         # clave catastral global
-        self.cveCatastral = cveCatas[0:25]
+        self.cve_len = cve_len
+        self.cveCatastral = cveCatas[0:cve_len]
         self.CFG = CFG
         self.UTI = UTI
         self.cveCondSel = ''
-        if len(cveCatas) > 25:
-            self.cveCondSel = cveCatas[25:]
+        if len(cveCatas) > cve_len:
+            self.cveCondSel = cveCatas[cve_len:]
 
         # es condominio
         self.cond = cond
@@ -465,7 +466,7 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
         self.cargaCatalogosConstruccionesP(self.cond)
 
         # -- carga informacion de la cedula segun la clave global
-        self.dataCed = self.consumeWSCedula(self.cveCatastral[0:25])
+        self.dataCed = self.consumeWSCedula(self.cveCatastral)
         #if not self.adelanteRevision and self.cargandoRevision:
         #    return
 
@@ -706,7 +707,7 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
 
         for dc in dataCond:
 
-            clave = dc['label'][25:]
+            clave = dc['label'][self.cve_len:]
             self.cmbCondo.addItem(clave, dc['other'])
 
     # - carga los indivisos de los condominios
@@ -929,6 +930,7 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
         return self.consumeWSGuardadoIndiv(listaInd, self.CFG.urlGuardaIndivisos + complemento)
     
     def obtieneClaMza(self, cveCata):
+        print(f"clave de obtieneClaMza: {cveCata}")
         return self.consumeWSGeneral(self.CFG.urlGetManzana + cveCata)
 
     def obtieneImagen(self, idImagen, tipo):
@@ -6233,28 +6235,47 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
     # - descomone clave
     def descomponeCveCata(self, cveCata):
 
-        clave = cveCata[0:2] + '-'
-        clave += cveCata[2:5] + '-'
-        clave += cveCata[5:8] + '-'
-        clave += cveCata[8:10] + '-'
-        clave += cveCata[10:14] + '-'
-        clave += cveCata[14:17] + '-'
-        clave += cveCata[17:20] + '-'
-        clave += cveCata[20:25]
+        clave = ''
+
+        if len(cveCata) == 16:
+            clave += cveCata[0:3] + '-'
+            clave += cveCata[3:5] + '-'
+            clave += cveCata[5:8] + '-'
+            clave += cveCata[8:10] + '-'
+            clave += cveCata[10:12] + '-'
+            clave += cveCata[12:16] + '-'
+        elif len(cveCata) == 25:
+            clave += cveCata[0:2] + '-'
+            clave += cveCata[2:5] + '-'
+            clave += cveCata[5:8] + '-'
+            clave += cveCata[8:10] + '-'
+            clave += cveCata[10:14] + '-'
+            clave += cveCata[14:17] + '-'
+            clave += cveCata[17:20] + '-'
+            clave += cveCata[20:25]
 
         return clave
 
     # - muestra clave global
     def muestraClaveGlobal(self, cveCata):
-
-        self.lbEdo.setText(cveCata[0:2])
-        self.lbRegCat.setText(cveCata[2:5])
-        self.lbMpio.setText(cveCata[5:8])
-        self.lbSecc.setText(cveCata[8:10])
-        self.lbLoc.setText(cveCata[10:14])
-        self.lbSec.setText(cveCata[14:17])
-        self.lbMza.setText(cveCata[17:20])
-        self.lbPredio.setText(cveCata[20:25])
+        if len(cveCata) == 16:
+            self.lbEdo.setText('--')
+            self.lbRegCat.setText('---')
+            self.lbMpio.setText(cveCata[0:3])
+            self.lbSecc.setText('--')
+            self.lbLoc.setText('----')
+            self.lbSec.setText(cveCata[3:5])
+            self.lbMza.setText(cveCata[5:8])
+            self.lbPredio.setText(cveCata[8:10])
+        elif len(cveCata) == 25:
+            self.lbEdo.setText(cveCata[0:2])
+            self.lbRegCat.setText(cveCata[2:5])
+            self.lbMpio.setText(cveCata[5:8])
+            self.lbSecc.setText(cveCata[8:10])
+            self.lbLoc.setText(cveCata[10:14])
+            self.lbSec.setText(cveCata[14:17])
+            self.lbMza.setText(cveCata[17:20])
+            self.lbPredio.setText(cveCata[20:25])
 
     # - Crea una alerta para ser mostrada como ventana de advertencia
     def createAlert(self, mensaje, icono = QMessageBox().Critical, titulo = 'Cedula'):

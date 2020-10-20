@@ -21,7 +21,7 @@
  *                                                                         *
  ***************************************************************************/
 """
-from PyQt5.QtCore import QSettings, QTranslator, qVersion, QCoreApplication
+from PyQt5.QtCore import QSettings, QTranslator, qVersion, QCoreApplication, QVariant
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QAction, QMessageBox
 from qgis.utils import iface
@@ -46,6 +46,7 @@ from .funciones.revisioncampo import AsignacionRevision
 from .funciones.revisioncampo import CedulaPadron
 from .funciones.revisioncampo import AsignacionPadron
 from .funciones.revisioncampo import IntermedioCedulaRevision
+from .funciones.subir_shape import subir_shape
 
 from .funciones.asignatareas import AsignaTareas
 from .funciones.adminusers import AdminUsers
@@ -105,6 +106,7 @@ class Master:
 
         resultado = self.consumeWSGeneral(url_cons = self.CFG.url_MA_getInfoUser + str(usuario))
 
+
         if not resultado:
             return
         self.dlg.btnAsigTareas.hide()
@@ -118,7 +120,10 @@ class Master:
         # Consulta de cartografia
         self.ACA = ActualizacionCatastralV3.ActualizacionCatastralV3(iface)
         self.UTI.ACA = self.ACA
-        
+
+        #Subir shapes
+        self.SHP = subir_shape.SubirShape(iface)
+
         # Division y fusion
         self.DFS = DivisionFusion.DivisionFusion(iface, self.ACA)
         
@@ -159,6 +164,8 @@ class Master:
         self.dlg.btnAsigCampo.clicked.connect(self.irAAsignacionCampo)
         self.dlg.btnAsigRev.clicked.connect(self.irAAsignacionRevision)
         self.dlg.btnAsigPad.clicked.connect(self.irAAsignacionPadron)
+
+        self.dlg.btnUpload.clicked.connect(self.irASubirShape)
 
         self.dlg.btnInterPad.clicked.connect(self.irAIntermediarioPad)
         self.dlg.btnInterRev.clicked.connect(self.irAIntermediarioRev)
@@ -511,6 +518,16 @@ class Master:
         self.CMS.ACA = self.ACA
 
         self.CMS.run()
+
+##############################################################################
+
+    def irASubirShape(self):
+        self.SHP.UTI = self.UTI
+        self.SHP.ACA = self.ACA
+        self.SHP.CFG = self.CFG
+
+        self.SHP.run()
+
 
 ###############################################################################
 
