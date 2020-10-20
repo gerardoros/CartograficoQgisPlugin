@@ -126,7 +126,6 @@ class usuariosEdicionVer(QtWidgets.QDialog, FORM_CLASS):
         self.llenaRoles(lista)
 
 
-    # -- aceptar el cambio la fusion de fracciones
     def event_aceptar(self):
 
         if self.nuevo:
@@ -185,7 +184,7 @@ class usuariosEdicionVer(QtWidgets.QDialog, FORM_CLASS):
         envio['lastName'] = apellido
         envio['login'] = usuario
         envio['password'] = None if not self.nuevo else cont1
-        envio['id'] = self.usuario['id']
+        envio['id'] = None if not self.usuario else self.usuario['id']
         envio['activated'] = activado
 
         # enviar al ws
