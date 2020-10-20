@@ -126,7 +126,8 @@ class Configuracion():
         self.urlConfirmarFinR = self.servidorIP + 'busquedasimplewkn/api/asignacion/confirmarFin/'
 
         # Administracion de Usuarios
-        self.url_AU_getAllUsers = self.servidorIP + 'autentificacion/api/users?size=1000'
+        # self.url_AU_getAllUsers = self.servidorIP + 'autentificacion/api/users?size=1000'
+        self.url_AU_getAllUsers = self.servidorIP + 'autentificacion/api/users/proc?size=1000'
         self.url_AU_getAllAuthorities = self.servidorIP + 'autentificacion/api/users/authorities'
         self.url_AU_insertAuthority = self.servidorIP + 'autentificacion/api/authorities/'
         self.url_AU_creaUsuario = self.servidorIP + 'autentificacion/api/register'

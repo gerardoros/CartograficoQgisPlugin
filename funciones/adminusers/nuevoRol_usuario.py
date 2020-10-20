@@ -97,7 +97,7 @@ class nuevoRol_usuario(QtWidgets.QDialog, FORM_CLASS):
             self.headers['Authorization'] = self.UTI.obtenerToken()
             response = requests.post(url, headers = self.headers)
         except requests.exceptions.RequestException as e:
-            self.createAlert("Error de servidor--, 'consumeWSGeneral()' '" + str(e) + "'", QMessageBox().Critical, "Error de servidor")
+            self.createAlert("Error de servidor, 'consumeWSGeneral()' '" + str(e) + "'", QMessageBox().Critical, "Error de servidor")
             return
 
         if response.status_code == 200 or response.status_code == 201:

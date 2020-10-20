@@ -78,6 +78,7 @@ class AdminUsers:
 
         self.dlg.btnNuevoUsuario.clicked.connect(self.event_nuevoUsuario)
         self.dlg.btnCambioClave.clicked.connect(self.event_cambioContra)
+        self.dlg.btnOperaciones.clicked.connect(self.event_asignaOperaciones)
 
         # ------ CIERRA DECLARACION DE EVENTOS
 
@@ -261,7 +262,10 @@ class AdminUsers:
             self.dlg.twUsuarios.setRowCount(len(self.usuarios))
             for i in range(0, len(self.usuarios)):
 
-                auth = ", ".join(self.usuarios[i]['authorities'])
+                # auth = ", ".join(self.usuarios[i]['authorities'])
+                auth = ''
+                if len(self.usuarios[i]['authorities']) > 0:
+                    auth = ", ".join(d['rol'] for d in self.usuarios[i]['authorities'])
 
                 btnVer = QtWidgets.QPushButton('Ver')
                 btnEdi = QtWidgets.QPushButton('Editar')
@@ -387,6 +391,17 @@ class AdminUsers:
         print(type(var))
         obj = cambioClave_Usuario(CFG = self.CFG, UTI = self.UTI, usuario = var)
         obj.exec()
+
+    def event_asignaOperaciones(self):
+        self.createAlert("Si conecto", QMessageBox().Information, "Si se hizo")
+        '''
+        var = QSettings().value('datoUsuario')
+
+        print(var)
+        print(type(var))
+        obj = cambioClave_Usuario(CFG = self.CFG, UTI = self.UTI, usuario = var)
+        obj.exec()
+        '''
 
     # --- CERRAR E V E N T O S   Widget ---
 

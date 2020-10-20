@@ -215,9 +215,9 @@ class Master:
                 if rol == 'ASIGNACION_PADRON':
                     self.dlg.btnAsigPad.setEnabled(True)
                 if rol == 'INTERMEDIO_REVISION':
-                    self.dlg.btnInterPad.setEnabled(True)
-                if rol == 'INTERMEDIO_PADRON':
                     self.dlg.btnInterRev.setEnabled(True)
+                if rol == 'INTERMEDIO_PADRON':
+                    self.dlg.btnInterPad.setEnabled(True)
                 if rol == 'ADMIN_USERS':
                     self.dlg.btnAdminUsers.setEnabled(True)
         else:
