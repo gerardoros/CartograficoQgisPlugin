@@ -1090,6 +1090,7 @@ class ActualizacionCatastralV3:
             url = self.CFG.urlConsultaManzana
         elif self.traducirIdCapa(idCapa) == 'predios.geom':
             url = self.CFG.urlConsultaPrediosGeom
+            print(f"\n\n\n\n ENTRO A CONSULTAR PREDIOS {self.idManzana}\n  Payload: {self.payload}, URL: {url}\n\n\n")
         elif self.traducirIdCapa(idCapa) == 'predios.num':
             url = self.CFG.urlConsultaPrediosNum
         elif self.traducirIdCapa(idCapa) == 'construcciones':

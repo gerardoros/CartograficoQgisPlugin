@@ -930,6 +930,7 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
         return self.consumeWSGuardadoIndiv(listaInd, self.CFG.urlGuardaIndivisos + complemento)
     
     def obtieneClaMza(self, cveCata):
+        print(f"clave de obtieneClaMza: {cveCata}")
         return self.consumeWSGeneral(self.CFG.urlGetManzana + cveCata)
 
     def obtieneImagen(self, idImagen, tipo):
