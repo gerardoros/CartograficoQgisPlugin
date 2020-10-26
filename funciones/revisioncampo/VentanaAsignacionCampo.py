@@ -103,7 +103,7 @@ class VentanaAsignacionCampo:
                     cveManzana = dato['cveManzana']
                     cveManzanaCorta = cveManzana[-3:]
                     cveCatastral = dato['cveCatastral']
-                    cvePredio = cveCatastral[-5:]
+                    cvePredio = cveCatastral[-2:] if len(cveCatastral) == 10 else cveCatastral[-5:]
                     item = QtWidgets.QTableWidgetItem(str(cveManzana))
                     self.dlg.tablaMazPred.setItem(x, 0 , item)
 

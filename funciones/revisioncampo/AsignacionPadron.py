@@ -139,7 +139,7 @@ class AsignacionPadron:
 
         try:
             headers = {'Content-Type': 'application/json', 'Authorization' : self.UTI.obtenerToken()}
-            respuesta = requests.get(self.CFG.urlLocalidades, headers = headers)
+            respuesta = requests.get(self.CFG.urlMunicipios, headers = headers)
         except requests.exceptions.RequestException:
             self.UTI.mostrarAlerta("Error de servidor LOC01", QMessageBox().Critical, "Cargar Localidades")
             print('ERROR: LOC000')
@@ -214,7 +214,7 @@ class AsignacionPadron:
 
                 try:
                     headers = {'Content-Type': 'application/json', 'Authorization' : self.UTI.obtenerToken()}
-                    respuesta = requests.get(self.CFG.urlSectores + idSector + '/sector/', headers = headers)
+                    respuesta = requests.get(self.CFG.urlSectoresMuni + idSector + '/sector/', headers = headers)
                 except requests.exceptions.RequestException:
                     self.UTI.mostrarAlerta("Error de servidor SEC01", QMessageBox().Critical, "Cargar Sectores")
                     print('ERROR: SEC000')

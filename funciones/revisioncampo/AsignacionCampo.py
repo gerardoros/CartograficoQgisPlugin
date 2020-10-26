@@ -138,7 +138,7 @@ class AsignacionCampo:
 
         try:
             headers = {'Content-Type': 'application/json', 'Authorization' : self.UTI.obtenerToken()}
-            respuesta = requests.get(self.CFG.urlLocalidades, headers = headers)
+            respuesta = requests.get(self.CFG.urlMunicipios, headers = headers)
             print(respuesta, "localidad ")
         except requests.exceptions.RequestException:
             self.UTI.mostrarAlerta("Error de servidor LOC01", QMessageBox().Critical, "Cargar Localidades")
@@ -213,7 +213,7 @@ class AsignacionCampo:
 
                 try:
                     headers = {'Content-Type': 'application/json', 'Authorization' : self.UTI.obtenerToken()}
-                    respuesta = requests.get(self.CFG.urlSectores + idSector + '/sector/', headers = headers)
+                    respuesta = requests.get(self.CFG.urlSectoresMuni + idSector + '/sector/', headers = headers)
                     print (self.CFG.urlSectores + idSector + '/sector/', "sector por localidad")
                 except requests.exceptions.RequestException:
                     self.UTI.mostrarAlerta("Error de servidor SEC01", QMessageBox().Critical, "Cargar Sectores")
