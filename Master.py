@@ -110,6 +110,7 @@ class Master:
         if not resultado:
             return
         self.dlg.btnAsigTareas.hide()
+        self.dlg.btnUpload.hide()
         var.setValue("datoUsuario", resultado)
         # obtiene todos los permisos del usuario
         # ----- P E N D I E N T E ----
@@ -389,6 +390,7 @@ class Master:
     def run(self):
         """Run method that performs all the real work"""
         #self.irAConsulta()
+        #self.ACA.UTI = self.UTI
         #self.ACA.pintarCapas()
         #self.irAFusionDivision()
         '''

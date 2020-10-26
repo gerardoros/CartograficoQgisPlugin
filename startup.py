@@ -125,6 +125,9 @@ class Startup():
         self.diccionarioGeom["cves_verticales"] = 'Point'
         self.diccionarioGeom["areas_inscritas"] = 'Polygon'
 
+
+        
+
     def borrarTodo(self):
         #grupoLayers =  QgsProject.instance().layerTreeRoot().findGroup('consulta')
         #layers = grupoLayers.findLayers()
@@ -154,8 +157,11 @@ class Startup():
 
     def mostrarConsola(self):
 
-        #iface.actionShowPythonDialog().trigger()
+        iface.actionShowPythonDialog().trigger()
         print ('CONSOLA INICIADA')
+        root = QgsProject.instance().layerTreeRoot()
+        root.addGroup('edicion')
+        print ('CONSOLA INICIADA2')
 
 
     '''
@@ -316,12 +322,7 @@ class Startup():
         # Solicitar SRID para el municipio
         headers = {'Content-Type': 'application/json', 'Authorization' : self.obtenerToken()}
 
-<<<<<<< HEAD
-
-        urlSrid = 'http://localhost:8080/busquedasimplewkn/api/cat/municipio/'
-=======
         urlSrid = 'http://192.168.0.21:8080/busquedasimplewkn/api/cat/municipio/'
->>>>>>> origin/master
         
         respuesta = requests.get(urlSrid, headers = headers)
 
@@ -335,6 +336,7 @@ class Startup():
             print('NO SE PUDO CARGAR SRDI', respuesta)
             QSettings().setValue('srid', '32614')
         
+        '''
         # Obtenemos la raiz para agregar grupos
         root = QgsProject.instance().layerTreeRoot() 
         root.addGroup('consulta')
@@ -356,6 +358,7 @@ class Startup():
 
         temp = QgsVectorLayer("Polygon?crs=epsg:" + srid, "result", "memory")
         #QgsProject.instance().addMapLayer(temp, False)
+        '''
         '''
         temp.startEditing()
         geom = QgsGeometry()
@@ -1063,9 +1066,200 @@ class Startup():
     def agregarCapaArbol(self, capa):
         QgsProject.instance().addMapLayer(capa, True)
 
+    def obtenerCapasDeReferencia(self):
+
+        token = self.obtenerToken()
+        print('------------------------------------------')
+
+        print(token)
+
+        print('------------------------------------------')
+
+        pagina = None
+        itemsPagina = None
+
+        payload = {"nombre": "e_municipio", "epsg": 32614,"bbox": False,"pin": False,"geomWKT": None, "epsgGeomWKT": 32614,"incluirGeom": True,"pagina": pagina,"itemsPagina": itemsPagina}
+
+        payload.update({'constr': True})
+
+        payload = json.dumps(payload)
+        headers = {'Content-Type': 'application/json', 'Authorization' : token}
+
+        response = requests.post('http://192.168.0.21:8080/busquedasimplewkn/api/busqueda/simple', headers = headers, data = payload)
+
+        if response.status_code == 200:
+            data = response.content
+            data = json.loads(data.decode('utf-8'))
+            
+            return data
+
+        else:
+            print('Error de servidor obtenerRef ----- ', response.text, 'Cargar capas de referencia')
+
+    def pintarMpio(self):
+
+        capaAPintar = QgsProject.instance().mapLayer(QSettings().value('xMunicipio'))
+
+        data = self.obtenerCapasDeReferencia()
+
+        vaciada = False
+
+        srid = QSettings().value('srid')
+
+        if srid is None or srid == 'None':
+            srid = '32614'
+
+        inSpatialRef = osr.SpatialReference()
+        inSpatialRef.ImportFromEPSG(int(srid))
+        outSpatialRef = osr.SpatialReference()
+        outSpatialRef.ImportFromEPSG(int(srid))
+        coordTrans = osr.CoordinateTransformation(inSpatialRef, outSpatialRef)
+        if not bool(data):
+            print('ERROR: REF00000000000000000000000000000000000000000000000')
+        
+        if data['features'] != []:
+
+            varKeys = data['features'][0]['properties']
+
+            keys = list(varKeys.keys())
+            properties = []
+            geoms = []
+            for feature in data['features']:
+                geom = feature['geometry']
+                
+                if geom == None:
+                    continue
+
+                property = feature['properties']
+                geom = json.dumps(geom)
+                geometry = ogr.CreateGeometryFromJson(geom)
+                geometry.Transform(coordTrans)
+                geoms.append(geometry.ExportToWkt())
+                l = []
+                for i in range(0, len(keys)):
+                    l.append(property[keys[i]])
+                properties.append(l)
+
+
+        nameCapa = 'Municipios'
+
+        # NO es la de calles   
+        if data['features'] != []:
+            fields = ""
+            for k in keys:
+                fields = fields + "&field=" + k + ":string(15)"
+
+            uriFigura = 'Polygon'
+
+            uri = str(uriFigura)+"?crs=epsg:" + str(srid) + fields + "&index=yes"
+        else:
+            uri = self.obtenerCampos(nameCapa)
+
+        # valida si se debe de pintar de nuevo la capa o utilizar la que ya existe
+        
+        mem_layer = QgsVectorLayer(uri, nameCapa, 'memory')
+
+        render = mem_layer.renderer()
+        symbol = QgsFillSymbol.createSimple({'color':'255,0,0,0', 'color_border':'#3579b1', 'width_border':'0.5'})
+        render.setSymbol(symbol)
+
+        QSettings().setValue('xMunicipio', mem_layer.id())
+
+        mem_layer.setReadOnly(True)
+
+        if data['features'] != []:
+            prov = mem_layer.dataProvider()
+            feats = [ QgsFeature() for i in range(len(geoms)) ]
+            for i, feat in enumerate(feats):
+                feat.setAttributes(properties[i])
+                feat.setGeometry(QgsGeometry.fromWkt(geoms[i]))
+
+            prov.addFeatures(feats)
+            
+
+
+        etiquetaField = ""
+        esExpresion = False
+        colorCapa = QColor(0,0,0)
+        
+        etiquetaField = 'nombre'
+        colorCapa = QColor(53,121,177)
+
+        settings = QgsPalLayerSettings()
+        settings.placement = QgsPalLayerSettings.AroundPoint
+        settings.fieldName = etiquetaField
+        settings.enabled = True
+        settings.isExpression = esExpresion
+        
+        settings.centroidWhole = True
+
+        textFormat = QgsTextFormat()
+        textFormat.setSize(8)
+        textFormat.setNamedStyle('Bold')
+        textFormat.setColor(colorCapa)
+
+        settings.setFormat(textFormat)
+
+        labeling = QgsVectorLayerSimpleLabeling(settings)
+
+        mem_layer.setLabeling(labeling)
+        mem_layer.setLabelsEnabled(True)
+
+        mem_layer.triggerRepaint()
+        root = QgsProject.instance().layerTreeRoot()
+        
+        grupo = root.findGroup('edicion')
+        if grupo is None:
+            root.addGroup('edicion')
+
+            root = QgsProject.instance().layerTreeRoot()
+            grupo = root.findGroup('edicion')
+
+        QgsProject.instance().addMapLayers([mem_layer], False)
+        
+        mzaNL = QgsLayerTreeLayer(mem_layer)
+
+        # se agrega el grupo de referencia en caso de que no se tenga
+        grupo.insertChildNode(0, mzaNL)
+
+
+    def obtenerCampos(self, nombreCapa):
+
+        listaCampos = {}
+        listaTipos = {}
+
+        listaCampos['Municipios'] = ['clave', 'cve_cat', 'id', 'nombre']
+        listaTipos['Municipios'] = ['string(5)', 'string(30)', 'integer', 'string(100)']
+
+        stringCapa = "Polygon?crs=epsg:" + str(QSettings().value('srid'))
+
+        campos = listaCampos[nombreCapa]
+        tipos = listaTipos[nombreCapa]
+
+        for indice in range(0, len(campos)):
+
+            name = campos[indice]
+            tipo = tipos[indice]
+
+            stringCapa += '&field='
+            stringCapa += name + ':'
+            stringCapa += tipo
+
+        stringCapa += '&index=yes'
+        
+        return stringCapa
+
 startup = Startup()
 startup.mostrarConsola()
 startup.checarLogin()
+startup.cargarCapas('')
+'''
+data = startup.obtenerCapasDeReferencia()
+print('aqio-------------------------------')
+print(data)
+print('aqio-------------------------------')
+'''
+startup.pintarMpio()
 #startup.cargarWorkstation()
 #startup.cargarCapas()
 

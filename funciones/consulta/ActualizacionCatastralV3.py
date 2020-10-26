@@ -2815,7 +2815,7 @@ class ActualizacionCatastralV3:
         
         root = QgsProject.instance().layerTreeRoot()
         grupoEdicion = root.findGroup('edicion')
-        cargar = False
+        
         if grupoEdicion == None:
             root.insertGroup(0, 'edicion')
             grupoEdicion = root.findGroup('edicion')
