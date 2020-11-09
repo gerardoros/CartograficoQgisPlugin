@@ -6,7 +6,7 @@ class Configuracion():
         
         #Direccion IP del servidor
         #self.servidorIP = 'http://localhost:8080/'
-        self.servidorIP = 'http://192.168.0.21:8080/'
+        self.servidorIP = 'http://192.168.0.25:8080/'
         #self.servidorIP = 'http://127.0.0.1:8080/'
 
         #Combos de localidades, sectores y manzanas/combo/municipios/
@@ -136,6 +136,8 @@ class Configuracion():
         self.url_AU_insertAuthority = self.servidorIP + 'autentificacion/api/authorities/'
         self.url_AU_creaUsuario = self.servidorIP + 'autentificacion/api/register'
         self.url_AU_actualizaUsuario = self.servidorIP + 'autentificacion/api/users'
+        self.url_AU_getAllRole = self.servidorIP + 'autentificacion/api/account/permisos-carto-user-distinct/'
+        self.url_AU_actualizarOperaciones = self.servidorIP + 'autentificacion/api/account/edit-permisos-cartografico'
 
         # Master
         self.url_MA_getInfoUser = self.servidorIP + 'autentificacion/api/users/'

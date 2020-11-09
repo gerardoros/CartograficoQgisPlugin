@@ -248,7 +248,7 @@ class usuariosEdicionVer(QtWidgets.QDialog, FORM_CLASS):
         self.cbActivado.setChecked(usuario['activated'])
 
         # llena roles
-        self.llenaRoles(self.usuario['authorities'])
+        self.llenaRoles(str(self.usuario['authorities']))
         
     def llenaRoles(self, roles = []):
         # llena roles
@@ -269,7 +269,7 @@ class usuariosEdicionVer(QtWidgets.QDialog, FORM_CLASS):
                                 }''')
 
             self.twRoles.setItem(i, 0, QtWidgets.QTableWidgetItem(roles[i]))
-            self.twRoles.setCellWidget(i, 1, btnRol)
+            self.twRoles.setCellWidget(i, 2, btnRol)
 
             btnRol.clicked.connect(self.event_currentPositionButtonPressed)
 
@@ -281,14 +281,19 @@ class usuariosEdicionVer(QtWidgets.QDialog, FORM_CLASS):
     def guardaUsuario(self, nuevo = False, url = '', envio = {}):
         data = ""
         
+        # envio - el objeto de tipo dict, es el json que se va a guardar
+        # se debe hacer la conversion para que sea aceptado por el servicio web
         jsonEnv = json.dumps(envio)
         
         try:
+            # header para obtener el token
             self.headers['Authorization'] = self.UTI.obtenerToken()
 
             if nuevo:
                 response = requests.post(url, headers = self.headers, data = jsonEnv)
             else:
+
+                # ejemplo con put, url, header y body o datos a enviar
                 response = requests.put(url, headers = self.headers, data = jsonEnv)
 
         except requests.exceptions.RequestException as e:

@@ -34,6 +34,8 @@ from .AdminUsers_dialog import AdminUsersDialog
 from .usuariosEdicionVer import usuariosEdicionVer
 import os.path, requests, json
 from .cambioClave_Usuario import cambioClave_Usuario
+from .asigna_operaciones import operaciones
+
 
 
 class AdminUsers:
@@ -393,15 +395,14 @@ class AdminUsers:
         obj.exec()
 
     def event_asignaOperaciones(self):
-        self.createAlert("Si conecto", QMessageBox().Information, "Si se hizo")
-        '''
-        var = QSettings().value('datoUsuario')
+        #self.createAlert("Si conecto", QMessageBox().Information, "Si se hizo")
+        
+        self.dlg.operaciones = operaciones(self.iface, CFG = self.CFG, UTI = self.UTI, nuevo = True)
+        
+        self.dlg.operaciones.run()
 
-        print(var)
-        print(type(var))
-        obj = cambioClave_Usuario(CFG = self.CFG, UTI = self.UTI, usuario = var)
-        obj.exec()
-        '''
+
+        
 
     # --- CERRAR E V E N T O S   Widget ---
 

@@ -123,7 +123,7 @@ class Startup():
         self.diccionarioGeom["horizontales.num"] = 'Point'
         self.diccionarioGeom["verticales"] = 'Polygon'
         self.diccionarioGeom["cves_verticales"] = 'Point'
-        self.diccionarioGeom["areas_inscritas"] = 'Polygon'
+        #self.diccionarioGeom["areas_inscritas"] = 'Polygon'
 
 
         
@@ -158,10 +158,10 @@ class Startup():
     def mostrarConsola(self):
 
         iface.actionShowPythonDialog().trigger()
-        print ('CONSOLA INICIADA')
-        root = QgsProject.instance().layerTreeRoot()
-        root.addGroup('edicion')
-        print ('CONSOLA INICIADA2')
+        #print ('CONSOLA INICIADA')
+        #root = QgsProject.instance().layerTreeRoot()
+        #root.addGroup('edicion')
+        #print ('CONSOLA INICIADA2')
 
 
     '''
@@ -322,28 +322,34 @@ class Startup():
         # Solicitar SRID para el municipio
         headers = {'Content-Type': 'application/json', 'Authorization' : self.obtenerToken()}
 
-        urlSrid = 'http://192.168.0.21:8080/busquedasimplewkn/api/cat/municipio/'
+        urlSrid = 'http://192.168.0.25:8080/busquedasimplewkn/api/cat/municipio/'
         
         respuesta = requests.get(urlSrid, headers = headers)
-
+        mpio = 0
 
         if respuesta.status_code == 200:
             salida = respuesta.json()
-            srid = str(salida[0]['srid'])
+            if len(salida) > 0:
+                srid = str(salida[0]['srid'])
+                mpio = str(salida[0]['clave'])
+            else:
+                print('NO SE PUDO CARGAR SRDI, "salida" sin valor')
+                srid = '32614'
 
             QSettings().setValue('srid', srid)
         else:
             print('NO SE PUDO CARGAR SRDI', respuesta)
             QSettings().setValue('srid', '32614')
         
+        QSettings().setValue('cveMpio', mpio)
         '''
         # Obtenemos la raiz para agregar grupos
         root = QgsProject.instance().layerTreeRoot() 
         root.addGroup('consulta')
         root.addGroup('referencia') 
-
+        '''
         
-        self.consultarLlenadoDeCapa('areas_inscritas')
+        #self.consultarLlenadoDeCapa('areas_inscritas')
         self.consultarLlenadoDeCapa('cves_verticales')
         self.consultarLlenadoDeCapa('verticales')
         self.consultarLlenadoDeCapa('horizontales.num')
@@ -353,7 +359,7 @@ class Startup():
         self.consultarLlenadoDeCapa('predios.geom')
         self.consultarLlenadoDeCapa('manzana')
         
-        
+        '''
         wkt = "POLYGON ((79.87749999947846 6.997500000409782, 79.88249999947845 6.997500000409782, 79.88249999947845 7.002500000409782, 79.87749999947846 7.002500000409782, 79.87749999947846 6.997500000409782))"
 
         temp = QgsVectorLayer("Polygon?crs=epsg:" + srid, "result", "memory")
@@ -416,12 +422,15 @@ class Startup():
         elif nombreCapa == "cves_verticales":
             etiquetaField = "clave"
             colorCapa = QColor(255,153,0)
-        elif nombreCapa == "areas_inscritas":
-            etiquetaField = "clave"
-            colorCapa = QColor(255,153,0)
         else:
             etiquetaField = "mensaje"
             colorCapa = QColor(255,153,0)
+
+        '''
+        elif nombreCapa == "areas_inscritas":
+            etiquetaField = "clave"
+            colorCapa = QColor(255,153,0)
+        '''
         
         settings = QgsPalLayerSettings()
         settings.fieldName = etiquetaField
@@ -576,7 +585,7 @@ class Startup():
 
         # se compara para verificar que se haya caducado el token
         if currentDate > exp:
-            url= 'http://192.168.0.21:8080/auth/login'
+            url= 'http://192.168.0.25:8080/auth/login'
             payload = {"username" : self.decodeRot13(var.value('usuario')), "password" : self.decodeRot13(var.value('clave'))}
             payload = json.dumps(payload)
             headers = {'Content-Type': 'application/json'}
@@ -800,17 +809,19 @@ class Startup():
         # obtener el tipo de geometria
         tipoGeom = self.diccionarioGeom[capaParam]
 
+        '''
+        elif capaParam == 'areas_inscritas':
+            stringCapa = 'Polygon?crs=epsg:' + str(QSettings().value('srid')) + '&field=id:string(15)&field=valor:integer(15)&field=descripcion:string(15)&field=clave:string(15)&index=yes'
+        '''
         if capaParam == 'predios.num':
             stringCapa = 'Point?crs=epsg:' + str(QSettings().value('srid')) + '&field=numExt:string(50)'
         elif capaParam == 'horizontales.num':
             stringCapa = 'Point?crs=epsg:' + str(QSettings().value('srid')) + '&field=num_ofi:string(50)'
-        elif capaParam == 'areas_inscritas':
-            stringCapa = 'Polygon?crs=epsg:' + str(QSettings().value('srid')) + '&field=id:string(15)&field=valor:integer(15)&field=descripcion:string(15)&field=clave:string(15)&index=yes'
         else:
             headers = {'Content-Type': 'application/json', 'Authorization' : self.obtenerToken()}
             
             stringTabla = self.diccionarioTabla[capaParam]
-            urlCapas = 'http://192.168.0.21:8080/busquedasimplewkn/api/thematics/lista/campos/' + stringTabla + '/' + 'false'
+            urlCapas = 'http://192.168.0.25:8080/busquedasimplewkn/api/thematics/lista/campos/' + stringTabla + '/' + 'false'
             respuesta = requests.post(urlCapas, headers = headers)
             
             stringCapa = tipoGeom + "?crs=epsg:" + str(QSettings().value('srid'))
@@ -911,15 +922,7 @@ class Startup():
             render.setSymbol(symbol)
             '''
 
-        elif capaParam == 'areas_inscritas':
-            QSettings().setValue('sAreasInscritas', stringCapa)
-            '''
-            QSettings().setValue('xAreasInscritas', nuevaCapa.id())
-            render = nuevaCapa.renderer()
-            symbol = QgsFillSymbol.createSimple({'color':'255,0,0,0', 'color_border':'#F646F3', 'width_border':'0.5'})
-            render.setSymbol(symbol)
-            '''
-
+        
         elif capaParam == 'horizontales.num':
             QSettings().setValue('sHoriNum', stringCapa)
             '''
@@ -946,7 +949,16 @@ class Startup():
             props['color'] = '#ff9900'
             nuevaCapa.renderer().setSymbol(QgsMarkerSymbol.createSimple(props))
             '''
-
+        '''
+        elif capaParam == 'areas_inscritas':
+            QSettings().setValue('sAreasInscritas', stringCapa)
+            '' '
+            QSettings().setValue('xAreasInscritas', nuevaCapa.id())
+            render = nuevaCapa.renderer()
+            symbol = QgsFillSymbol.createSimple({'color':'255,0,0,0', 'color_border':'#F646F3', 'width_border':'0.5'})
+            render.setSymbol(symbol)
+            '' '
+        '''
         
         #QSettings().setValue('cAreasInscritas', nuevaCapa)
         '''
@@ -1085,7 +1097,7 @@ class Startup():
         payload = json.dumps(payload)
         headers = {'Content-Type': 'application/json', 'Authorization' : token}
 
-        response = requests.post('http://192.168.0.21:8080/busquedasimplewkn/api/busqueda/simple', headers = headers, data = payload)
+        response = requests.post('http://192.168.0.25:8080/busquedasimplewkn/api/busqueda/simple', headers = headers, data = payload)
 
         if response.status_code == 200:
             data = response.content
@@ -1252,14 +1264,14 @@ class Startup():
 startup = Startup()
 startup.mostrarConsola()
 startup.checarLogin()
-startup.cargarCapas('')
+#startup.cargarCapas('')
 '''
 data = startup.obtenerCapasDeReferencia()
 print('aqio-------------------------------')
 print(data)
 print('aqio-------------------------------')
 '''
-startup.pintarMpio()
+#startup.pintarMpio()
 #startup.cargarWorkstation()
 #startup.cargarCapas()
 

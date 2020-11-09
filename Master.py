@@ -197,10 +197,9 @@ class Master:
     #--------MEOTOD QUE COMPRUEBA LAS VERIIFCACIONES DE LOS BOTONES
     def asignActionsByRoles(self, iface):
         var = QSettings()
-        print('EStado del user: '+ var.value('logeado'))
         if var.value('logeado') == 'True':
-            response = self.consumeWSGeneral("http://192.168.0.21:8080/autentificacion/api/account/permisos-carto")
-            print(response)
+            response = self.consumeWSGeneral("http://192.168.0.25:8080/autentificacion/api/account/permisos-carto")
+            
             for rol in response["roles"]:
                 if rol == 'ASIGNACION_TAREAS':
                     self.dlg.btnAsigTareas.setEnabled(True)
