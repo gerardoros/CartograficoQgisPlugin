@@ -23,7 +23,7 @@
 """
 from PyQt5.QtCore import QSettings, QTranslator, qVersion, QCoreApplication, QRectF
 from PyQt5.QtGui import QIcon, QFont
-from PyQt5.QtWidgets import QAction
+from PyQt5.QtWidgets import QAction, QFileDialog
 
 # Initialize Qt resources from file resources.py
 from .resources import *
@@ -31,7 +31,7 @@ from .resources import *
 from .ActualizacionCatastralV3_dialog import ActualizacionCatastralV3Dialog
 import os.path
 
-from PyQt5.QtCore import QSettings, QTranslator, qVersion, QCoreApplication, Qt, QSettings, QSize
+from PyQt5.QtCore import QSettings, QTranslator, qVersion, QCoreApplication, Qt, QSettings, QSize, QDir
 from PyQt5.QtGui import QIcon, QColor, QCursor, QPixmap, QStandardItemModel
 from PyQt5.QtWidgets import QAction, QMessageBox, QTableWidgetItem, QListView, QCompleter
 from PyQt5 import QtWidgets
@@ -42,7 +42,7 @@ from qgis.gui import QgsLayerTreeView, QgsVertexMarker
 from PyQt5 import QtGui
 # Import the code for the DockWidget
 import os, json, requests, datetime, qgis.core
-from datetime import datetime as dt
+from datetime import datetime as dt, date
 from osgeo import ogr, osr
 from .Cedula_MainWindow import CedulaMainWindow
 
@@ -120,7 +120,7 @@ class ActualizacionCatastralV3:
         'Localidades' : 'e_localidad',
         'Sectores' : 'e_sector',
         'Manzanas' : 'e_manzana',
-        'Predios' : 'e_predio',
+        'Predios' : 'vw_predio',
         'Calles' : 'vw_calle',
         'Colonias' : 'e_colonia',
         'Codigo Postal' : 'e_cp',
@@ -130,7 +130,7 @@ class ActualizacionCatastralV3:
         }
 
         # -- evento boton de abrir cedula --
-        self.dockwidget.btnAbrirCedula.setIcon(QtGui.QIcon('add.png'))
+        self.dockwidget.btnAbrirCedula.setIcon(QtGui.QIcon(':cedula/icons/add.png'))
         self.dockwidget.btnAbrirCedula.clicked.connect(self.abrirCedula)
 
         # -- evento boton de cancelar apertura de cedula --
@@ -2390,7 +2390,7 @@ class ActualizacionCatastralV3:
 
         # consume informacion del Webservice para obtener la capa
         if nameCapa == 'Construcciones':
-            tabla = 'e_construccion'
+            tabla = 'vw_construccion'
         else:
             tabla = self.tablasReferencias[nameCapa]
              
@@ -3293,12 +3293,25 @@ class ActualizacionCatastralV3:
         self.pintarCapasReferencia('Calles', bound, False)
         self.pintarCapasReferencia('Manzanas', bound, False)
 
+        # obtiene la informacion de las capas complementarias
         xCalle = QgsProject.instance().mapLayer(QSettings().value('xCalle'))
         xManza = QgsProject.instance().mapLayer(QSettings().value('xManzanasRef'))
         
-
         layer = QgsProject.instance().mapLayer(QSettings().value('xManzana'))
-         
+
+        # obtiene los parametrospara el reporte
+        cveCata = list(layer.getFeatures())[0]['cve_cat']
+        cveCata = cveCata[0:3] + '-' + cveCata[3:5] + '-' + cveCata[5:] if cveCata else 'NOO ES CADENA'
+
+        propietario = '' # propietarios (no se sabe de donde salen por ahorita 2020-11-09)
+        mpio = QSettings().value('mpio') + ', ESTADO DE MÉXICO'
+        levanto = '' # persona que levanto (no se sabe de donde salen por ahorita 2020-11-09)
+        dibujo = '' # persona que dibujo (no se sabe de donde salen por ahorita 2020-11-09)
+        ubicacion = '' # ubicacion (direccion, no se sabe de donde salen por ahorita 2020-11-09)
+        certifica = '' # la persona que certifica no se sabe quien es...
+        scale = 0 # escala del mapa
+
+        # INICIA PROCESO DE IMPRESION DE PLANO MANZANERO
         project = QgsProject.instance()
         manager = project.layoutManager()
         layoutName = 'Manzana'
@@ -3445,8 +3458,6 @@ class ActualizacionCatastralV3:
         for i in range(n):
             vertices.append(polygon[0][i])
 
-        print(vertices)
-            
         # creacion de la capa de puntos
         stringCapa = 'Point?crs=epsg:' + str(QSettings().value('srid')) + '&field=num:string(10)'
         layerPoint = QgsVectorLayer(stringCapa, 'point', 'memory')
@@ -3482,7 +3493,7 @@ class ActualizacionCatastralV3:
         props['color'] = '#ffffff'
         symbol = QgsMarkerSymbol.createSimple({'name': 'square', 'color': '255,255,255,0', 'outline_color': '0,0,0,0'})
         layerPoint.renderer().setSymbol(symbol)
-
+        
         # PINTAR LAS LINEAS QUE CONFORMAN EL POLIGONO PARA MARCAR LAS DISTANCIAS QUE HAY ENTRE SUS PUNTOS
         # creacion de la capa de lineas
         stringCapa = 'LineString?crs=epsg:' + str(QSettings().value('srid')) + '&field=num:string(10)'
@@ -3591,14 +3602,13 @@ class ActualizacionCatastralV3:
         render.setSymbol(symbol)
 
         #QgsProject.instance().addMapLayers([layerLinestring])
-
+        
         # CREACION DEL MAPA GRANDE
         map = QgsLayoutItemMap(layout)
         map.setRect(20, 20, 20, 20)
 
         # define las capas a mostrar
-        #map.setLayers([layerPoly, layerPoint, layerLine, layerLinestring])
-        map.setLayers([layerPoly])
+        map.setLayers([layerPoly, layerPoint, layerLine, layerLinestring])
 
         # calcula el rectangulo del area que va a mostrar en el layout
         rect = list(layerPoly.getFeatures())[0].geometry().buffer(15, 0).boundingBox()
@@ -3647,9 +3657,12 @@ class ActualizacionCatastralV3:
         map.attemptMove(QgsLayoutPoint(8, 8, QgsUnitTypes.LayoutMillimeters))
         map.attemptResize(QgsLayoutSize(142.194, 200, QgsUnitTypes.LayoutMillimeters))
 
+        # obtener la escala
+        scale = map.scale()
+
         # agrega el mapa al Layout
         layout.addLayoutItem(map)
-         
+        
         # SE AGREGA UN SEGUNDO MAPA COMO REFERENCIA DE UBICACION
         # se utiliza otra capa para agregar la referencia del predio
         layers1 = xManza
@@ -3669,7 +3682,7 @@ class ActualizacionCatastralV3:
         render = layerPoly2.renderer()
         symbol = QgsFillSymbol.createSimple({'color':'#686868', 'color_border':'#686868', 'width_border':'0.1'})
         render.setSymbol(symbol)
-
+        
         map1 = QgsLayoutItemMap(layout)
         map1.setRect(20, 20, 20, 20)
 
@@ -3697,14 +3710,15 @@ class ActualizacionCatastralV3:
 
         # agrega el segundo mapa
         layout.addLayoutItem(map1)
-
+        
         complemento = ''
+        
         for i in range(len(vertices) - 1):
             if (i + 1) == (len(vertices) - 1):
                 complemento = complemento + '<tr><td>' + str(i + 1) + ' - 1</td><td>' + str(round(vertices[i].distance(vertices[0]), 2)) + '</td><td>' + '{:,.2f}'.format(round(vertices[i].x(), 2)) + '</td><td>' + '{:,.2f}'.format(round(vertices[i].y(), 2)) + '</td></tr>'
             else:
                 complemento = complemento + '<tr><td>' + str(i + 1) + ' - ' + str(i + 2) + '</td><td>' + str(round(vertices[i].distance(vertices[i + 1]), 2)) + '</td><td>' + '{:,.2f}'.format(round(vertices[i].x(), 2)) + '</td><td>' + '{:,.2f}'.format(round(vertices[i].y(), 2)) + '</td></tr>'
-
+        
         html = '''
         <head>
         <style>
@@ -3750,7 +3764,7 @@ class ActualizacionCatastralV3:
           </tr>
         </table>
         '''
-
+        
         geomPTemp = list(layerPoly.getFeatures())[0].geometry()
         area = round(geomPTemp.area(), 2)
         peri = round(geomPTemp.length(), 2)
@@ -3766,13 +3780,13 @@ class ActualizacionCatastralV3:
         layout_html.setHtml(html)
         layout_html.loadHtml()
         html_frame.setFrameEnabled(False)
-
+        
 
         # agregar una imagen (rosa de los vientos)
         picture = QgsLayoutItemPicture(layout)
         picture.attemptMove(QgsLayoutPoint(7.85, 7.85, QgsUnitTypes.LayoutMillimeters))
         picture.attemptResize(QgsLayoutSize(22, 22, QgsUnitTypes.LayoutMillimeters))
-        picture.setPicturePath('C:/AplicacionQGIS/reporte/image4144.png')
+        picture.setPicturePath(':cedula/icons/image4144.png')
         picture.setLinkedMap(map)
         picture.setNorthMode(QgsLayoutItemPicture.NorthMode.TrueNorth)
         layout.addLayoutItem(picture)
@@ -3781,8 +3795,8 @@ class ActualizacionCatastralV3:
         picture = QgsLayoutItemPicture(layout)
         picture.attemptMove(QgsLayoutPoint(261.194, 74.220, QgsUnitTypes.LayoutMillimeters))
         picture.attemptResize(QgsLayoutSize(10, 10, QgsUnitTypes.LayoutMillimeters))
-        picture.setPicturePath('C:/AplicacionQGIS/reporte/image4144.png')
-        picture.setLinkedMap(map1)
+        picture.setPicturePath(':cedula/icons/image4144.png')
+        #picture.setLinkedMap(map1)
         picture.setNorthMode(QgsLayoutItemPicture.NorthMode.TrueNorth)
         layout.addLayoutItem(picture)
 
@@ -3790,8 +3804,8 @@ class ActualizacionCatastralV3:
         picture = QgsLayoutItemPicture(layout)
         picture.attemptMove(QgsLayoutPoint(214.2, 8.2, QgsUnitTypes.LayoutMillimeters))
         picture.attemptResize(QgsLayoutSize(26.407, 14.486, QgsUnitTypes.LayoutMillimeters))
-        picture.setPicturePath('C:/AplicacionQGIS/reporte/Cuau_bien.jpg')
-        picture.setLinkedMap(map1)
+        picture.setPicturePath(':cedula/icons/Cuau_bien.jpg')
+        #picture.setLinkedMap(map1)
         picture.setNorthMode(QgsLayoutItemPicture.NorthMode.TrueNorth)
         layout.addLayoutItem(picture)
 
@@ -3828,7 +3842,7 @@ class ActualizacionCatastralV3:
         layout.addLayoutItem(title)
 
         title = QgsLayoutItemLabel(layout)
-        title.setText('DE LA MAZA DE LA PARRA MERCEDES')
+        title.setText(propietario.upper())
         title.attemptMove(QgsLayoutPoint(215.493, 87.870, QgsUnitTypes.LayoutMillimeters))
         title.attemptResize(QgsLayoutSize(55.227, 3.560, QgsUnitTypes.LayoutMillimeters))
         font = QFont('MS Shell Dlg 2', 8)
@@ -3844,7 +3858,7 @@ class ActualizacionCatastralV3:
         layout.addLayoutItem(title)
 
         title = QgsLayoutItemLabel(layout)
-        title.setText('001 06 351 62 01 000A')
+        title.setText(cveCata)
         title.attemptMove(QgsLayoutPoint(215.493, 94.203, QgsUnitTypes.LayoutMillimeters))
         title.attemptResize(QgsLayoutSize(55.227, 3.560, QgsUnitTypes.LayoutMillimeters))
         font = QFont('MS Shell Dlg 2', 8)
@@ -3860,7 +3874,7 @@ class ActualizacionCatastralV3:
         layout.addLayoutItem(title)
 
         title = QgsLayoutItemLabel(layout)
-        title.setText('CALLE BELLOTTO MZA 51 LTE 62 VIV A HOY PARQUE SAN MATEO')
+        title.setText(ubicacion.upper())
         title.attemptMove(QgsLayoutPoint(226.205, 98.408, QgsUnitTypes.LayoutMillimeters))
         title.attemptResize(QgsLayoutSize(44.989, 7.296, QgsUnitTypes.LayoutMillimeters))
         font = QFont('MS Shell Dlg 2', 8)
@@ -3876,7 +3890,7 @@ class ActualizacionCatastralV3:
         layout.addLayoutItem(title)
 
         title = QgsLayoutItemLabel(layout)
-        title.setText('CUAUTITLÁN, ESTADO DE MÉXICO')
+        title.setText(mpio.upper())
         title.attemptMove(QgsLayoutPoint(215.493, 107.950, QgsUnitTypes.LayoutMillimeters))
         title.attemptResize(QgsLayoutSize(55.227, 3.560, QgsUnitTypes.LayoutMillimeters))
         font = QFont('MS Shell Dlg 2', 8)
@@ -3892,7 +3906,7 @@ class ActualizacionCatastralV3:
         layout.addLayoutItem(title)
 
         title = QgsLayoutItemLabel(layout)
-        title.setText('CUAUTITLÁN, ESTADO DE MÉXICO')
+        title.setText(levanto.upper())
         title.attemptMove(QgsLayoutPoint(215.493, 114.323, QgsUnitTypes.LayoutMillimeters))
         title.attemptResize(QgsLayoutSize(55.227, 3.560, QgsUnitTypes.LayoutMillimeters))
         font = QFont('MS Shell Dlg 2', 8)
@@ -3908,7 +3922,7 @@ class ActualizacionCatastralV3:
         layout.addLayoutItem(title)
 
         title = QgsLayoutItemLabel(layout)
-        title.setText('MTRO. HUGO PAREDEZ MÁRQUEZ')
+        title.setText(dibujo.upper())
         title.attemptMove(QgsLayoutPoint(215.493, 120.007, QgsUnitTypes.LayoutMillimeters))
         title.attemptResize(QgsLayoutSize(55.227, 3.560, QgsUnitTypes.LayoutMillimeters))
         font = QFont('MS Shell Dlg 2', 8)
@@ -3924,7 +3938,7 @@ class ActualizacionCatastralV3:
         layout.addLayoutItem(title)
 
         title = QgsLayoutItemLabel(layout)
-        title.setText('60.00 M2')
+        title.setText(str('{:,.2f}'.format(area)) +  ' M2')
         title.attemptMove(QgsLayoutPoint(215.493, 125.690, QgsUnitTypes.LayoutMillimeters))
         title.attemptResize(QgsLayoutSize(55.227, 3.560, QgsUnitTypes.LayoutMillimeters))
         font = QFont('MS Shell Dlg 2', 8)
@@ -3940,7 +3954,7 @@ class ActualizacionCatastralV3:
         layout.addLayoutItem(title)
 
         title = QgsLayoutItemLabel(layout)
-        title.setText('2020-10-23')
+        title.setText(str(date.today()))
         title.attemptMove(QgsLayoutPoint(237.694, 125.690, QgsUnitTypes.LayoutMillimeters))
         title.attemptResize(QgsLayoutSize(17.677, 3.560, QgsUnitTypes.LayoutMillimeters))
         font = QFont('MS Shell Dlg 2', 8)
@@ -3956,7 +3970,7 @@ class ActualizacionCatastralV3:
         layout.addLayoutItem(title)
 
         title = QgsLayoutItemLabel(layout)
-        title.setText('1:100')
+        title.setText('1:' + str(round(scale, 2)))
         title.attemptMove(QgsLayoutPoint(257.763, 125.690, QgsUnitTypes.LayoutMillimeters))
         title.attemptResize(QgsLayoutSize(12.956, 3.560, QgsUnitTypes.LayoutMillimeters))
         font = QFont('MS Shell Dlg 2', 8)
@@ -3972,7 +3986,7 @@ class ActualizacionCatastralV3:
         layout.addLayoutItem(title)
 
         title = QgsLayoutItemLabel(layout)
-        title.setText('1:100')
+        title.setText('1:' + str(round(scale, 2)))
         title.attemptMove(QgsLayoutPoint(215.493, 131.314, QgsUnitTypes.LayoutMillimeters))
         title.attemptResize(QgsLayoutSize(13.655, 3.560, QgsUnitTypes.LayoutMillimeters))
         font = QFont('MS Shell Dlg 2', 8)
@@ -3984,7 +3998,7 @@ class ActualizacionCatastralV3:
         texto = '''LA QUE SUSCRIBE LIC. LIZETT ORTEGA ALMANZA COORDINADORA DE CATASTRO EN EL MUNICIPIO DE CUAUTITLÁN, ESTADO DE MÉXICO.
         CON FUNDAMENTO EN LO ESTABLECIDO EN LOS ARTICULOS 171 FRACC. VI Y 172 DEL CÓDIGO FINANCIERO DEL ESTADO DE MÉXICO Y MUNICIPIOS.\n\n
         QUE EN EL PADRÓN CATASTRAL SE ENCUENTRA REGISTRADO EL PREDIO CON LA UBICACIÓN Y MEDIDAS QUE SE MUESTRAN EN EL PLANO MANZANERO\n\n
-        LOS DERECHOS CONFORME AL ARTICULO 166 DEL CÓDIGO FINANCIERO DEL ESTADO DE MÉXICO Y MUNICIPIOS\n\n\n\n\n\n\n\n\n\n
+        LOS DERECHOS CONFORME AL ARTICULO 166 DEL CÓDIGO FINANCIERO DEL ESTADO DE MÉXICO Y MUNICIPIOS\n\n\n\n\n\n\n\n\n
         - EL PRESENTE PLANO NO AUTORIZA FUSIÓN, SUBDIVISIÓN O LOTIFICACION ALGUNA
         - EL PRESENTE PLANO NO PREJUZGA DERECHOS DE PROPIEDAD
         - EL PRESENTE PLANO NO DETERMINA INFORMACIÓN AUTORIZADA PARA CUALQUIER TIPO DE VIALIDAD
@@ -3999,9 +4013,8 @@ class ActualizacionCatastralV3:
 
         title = QgsLayoutItemLabel(layout)
         texto = '''C E R T I F I C A\n\n\n\n\n
-        A T E N T A M E N T E\n\n\n\n
-        LIC. LIZETT ORTEGA ALMANZA
-        '''
+        A T E N T A M E N T E\n\n\n        
+        ''' + certifica.upper()
         title.setText(texto)
         title.attemptMove(QgsLayoutPoint(214.200, 150.000, QgsUnitTypes.LayoutMillimeters))
         title.attemptResize(QgsLayoutSize(57.433, 40.790, QgsUnitTypes.LayoutMillimeters))
@@ -4015,15 +4028,24 @@ class ActualizacionCatastralV3:
         layout = manager.layoutByName(layoutName)
         exporter = QgsLayoutExporter(layout)
 
-        fnPng = 'C:/AplicacionQGIS/reporte/layout_ejemplo.png'
-        fnPdf = 'C:/AplicacionQGIS/reporte/layout_ejemplo.pdf'
 
-        exporter.exportToImage(fnPng, QgsLayoutExporter.ImageExportSettings())
+        folder = str(QFileDialog.getExistingDirectory(None, "Selecciona la carpeta donde se guardará el plano manzananero", 'c:/'))
+        print(folder, cveCata)
+        #fnPng = 'C:/AplicacionQGIS/reporte/layout_ejemplo.png'
+        fnPdf = folder + '/plano_manzanero_' + cveCata + '.pdf'
+
+        #exporter.exportToImage(fnPng, QgsLayoutExporter.ImageExportSettings())
         exporter.exportToPdf(fnPdf, QgsLayoutExporter.PdfExportSettings())
 
-
-
         self.UTI.mostrarAlerta("Proceso concluido", QMessageBox.Information, 'Plano Manzanero')
+
+        # abrir carpeta del archivo recien creado
+        path = os.path.realpath(folder)
+        os.startfile(path)
+
+        # eliminar el layout 
+        manager.removeLayout(layout)
+
 
 ####################################################################################################################
 
