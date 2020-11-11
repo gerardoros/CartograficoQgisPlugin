@@ -96,11 +96,12 @@ class usuariosEdicionVer(QtWidgets.QDialog, FORM_CLASS):
 
         # con cada iteracion consumir el servicio web con el rol
         #http://192.168.0.25:8080/autentificacion/api/account/permisos-carto-user-distinct/<ROL>
-
+        self.listaServicios = []
         # de la listaque regrese el servicio filtrar las operaciones para al final tener una lista con roles y operaciones
-
-
-        nuevalista = []
+        for x in range(0,len(self.roles)):
+            self.listaServicios = self.consumeWSGeneral(url_cons = self.CFG.url_AU_getAllRole + self.roles[x])
+            print(listaServicios)
+        '''nuevalista = []
 
         for recorrer lista de roles:
             listaServicios = self.consumeWSGeneral(url_cons = self.CFG.url_AU_getAllAuthorities + el rol de la iteracion)
@@ -113,7 +114,7 @@ class usuariosEdicionVer(QtWidgets.QDialog, FORM_CLASS):
 
             n['operaciones'] = comas
 
-        nuevalista.append(n)
+        nuevalista.append(n)'''
 
         # al final tendras la lista de roles con operaciones
         # y esa lista la utilizaras para llenar la tabla del otro formario pasandola por parametros
