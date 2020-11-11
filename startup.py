@@ -325,13 +325,15 @@ class Startup():
         urlSrid = 'http://192.168.0.25:8080/busquedasimplewkn/api/cat/municipio/'
         
         respuesta = requests.get(urlSrid, headers = headers)
-        mpio = 0
+        cveMpio = 0
+        mpio = ''
 
         if respuesta.status_code == 200:
             salida = respuesta.json()
             if len(salida) > 0:
                 srid = str(salida[0]['srid'])
-                mpio = str(salida[0]['clave'])
+                cveMpio = str(salida[0]['clave'])
+                mpio = str(salida[0]['descripcion'])
             else:
                 print('NO SE PUDO CARGAR SRDI, "salida" sin valor')
                 srid = '32614'
@@ -341,7 +343,8 @@ class Startup():
             print('NO SE PUDO CARGAR SRDI', respuesta)
             QSettings().setValue('srid', '32614')
         
-        QSettings().setValue('cveMpio', mpio)
+        QSettings().setValue('cveMpio', cveMpio)
+        QSettings().setValue('mpio', mpio)
         '''
         # Obtenemos la raiz para agregar grupos
         root = QgsProject.instance().layerTreeRoot() 
