@@ -207,6 +207,11 @@ QHeaderView {background-color: white;}</string>
            <string>Rol</string>
           </property>
          </column>
+         <column>
+          <property name="text">
+           <string>Operaciones</string>
+          </property>
+         </column>
         </widget>
        </item>
        <item row="1" column="2">

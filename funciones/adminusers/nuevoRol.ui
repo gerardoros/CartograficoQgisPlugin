@@ -205,7 +205,7 @@ border: 1px solid #adb2b5;
         </widget>
        </item>
        <item row="2" column="0" colspan="4">
-        <widget class="QTableWidget" name="tableWidget">
+        <widget class="QTableWidget" name="twDefinir">
          <property name="styleSheet">
           <string notr="true">QTableWidget {background-color: white;}
 QHeaderView::section
@@ -218,17 +218,23 @@ height:24px
 }
 QHeaderView {background-color: white;}</string>
          </property>
+         <property name="autoScrollMargin">
+          <number>16</number>
+         </property>
          <property name="columnCount">
           <number>2</number>
          </property>
+         <attribute name="horizontalHeaderDefaultSectionSize">
+          <number>134</number>
+         </attribute>
          <column>
           <property name="text">
-           <string/>
+           <string>Operación</string>
           </property>
          </column>
          <column>
           <property name="text">
-           <string>Operación</string>
+           <string>id</string>
           </property>
          </column>
         </widget>

@@ -104,7 +104,7 @@ class agregarRoles_usuario(QtWidgets.QDialog, FORM_CLASS):
 
     # -- abre formulario para agregar nuevo rol
     def event_nuevo(self):
-        obj = nuevoRol_usuario(CFG = self.CFG, UTI = self.UTI)
+        obj = nuevoRol_usuario(CFG = self.CFG, UTI = self.UTI, nuevo = True)
         respuesta = obj.exec()
 
         # regresa un 0 o un 1
