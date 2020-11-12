@@ -75,7 +75,7 @@ class IntermedioCedulaRevision:
         """Run method that performs all the real work"""
         # show the dialog
         self.pluginM.UTI.strechtTabla(self.dlg.tablaClaves)
-        self.usuarioLogeado = 'jaz'
+        self.usuarioLogeado = 'admin'
         #self.llenarTabla()
         self.llenarCombito()
 
@@ -97,7 +97,7 @@ class IntermedioCedulaRevision:
             respuesta = requests.get(self.pluginM.CFG.urlObtenerIdPredioEc + self.cveCatastral, headers = headers)
 
             print (self.pluginM.CFG.urlObtenerIdPredioEc + self.cveCatastral)
-            print (respuesta)
+            print (respuesta.json())
             if respuesta.status_code == 200:
                 idPredio = respuesta.json()
             else:
@@ -142,6 +142,7 @@ class IntermedioCedulaRevision:
 
                     for x in range(0, len(datos)):
                         dato = datos[x]
+                        print(f"DATO: {dato}")
                         if self.tipo == 'PAD':
                             claveMedia = dato[-11:]
                         elif self.tipo == 'REV':
@@ -187,8 +188,8 @@ class IntermedioCedulaRevision:
                 if len(datos) > 0:
                     listaManzanas = []
                     for dato in datos:
-                        envioManzana = dato['cveCatastral'][0:20]
-                        cveManzana = envioManzana[-6:]
+                        envioManzana = dato['cveCatastral']
+                        cveManzana = envioManzana[:8]
                         
                         if not cveManzana in listaManzanas:
                             listaManzanas.append(cveManzana)

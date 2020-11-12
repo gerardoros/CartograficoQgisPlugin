@@ -78,7 +78,9 @@ class AsignacionPadron:
 
         self.dlg.chkTodoClaves.stateChanged.connect(self.marcarTodoClaves)
         self.dlg.chkTodoMazPred.stateChanged.connect(self.marcarTodoMazPred)
+        self.dlg.tablaClaves.hideColumn(1)
         self.dlg.tablaMazPred.hideColumn(0)
+        self.dlg.tablaMazPred.hideColumn(3)
 
         self.dlg.btnAsignar.clicked.connect(self.asignarRevision)
         self.dlg.btnLiberarAsig.clicked.connect(self.llamarLiberar)

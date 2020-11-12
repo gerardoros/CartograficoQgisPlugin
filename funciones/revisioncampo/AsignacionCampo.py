@@ -79,7 +79,9 @@ class AsignacionCampo:
 
         self.dlg.chkTodoClaves.stateChanged.connect(self.marcarTodoClaves)
         self.dlg.chkTodoMazPred.stateChanged.connect(self.marcarTodoMazPred)
+        self.dlg.tablaClaves.hideColumn(1)
         self.dlg.tablaMazPred.hideColumn(0)
+        self.dlg.tablaMazPred.hideColumn(3)
 
         self.dlg.btnAsignar.clicked.connect(self.asignarCampo)
         self.dlg.btnLiberarAsig.clicked.connect(self.llamarLiberar)
@@ -354,7 +356,7 @@ class AsignacionCampo:
 
         if self.llaveManzana in keysDer: #Si la llave manzana ya existe en la tabla derecha...
             for predio in self.capaPredios.getFeatures():
-                cveCat = predio['clave']
+                cveCat = f"{predio['cve_cat']}-{predio['clave']}"
                 if not cveCat in self.clavesDer[self.llaveManzana]: #Si la clave del predio no esta en el lado derecho...
                     #if not cveCat in clavesPerronas:
                     filtro.append(cveCat)
@@ -362,7 +364,7 @@ class AsignacionCampo:
         else: #Si la llave de manzanaaun no la tenemos...
             self.clavesDer[self.llaveManzana] = [] #La agregamos al lado derecho pero vacia...
             for predio in self.capaPredios.getFeatures():
-                cveCat = predio['clave']
+                cveCat = f"{predio['cve_cat']}-{predio['clave']}"
                 filtro.append(cveCat)
 
         if self.llaveManzana in keysAsig:
@@ -399,10 +401,16 @@ class AsignacionCampo:
         for x in range(0, len(self.clavesIzq)):
             self.dlg.tablaClaves.insertRow(x)
 
-            item = QtWidgets.QTableWidgetItem(self.clavesIzq[x])
+            cve_cat, cve_pred = self.clavesIzq[x].split("-")
+
+            item = QtWidgets.QTableWidgetItem(cve_pred)
             item.setFlags( QtCore.Qt.ItemIsUserCheckable |  QtCore.Qt.ItemIsEnabled )
             item.setCheckState(QtCore.Qt.Unchecked)
-            self.dlg.tablaClaves.setItem(x, 0 , item)
+            self.dlg.tablaClaves.setItem(x, 0, item)
+
+            item = QtWidgets.QTableWidgetItem(cve_cat)
+            item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            self.dlg.tablaClaves.setItem(x, 1, item)
 
 
 #-------------------------------------------------------------------------------------------------
@@ -429,9 +437,15 @@ class AsignacionCampo:
                 item.setFlags( QtCore.Qt.ItemIsUserCheckable |  QtCore.Qt.ItemIsEnabled )
                 item.setCheckState(QtCore.Qt.Unchecked)
 
-                item = QtWidgets.QTableWidgetItem(str(listaKey[x]))
+                cve_cat, cve_pred = listaKey[x].split("-")
+
+                item = QtWidgets.QTableWidgetItem(cve_pred)
                 self.dlg.tablaMazPred.setItem(rowCount-1, 2 , item)
                 item.setFlags( QtCore.Qt.ItemIsSelectable |  QtCore.Qt.ItemIsEnabled )
+
+                item = QtWidgets.QTableWidgetItem(cve_cat)
+                self.dlg.tablaMazPred.setItem(rowCount - 1, 3, item)
+                item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
 
 #-------------------------------------------------------------------------------------------------------
 
@@ -468,7 +482,7 @@ class AsignacionCampo:
 
             for index in indexSel:
                 key = str(self.dlg.tablaMazPred.item(index, 0).text())
-                data = str(self.dlg.tablaMazPred.item(index, 2).text())
+                data = f"{self.dlg.tablaMazPred.item(index, 3).text()}-{self.dlg.tablaMazPred.item(index, 2).text()}"
                 self.clavesDer[str(key)].remove(str(data))
             
                 if key == self.llaveManzana:
@@ -607,8 +621,7 @@ class AsignacionCampo:
                 llavesEnvio = {}
                 for index in indexSel:
                     cveManzana = str(self.dlg.tablaMazPred.item(index, 0).text())
-                    cvePredioMedia = str(self.dlg.tablaMazPred.item(index, 2).text())
-                    cveCatCompleta = cveManzana + cvePredioMedia
+                    cveCatCompleta = str(self.dlg.tablaMazPred.item(index, 3).text())
                     
                     llaves = llavesEnvio.keys()
                     if not cveManzana in llaves:

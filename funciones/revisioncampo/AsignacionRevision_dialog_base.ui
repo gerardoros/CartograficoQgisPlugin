@@ -285,6 +285,11 @@ height:24px
       <string>Predio</string>
      </property>
     </column>
+    <column>
+     <property name="text">
+      <string>OCULTA2</string>
+     </property>
+    </column>
    </widget>
    <widget class="QTableWidget" name="tablaClaves">
     <property name="geometry">
@@ -313,6 +318,11 @@ height:24px
     <column>
      <property name="text">
       <string>Claves catastrales</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>OCULTO</string>
      </property>
     </column>
    </widget>
