@@ -73,12 +73,25 @@ class agregarRoles_usuario(QtWidgets.QDialog, FORM_CLASS):
     # -- aceptar el cambio la fusion de fracciones
     def event_aceptar(self):
 
+        # se valida si hay registros en el qtablewidget
         if self.twRoles.rowCount() > 0:
 
+
+            # obtenemos el numero total de registros en el qtablewidget
             allRows = self.twRoles.rowCount()
+
+            # inicializamos variable (lista) donde se agregan el texto de los registros activos por check
             self._seleccionados = []
+
+            # se itera los registros del qtablewidget
             for row in range(0, allRows):
+
+                # se obtiene el item segun la iteracion
+                # el registro (row) en la posicion 0 (columna 0) 
+                # en este ejmplo solo se cuenta con una columna por eso la posicion 0
                 item = self.twRoles.item(row, 0)
+
+                # se verifica que el checkbox este seleccionado
                 if item.checkState() == 2: # True
                     self._seleccionados.append(item.text())
 
@@ -91,7 +104,7 @@ class agregarRoles_usuario(QtWidgets.QDialog, FORM_CLASS):
 
     # -- abre formulario para agregar nuevo rol
     def event_nuevo(self):
-        obj = nuevoRol_usuario(CFG = self.CFG, UTI = self.UTI)
+        obj = nuevoRol_usuario(CFG = self.CFG, UTI = self.UTI, nuevo = True)
         respuesta = obj.exec()
 
         # regresa un 0 o un 1

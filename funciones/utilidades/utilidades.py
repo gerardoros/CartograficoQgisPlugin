@@ -429,6 +429,14 @@ class Utilidad:
 
 	def formatoCapa(self, capaParam, nuevaCapa):
 
+		'''
+		elif capaParam == 'areas_inscritas':
+			QSettings().setValue('xAreasInscritas', nuevaCapa.id())
+			render = nuevaCapa.renderer()
+			symbol = QgsFillSymbol.createSimple({'color':'255,0,0,0', 'color_border':'#F646F3', 'width_border':'0.5'})
+			render.setSymbol(symbol)
+		'''
+
 		# C A P A S   D E   C O N S U L T A 
 		if capaParam == 'manzana':
 			QSettings().setValue('xManzana', nuevaCapa.id())
@@ -485,12 +493,6 @@ class Utilidad:
 			QSettings().setValue('xHoriGeom', nuevaCapa.id())
 			render = nuevaCapa.renderer()
 			symbol = QgsFillSymbol.createSimple({'color':'255,0,0,0', 'color_border':'#C68C21', 'width_border':'0.5'})
-			render.setSymbol(symbol)
-
-		elif capaParam == 'areas_inscritas':
-			QSettings().setValue('xAreasInscritas', nuevaCapa.id())
-			render = nuevaCapa.renderer()
-			symbol = QgsFillSymbol.createSimple({'color':'255,0,0,0', 'color_border':'#F646F3', 'width_border':'0.5'})
 			render.setSymbol(symbol)
 
 		elif capaParam == 'horizontales.num':
@@ -615,13 +617,15 @@ class Utilidad:
 		elif nombreCapa == "cves_verticales":
 			etiquetaField = "clave"
 			colorCapa = QColor(255,153,0)
-		elif nombreCapa == "areas_inscritas":
-			etiquetaField = "clave"
-			colorCapa = QColor(255,153,0)
 		else:
 			etiquetaField = "mensaje"
 			colorCapa = QColor(255,153,0)
-		
+		'''
+		elif nombreCapa == "areas_inscritas":
+			etiquetaField = "clave"
+			colorCapa = QColor(255,153,0)
+		'''
+
 		settings = QgsPalLayerSettings()
 		settings.fieldName = etiquetaField
 		settings.enabled = True
@@ -658,9 +662,10 @@ class Utilidad:
 		# Se crea una lista de vectores a partir de una fuente de datos
 		# ejemplo. 'point?crs=epsg:4326&field=id:integer'
 		listNC = []
+		'''
 		if QgsProject.instance().mapLayer(QSettings().value('xAreasInscritas')) is None:
 			listNC.append(QgsVectorLayer(QSettings().value('sAreasInscritas'), 'areas_inscritas', 'memory'))
-
+		'''
 		if QgsProject.instance().mapLayer(QSettings().value('xCvesVert')) is None:
 			listNC.append(QgsVectorLayer(QSettings().value('sCvesVert'), 'cves_verticales', 'memory'))
 

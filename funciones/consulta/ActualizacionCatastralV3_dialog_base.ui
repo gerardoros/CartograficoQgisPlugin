@@ -60,7 +60,7 @@ QWidget:item:selected
 </string>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
@@ -87,31 +87,10 @@ QWidget:item:selected
         <string>Actualización Cartográfica de Manzana</string>
        </property>
       </widget>
-      <widget class="QComboBox" name="comboLocalidad">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>60</y>
-         <width>261</width>
-         <height>22</height>
-        </rect>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">QComboBox QAbstractItemView::item { min-height: 25; font-family: &quot;Century Gothic&quot;;}
-QListView{color: black ; font-size: 16px; outline:none; font-weight:bold; font-family: &quot;Century Gothic&quot;;}
-
-QComboBox{
-background : rgb(250,238,224);
-}
-QComboBox:item:selected {
-color: black ;
-}</string>
-       </property>
-      </widget>
       <widget class="QComboBox" name="comboSector">
        <property name="geometry">
         <rect>
-         <x>280</x>
+         <x>20</x>
          <y>60</y>
          <width>111</width>
          <height>22</height>
@@ -133,7 +112,7 @@ color: black ;
       <widget class="QComboBox" name="comboManzana">
        <property name="geometry">
         <rect>
-         <x>401</x>
+         <x>141</x>
          <y>60</y>
          <width>101</width>
          <height>22</height>
@@ -151,29 +130,10 @@ color: black ;
 }</string>
        </property>
       </widget>
-      <widget class="QLabel" name="label_2">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>40</y>
-         <width>221</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <family>Century Gothic</family>
-         <pointsize>10</pointsize>
-        </font>
-       </property>
-       <property name="text">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;Localidad&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-      </widget>
       <widget class="QLabel" name="label_3">
        <property name="geometry">
         <rect>
-         <x>280</x>
+         <x>20</x>
          <y>40</y>
          <width>111</width>
          <height>20</height>
@@ -192,7 +152,7 @@ color: black ;
       <widget class="QLabel" name="label_4">
        <property name="geometry">
         <rect>
-         <x>401</x>
+         <x>141</x>
          <y>40</y>
          <width>101</width>
          <height>20</height>
@@ -211,8 +171,8 @@ color: black ;
       <widget class="QPushButton" name="botonCargar">
        <property name="geometry">
         <rect>
-         <x>201</x>
-         <y>90</y>
+         <x>251</x>
+         <y>50</y>
          <width>111</width>
          <height>31</height>
         </rect>
@@ -832,30 +792,39 @@ marcadores</string>
         <string>Marcador de Vertices</string>
        </property>
       </widget>
-      <widget class="QRadioButton" name="rb16">
+      <widget class="QPushButton" name="btnPlanoManzanero">
        <property name="geometry">
         <rect>
-         <x>20</x>
-         <y>100</y>
-         <width>41</width>
-         <height>21</height>
+         <x>380</x>
+         <y>50</y>
+         <width>111</width>
+         <height>31</height>
         </rect>
        </property>
-       <property name="text">
-        <string>&amp;16</string>
+       <property name="font">
+        <font>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
        </property>
-      </widget>
-      <widget class="QRadioButton" name="rb25">
-       <property name="geometry">
-        <rect>
-         <x>70</x>
-         <y>100</y>
-         <width>41</width>
-         <height>21</height>
-        </rect>
+       <property name="styleSheet">
+        <string notr="true">QPushButton{
+background : rgb(174, 116, 0);
+color : rgb(255, 255, 255);
+border-radius : 4px;
+}
+QPushButton::hover{
+background : rgb(104, 69, 13);
+color : rgb(255, 255, 255);
+border-radius : 4px;
+}
+QPushButton:disabled {
+background: rgb(217, 217, 217)
+}</string>
        </property>
        <property name="text">
-        <string>&amp;25</string>
+        <string>Impresión de
+Plano Manzanero</string>
        </property>
       </widget>
      </widget>
@@ -970,9 +939,9 @@ height:24px
        <property name="geometry">
         <rect>
          <x>128</x>
-         <y>80</y>
+         <y>90</y>
          <width>257</width>
-         <height>111</height>
+         <height>101</height>
         </rect>
        </property>
        <property name="styleSheet">
@@ -1027,7 +996,7 @@ background: rgb(217, 217, 217)
 }</string>
        </property>
        <property name="text">
-        <string>Actualizar Datos</string>
+        <string>Actualizar datos</string>
        </property>
       </widget>
       <widget class="QPushButton" name="botonCancelarReferencia">
@@ -1158,27 +1127,7 @@ color: black ;
        </property>
        <item>
         <property name="text">
-         <string>Estado</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Region Catastral</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
          <string>Municipios</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Secciones</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Localidades</string>
         </property>
        </item>
        <item>
@@ -1203,19 +1152,33 @@ color: black ;
        </item>
        <item>
         <property name="text">
-         <string>Zona Uno</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Zona Dos</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
          <string>Area de Valor</string>
         </property>
        </item>
+       <item>
+        <property name="text">
+         <string>Corredor de Valor</string>
+        </property>
+       </item>
+      </widget>
+      <widget class="QLabel" name="label_12">
+       <property name="geometry">
+        <rect>
+         <x>130</x>
+         <y>70</y>
+         <width>201</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Century Gothic</family>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Selecciona una geometría&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
       </widget>
      </widget>
     </widget>

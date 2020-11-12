@@ -110,6 +110,7 @@ class Master:
         if not resultado:
             return
         self.dlg.btnAsigTareas.hide()
+        self.dlg.btnUpload.hide()
         var.setValue("datoUsuario", resultado)
         # obtiene todos los permisos del usuario
         # ----- P E N D I E N T E ----
@@ -196,10 +197,9 @@ class Master:
     #--------MEOTOD QUE COMPRUEBA LAS VERIIFCACIONES DE LOS BOTONES
     def asignActionsByRoles(self, iface):
         var = QSettings()
-        print('EStado del user: '+ var.value('logeado'))
         if var.value('logeado') == 'True':
-            response = self.consumeWSGeneral("http://192.168.0.21:8080/autentificacion/api/account/permisos-carto")
-            print(response)
+            response = self.consumeWSGeneral("http://192.168.0.25:8080/autentificacion/api/account/permisos-carto")
+            
             for rol in response["roles"]:
                 if rol == 'ASIGNACION_TAREAS':
                     self.dlg.btnAsigTareas.setEnabled(True)
@@ -222,9 +222,9 @@ class Master:
                 if rol == 'ASIGNACION_PADRON':
                     self.dlg.btnAsigPad.setEnabled(True)
                 if rol == 'INTERMEDIO_REVISION':
-                    self.dlg.btnInterPad.setEnabled(True)
-                if rol == 'INTERMEDIO_PADRON':
                     self.dlg.btnInterRev.setEnabled(True)
+                if rol == 'INTERMEDIO_PADRON':
+                    self.dlg.btnInterPad.setEnabled(True)
                 if rol == 'ADMIN_USERS':
                     self.dlg.btnAdminUsers.setEnabled(True)
         else:
@@ -389,6 +389,7 @@ class Master:
     def run(self):
         """Run method that performs all the real work"""
         #self.irAConsulta()
+        #self.ACA.UTI = self.UTI
         #self.ACA.pintarCapas()
         #self.irAFusionDivision()
         '''

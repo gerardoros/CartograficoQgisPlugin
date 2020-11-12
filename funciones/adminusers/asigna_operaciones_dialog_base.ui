@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>operacionesDialogBase</class>
+ <widget class="QDialog" name="operacionesDialogBase">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>363</width>
+    <height>326</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>363</width>
+    <height>326</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>363</width>
+    <height>326</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Operaciones</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">background : rgb(250,238,224);</string>
+  </property>
+  <widget class="QLabel" name="label">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>10</y>
+     <width>171</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Century Gothic</family>
+     <pointsize>12</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>Asignar operaciones</string>
+   </property>
+  </widget>
+  <widget class="QGroupBox" name="groupBox">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>30</y>
+     <width>341</width>
+     <height>241</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QTabBar::Tab{
+background : rgb(174, 116, 0);
+color : rgb(255, 255, 255);
+font-weight: bold;
+font-size: 12px;
+width:224px
+}
+
+QTabBar::tab:selected, QTabBar::tab:hover {
+color : rgb(174, 116, 0);
+background : rgb(255, 255, 255);
+
+}
+
+QWidget{
+background : rgb(255,255,255);
+}
+
+/*
+QWidget:item:selected
+{
+	color: black; background-color:  rgb(250,238,224);
+}
+*/
+
+</string>
+   </property>
+   <property name="title">
+    <string/>
+   </property>
+   <widget class="QTableWidget" name="twOperaciones">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>10</y>
+      <width>151</width>
+      <height>221</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Century Gothic</family>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QHeaderView::section
+{
+background-color: rgb(238,225,200);
+color : rgb(52, 42, 24 );
+text-align: right;
+font-size:12px;
+height:24px
+}</string>
+    </property>
+    <attribute name="horizontalHeaderDefaultSectionSize">
+     <number>149</number>
+    </attribute>
+    <column>
+     <property name="text">
+      <string>Roles</string>
+     </property>
+    </column>
+   </widget>
+   <widget class="QTableWidget" name="twOperaciones_2">
+    <property name="geometry">
+     <rect>
+      <x>160</x>
+      <y>10</y>
+      <width>171</width>
+      <height>221</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Century Gothic</family>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QHeaderView::section
+{
+background-color: rgb(238,225,200);
+color : rgb(52, 42, 24 );
+text-align: right;
+font-size:12px;
+height:24px
+}</string>
+    </property>
+    <attribute name="horizontalHeaderDefaultSectionSize">
+     <number>170</number>
+    </attribute>
+    <column>
+     <property name="text">
+      <string>Operaciones</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>OCULTA</string>
+     </property>
+    </column>
+   </widget>
+  </widget>
+  <widget class="QPushButton" name="btCerrar">
+   <property name="geometry">
+    <rect>
+     <x>190</x>
+     <y>280</y>
+     <width>150</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>150</width>
+     <height>30</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>150</width>
+     <height>30</height>
+    </size>
+   </property>
+   <property name="font">
+    <font>
+     <family>Century Gothic</family>
+     <pointsize>12</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton{
+background : rgb(174, 116, 0);
+color : rgb(255, 255, 255)
+}
+QPushButton::disabled {
+background : rgb(187, 129, 13);
+color : rgb(245,245,245);
+border: 1px solid #adb2b5;
+}</string>
+   </property>
+   <property name="text">
+    <string>Cerrar</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btGuardar">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>280</y>
+     <width>150</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>150</width>
+     <height>30</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>150</width>
+     <height>30</height>
+    </size>
+   </property>
+   <property name="font">
+    <font>
+     <family>Century Gothic</family>
+     <pointsize>12</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton{
+background : rgb(174, 116, 0);
+color : rgb(255, 255, 255)
+}
+QPushButton::disabled {
+background : rgb(187, 129, 13);
+color : rgb(245,245,245);
+border: 1px solid #adb2b5;
+}</string>
+   </property>
+   <property name="text">
+    <string>Guardar</string>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

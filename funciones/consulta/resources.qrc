@@ -1,5 +1,7 @@
 <RCC>
   <qresource prefix="cedula">
+    <file>icons/Cuau_bien.jpg</file>
+    <file>icons/image4144.png</file>
     <file>icons/guardar.png</file>
     <file>icons/icons8-close-window-30.png</file>
     <file>icons/icons8-save-filled-50.png</file>

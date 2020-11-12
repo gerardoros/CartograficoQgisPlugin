@@ -95,85 +95,20 @@ background : rgb(255, 255, 255);
        <property name="spacing">
         <number>5</number>
        </property>
-       <item row="1" column="1">
-        <widget class="QLabel" name="label">
-         <property name="font">
-          <font>
-           <family>Century Gothic</family>
-           <pointsize>12</pointsize>
-           <weight>75</weight>
-           <bold>true</bold>
-          </font>
-         </property>
-         <property name="text">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;right&quot;&gt;Busqueda:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="2">
-        <widget class="QLineEdit" name="leBusqueda">
-         <property name="minimumSize">
-          <size>
-           <width>200</width>
-           <height>30</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>200</width>
-           <height>30</height>
-          </size>
-         </property>
-         <property name="font">
-          <font>
-           <family>Century Gothic</family>
-           <pointsize>12</pointsize>
-           <weight>75</weight>
-           <bold>true</bold>
-          </font>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="2" alignment="Qt::AlignHCenter">
-        <widget class="QPushButton" name="btnNuevoUsuario">
-         <property name="minimumSize">
-          <size>
-           <width>130</width>
-           <height>30</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>130</width>
-           <height>30</height>
-          </size>
-         </property>
-         <property name="font">
-          <font>
-           <family>Century Gothic</family>
-           <pointsize>11</pointsize>
-           <weight>75</weight>
-           <bold>true</bold>
-          </font>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">QPushButton{
-background : rgb(174, 116, 0);
-color : rgb(255, 255, 255)
-}
-QPushButton::disabled {
-background : rgb(187, 129, 13);
-color : rgb(245,245,245);
-border: 1px solid #adb2b5;
-}</string>
-         </property>
-         <property name="text">
-          <string>Nuevo Usuario</string>
-         </property>
-        </widget>
-       </item>
        <item row="2" column="0" colspan="3">
         <widget class="QTableWidget" name="twUsuarios">
+         <property name="minimumSize">
+          <size>
+           <width>600</width>
+           <height>476</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>601</width>
+           <height>477</height>
+          </size>
+         </property>
          <property name="styleSheet">
           <string notr="true">QHeaderView::section
 {
@@ -231,6 +166,83 @@ height:24px
          </column>
         </widget>
        </item>
+       <item row="1" column="1">
+        <widget class="QLabel" name="label">
+         <property name="font">
+          <font>
+           <family>Century Gothic</family>
+           <pointsize>12</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;right&quot;&gt;Busqueda:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="2">
+        <widget class="QLineEdit" name="leBusqueda">
+         <property name="minimumSize">
+          <size>
+           <width>200</width>
+           <height>30</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>200</width>
+           <height>30</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <family>Century Gothic</family>
+           <pointsize>12</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <widget class="QPushButton" name="btnNuevoUsuario">
+         <property name="minimumSize">
+          <size>
+           <width>130</width>
+           <height>30</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>130</width>
+           <height>30</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <family>Century Gothic</family>
+           <pointsize>11</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QPushButton{
+background : rgb(174, 116, 0);
+color : rgb(255, 255, 255)
+}
+QPushButton::disabled {
+background : rgb(187, 129, 13);
+color : rgb(245,245,245);
+border: 1px solid #adb2b5;
+}</string>
+         </property>
+         <property name="text">
+          <string>Nuevo Usuario</string>
+         </property>
+        </widget>
+       </item>
        <item row="0" column="0">
         <widget class="QPushButton" name="btnCambioClave">
          <property name="minimumSize">
@@ -269,6 +281,43 @@ border: 1px solid #adb2b5;
          </property>
         </widget>
        </item>
+       <item row="0" column="1">
+        <widget class="QPushButton" name="btnOperaciones">
+         <property name="minimumSize">
+          <size>
+           <width>130</width>
+           <height>30</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>130</width>
+           <height>30</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>11</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QPushButton{
+background : rgb(174, 116, 0);
+color : rgb(255, 255, 255)
+}
+QPushButton::disabled {
+background : rgb(187, 129, 13);
+color : rgb(245,245,245);
+border: 1px solid #adb2b5;
+}</string>
+         </property>
+         <property name="text">
+          <string>Operaciones</string>
+         </property>
+        </widget>
+       </item>
       </layout>
      </widget>
     </widget>
@@ -276,7 +325,6 @@ border: 1px solid #adb2b5;
   </layout>
  </widget>
  <tabstops>
-  <tabstop>btnNuevoUsuario</tabstop>
   <tabstop>leBusqueda</tabstop>
   <tabstop>twUsuarios</tabstop>
   <tabstop>btnCambioClave</tabstop>
