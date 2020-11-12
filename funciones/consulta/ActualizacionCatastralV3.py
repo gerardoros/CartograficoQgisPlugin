@@ -126,7 +126,8 @@ class ActualizacionCatastralV3:
         'Codigo Postal' : 'e_cp',
         'Zona Uno' : 'e_zona_uno',
         'Zona Dos' : 'e_zona_dos',
-        'Area de Valor' : 'e_area_valor'
+        'Area de Valor' : 'e_area_valor',
+        'Corredor de Valor' : 'e_corredor_valor'
         }
 
         # -- evento boton de abrir cedula --
@@ -540,6 +541,7 @@ class ActualizacionCatastralV3:
         #self.dockwidget.comboCapaReferencia.addItem('Zona Uno', 'e_zona_uno')
         #self.dockwidget.comboCapaReferencia.addItem('Zona Dos', 'e_zona_dos')
         self.dockwidget.comboCapaReferencia.addItem('Area de Valor', 'e_area_valor')
+        self.dockwidget.comboCapaReferencia.addItem('Corredor de Valor', 'e_corredor_valor')
 
 
 #################################################################################################################################
@@ -609,6 +611,7 @@ class ActualizacionCatastralV3:
         lista.append(QSettings().value('xManzanasRef'))
         lista.append(QSettings().value('xPredRef'))
         lista.append(QSettings().value('xConstRef'))
+        lista.append(QSettings().value('xCorrValor'))
 
         root = QgsProject.instance().layerTreeRoot()
         # se obtienen los grupos a los que pertenecen cada una de esas capas
@@ -1088,6 +1091,8 @@ class ActualizacionCatastralV3:
             return True
         elif idCapa == self.obtenerIdCapa('Calles'):
             return True
+        elif idCapa == self.obtenerIdCapa('Corredor de Valor'):
+            return True
         elif idCapa == self.obtenerIdCapa('Sectores'):
             return True
         elif idCapa == self.obtenerIdCapa('Localidades'):
@@ -1422,8 +1427,8 @@ class ActualizacionCatastralV3:
                     self.tipConst = 0
 
                     if self.capaActiva.id() == self.obtenerIdCapa('Area de Valor'): #Areas de valor
-                        self.listaAtributos = ['valor', 'descripcion', 'cve_vus']
-                        self.listaEtiquetas = ['Valor', 'Descripcion', 'vus']
+                        self.listaAtributos = ['valor', 'descripcion', 'clave']
+                        self.listaEtiquetas = ['Valor', 'Descripcion', 'Clave']
 
                         headers = {'Content-Type': 'application/json', 'Authorization' : self.UTI.obtenerToken()}
 
@@ -1471,6 +1476,10 @@ class ActualizacionCatastralV3:
                     elif self.capaActiva.id() == self.obtenerIdCapa('Codigo Postal'): #Colonia
                         self.listaAtributos = ['cve_cp']
                         self.listaEtiquetas = ['CP']
+
+                    elif self.capaActiva.id() == self.obtenerIdCapa('Corredor de Valor'): # Corredor de valor
+                        self.listaAtributos = ['clave']
+                        self.listaEtiquetas = ['Clave']
 
                     elif self.capaActiva.id() == self.obtenerIdCapa('Calles'): #Calles
                         self.listaAtributos = ['valor', 'longitud', 'id_cve_vialidad', 'tipo_vector_calle', 'calle']
@@ -1959,7 +1968,7 @@ class ActualizacionCatastralV3:
 
             if banderaCompleta:
                 indexCveVus = self.comboCveVus.currentIndex()
-                feat['cve_vus'] = self.comboCveVus.itemData(indexCveVus)
+                feat['clave'] = self.comboCveVus.itemData(indexCveVus)
 
         
         #----------------------Zona Uno------------------#
@@ -2121,7 +2130,7 @@ class ActualizacionCatastralV3:
                 feat['longitud'] = float(self.dockwidget.tablaEdicionRef.item(1, 1).text())
 
 
-        #----------------------Codigo Postal------------------#
+        #----------------------Sectores------------------#
         elif nombreCapa == 'Sectores':
 
             texto = "Nada"
@@ -2161,7 +2170,7 @@ class ActualizacionCatastralV3:
 
             banderaCompleta = banderaClave and banderaNom
 
-        #----------------------Codigo Postal------------------#
+        #----------------------Localidades------------------#
         elif nombreCapa == 'Localidades':
 
             texto = "Nada"
@@ -2201,7 +2210,7 @@ class ActualizacionCatastralV3:
 
             banderaCompleta = banderaClave and banderaNom
 
-        #----------------------Codigo Postal------------------#
+        #----------------------Secciones------------------#
         elif nombreCapa == 'Secciones':
 
             texto = "Nada"
@@ -2241,7 +2250,7 @@ class ActualizacionCatastralV3:
 
             banderaCompleta = banderaClave and banderaNom
 
-        #----------------------Codigo Postal------------------#
+        #----------------------Municipios------------------#
         elif nombreCapa == 'Municipios':
 
             texto = "Nada"
@@ -2281,7 +2290,7 @@ class ActualizacionCatastralV3:
 
             banderaCompleta = banderaClave and banderaNom
 
-        #----------------------Codigo Postal------------------#
+        #----------------------Regions Catastral------------------#
         elif nombreCapa == 'Region Catastral':
 
             texto = "Nada"
@@ -2321,7 +2330,7 @@ class ActualizacionCatastralV3:
 
             banderaCompleta = banderaClave and banderaNom
 
-        #----------------------Codigo Postal------------------#
+        #----------------------Estado------------------#
         elif nombreCapa == 'Estado':
 
             texto = "Nada"
@@ -2361,6 +2370,29 @@ class ActualizacionCatastralV3:
 
             if not banderaNom:
                 self.UTI.mostrarAlerta('La longitud del nombre no debe exceder 64 caracteres', QMessageBox().Critical, 'Error de entrada')
+        
+        #----------------------Corredor de Valor------------------#
+        elif nombreCapa == 'Corredor de Valor':
+
+            texto = "Nada"
+
+            banderaNom = True
+
+            #Comparar el nombre
+            try:
+                texto = self.dockwidget.tablaEdicionRef.item(0, 1).text()
+            except: #Error al obtenre texto
+                banderaNom = False
+            if len(texto) <= 10: #Validacion de longitud
+                feat['clave'] = texto
+            else:
+                banderaNom = False
+
+            #Banderas
+            if not banderaNom:
+                self.UTI.mostrarAlerta('La longitud de la clave no debe exceder 10 caracteres', QMessageBox().Critical, 'Error de entrada')
+
+            banderaCompleta = banderaClave and banderaNom
 
         self.capaActiva.updateFeature(feat)
         self.capaActiva.triggerRepaint()
@@ -2393,7 +2425,7 @@ class ActualizacionCatastralV3:
             tabla = 'vw_construccion'
         else:
             tabla = self.tablasReferencias[nameCapa]
-             
+
         data = self.obtenerCapasDeReferencia(tabla, bound)
 
         vaciada = False
@@ -2452,19 +2484,20 @@ class ActualizacionCatastralV3:
 
 
             # NO es la de calles
-            if nameCapa != 'Calles':    
+            if nameCapa != 'Calles':
                 if data['features'] != []:
                     fields = ""
                     for k in keys:
                         fields = fields + "&field=" + k + ":string(15)"
 
                     uriFigura = 'Polygon'
+                    if nameCapa == 'Corredor de Valor':
+                        uriFigura = 'LineString'
 
                     uri = str(uriFigura)+"?crs=epsg:" + str(srid) + fields + "&index=yes"
                 else:
                     uri = self.obtenerCampos(nameCapa)
-
-            else: # por si SII son calles
+            else:
                 stringCalles = self.obtenerCamposCalles()
                 uri = stringCalles
 
@@ -2540,10 +2573,13 @@ class ActualizacionCatastralV3:
                 colorCapa = QColor(9,222,102)
             elif nameCapa == 'Calles':
                 etiquetaField = 'calle'
-                colorCapa = QColor(0,255,0)
+                colorCapa = QColor(255,26,255)
             elif nameCapa == 'Colonias':
                 etiquetaField = 'descripcion'
                 colorCapa = QColor(0,0,180)
+            elif nameCapa == 'Corredor de Valor':
+                etiquetaField = 'clave'
+                colorCapa = QColor(14,11,255)
             elif nameCapa == 'Codigo Postal':
                 etiquetaField = 'cve_cp'
                 colorCapa = QColor(255,127,0)
@@ -2564,7 +2600,7 @@ class ActualizacionCatastralV3:
 
             placeo = QgsPalLayerSettings.AroundPoint
 
-            if nameCapa == 'Calles':
+            if nameCapa == 'Calles' or nameCapa == 'Corredor de Valor':
                 placeo = QgsPalLayerSettings.Line  
 
             settings = QgsPalLayerSettings()
@@ -2761,13 +2797,16 @@ class ActualizacionCatastralV3:
         listaCampos['Colonias'] = ['cve_col', 'descripcion', 'id', 'id_tipo_asentamiento']
         listaTipos['Colonias'] = ['string(5)', 'string(50)', 'integer', 'integer']
         
+        listaCampos['Cooredor de Valor'] = ['clave', 'id']
+        listaTipos['Corredor de Valor'] = ['string(10)', 'integer']
+        
         listaCampos['Zona Uno'] = ['descripcion', 'id']
         listaTipos['Zona Uno'] = ['string(50)', 'integer']
 
         listaCampos['Zona Dos'] = ['descripcion', 'id']
         listaTipos['Zona Dos'] = ['string(50)', 'integer']
 
-        listaCampos['Area de Valor'] = ['cve_vus', 'descripcion', 'id', 'valor']
+        listaCampos['Area de Valor'] = ['clave', 'descripcion', 'id', 'valor']
         listaTipos['Area de Valor'] = ['string(10)', 'string(50)', 'integer', 'real']
 
         stringCapa = "Polygon?crs=epsg:" + str(QSettings().value('srid'))
@@ -2832,43 +2871,40 @@ class ActualizacionCatastralV3:
 ######################################################################################################################
     
     def activarEdicion(self):
-        
-        ''' se usa para validar que haya una manzana cargada antes de proceder
-        try:
-            bound = self.obtenerBoundingBox().asWkt()
-        except:
-            self.UTI.mostrarAlerta('No se ha cargado ninguna Manzana', QMessageBox().Critical, 'Cargar referencia')
-            return
-        '''
 
-        nombreCapa = self.dockwidget.comboCapasEdicion.currentText()
-        
-        root = QgsProject.instance().layerTreeRoot()
-        grupoEdicion = root.findGroup('edicion')
-        
-        if grupoEdicion == None:
-            root.insertGroup(0, 'edicion')
+        # si NO esta en edicion
+        if self.capaEnEdicion == '':
+            nombreCapa = self.dockwidget.comboCapasEdicion.currentText()
+            
+            root = QgsProject.instance().layerTreeRoot()
             grupoEdicion = root.findGroup('edicion')
+            
+            if grupoEdicion == None:
+                root.insertGroup(0, 'edicion')
+                grupoEdicion = root.findGroup('edicion')
 
-        self.capaEnEdicion = self.obtenerIdCapa(nombreCapa)
-        self.quitarDeGrupo(self.obtenerIdCapa(nombreCapa), 'referencia')
-        self.pintarCapasReferencia(nombreCapa, None, True)
-            #self.ineditarCampos(nombreCapa)
+            self.capaEnEdicion = self.obtenerIdCapa(nombreCapa)
+            self.quitarDeGrupo(self.obtenerIdCapa(nombreCapa), 'referencia')
+            self.pintarCapasReferencia(nombreCapa, None, True)
 
-        self.dockwidget.comboCapasEdicion.setEnabled(False)
-        self.dockwidget.botonActivarEdicion.setEnabled(False)
-        self.dockwidget.botonActualizarRef.setEnabled(True)
-        self.dockwidget.botonCancelarReferencia.setEnabled(True)
+            self.dockwidget.comboCapasEdicion.setEnabled(False)
+            self.dockwidget.botonActualizarRef.setEnabled(True)
+            self.dockwidget.botonCancelarReferencia.setEnabled(True)
+            self.dockwidget.botonActivarEdicion.setText('Terminar')
 
-        if nombreCapa == 'Calles':
-            self.dockwidget.tablaServiciosCalles.clearContents()
-            self.dockwidget.tablaServiciosCalles.setVisible(True)
-            self.dockwidget.botonActualizarServiciosCalles.setVisible(True)
-            self.dockwidget.tituloServiciosCalles.setVisible(True)
+            '''
+            if nombreCapa == 'Calles':
+                self.dockwidget.tablaServiciosCalles.clearContents()
+                self.dockwidget.tablaServiciosCalles.setVisible(True)
+                self.dockwidget.botonActualizarServiciosCalles.setVisible(True)
+                self.dockwidget.tituloServiciosCalles.setVisible(True)
+            else:
+                self.dockwidget.tablaServiciosCalles.setVisible(False)
+                self.dockwidget.botonActualizarServiciosCalles.setVisible(False)
+                self.dockwidget.tituloServiciosCalles.setVisible(False)
+            '''
         else:
-            self.dockwidget.tablaServiciosCalles.setVisible(False)
-            self.dockwidget.botonActualizarServiciosCalles.setVisible(False)
-            self.dockwidget.tituloServiciosCalles.setVisible(False)
+            self.UTI.mostrarAlerta("Proceda con el guardado mediante la seccion de topologías", QMessageBox.Information, "Guardar Cambios")
 
 
 ##########################################################################################################
@@ -2969,6 +3005,7 @@ class ActualizacionCatastralV3:
                 QSettings().setValue('posibleGuardarRef', 'False') 
                 self.dockwidget.comboCapasEdicion.setEnabled(True)
                 self.dockwidget.botonActivarEdicion.setEnabled(True)
+                self.dockwidget.botonActivarEdicion.setText('Activar Edicion de \nReferencia')
                 self.dockwidget.botonActualizarRef.setEnabled(False)
                 self.dockwidget.botonCancelarReferencia.setEnabled(False)
                 self.quitarDeGrupo(self.capaEnEdicion, 'edicion')
@@ -3028,6 +3065,7 @@ class ActualizacionCatastralV3:
         #self.dockwidget.labelCapaEdicionRef.setText('---')
         self.dockwidget.comboCapasEdicion.setEnabled(True)
         self.dockwidget.botonActivarEdicion.setEnabled(True)
+        self.dockwidget.botonActivarEdicion.setText('Activar Edicion de \nReferencia')
         self.dockwidget.botonActualizarRef.setEnabled(False)
         self.dockwidget.botonCancelarReferencia.setEnabled(False)
         self.dockwidget.tablaServiciosCalles.setVisible(False)
@@ -3138,6 +3176,8 @@ class ActualizacionCatastralV3:
             return 'Codigo Postal'
         elif QSettings().value('xColonia') == idCapa:
             return 'Colonias'
+        elif QSettings().value('xCorrValor') == idCapa:
+            return 'Corredor de Valor'
         elif QSettings().value('xCalle') == idCapa:
             return 'Calles'
         elif QSettings().value('xSector') == idCapa:
@@ -3189,6 +3229,8 @@ class ActualizacionCatastralV3:
             return QSettings().value('xZonaDos')
         elif nombreCapa == "Codigo Postal":
             return QSettings().value('xCP')
+        elif nombreCapa == "Corredor de Valor":
+            return QSettings().value('xCorrValor')
         elif nombreCapa == "Colonias":
             return QSettings().value('xColonia')
         elif nombreCapa == "Calles":
@@ -3228,6 +3270,8 @@ class ActualizacionCatastralV3:
             valor = 'xCP'
         elif nombreCapa == "Colonias":
             valor = 'xColonia'
+        elif nombreCapa == "Corredor de Valor":
+            valor = 'xCorrValor'
         elif nombreCapa == "Calles":
             valor = 'xCalle'
         elif nombreCapa == "Sectores":
@@ -4030,7 +4074,7 @@ class ActualizacionCatastralV3:
 
 
         folder = str(QFileDialog.getExistingDirectory(None, "Selecciona la carpeta donde se guardará el plano manzananero", 'c:/'))
-        print(folder, cveCata)
+
         #fnPng = 'C:/AplicacionQGIS/reporte/layout_ejemplo.png'
         fnPdf = folder + '/plano_manzanero_' + cveCata + '.pdf'
 
