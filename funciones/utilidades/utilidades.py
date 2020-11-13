@@ -584,6 +584,11 @@ class Utilidad:
 			symbol = QgsFillSymbol.createSimple({'color':'255,0,0,0', 'color_border':'#00ADAD', 'width_border':'0.5'})
 			render.setSymbol(symbol)
 
+		elif capaParam == 'Corredor de Valor':
+			render = nuevaCapa.renderer()
+			symbol = QgsLineSymbol.createSimple({'line_style':'SimpleLine', 'color':'#0e0bff', 'width_border':'0.5'})
+			render.setSymbol(symbol)
+
 	def etiquetarCapa(self, nombreCapa, capa):
 
 		if capa == None:

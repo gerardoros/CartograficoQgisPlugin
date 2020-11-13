@@ -288,7 +288,10 @@ class ActualizacionCatastralV3:
             self.dockwidget.show()
             
             #self.UTI.strechtTabla(self.dockwidget.tablaEdicion)
-            self.UTI.strechtTabla(self.dockwidget.tablaEdicionRef)
+            # self.UTI.strechtTabla(self.dockwidget.tablaEdicionRef)
+
+            self.dockwidget.tablaEdicionRef.setColumnWidth(0, 50)
+            self.dockwidget.tablaEdicionRef.setColumnWidth(1, 50)
 
             if self.capasCompletas():
 
@@ -888,11 +891,6 @@ class ActualizacionCatastralV3:
             return False
         
         data = self.obtenerAPintar(mem_layer.id())
-        '''
-        print(nombreCapa)
-        print(data)
-        print(self.idManzana)
-        '''
 
         type(data)
         srid = QSettings().value("srid")
@@ -1369,7 +1367,7 @@ class ActualizacionCatastralV3:
 
             if self.validarEdicion():
                 
-                self.UTI.mostrarAlerta('Se actualizo correctamente', QMessageBox().Information, 'Edicion de atributos')
+                self.UTI.mostrarAlerta('Se actualizó correctamente', QMessageBox().Information, 'Edicion de atributos')
                 self.cargarTablita()
             
         else:
@@ -1405,8 +1403,8 @@ class ActualizacionCatastralV3:
             idCapa = self.capaActiva.id()
 
             header = self.dockwidget.tablaEdicionRef.horizontalHeader()
-            header.setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeToContents)
-            header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeToContents)
+            header.setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
+            header.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
             #header.setStretchLastSection(True)
             
             #self.dockwidget.labelCapaEdicionRef.setText('---')
@@ -1427,22 +1425,8 @@ class ActualizacionCatastralV3:
                     self.tipConst = 0
 
                     if self.capaActiva.id() == self.obtenerIdCapa('Area de Valor'): #Areas de valor
-                        self.listaAtributos = ['valor', 'descripcion', 'clave']
-                        self.listaEtiquetas = ['Valor', 'Descripcion', 'Clave']
-
-                        headers = {'Content-Type': 'application/json', 'Authorization' : self.UTI.obtenerToken()}
-
-                        respuesta = requests.get(self.CFG.urlValoresTerrenos, headers = headers)
-                        self.diccCveVus = {}
-                        if respuesta.status_code == 200:
-                            for resp in respuesta.json():
-
-                                self.comboCveVus.addItem(str(resp['descripcion']), str(resp['cveVus']))
-                                self.diccCveVus[str(resp['cveVus'])] = str(resp['descripcion'])
-                        
-                        else:
-                            self.UTI.mostrarAlerta("No se han podido cargar los tipos de cvevus\nError de servidor cvevus", QMessageBox().Critical, "Cargar tipos de asentamiento")
-
+                        self.listaAtributos = ['valor', 'descripcion']
+                        self.listaEtiquetas = ['Valor', 'Descripcion']
 
                     elif self.capaActiva.id() == self.obtenerIdCapa('Zona Uno') or self.capaActiva.id() == self.obtenerIdCapa('Zona Dos'): #Zonas
                         self.listaAtributos = ['descripcion']
@@ -1502,8 +1486,8 @@ class ActualizacionCatastralV3:
 
 
                     elif self.capaActiva.id() == self.obtenerIdCapa('Sectores'): #Sector
-                        self.listaAtributos = ['clave', 'nombre']
-                        self.listaEtiquetas = ['Clave', 'Nombre']
+                        self.listaAtributos = ['clave']
+                        self.listaEtiquetas = ['Clave']
                     
                     elif self.capaActiva.id() == self.obtenerIdCapa('Localidades'): #Localidades
                         self.listaAtributos = ['clave', 'nombre']
@@ -1553,27 +1537,26 @@ class ActualizacionCatastralV3:
                             self.comboTipoAs.setCurrentIndex(index)
 
                     elif self.capaActiva.id() == self.obtenerIdCapa( 'Area de Valor'):
-
-                        self.dockwidget.tablaEdicionRef.setCellWidget(2,1,self.comboCveVus)
-
-                        idCve = str(self.seleccion[0]['cve_vus'])
-
-                        textito = self.diccCveVus[idCve]
-                        index = self.comboCveVus.findText(str(textito), QtCore.Qt.MatchFixedString)
-                        if index >= 0:
-                            self.comboCveVus.setCurrentIndex(index)
-
-
+                        pass
 
                     elif self.capaActiva.id() == self.obtenerIdCapa('Calles'): #Calles
 
                         self.dockwidget.tablaEdicionRef.setCellWidget(2,1,self.comboTipoVia)
 
                         idCve = str(self.seleccion[0]['id_cve_vialidad'])
+
+                        print(self.seleccion[0].id())
+                        print(self.seleccion[0]['id'])
+                        print(str(self.seleccion[0]['id_cve_vialidad']))
+
                         if idCve == None or idCve == '' or idCve == 'CALLE':
                             idCve = 'NULL'
 
+                        print(idCve)
+                        print(self.diccionarioTipoVia)
+
                         textito = self.diccionarioTipoVia[idCve]
+                        #textito = str(idCve)
 
                         index = self.comboTipoVia.findText(str(textito), QtCore.Qt.MatchFixedString)
                         if index >= 0:
@@ -1657,7 +1640,7 @@ class ActualizacionCatastralV3:
 
             if self.validarEdicionRef():
                 
-                self.UTI.mostrarAlerta('Se actualizo correctamente', QMessageBox().Information, 'Edicion de atributos')
+                self.UTI.mostrarAlerta('Se actualizó correctamente', QMessageBox().Information, 'Edicion de atributos')
                 self.cargarTablitaRef()
             
         else:
@@ -2025,7 +2008,7 @@ class ActualizacionCatastralV3:
                 banderaCompleta = False
             
             if not banderaCompleta:
-                self.UTI.mostrarAlerta('El codigo postal debe estar compuesto por 5 numeros', QMessageBox().Critical, 'Error de entrada')
+                self.UTI.mostrarAlerta('El codigo postal debe estar compuesto por 5 números', QMessageBox().Critical, 'Error de entrada')
 
         #----------------------Colonias------------------#
         elif nombreCapa == 'Colonias':
@@ -2129,6 +2112,10 @@ class ActualizacionCatastralV3:
                 feat['c_tipo_vialidad'] = self.comboTipoVia.currentText()
                 feat['longitud'] = float(self.dockwidget.tablaEdicionRef.item(1, 1).text())
 
+                print(self.comboTipoVia.itemData(indexComboVia))
+                print(self.comboTipoVia.currentText())
+                print(float(self.dockwidget.tablaEdicionRef.item(1, 1).text()))
+
 
         #----------------------Sectores------------------#
         elif nombreCapa == 'Sectores':
@@ -2144,31 +2131,18 @@ class ActualizacionCatastralV3:
             except: #Error al obtenre texto
                 banderaClave = False
             if self.UTI.esEntero(texto): #Cuando es entero
-                if len(texto) == 3: #Validacion de longitud
+                if len(texto) == 2: #Validacion de longitud
                     feat['clave'] = texto
                 else:
                     banderaClave = False
             else: #Cuando no es numerico
                 banderaClave = False
             
-            #Comparar el nombre
-            try:
-                texto = self.dockwidget.tablaEdicionRef.item(1, 1).text()
-            except: #Error al obtenre texto
-                banderaNom = False
-            if len(texto) <= 256: #Validacion de longitud
-                feat['nombre'] = texto
-            else:
-                banderaNom = False
-
             #Banderas
             if not banderaClave:
-                self.UTI.mostrarAlerta('La clave debe estar compuesta por 3 numeros', QMessageBox().Critical, 'Error de entrada')
+                self.UTI.mostrarAlerta('La clave debe estar compuesta por 2 números', QMessageBox().Critical, 'Error de entrada')
 
-            if not banderaNom:
-                self.UTI.mostrarAlerta('La longitud del nombre no debe exceder 256 caracteres', QMessageBox().Critical, 'Error de entrada')
-
-            banderaCompleta = banderaClave and banderaNom
+            banderaCompleta = banderaClave
 
         #----------------------Localidades------------------#
         elif nombreCapa == 'Localidades':
@@ -2203,7 +2177,7 @@ class ActualizacionCatastralV3:
 
             #Banderas
             if not banderaClave:
-                self.UTI.mostrarAlerta('La clave debe estar compuesta por 4 numeros', QMessageBox().Critical, 'Error de entrada')
+                self.UTI.mostrarAlerta('La clave debe estar compuesta por 4 números', QMessageBox().Critical, 'Error de entrada')
 
             if not banderaNom:
                 self.UTI.mostrarAlerta('La longitud del nombre no debe exceder 256 caracteres', QMessageBox().Critical, 'Error de entrada')
@@ -2243,7 +2217,7 @@ class ActualizacionCatastralV3:
 
             #Banderas
             if not banderaClave:
-                self.UTI.mostrarAlerta('La clave debe estar compuesta por 2 numeros', QMessageBox().Critical, 'Error de entrada')
+                self.UTI.mostrarAlerta('La clave debe estar compuesta por 2 números', QMessageBox().Critical, 'Error de entrada')
 
             if not banderaNom:
                 self.UTI.mostrarAlerta('La longitud del nombre no debe exceder 64 caracteres', QMessageBox().Critical, 'Error de entrada')
@@ -2283,7 +2257,7 @@ class ActualizacionCatastralV3:
 
             #Banderas
             if not banderaClave:
-                self.UTI.mostrarAlerta('La clave debe estar compuesta por 3 numeros', QMessageBox().Critical, 'Error de entrada')
+                self.UTI.mostrarAlerta('La clave debe estar compuesta por 3 números', QMessageBox().Critical, 'Error de entrada')
 
             if not banderaNom:
                 self.UTI.mostrarAlerta('La longitud del nombre no debe exceder 256 caracteres', QMessageBox().Critical, 'Error de entrada')
@@ -2323,7 +2297,7 @@ class ActualizacionCatastralV3:
 
             #Banderas
             if not banderaClave:
-                self.UTI.mostrarAlerta('La clave debe estar compuesta por 3 numeros', QMessageBox().Critical, 'Error de entrada')
+                self.UTI.mostrarAlerta('La clave debe estar compuesta por 3 números', QMessageBox().Critical, 'Error de entrada')
 
             if not banderaNom:
                 self.UTI.mostrarAlerta('La longitud del nombre no debe exceder 64 caracteres', QMessageBox().Critical, 'Error de entrada')
@@ -2366,7 +2340,7 @@ class ActualizacionCatastralV3:
 
             #Banderas
             if not banderaClave:
-                self.UTI.mostrarAlerta('La clave debe estar compuesta por 2 numeros', QMessageBox().Critical, 'Error de entrada')
+                self.UTI.mostrarAlerta('La clave debe estar compuesta por 2 números', QMessageBox().Critical, 'Error de entrada')
 
             if not banderaNom:
                 self.UTI.mostrarAlerta('La longitud del nombre no debe exceder 64 caracteres', QMessageBox().Critical, 'Error de entrada')
@@ -2392,7 +2366,7 @@ class ActualizacionCatastralV3:
             if not banderaNom:
                 self.UTI.mostrarAlerta('La longitud de la clave no debe exceder 10 caracteres', QMessageBox().Critical, 'Error de entrada')
 
-            banderaCompleta = banderaClave and banderaNom
+            banderaCompleta = banderaNom
 
         self.capaActiva.updateFeature(feat)
         self.capaActiva.triggerRepaint()
@@ -2455,7 +2429,7 @@ class ActualizacionCatastralV3:
                 print('ERROR: REF000')
             
 
-            print (data['features'])
+            print (data['features'][0]['properties'])
 
 
 
@@ -2504,8 +2478,7 @@ class ActualizacionCatastralV3:
             # valida si se debe de pintar de nuevo la capa o utilizar la que ya existe
             if capaAPintar == None:
                 mem_layer = QgsVectorLayer(uri, nameCapa, 'memory')
-                self.UTI.formatoCapa(nameCapa, mem_layer)
-                #self.etiquetarCapa(nameCapa, mem_layer)   
+                self.UTI.formatoCapa(nameCapa, mem_layer) 
             else:
                 mem_layer = capaAPintar
 
@@ -2522,12 +2495,14 @@ class ActualizacionCatastralV3:
             self.setearIdReferencia(nameCapa, mem_layer.id())
 
             mem_layer.setReadOnly(not edicion)
-
+            
             if data['features'] != []:
                 prov = mem_layer.dataProvider()
                 feats = [ QgsFeature() for i in range(len(geoms)) ]
                 for i, feat in enumerate(feats):
+                    print(properties[i])
                     feat.setAttributes(properties[i])
+
                     feat.setGeometry(QgsGeometry.fromWkt(geoms[i]))
 
                 if nameCapa != 'Manzanas' and nameCapa != 'Predios' and nameCapa != 'Construcciones':
@@ -2590,7 +2565,7 @@ class ActualizacionCatastralV3:
                 etiquetaField = 'descripcion'
                 colorCapa = QColor(120,0,232)
             elif nameCapa == 'Area de Valor':
-                etiquetaField = 'valor'
+                etiquetaField = 'Descripcion'
                 colorCapa = QColor(0,173,173)
             elif nameCapa.lower() == "construcciones":
                 etiquetaField = " if( cve_const_esp is null, concat(nom_volumen, '\n', num_niveles), concat(nom_volumen, '\n', cve_const_esp))"
@@ -2751,10 +2726,6 @@ class ActualizacionCatastralV3:
         payload = json.dumps(payload)
         headers = {'Content-Type': 'application/json', 'Authorization' : token}
         
-
-        print(self.CFG.urlConsultaReferencia)
-        print(payload)
-
         response = requests.post(self.CFG.urlConsultaReferencia, headers = headers, data = payload)
 
         if response.status_code == 200:
@@ -2788,8 +2759,8 @@ class ActualizacionCatastralV3:
         listaCampos['Localidades'] = ['clave', 'cve_cat', 'id', 'nombre']
         listaTipos['Localidades'] = ['string(5)', 'string(30)', 'integer', 'string(100)']
 
-        listaCampos['Sectores'] = ['clave', 'cve_cat', 'id', 'nombre']
-        listaTipos['Sectores'] = ['string(5)', 'string(30)', 'integer', 'string(100)']
+        listaCampos['Sectores'] = ['clave', 'cve_cat', 'id']
+        listaTipos['Sectores'] = ['string(5)', 'string(30)', 'integer']
 
         listaCampos['Codigo Postal'] = ['cve_cp', 'id']
         listaTipos['Codigo Postal'] = ['string(5)', 'integer']
@@ -2797,7 +2768,7 @@ class ActualizacionCatastralV3:
         listaCampos['Colonias'] = ['cve_col', 'descripcion', 'id', 'id_tipo_asentamiento']
         listaTipos['Colonias'] = ['string(5)', 'string(50)', 'integer', 'integer']
         
-        listaCampos['Cooredor de Valor'] = ['clave', 'id']
+        listaCampos['Corredor de Valor'] = ['clave', 'id']
         listaTipos['Corredor de Valor'] = ['string(10)', 'integer']
         
         listaCampos['Zona Uno'] = ['descripcion', 'id']
@@ -2848,7 +2819,7 @@ class ActualizacionCatastralV3:
 
         if respuesta.status_code == 200:
             datos = respuesta.json()
-            
+            n = ""
             for campo in datos:
 
                 longitud = campo['longitud']
@@ -2862,7 +2833,8 @@ class ActualizacionCatastralV3:
 
                 if longitud != None:
                     stringCapa += "("+str(longitud)+")"
-                
+                n = n + name + ', '
+            print(n)
             stringCapa += '&index=yes'
             return stringCapa
 
@@ -3062,7 +3034,10 @@ class ActualizacionCatastralV3:
         else:
             self.pintarCapasReferencia(xCapa, bBox.asWkt(), False)
 
-        #self.dockwidget.labelCapaEdicionRef.setText('---')
+        self.dockwidget.labelStatusEdicionRef.setText('---')
+        estilo = '''color: rgb(0, 0, 0);'''
+
+        self.dockwidget.labelStatusEdicionRef.setStyleSheet(estilo)
         self.dockwidget.comboCapasEdicion.setEnabled(True)
         self.dockwidget.botonActivarEdicion.setEnabled(True)
         self.dockwidget.botonActivarEdicion.setText('Activar Edicion de \nReferencia')
