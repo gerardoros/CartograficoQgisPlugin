@@ -28,9 +28,10 @@ class usuariosEdicionVer(QtWidgets.QDialog, FORM_CLASS):
         self.usuario = usuario
         self.nuevo = nuevo
         self.edicion = edicion
-
+        self.listaServicios = []
         self.CFG = CFG
         self.UTI = UTI
+        #self.nuevalista = []
 
         # -- informacion cargada
         self.cargada = False
@@ -67,6 +68,7 @@ class usuariosEdicionVer(QtWidgets.QDialog, FORM_CLASS):
 
         self.twRoles.setEditTriggers(QtWidgets.QTableWidget.NoEditTriggers)
         self.twRoles.setSortingEnabled(True)
+        self.twRoles.setColumnWidth(1,349)
         
         self.cargada = True
 
@@ -89,18 +91,29 @@ class usuariosEdicionVer(QtWidgets.QDialog, FORM_CLASS):
 
         print(self.roles)
 
-
         # tenemos la lista asi ['ROLE_ADMIN', 'ROLE_USER', 'ROLE_GENERAL', 'LINDEROS']
 
         # con un for recorrer la lista de roles
 
         # con cada iteracion consumir el servicio web con el rol
         #http://192.168.0.25:8080/autentificacion/api/account/permisos-carto-user-distinct/<ROL>
-        self.listaServicios = []
+        self.nuevalista = []
         # de la listaque regrese el servicio filtrar las operaciones para al final tener una lista con roles y operaciones
         for x in range(0,len(self.roles)):
+            n={}
             self.listaServicios = self.consumeWSGeneral(url_cons = self.CFG.url_AU_getAllRole + self.roles[x])
-            print(listaServicios)
+            n['rol'] = self.roles[x]
+            comas = ''
+            for i in range(0,len(self.listaServicios)):
+                if self.listaServicios[i]['asignado'] == True:
+                    comas = comas + self.listaServicios[i]['nombre'] + ','
+
+            n['operaciones'] = comas[:-1]
+
+            self.nuevalista.append(n)
+        print(self.nuevalista)
+        
+        
         '''nuevalista = []
 
         for recorrer lista de roles:
@@ -131,7 +144,7 @@ class usuariosEdicionVer(QtWidgets.QDialog, FORM_CLASS):
             return
 
         # manda a abrir el formulario (parametros: self.roles, self.CFG, self.UTI)
-        obj = agregarRoles_usuario(self.roles, CFG = self.CFG, UTI = self.UTI)
+        obj = agregarRoles_usuario(self.nuevalista, CFG = self.CFG, UTI = self.UTI)
         respuesta = obj.exec()
 
         # regresa un 0 o un 1

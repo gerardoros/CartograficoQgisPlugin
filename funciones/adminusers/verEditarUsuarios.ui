@@ -59,18 +59,18 @@
        </rect>
       </property>
       <layout class="QGridLayout" name="gridLayout">
-       <item row="6" column="0" colspan="2">
-        <widget class="QgsPasswordLineEdit" name="mleContrUno">
+       <item row="5" column="0">
+        <widget class="QLabel" name="lbContrUno">
          <property name="minimumSize">
           <size>
-           <width>257</width>
-           <height>25</height>
+           <width>94</width>
+           <height>0</height>
           </size>
          </property>
          <property name="maximumSize">
           <size>
-           <width>8000</width>
-           <height>25</height>
+           <width>94</width>
+           <height>16777215</height>
           </size>
          </property>
          <property name="font">
@@ -81,26 +81,23 @@
            <bold>true</bold>
           </font>
          </property>
-         <property name="styleSheet">
-          <string notr="true">background : rgb(255,255,255)</string>
-         </property>
-         <property name="maxLength">
-          <number>60</number>
+         <property name="text">
+          <string>Contraseña:</string>
          </property>
         </widget>
        </item>
-       <item row="10" column="2">
-        <widget class="QPushButton" name="btnOk">
+       <item row="7" column="0">
+        <widget class="QLabel" name="label_2">
          <property name="minimumSize">
           <size>
-           <width>130</width>
-           <height>30</height>
+           <width>94</width>
+           <height>0</height>
           </size>
          </property>
          <property name="maximumSize">
           <size>
-           <width>130</width>
-           <height>30</height>
+           <width>16777215</width>
+           <height>16777215</height>
           </size>
          </property>
          <property name="font">
@@ -111,19 +108,8 @@
            <bold>true</bold>
           </font>
          </property>
-         <property name="styleSheet">
-          <string notr="true">QPushButton{
-background : rgb(174, 116, 0);
-color : rgb(255, 255, 255)
-}
-QPushButton::disabled {
-background : rgb(187, 129, 13);
-color : rgb(245,245,245);
-border: 1px solid #adb2b5;
-}</string>
-         </property>
          <property name="text">
-          <string>Guardar</string>
+          <string>Correo:</string>
          </property>
         </widget>
        </item>
@@ -223,60 +209,6 @@ QCheckBox::indicator {
          </property>
         </widget>
        </item>
-       <item row="5" column="0">
-        <widget class="QLabel" name="lbContrUno">
-         <property name="minimumSize">
-          <size>
-           <width>94</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>94</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <property name="font">
-          <font>
-           <family>Century Gothic</family>
-           <pointsize>12</pointsize>
-           <weight>75</weight>
-           <bold>true</bold>
-          </font>
-         </property>
-         <property name="text">
-          <string>Contraseña:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="7" column="0">
-        <widget class="QLabel" name="label_2">
-         <property name="minimumSize">
-          <size>
-           <width>94</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>16777215</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <property name="font">
-          <font>
-           <family>Century Gothic</family>
-           <pointsize>12</pointsize>
-           <weight>75</weight>
-           <bold>true</bold>
-          </font>
-         </property>
-         <property name="text">
-          <string>Correo:</string>
-         </property>
-        </widget>
-       </item>
        <item row="7" column="1" colspan="2">
         <widget class="QLineEdit" name="leCorreo">
          <property name="minimumSize">
@@ -304,6 +236,33 @@ QCheckBox::indicator {
          </property>
          <property name="maxLength">
           <number>100</number>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="0">
+        <widget class="QLabel" name="label">
+         <property name="minimumSize">
+          <size>
+           <width>94</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>94</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <family>Century Gothic</family>
+           <pointsize>12</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>Usuario:</string>
          </property>
         </widget>
        </item>
@@ -337,33 +296,6 @@ QCheckBox::indicator {
          </property>
          <property name="echoMode">
           <enum>QLineEdit::Password</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="0">
-        <widget class="QLabel" name="label">
-         <property name="minimumSize">
-          <size>
-           <width>94</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>94</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <property name="font">
-          <font>
-           <family>Century Gothic</family>
-           <pointsize>12</pointsize>
-           <weight>75</weight>
-           <bold>true</bold>
-          </font>
-         </property>
-         <property name="text">
-          <string>Usuario:</string>
          </property>
         </widget>
        </item>
@@ -405,33 +337,6 @@ border: 1px solid #adb2b5;
          </property>
         </widget>
        </item>
-       <item row="0" column="2">
-        <widget class="QLabel" name="label_4">
-         <property name="minimumSize">
-          <size>
-           <width>94</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>94</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <property name="font">
-          <font>
-           <family>Century Gothic</family>
-           <pointsize>12</pointsize>
-           <weight>75</weight>
-           <bold>true</bold>
-          </font>
-         </property>
-         <property name="text">
-          <string>Apellido (s):</string>
-         </property>
-        </widget>
-       </item>
        <item row="0" column="0">
         <widget class="QLabel" name="label_3">
          <property name="minimumSize">
@@ -456,6 +361,33 @@ border: 1px solid #adb2b5;
          </property>
          <property name="text">
           <string>Nombre (s):</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <widget class="QLabel" name="label_4">
+         <property name="minimumSize">
+          <size>
+           <width>94</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>94</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <family>Century Gothic</family>
+           <pointsize>12</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>Apellido (s):</string>
          </property>
         </widget>
        </item>
@@ -516,49 +448,6 @@ border: 1px solid #adb2b5;
          </property>
         </widget>
        </item>
-       <item row="9" column="0" colspan="4">
-        <widget class="QTableWidget" name="twRoles">
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>150</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>16777215</width>
-           <height>250</height>
-          </size>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">QTableWidget {background-color: white;}
-QHeaderView::section
-{
-background-color: rgb(238,225,200);
-color : rgb(52, 42, 24 );
-text-align: right;
-font-size:12px;
-height:24px
-}
-QHeaderView {background-color: white;}</string>
-         </property>
-         <column>
-          <property name="text">
-           <string>Rol</string>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>Operaciones</string>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string/>
-          </property>
-         </column>
-        </widget>
-       </item>
        <item row="4" column="1" colspan="2">
         <widget class="QLineEdit" name="leUsuario">
          <property name="minimumSize">
@@ -570,36 +459,6 @@ QHeaderView {background-color: white;}</string>
          <property name="maximumSize">
           <size>
            <width>800</width>
-           <height>25</height>
-          </size>
-         </property>
-         <property name="font">
-          <font>
-           <family>Century Gothic</family>
-           <pointsize>12</pointsize>
-           <weight>75</weight>
-           <bold>true</bold>
-          </font>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">background : rgb(255,255,255)</string>
-         </property>
-         <property name="maxLength">
-          <number>50</number>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="0" colspan="2">
-        <widget class="QLineEdit" name="leNombres">
-         <property name="minimumSize">
-          <size>
-           <width>257</width>
-           <height>25</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>8000</width>
            <height>25</height>
           </size>
          </property>
@@ -655,6 +514,150 @@ border: 1px solid #adb2b5;
          <property name="text">
           <string>Cancelar</string>
          </property>
+        </widget>
+       </item>
+       <item row="1" column="0" colspan="2">
+        <widget class="QLineEdit" name="leNombres">
+         <property name="minimumSize">
+          <size>
+           <width>257</width>
+           <height>25</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>8000</width>
+           <height>25</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <family>Century Gothic</family>
+           <pointsize>12</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background : rgb(255,255,255)</string>
+         </property>
+         <property name="maxLength">
+          <number>50</number>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="0" colspan="2">
+        <widget class="QgsPasswordLineEdit" name="mleContrUno">
+         <property name="minimumSize">
+          <size>
+           <width>257</width>
+           <height>25</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>8000</width>
+           <height>25</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <family>Century Gothic</family>
+           <pointsize>12</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background : rgb(255,255,255)</string>
+         </property>
+         <property name="maxLength">
+          <number>60</number>
+         </property>
+        </widget>
+       </item>
+       <item row="10" column="2">
+        <widget class="QPushButton" name="btnOk">
+         <property name="minimumSize">
+          <size>
+           <width>130</width>
+           <height>30</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>130</width>
+           <height>30</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <family>Century Gothic</family>
+           <pointsize>12</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QPushButton{
+background : rgb(174, 116, 0);
+color : rgb(255, 255, 255)
+}
+QPushButton::disabled {
+background : rgb(187, 129, 13);
+color : rgb(245,245,245);
+border: 1px solid #adb2b5;
+}</string>
+         </property>
+         <property name="text">
+          <string>Guardar</string>
+         </property>
+        </widget>
+       </item>
+       <item row="9" column="0" colspan="4">
+        <widget class="QTableWidget" name="twRoles">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>150</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>250</height>
+          </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QTableWidget {background-color: white;}
+QHeaderView::section
+{
+background-color: rgb(238,225,200);
+color : rgb(52, 42, 24 );
+text-align: right;
+font-size:12px;
+height:24px
+}
+QHeaderView {background-color: white;}</string>
+         </property>
+         <property name="sizeAdjustPolicy">
+          <enum>QAbstractScrollArea::AdjustToContents</enum>
+         </property>
+         <column>
+          <property name="text">
+           <string>Rol</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Operaciones</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string/>
+          </property>
+         </column>
         </widget>
        </item>
       </layout>
