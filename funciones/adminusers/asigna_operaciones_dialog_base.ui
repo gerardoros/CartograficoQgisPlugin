@@ -184,8 +184,8 @@ height:24px
    </property>
    <property name="font">
     <font>
-     <family>Century Gothic</family>
-     <pointsize>12</pointsize>
+     <family>MS Shell Dlg 2</family>
+     <pointsize>8</pointsize>
      <weight>75</weight>
      <bold>true</bold>
     </font>
@@ -193,12 +193,16 @@ height:24px
    <property name="styleSheet">
     <string notr="true">QPushButton{
 background : rgb(174, 116, 0);
-color : rgb(255, 255, 255)
+color : rgb(255, 255, 255);
+border-radius : 4px;
 }
-QPushButton::disabled {
-background : rgb(187, 129, 13);
-color : rgb(245,245,245);
-border: 1px solid #adb2b5;
+QPushButton::hover{
+background : rgb(104, 69, 13);
+color : rgb(255, 255, 255);
+border-radius : 4px;
+}
+QPushButton:disabled {
+background: rgb(217, 217, 217)
 }</string>
    </property>
    <property name="text">
@@ -228,8 +232,8 @@ border: 1px solid #adb2b5;
    </property>
    <property name="font">
     <font>
-     <family>Century Gothic</family>
-     <pointsize>12</pointsize>
+     <family>MS Shell Dlg 2</family>
+     <pointsize>8</pointsize>
      <weight>75</weight>
      <bold>true</bold>
     </font>
@@ -237,12 +241,16 @@ border: 1px solid #adb2b5;
    <property name="styleSheet">
     <string notr="true">QPushButton{
 background : rgb(174, 116, 0);
-color : rgb(255, 255, 255)
+color : rgb(255, 255, 255);
+border-radius : 4px;
 }
-QPushButton::disabled {
-background : rgb(187, 129, 13);
-color : rgb(245,245,245);
-border: 1px solid #adb2b5;
+QPushButton::hover{
+background : rgb(104, 69, 13);
+color : rgb(255, 255, 255);
+border-radius : 4px;
+}
+QPushButton:disabled {
+background: rgb(217, 217, 217)
 }</string>
    </property>
    <property name="text">

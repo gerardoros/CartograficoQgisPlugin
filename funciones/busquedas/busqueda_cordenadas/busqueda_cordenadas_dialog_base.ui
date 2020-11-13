@@ -6,20 +6,20 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>631</width>
-    <height>175</height>
+    <width>607</width>
+    <height>156</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>631</width>
-    <height>175</height>
+    <width>607</width>
+    <height>156</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>631</width>
-    <height>175</height>
+    <width>607</width>
+    <height>156</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -47,16 +47,16 @@
   <widget class="QPushButton" name="btDetalle">
    <property name="geometry">
     <rect>
-     <x>350</x>
-     <y>130</y>
-     <width>130</width>
+     <x>330</x>
+     <y>110</y>
+     <width>131</width>
      <height>30</height>
     </rect>
    </property>
    <property name="font">
     <font>
-     <family>Arial</family>
-     <pointsize>12</pointsize>
+     <family>MS Shell Dlg 2</family>
+     <pointsize>8</pointsize>
      <weight>75</weight>
      <bold>true</bold>
     </font>
@@ -64,12 +64,16 @@
    <property name="styleSheet">
     <string notr="true">QPushButton{
 background : rgb(174, 116, 0);
-color : rgb(255, 255, 255)
+color : rgb(255, 255, 255);
+border-radius : 4px;
 }
-QPushButton::disabled {
-background : rgb(187, 129, 13);
-color : rgb(245,245,245);
-border: 1px solid #adb2b5;
+QPushButton::hover{
+background : rgb(104, 69, 13);
+color : rgb(255, 255, 255);
+border-radius : 4px;
+}
+QPushButton:disabled {
+background: rgb(217, 217, 217)
 }</string>
    </property>
    <property name="text">
@@ -79,16 +83,16 @@ border: 1px solid #adb2b5;
   <widget class="QPushButton" name="btCerrar">
    <property name="geometry">
     <rect>
-     <x>490</x>
-     <y>130</y>
+     <x>470</x>
+     <y>110</y>
      <width>130</width>
      <height>30</height>
     </rect>
    </property>
    <property name="font">
     <font>
-     <family>Arial</family>
-     <pointsize>12</pointsize>
+     <family>MS Shell Dlg 2</family>
+     <pointsize>8</pointsize>
      <weight>75</weight>
      <bold>true</bold>
     </font>
@@ -96,12 +100,76 @@ border: 1px solid #adb2b5;
    <property name="styleSheet">
     <string notr="true">QPushButton{
 background : rgb(174, 116, 0);
-color : rgb(255, 255, 255)
+color : rgb(255, 255, 255);
+border-radius : 4px;
 }
-QPushButton::disabled {
-background : rgb(187, 129, 13);
-color : rgb(245,245,245);
-border: 1px solid #adb2b5;
+QPushButton::hover{
+background : rgb(104, 69, 13);
+color : rgb(255, 255, 255);
+border-radius : 4px;
+}
+QPushButton:disabled {
+background: rgb(217, 217, 217)
+}QPushButton{
+background : rgb(174, 116, 0);
+color : rgb(255, 255, 255);
+border-radius : 4px;
+}
+QPushButton::hover{
+background : rgb(104, 69, 13);
+color : rgb(255, 255, 255);
+border-radius : 4px;
+}
+QPushButton:disabled {
+background: rgb(217, 217, 217)
+}QPushButton{
+background : rgb(174, 116, 0);
+color : rgb(255, 255, 255);
+border-radius : 4px;
+}
+QPushButton::hover{
+background : rgb(104, 69, 13);
+color : rgb(255, 255, 255);
+border-radius : 4px;
+}
+QPushButton:disabled {
+background: rgb(217, 217, 217)
+}QPushButton{
+background : rgb(174, 116, 0);
+color : rgb(255, 255, 255);
+border-radius : 4px;
+}
+QPushButton::hover{
+background : rgb(104, 69, 13);
+color : rgb(255, 255, 255);
+border-radius : 4px;
+}
+QPushButton:disabled {
+background: rgb(217, 217, 217)
+}QPushButton{
+background : rgb(174, 116, 0);
+color : rgb(255, 255, 255);
+border-radius : 4px;
+}
+QPushButton::hover{
+background : rgb(104, 69, 13);
+color : rgb(255, 255, 255);
+border-radius : 4px;
+}
+QPushButton:disabled {
+background: rgb(217, 217, 217)
+}QPushButton{
+background : rgb(174, 116, 0);
+color : rgb(255, 255, 255);
+border-radius : 4px;
+}
+QPushButton::hover{
+background : rgb(104, 69, 13);
+color : rgb(255, 255, 255);
+border-radius : 4px;
+}
+QPushButton:disabled {
+background: rgb(217, 217, 217)
 }</string>
    </property>
    <property name="text">
@@ -111,16 +179,16 @@ border: 1px solid #adb2b5;
   <widget class="QPushButton" name="btLocalizar">
    <property name="geometry">
     <rect>
-     <x>210</x>
-     <y>130</y>
+     <x>190</x>
+     <y>110</y>
      <width>130</width>
      <height>30</height>
     </rect>
    </property>
    <property name="font">
     <font>
-     <family>Arial</family>
-     <pointsize>12</pointsize>
+     <family>MS Shell Dlg 2</family>
+     <pointsize>8</pointsize>
      <weight>75</weight>
      <bold>true</bold>
     </font>
@@ -128,12 +196,16 @@ border: 1px solid #adb2b5;
    <property name="styleSheet">
     <string notr="true">QPushButton{
 background : rgb(174, 116, 0);
-color : rgb(255, 255, 255)
+color : rgb(255, 255, 255);
+border-radius : 4px;
 }
-QPushButton::disabled {
-background : rgb(187, 129, 13);
-color : rgb(245,245,245);
-border: 1px solid #adb2b5;
+QPushButton::hover{
+background : rgb(104, 69, 13);
+color : rgb(255, 255, 255);
+border-radius : 4px;
+}
+QPushButton:disabled {
+background: rgb(217, 217, 217)
 }</string>
    </property>
    <property name="text">
@@ -143,7 +215,7 @@ border: 1px solid #adb2b5;
   <widget class="QLabel" name="label_2">
    <property name="geometry">
     <rect>
-     <x>20</x>
+     <x>10</x>
      <y>30</y>
      <width>421</width>
      <height>21</height>
@@ -164,7 +236,7 @@ border: 1px solid #adb2b5;
   <widget class="QLabel" name="label">
    <property name="geometry">
     <rect>
-     <x>20</x>
+     <x>10</x>
      <y>10</y>
      <width>601</width>
      <height>21</height>
@@ -185,8 +257,8 @@ border: 1px solid #adb2b5;
   <widget class="QLabel" name="label_3">
    <property name="geometry">
     <rect>
-     <x>40</x>
-     <y>80</y>
+     <x>10</x>
+     <y>70</y>
      <width>47</width>
      <height>13</height>
     </rect>
@@ -194,7 +266,7 @@ border: 1px solid #adb2b5;
    <property name="font">
     <font>
      <family>Arial</family>
-     <pointsize>12</pointsize>
+     <pointsize>10</pointsize>
      <weight>75</weight>
      <bold>true</bold>
     </font>
@@ -206,8 +278,8 @@ border: 1px solid #adb2b5;
   <widget class="QLabel" name="label_4">
    <property name="geometry">
     <rect>
-     <x>280</x>
-     <y>80</y>
+     <x>250</x>
+     <y>70</y>
      <width>47</width>
      <height>13</height>
     </rect>
@@ -215,7 +287,7 @@ border: 1px solid #adb2b5;
    <property name="font">
     <font>
      <family>Arial</family>
-     <pointsize>12</pointsize>
+     <pointsize>10</pointsize>
      <weight>75</weight>
      <bold>true</bold>
     </font>
@@ -227,10 +299,10 @@ border: 1px solid #adb2b5;
   <widget class="QLineEdit" name="leCordenadasX">
    <property name="geometry">
     <rect>
-     <x>60</x>
+     <x>30</x>
      <y>70</y>
      <width>211</width>
-     <height>31</height>
+     <height>21</height>
     </rect>
    </property>
    <property name="font">
@@ -254,10 +326,10 @@ border: 1px solid #adb2b5;
   <widget class="QLineEdit" name="leCordenadasY">
    <property name="geometry">
     <rect>
-     <x>300</x>
+     <x>270</x>
      <y>70</y>
      <width>211</width>
-     <height>31</height>
+     <height>21</height>
     </rect>
    </property>
    <property name="font">
@@ -281,8 +353,8 @@ border: 1px solid #adb2b5;
   <widget class="QPushButton" name="btCodnadas">
    <property name="geometry">
     <rect>
-     <x>530</x>
-     <y>70</y>
+     <x>500</x>
+     <y>60</y>
      <width>41</width>
      <height>30</height>
     </rect>
@@ -298,12 +370,16 @@ border: 1px solid #adb2b5;
    <property name="styleSheet">
     <string notr="true">QPushButton{
 background : rgb(174, 116, 0);
-color : rgb(255, 255, 255)
+color : rgb(255, 255, 255);
+border-radius : 4px;
 }
-QPushButton::disabled {
-background : rgb(187, 129, 13);
-color : rgb(245,245,245);
-border: 1px solid #adb2b5;
+QPushButton::hover{
+background : rgb(104, 69, 13);
+color : rgb(255, 255, 255);
+border-radius : 4px;
+}
+QPushButton:disabled {
+background: rgb(217, 217, 217)
 }</string>
    </property>
    <property name="text">
