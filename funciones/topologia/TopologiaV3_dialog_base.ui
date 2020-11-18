@@ -23,7 +23,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>Validador de Topologia</string>
+   <string>Validador de topología</string>
   </property>
   <property name="styleSheet">
    <string notr="true">QDialog{
@@ -73,7 +73,7 @@ height:24px
     </font>
    </property>
    <property name="text">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Errores de Topologia Detectados&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Errores de topología detectados&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
   </widget>
   <widget class="QTableWidget" name="tablaComp">
@@ -127,7 +127,7 @@ height:24px
    </column>
    <column>
     <property name="text">
-     <string>Erroneos</string>
+     <string>Erróneos</string>
     </property>
    </column>
    <item row="0" column="0">
@@ -200,7 +200,7 @@ background: rgb(217, 217, 217)
 }</string>
    </property>
    <property name="text">
-    <string>Validar topologia
+    <string>Validar topología
 (Consulta)</string>
    </property>
   </widget>
@@ -237,7 +237,7 @@ background: rgb(217, 217, 217)
 }</string>
    </property>
    <property name="text">
-    <string>Validar topologia
+    <string>Validar topología
 (Referencia)</string>
    </property>
   </widget>
@@ -274,7 +274,7 @@ background: rgb(217, 217, 217)
 }</string>
    </property>
    <property name="text">
-    <string>Reglas de Topologia</string>
+    <string>Reglas de topología</string>
    </property>
   </widget>
   <widget class="QWidget" name="widget" native="true">

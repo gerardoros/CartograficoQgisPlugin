@@ -23,6 +23,8 @@ class Reglas:
         self.prediosMalos = []
         self.constMalas = []
 
+        self.srid = QSettings().value("srid")
+
 ############################################################################
 
     def obtenerSoloFeaturesRef(self, nameCapa, tipoConsulta):
@@ -36,7 +38,7 @@ class Reglas:
         data = self.ACA.obtenerCapasDeReferencia(self.ACA.tablasReferencias[nameCapa], None)
         
         type(data)
-        srid = 32614
+        srid = self.srid
         inSpatialRef = osr.SpatialReference()
         inSpatialRef.ImportFromEPSG(int(srid))
         outSpatialRef = osr.SpatialReference()
@@ -59,7 +61,6 @@ class Reglas:
 
         if tipoConsulta == 'contenedor':
             self.valorInteresado = keys.index(stringInteresado)
-            
 
         properties = []
         geoms = []
@@ -146,7 +147,7 @@ class Reglas:
         
 
         self.stringError = "Interseccion: " + nombreCapa1 + " - " + nombreCapa2 + " " + str(self.cuentaError) + " elementos"   
-        temp = QgsVectorLayer("Polygon?crs=epsg:32614", "Intersecciones: "  + nombreCapa1 + "-" + nombreCapa2, "memory")
+        temp = QgsVectorLayer("Polygon?crs=epsg:" + self.srid, "Intersecciones: "  + nombreCapa1 + "-" + nombreCapa2, "memory")
 
         self.pintarErrores(temp, listaErrores)
         
@@ -198,7 +199,7 @@ class Reglas:
 
         #Dibujamos los errores
         self.stringError = nombreBase + " no cubiertos por " + nombreCobertura + " " + str(self.cuentaError) + " elementos"
-        temp = QgsVectorLayer("Polygon?crs=epsg:32614", nombreBase + " no cubiertos por " + nombreCobertura, "memory")
+        temp = QgsVectorLayer("Polygon?crs=epsg:" + self.srid, nombreBase + " no cubiertos por " + nombreCobertura, "memory")
         
         
         self.pintarErrores(temp, listDiferencias)
@@ -249,7 +250,7 @@ class Reglas:
         
 
         self.stringError = nombreObjetos + " no cubiertos totalmente por " + nombreContenedor + " " + str(self.cuentaError) + " elementos"
-        temp = QgsVectorLayer("Polygon?crs=epsg:32614", nombreObjetos + " no cubiertos totalmente por " + nombreContenedor, "memory")
+        temp = QgsVectorLayer("Polygon?crs=epsg:" + self.srid, nombreObjetos + " no cubiertos totalmente por " + nombreContenedor, "memory")
 
         self.pintarErrores(temp, listaSalidas)
 
@@ -286,7 +287,7 @@ class Reglas:
 
         
         self.stringError = "Capa: " + nombreCapa + " " + str(self.cuentaError) + " geometrias invalidas"
-        temp = QgsVectorLayer('Polygon?crs=epsg:32614', 'Poligonos Invalidos ' + nombreCapa, 'memory')
+        temp = QgsVectorLayer('Polygon?crs=epsg:' + self.srid, 'Poligonos Invalidos ' + nombreCapa, 'memory')
 
         self.pintarErrores(temp, geoms)
 
@@ -332,10 +333,10 @@ class Reglas:
         l1 = QgsVectorLayer()
 
         if capa.wkbType() == 5 or capa.wkbType() == 2:
-            l1 = QgsVectorLayer('LineString?crs=epsg:32614&field=cve_cat:string(15)&index=yes', 'duplicado_' + nombreCapa, 'memory')
+            l1 = QgsVectorLayer('LineString?crs=epsg:' + self.srid + '&field=cve_cat:string(15)&index=yes', 'duplicado_' + nombreCapa, 'memory')
 
         if capa.wkbType() == 1:
-            l1 = QgsVectorLayer('Point?crs=epsg:32614&field=cve_cat:string(15)&index=yes', 'duplicado_' + nombreCapa, 'memory')
+            l1 = QgsVectorLayer('Point?crs=epsg:' + self.srid + '&field=cve_cat:string(15)&index=yes', 'duplicado_' + nombreCapa, 'memory')
 
         self.pintarErrores(l1, geoms)
 
@@ -377,7 +378,7 @@ class Reglas:
         
 
         self.stringError = "Capa: " + nombreCapa  + " se solapan "  + str(self.cuentaError) + " lineas"
-        l1 = QgsVectorLayer('LineString?crs=epsg:32614&field=cve_cat:string(15)&index=yes', 'Lineas solapadas ' + nombreCapa, 'memory')
+        l1 = QgsVectorLayer('LineString?crs=epsg:' + self.srid + '&field=cve_cat:string(15)&index=yes', 'Lineas solapadas ' + nombreCapa, 'memory')
 
         self.pintarErrores(l1, geoms)
 
@@ -412,7 +413,7 @@ class Reglas:
         
 
         self.stringError = "Multipartes: "  + nombreCapa + " " + str(self.cuentaError) + " elementos"   
-        l1 = QgsVectorLayer('Polygon?crs=epsg:32614&index=yes', 'Geometrias Multiparte ' + nombreCapa, 'memory')
+        l1 = QgsVectorLayer('Polygon?crs=epsg:' + self.srid + '&index=yes', 'Geometrias Multiparte ' + nombreCapa, 'memory')
         
         self.pintarErrores(l1, geoms) 
 
@@ -451,7 +452,7 @@ class Reglas:
         
         self.cuentaError = len(geoms)
         self.stringError = "Anillos: "  + nombreCapa + " " + str(self.cuentaError) + " elementos"   
-        l1 = QgsVectorLayer('Polygon?crs=epsg:32614&index=yes', 'Anillos ' + nombreCapa, 'memory')
+        l1 = QgsVectorLayer('Polygon?crs=epsg:' + self.srid + '&index=yes', 'Anillos ' + nombreCapa, 'memory')
 
         self.pintarErrores(l1, geoms)
 
@@ -488,7 +489,7 @@ class Reglas:
 
         
         self.stringError = "Puntos de la capa: " + nombrePunto + " no incluidos en poligonos de la capa " + nombrePoligono + " " + str(self.cuentaError) + " elementos"
-        capa = QgsVectorLayer('Point?crs=epsg:32614&field=cve_cat:string(15)&index=yes',  "Puntos de la capa: " + nombrePunto + " no incluidos en poligonos de la capa " + nombrePoligono, 'memory')
+        capa = QgsVectorLayer('Point?crs=epsg:' + self.srid + '&field=cve_cat:string(15)&index=yes',  "Puntos de la capa: " + nombrePunto + " no incluidos en poligonos de la capa " + nombrePoligono, 'memory')
 
         self.pintarErrores(capa, geoms)
 
@@ -585,7 +586,7 @@ class Reglas:
         
         
         self.stringError = nombreObj + " sin tocar un solo elemento de " + nombreBase + " " + str(self.cuentaError) + " elementos"
-        temp = QgsVectorLayer("Polygon?crs=epsg:32614", nombreObj + " sin tocar un solo elemento de " + nombreBase, "memory")
+        temp = QgsVectorLayer("Polygon?crs=epsg:" + self.srid, nombreObj + " sin tocar un solo elemento de " + nombreBase, "memory")
 
         self.pintarErrores(temp, listaError)
 
@@ -691,7 +692,7 @@ class Reglas:
         root = QgsProject.instance().layerTreeRoot()
         grupoErrores = root.findGroup('ERRORES DE TOPOLOGIA')
 
-        l1 = QgsVectorLayer('Polygon?crs=epsg:32614&field=cve_cat:string(15)&index=yes', 'poligono_duplicado_' + nombreCapa, 'memory')
+        l1 = QgsVectorLayer('Polygon?crs=epsg:' + self.srid + '&field=cve_cat:string(15)&index=yes', 'poligono_duplicado_' + nombreCapa, 'memory')
 
         self.pintarErrores(l1, geoms)
 
@@ -729,7 +730,7 @@ class Reglas:
 
         
         self.stringError = "Debe existir exactamente un punto de la capa " + nombrePunto + " en poligonos de la capa " + nombrePoligono + " " + str(self.cuentaError) + " elementos"
-        capa = QgsVectorLayer('Polygon?crs=epsg:32614&field=cve_cat:string(15)&index=yes',  "Puntos de la capa: " + nombrePunto + " no incluidos en poligonos de la capa " + nombrePoligono, 'memory')
+        capa = QgsVectorLayer('Polygon?crs=epsg:' + self.srid + '&field=cve_cat:string(15)&index=yes',  "Puntos de la capa: " + nombrePunto + " no incluidos en poligonos de la capa " + nombrePoligono, 'memory')
 
         self.pintarErrores(capa, geoms)
 
@@ -769,7 +770,7 @@ class Reglas:
             return
 
         self.stringError = str(self.cuentaError) + " areas inscritas en predios regulares"
-        capa = QgsVectorLayer('Polygon?crs=epsg:32614&field=cve_cat:string(15)&index=yes',  "Areas inscritas en predios regulares", 'memory')
+        capa = QgsVectorLayer('Polygon?crs=epsg:' + self.srid + '&field=cve_cat:string(15)&index=yes',  "Areas inscritas en predios regulares", 'memory')
 
         self.pintarErrores(capa, listaError)
 
@@ -800,7 +801,7 @@ class Reglas:
             return
 
         self.stringError = str(self.cuentaError) + " Areas inscritas no cuadradas o rectangulares y con angulos rectos"
-        capa = QgsVectorLayer('Polygon?crs=epsg:32614&field=cve_cat:string(15)&index=yes',  "Areas inscritas no cuadradas o rectangulares y con angulos rectos", 'memory')
+        capa = QgsVectorLayer('Polygon?crs=epsg:' + self.srid + '&field=cve_cat:string(15)&index=yes',  "Areas inscritas no cuadradas o rectangulares y con angulos rectos", 'memory')
 
         self.pintarErrores(capa, listaError)
 
@@ -842,7 +843,7 @@ class Reglas:
             return
 
         self.stringError = str(self.cuentaError) + " predios irregulares con mas de dos areas inscritas"
-        capa = QgsVectorLayer('Polygon?crs=epsg:32614&field=cve_cat:string(15)&index=yes',  "predios irregulares con mas de dos areas inscritas", 'memory')
+        capa = QgsVectorLayer('Polygon?crs=epsg:' + self.srid + '&field=cve_cat:string(15)&index=yes',  "predios irregulares con mas de dos areas inscritas", 'memory')
 
         self.pintarErrores(capa, listaError)
 
@@ -881,14 +882,15 @@ class Reglas:
 
         
         self.stringError = "Debe existir al menos un punto de la capa " + nombrePunto + " en poligonos de la capa " + nombrePoligono + " " + str(self.cuentaError) + " elementos"
-        capa = QgsVectorLayer('Polygon?crs=epsg:32614&field=cve_cat:string(15)&index=yes',  "Puntos de la capa: " + nombrePunto + " no incluidos en poligonos de la capa " + nombrePoligono, 'memory')
+        capa = QgsVectorLayer('Polygon?crs=epsg:' + self.srid + '&field=cve_cat:string(15)&index=yes',  "Puntos de la capa: " + nombrePunto + " no incluidos en poligonos de la capa " + nombrePoligono, 'memory')
 
         self.pintarErrores(capa, geoms)
 
 #################################################################################################
 
     def validarInclusionRef(self, nombreObjeto, nombreContenedor):
-
+        print(nombreObjeto)
+        print(nombreContenedor)
 
         listaObjeto = self.obtenerSoloFeaturesRef(nombreObjeto, 'objeto')
         listaContenedor = self.obtenerSoloFeaturesRef(nombreContenedor, 'contenedor')
@@ -938,7 +940,7 @@ class Reglas:
             return
         #Los dibujamos
         self.stringError = nombreObjeto + " no cubiertos totalmente por " + nombreContenedor + " " + str(self.cuentaError) + " elementos"
-        temp = QgsVectorLayer("Polygon?crs=epsg:32614", nombreObjeto + " no cubiertos totalmente por " + nombreContenedor, "memory")
+        temp = QgsVectorLayer("Polygon?crs=epsg:" + self.srid, nombreObjeto + " no cubiertos totalmente por " + nombreContenedor, "memory")
 
         self.pintarErrores(temp, listaSalidas)
 
@@ -971,7 +973,7 @@ class Reglas:
         self.poligonosValidos = False
 
         self.stringError = "Capa: " + nombreCapa + " " + str(self.cuentaError) + " geometrias invalidas"
-        temp = QgsVectorLayer('Polygon?crs=epsg:32614', 'Poligonos Invalidos ' + nombreCapa, 'memory')
+        temp = QgsVectorLayer('Polygon?crs=epsg:' + self.srid, 'Poligonos Invalidos ' + nombreCapa, 'memory')
 
         self.pintarErrores(temp, geoms)
     
@@ -1002,7 +1004,8 @@ class Reglas:
         diccCampos['Codigo Postal'] = ['cve_cp']
         diccCampos['Zona Uno'] = ['descripcion']
         diccCampos['Zona Dos'] = ['descripcion']
-        diccCampos['Area de Valor'] = ['valor', 'descripcion', 'cve_vus']
+        diccCampos['Area de Valor'] = ['descripcion']
+        diccCampos['Corredor de Valor'] = ['clave']
 
 
         self.cuentaError = 0
@@ -1028,9 +1031,9 @@ class Reglas:
 
 
         if nombreCapa == 'Calles':
-            temp = QgsVectorLayer('LineString?crs=epsg:32614', 'Campos Incompletos ' + nombreCapa, 'memory')
+            temp = QgsVectorLayer('LineString?crs=epsg:' + self.srid, 'Campos Incompletos ' + nombreCapa, 'memory')
         else:
-            temp = QgsVectorLayer('Polygon?crs=epsg:32614', 'Campos Incompletos ' + nombreCapa, 'memory')
+            temp = QgsVectorLayer('Polygon?crs=epsg:' + self.srid, 'Campos Incompletos ' + nombreCapa, 'memory')
 
 
 
@@ -1110,9 +1113,9 @@ class Reglas:
 
         #if nombreCapa1 != 'Calles':
             
-        temp = QgsVectorLayer('Polygon?crs=epsg:32614', "Intersecciones: " + nombreCapa1 + " - " + nombreCapa2, 'memory')
+        temp = QgsVectorLayer('Polygon?crs=epsg:' + self.srid, "Intersecciones: " + nombreCapa1 + " - " + nombreCapa2, 'memory')
         #else:
-        #    temp = QgsVectorLayer('LineString?crs=epsg:32614', "Intersecciones: " + nombreCapa1 + " - " + nombreCapa2, 'memory')
+        #    temp = QgsVectorLayer('LineString?crs=epsg:' + self.srid, "Intersecciones: " + nombreCapa1 + " - " + nombreCapa2, 'memory')
 
         self.pintarErrores(temp, listaErrores)
         
@@ -1142,12 +1145,12 @@ class Reglas:
         if (self.cuentaError == 0):
             return
 
-        self.stringError = "Capa: " + capa.name() + " " + str(self.cuentaError) + " longitud de " + str(campo) + " invalida"
+        self.stringError = "Capa: " + capa.name() + " (" + str(self.cuentaError) + ") longitud de '" + str(campo) + "'' inválida"
 
         if capa.wkbType() == 3 or capa.wkbType() == 6:
-            temp = QgsVectorLayer('Polygon?crs=epsg:32614','('+ capa.name() +')'  +  ' Longitud invalida de ' + campo, 'memory')
+            temp = QgsVectorLayer('Polygon?crs=epsg:' + self.srid,'('+ capa.name() +')'  +  ' Longitud inválida de ' + campo, 'memory')
         else:
-            temp = QgsVectorLayer('Point?crs=epsg:32614','('+ capa.name() +')'  +  ' Longitud invalida de ' + campo, 'memory')
+            temp = QgsVectorLayer('Point?crs=epsg:' + self.srid,'('+ capa.name() +')'  +  ' Longitud inválida de ' + campo, 'memory')
         self.pintarErrores(temp, listaError)
 
 ######################################################################################################################################
@@ -1178,9 +1181,9 @@ class Reglas:
         self.stringError = "Capa: " + capa.name() + " " + str(self.cuentaError) + str(campo) + " vacio"
 
         if capa.wkbType() == 3 or capa.wkbType() == 6:
-            temp = QgsVectorLayer('Polygon?crs=epsg:32614','('+ capa.name() +')'  +  ' Campo vacio: ' + campo, 'memory')
+            temp = QgsVectorLayer('Polygon?crs=epsg:' + self.srid,'('+ capa.name() +')'  +  ' Campo vacio: ' + campo, 'memory')
         else:
-            temp = QgsVectorLayer('Point?crs=epsg:32614','('+ capa.name() +')'  +  ' Campo vacio: ' + campo, 'memory')
+            temp = QgsVectorLayer('Point?crs=epsg:' + self.srid,'('+ capa.name() +')'  +  ' Campo vacio: ' + campo, 'memory')
         self.pintarErrores(temp, listaError)
 
 ##################################################################################################
@@ -1212,9 +1215,9 @@ class Reglas:
         self.stringError = "Capa: " + capa.name() + " " + str(self.cuentaError) + str(campo1) + ' y ' + str(campo2) + " vacios"
 
         if capa.wkbType() == 3 or capa.wkbType() == 6:
-            temp = QgsVectorLayer('Polygon?crs=epsg:32614','('+ capa.name() +')'  +  str(campo1) + ' y ' + str(campo2) + " vacios", 'memory')
+            temp = QgsVectorLayer('Polygon?crs=epsg:' + self.srid,'('+ capa.name() +')'  +  str(campo1) + ' y ' + str(campo2) + " vacios", 'memory')
         else:
-            temp = QgsVectorLayer('Point?crs=epsg:32614','('+ capa.name() +')'  +  str(campo1) + ' y ' + str(campo2) + " vacios", 'memory')
+            temp = QgsVectorLayer('Point?crs=epsg:' + self.srid,'('+ capa.name() +')'  +  str(campo1) + ' y ' + str(campo2) + " vacios", 'memory')
         self.pintarErrores(temp, listaError)
 
 ################################################################################################
@@ -1258,9 +1261,9 @@ class Reglas:
         self.stringError = "Capa: " + capaObjeto.name() + " " + str(self.cuentaError) + str(campo) + " repetido"
 
         if capaObjeto.wkbType() == 3 or capaObjeto.wkbType() == 6:
-            temp = QgsVectorLayer('Polygon?crs=epsg:32614','('+ capaObjeto.name() +')'  +  ' Campo repetido: ' + campo, 'memory')
+            temp = QgsVectorLayer('Polygon?crs=epsg:' + self.srid,'('+ capaObjeto.name() +')'  +  ' Campo repetido: ' + campo, 'memory')
         else:
-            temp = QgsVectorLayer('Point?crs=epsg:32614','('+ capaObjeto.name() +')'  +  ' Campo repetido: ' + campo, 'memory')
+            temp = QgsVectorLayer('Point?crs=epsg:' + self.srid,'('+ capaObjeto.name() +')'  +  ' Campo repetido: ' + campo, 'memory')
         self.pintarErrores(temp, listaError)
 
 
