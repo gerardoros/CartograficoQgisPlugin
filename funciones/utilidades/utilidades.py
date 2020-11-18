@@ -226,8 +226,6 @@ class Utilidad:
 
 			print (jsonParaGuardarAtributos)
 			
-			#try:
-			
 			url = self.CFG.urlGuardadoCon
 			payload = jsonParaGuardarAtributos
 			headers = {'Content-Type': 'application/json', 'Authorization' : self.obtenerToken()}
@@ -298,6 +296,16 @@ class Utilidad:
 
 	def agregarALista(self, idCapa):
 
+		# armar la clave catastral del predio (e_predio)
+		# consulta la manzana, se toma la clave de ella y se concatena con la clave del predio
+		clave = ''
+		if idCapa == 'predios.geom' or idCapa == 'construcciones':
+			manzana = QgsProject.instance().mapLayer( self.ACA.obtenerIdCapa('manzana'))
+			feat = manzana.getFeatures()
+			
+			for f in feat:
+				clave = f['cve_cat']
+
 		capa = QgsProject.instance().mapLayer( self.ACA.obtenerIdCapa( idCapa))
 		listaTemp = []
 
@@ -328,7 +336,32 @@ class Utilidad:
 					if punto != None:
 						atributos['num_ofi'] = punto['num_ofi']
 						atributos['geom_num'] = punto.geometry().asWkt()
-					
+
+
+			if idCapa == 'predios.geom':
+				atributos['cve_cat'] = clave + atributos['clave']
+
+
+			# armar la clave de las construcciones
+			if idCapa == 'construcciones':
+				predios = QgsProject.instance().mapLayer( self.ACA.obtenerIdCapa('predios.geom'))
+				fPredios = predios.getFeatures()
+
+				lista = []
+				# comparar las geometrias de predios con la de la contruccion
+				for f in fPredios:
+					valor = feat.geometry().intersects(f.geometry())
+					if valor > 0:
+						l = {}
+						l['v'] = valor
+						l['c'] = f['clave']
+
+						lista.append(l)
+
+				# obtener el registro con el valor mas grande para saber la clave del predio
+				maxim = max(lista, key=lambda x:x['v'])
+				atributos['cve_catastral'] = clave + maxim['c']
+
 			campos['attr'] = atributos
 			if campos['attr']['id'] == None or campos['attr']['id'] == '':
 				campos['nuevo'] = True
