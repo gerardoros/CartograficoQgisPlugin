@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/plugins/datos_inmueble" >
+        <file>icon.png</file>
+    </qresource>
+</RCC>

@@ -88,6 +88,7 @@ class ActualizacionCatastralV3:
         self.dockwidget.botonActualizarServiciosCalles.clicked.connect(self.actualizarServiciosCalles)
 
         self.dockwidget.btnPlanoManzanero.clicked.connect(self.event_planoMza)
+        self.dockwidget.btnPlanoPred.clicked.connect(self.event_planoPred)
 
         self.cve_cat_len = 16
 
@@ -109,6 +110,7 @@ class ActualizacionCatastralV3:
 
 
         self.diccServiciosCalle = {}
+        self.fIdImpresion = None
 
         self.capaEnEdicion = ''
         QSettings().setValue('capaRefEdicion', 'None')
@@ -289,7 +291,10 @@ class ActualizacionCatastralV3:
             self.dockwidget.show()
             
             #self.UTI.strechtTabla(self.dockwidget.tablaEdicion)
-            self.UTI.strechtTabla(self.dockwidget.tablaEdicionRef)
+            # self.UTI.strechtTabla(self.dockwidget.tablaEdicionRef)
+
+            self.dockwidget.tablaEdicionRef.setColumnWidth(0, 50)
+            self.dockwidget.tablaEdicionRef.setColumnWidth(1, 50)
 
             if self.capasCompletas():
 
@@ -355,7 +360,7 @@ class ActualizacionCatastralV3:
                             self.UTI.mostrarAlerta("Error al cargar Sectores\nError de servidor loc1", QMessageBox().Information, "Cargar Localidades")
 
                     #Asignar eventos de cambio de seleccion
-                    
+                    print('una vez 361')
                     self.xManzana.selectionChanged.connect(self.cargarTablita)
                     self.xPredGeom.selectionChanged.connect(self.cargarTablita)
                     self.xPredNum.selectionChanged.connect(self.cargarTablita)
@@ -588,6 +593,8 @@ class ActualizacionCatastralV3:
         if self.dockwidget.checkTodasGeom.isChecked():
             bound = None
 
+        # quitar el evento de CargarTablita
+
         # si se trata de predios tambien se cargan las contrucciones
         if nameCapa.lower() == 'predios':
             self.pintarCapasReferencia("Construcciones", bound, False)
@@ -751,6 +758,8 @@ class ActualizacionCatastralV3:
     #Pintar todas las capas
     def pintarCapas(self):
 
+        self.fIdImpresion = None
+
         # inicializa la lista de geometrias eliminadas
         QSettings().setValue('listaEliminada', [])
 
@@ -892,11 +901,6 @@ class ActualizacionCatastralV3:
             return False
         
         data = self.obtenerAPintar(mem_layer.id())
-        '''
-        print(nombreCapa)
-        print(data)
-        print(self.idManzana)
-        '''
 
         type(data)
         srid = QSettings().value("srid")
@@ -1208,6 +1212,12 @@ class ActualizacionCatastralV3:
                 elif self.capaActiva.id() == self.obtenerIdCapa('predios.geom'):
                     self.listaAtributos = ['clave']
                     self.listaEtiquetas = ['Clave']
+
+                    # temporal - Preparacion para la impresion de cedula
+                    textoItem = str(self.seleccion[0]['clave'])
+                    self.dockwidget.qlPredioImpr.setText(textoItem)
+                    self.fIdImpresion = self.seleccion[0].id()
+
                 elif self.capaActiva.id() == self.obtenerIdCapa('predios.num'):
                     self.listaAtributos = ['numExt']
                     self.listaEtiquetas = ['Numero exterior']
@@ -1276,7 +1286,10 @@ class ActualizacionCatastralV3:
 
             else:
                 self.cambiarStatus("---", "error")
+                self.dockwidget.qlPredioImpr.setText('-')
+                self.fIdImpresion = None
 
+        print(self.fIdImpresion, self.dockwidget.qlPredioImpr.text())
         # -- abrir cedula -- 
         if self.abrePredio:
 
@@ -1373,7 +1386,7 @@ class ActualizacionCatastralV3:
 
             if self.validarEdicion():
                 
-                self.UTI.mostrarAlerta('Se actualizo correctamente', QMessageBox().Information, 'Edicion de atributos')
+                self.UTI.mostrarAlerta('Se actualizó correctamente', QMessageBox().Information, 'Edicion de atributos')
                 self.cargarTablita()
             
         else:
@@ -1409,8 +1422,8 @@ class ActualizacionCatastralV3:
             idCapa = self.capaActiva.id()
 
             header = self.dockwidget.tablaEdicionRef.horizontalHeader()
-            header.setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeToContents)
-            header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeToContents)
+            header.setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
+            header.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
             #header.setStretchLastSection(True)
             
             #self.dockwidget.labelCapaEdicionRef.setText('---')
@@ -1431,22 +1444,8 @@ class ActualizacionCatastralV3:
                     self.tipConst = 0
 
                     if self.capaActiva.id() == self.obtenerIdCapa('Area de Valor'): #Areas de valor
-                        self.listaAtributos = ['valor', 'descripcion', 'clave']
-                        self.listaEtiquetas = ['Valor', 'Descripcion', 'Clave']
-
-                        headers = {'Content-Type': 'application/json', 'Authorization' : self.UTI.obtenerToken()}
-
-                        respuesta = requests.get(self.CFG.urlValoresTerrenos, headers = headers)
-                        self.diccCveVus = {}
-                        if respuesta.status_code == 200:
-                            for resp in respuesta.json():
-
-                                self.comboCveVus.addItem(str(resp['descripcion']), str(resp['cveVus']))
-                                self.diccCveVus[str(resp['cveVus'])] = str(resp['descripcion'])
-                        
-                        else:
-                            self.UTI.mostrarAlerta("No se han podido cargar los tipos de cvevus\nError de servidor cvevus", QMessageBox().Critical, "Cargar tipos de asentamiento")
-
+                        self.listaAtributos = ['valor', 'descripcion']
+                        self.listaEtiquetas = ['Valor', 'Descripcion']
 
                     elif self.capaActiva.id() == self.obtenerIdCapa('Zona Uno') or self.capaActiva.id() == self.obtenerIdCapa('Zona Dos'): #Zonas
                         self.listaAtributos = ['descripcion']
@@ -1506,8 +1505,8 @@ class ActualizacionCatastralV3:
 
 
                     elif self.capaActiva.id() == self.obtenerIdCapa('Sectores'): #Sector
-                        self.listaAtributos = ['clave', 'nombre']
-                        self.listaEtiquetas = ['Clave', 'Nombre']
+                        self.listaAtributos = ['clave']
+                        self.listaEtiquetas = ['Clave']
                     
                     elif self.capaActiva.id() == self.obtenerIdCapa('Localidades'): #Localidades
                         self.listaAtributos = ['clave', 'nombre']
@@ -1557,26 +1556,14 @@ class ActualizacionCatastralV3:
                             self.comboTipoAs.setCurrentIndex(index)
 
                     elif self.capaActiva.id() == self.obtenerIdCapa( 'Area de Valor'):
-
-                        self.dockwidget.tablaEdicionRef.setCellWidget(2,1,self.comboCveVus)
-
-                        idCve = str(self.seleccion[0]['cve_vus'])
-
-                        textito = self.diccCveVus[idCve]
-                        index = self.comboCveVus.findText(str(textito), QtCore.Qt.MatchFixedString)
-                        if index >= 0:
-                            self.comboCveVus.setCurrentIndex(index)
-
-
+                        pass
 
                     elif self.capaActiva.id() == self.obtenerIdCapa('Calles'): #Calles
 
                         self.dockwidget.tablaEdicionRef.setCellWidget(2,1,self.comboTipoVia)
-
                         idCve = str(self.seleccion[0]['id_cve_vialidad'])
                         if idCve == None or idCve == '' or idCve == 'CALLE':
                             idCve = 'NULL'
-
                         textito = self.diccionarioTipoVia[idCve]
 
                         index = self.comboTipoVia.findText(str(textito), QtCore.Qt.MatchFixedString)
@@ -1661,7 +1648,7 @@ class ActualizacionCatastralV3:
 
             if self.validarEdicionRef():
                 
-                self.UTI.mostrarAlerta('Se actualizo correctamente', QMessageBox().Information, 'Edicion de atributos')
+                self.UTI.mostrarAlerta('Se actualizó correctamente', QMessageBox().Information, 'Edicion de atributos')
                 self.cargarTablitaRef()
             
         else:
@@ -1771,7 +1758,7 @@ class ActualizacionCatastralV3:
             except: #Error al obtenre texto
                 banderaCompleta = False
             if self.UTI.esEntero(texto): #Cuando es entero
-                if len(texto) == 5: #Validacion de longitud
+                if len(texto) == 2: #Validacion de longitud
                     feat['clave'] = texto
                 else:
                     banderaCompleta = False
@@ -1779,7 +1766,7 @@ class ActualizacionCatastralV3:
                 banderaCompleta = False
             
             if not banderaCompleta: #Mensaje de error
-                self.UTI.mostrarAlerta('La clave debe estar compuesta por exactamente 5 numeros', QMessageBox().Critical, 'Error de entrada')
+                self.UTI.mostrarAlerta('La clave debe estar compuesta por exactamente 3 numeros', QMessageBox().Critical, 'Error de entrada')
 
         #.....predios geom....#
         elif nombreCapa == 'predios.num':
@@ -1972,7 +1959,7 @@ class ActualizacionCatastralV3:
 
             if banderaCompleta:
                 indexCveVus = self.comboCveVus.currentIndex()
-                feat['clave'] = self.comboCveVus.itemData(indexCveVus)
+                # feat['clave'] = self.comboCveVus.itemData(indexCveVus)
 
         
         #----------------------Zona Uno------------------#
@@ -2029,7 +2016,7 @@ class ActualizacionCatastralV3:
                 banderaCompleta = False
             
             if not banderaCompleta:
-                self.UTI.mostrarAlerta('El codigo postal debe estar compuesto por 5 numeros', QMessageBox().Critical, 'Error de entrada')
+                self.UTI.mostrarAlerta('El codigo postal debe estar compuesto por 5 números', QMessageBox().Critical, 'Error de entrada')
 
         #----------------------Colonias------------------#
         elif nombreCapa == 'Colonias':
@@ -2133,7 +2120,6 @@ class ActualizacionCatastralV3:
                 feat['c_tipo_vialidad'] = self.comboTipoVia.currentText()
                 feat['longitud'] = float(self.dockwidget.tablaEdicionRef.item(1, 1).text())
 
-
         #----------------------Sectores------------------#
         elif nombreCapa == 'Sectores':
 
@@ -2148,31 +2134,18 @@ class ActualizacionCatastralV3:
             except: #Error al obtenre texto
                 banderaClave = False
             if self.UTI.esEntero(texto): #Cuando es entero
-                if len(texto) == 3: #Validacion de longitud
+                if len(texto) == 2: #Validacion de longitud
                     feat['clave'] = texto
                 else:
                     banderaClave = False
             else: #Cuando no es numerico
                 banderaClave = False
             
-            #Comparar el nombre
-            try:
-                texto = self.dockwidget.tablaEdicionRef.item(1, 1).text()
-            except: #Error al obtenre texto
-                banderaNom = False
-            if len(texto) <= 256: #Validacion de longitud
-                feat['nombre'] = texto
-            else:
-                banderaNom = False
-
             #Banderas
             if not banderaClave:
-                self.UTI.mostrarAlerta('La clave debe estar compuesta por 3 numeros', QMessageBox().Critical, 'Error de entrada')
+                self.UTI.mostrarAlerta('La clave debe estar compuesta por 2 números', QMessageBox().Critical, 'Error de entrada')
 
-            if not banderaNom:
-                self.UTI.mostrarAlerta('La longitud del nombre no debe exceder 256 caracteres', QMessageBox().Critical, 'Error de entrada')
-
-            banderaCompleta = banderaClave and banderaNom
+            banderaCompleta = banderaClave
 
         #----------------------Localidades------------------#
         elif nombreCapa == 'Localidades':
@@ -2207,7 +2180,7 @@ class ActualizacionCatastralV3:
 
             #Banderas
             if not banderaClave:
-                self.UTI.mostrarAlerta('La clave debe estar compuesta por 4 numeros', QMessageBox().Critical, 'Error de entrada')
+                self.UTI.mostrarAlerta('La clave debe estar compuesta por 4 números', QMessageBox().Critical, 'Error de entrada')
 
             if not banderaNom:
                 self.UTI.mostrarAlerta('La longitud del nombre no debe exceder 256 caracteres', QMessageBox().Critical, 'Error de entrada')
@@ -2247,7 +2220,7 @@ class ActualizacionCatastralV3:
 
             #Banderas
             if not banderaClave:
-                self.UTI.mostrarAlerta('La clave debe estar compuesta por 2 numeros', QMessageBox().Critical, 'Error de entrada')
+                self.UTI.mostrarAlerta('La clave debe estar compuesta por 2 números', QMessageBox().Critical, 'Error de entrada')
 
             if not banderaNom:
                 self.UTI.mostrarAlerta('La longitud del nombre no debe exceder 64 caracteres', QMessageBox().Critical, 'Error de entrada')
@@ -2287,7 +2260,7 @@ class ActualizacionCatastralV3:
 
             #Banderas
             if not banderaClave:
-                self.UTI.mostrarAlerta('La clave debe estar compuesta por 3 numeros', QMessageBox().Critical, 'Error de entrada')
+                self.UTI.mostrarAlerta('La clave debe estar compuesta por 3 números', QMessageBox().Critical, 'Error de entrada')
 
             if not banderaNom:
                 self.UTI.mostrarAlerta('La longitud del nombre no debe exceder 256 caracteres', QMessageBox().Critical, 'Error de entrada')
@@ -2327,7 +2300,7 @@ class ActualizacionCatastralV3:
 
             #Banderas
             if not banderaClave:
-                self.UTI.mostrarAlerta('La clave debe estar compuesta por 3 numeros', QMessageBox().Critical, 'Error de entrada')
+                self.UTI.mostrarAlerta('La clave debe estar compuesta por 3 números', QMessageBox().Critical, 'Error de entrada')
 
             if not banderaNom:
                 self.UTI.mostrarAlerta('La longitud del nombre no debe exceder 64 caracteres', QMessageBox().Critical, 'Error de entrada')
@@ -2370,7 +2343,7 @@ class ActualizacionCatastralV3:
 
             #Banderas
             if not banderaClave:
-                self.UTI.mostrarAlerta('La clave debe estar compuesta por 2 numeros', QMessageBox().Critical, 'Error de entrada')
+                self.UTI.mostrarAlerta('La clave debe estar compuesta por 2 números', QMessageBox().Critical, 'Error de entrada')
 
             if not banderaNom:
                 self.UTI.mostrarAlerta('La longitud del nombre no debe exceder 64 caracteres', QMessageBox().Critical, 'Error de entrada')
@@ -2396,7 +2369,7 @@ class ActualizacionCatastralV3:
             if not banderaNom:
                 self.UTI.mostrarAlerta('La longitud de la clave no debe exceder 10 caracteres', QMessageBox().Critical, 'Error de entrada')
 
-            banderaCompleta = banderaClave and banderaNom
+            banderaCompleta = banderaNom
 
         self.capaActiva.updateFeature(feat)
         self.capaActiva.triggerRepaint()
@@ -2457,15 +2430,11 @@ class ActualizacionCatastralV3:
             if not bool(data):
                 self.UTI.mostrarAlerta('Error de servidor capRefr', QMessageBox().Critical, "Cargar capa de referencia")
                 print('ERROR: REF000')
-            
-
-            print (data['features'])
-
-
 
             if data['features'] != []:
 
                 varKeys = data['features'][0]['properties']
+                print(varKeys)
 
                 keys = list(varKeys.keys())
                 properties = []
@@ -2505,11 +2474,12 @@ class ActualizacionCatastralV3:
                 stringCalles = self.obtenerCamposCalles()
                 uri = stringCalles
 
+            print(uri)
+
             # valida si se debe de pintar de nuevo la capa o utilizar la que ya existe
             if capaAPintar == None:
                 mem_layer = QgsVectorLayer(uri, nameCapa, 'memory')
-                self.UTI.formatoCapa(nameCapa, mem_layer)
-                #self.etiquetarCapa(nameCapa, mem_layer)   
+                self.UTI.formatoCapa(nameCapa, mem_layer) 
             else:
                 mem_layer = capaAPintar
 
@@ -2526,7 +2496,7 @@ class ActualizacionCatastralV3:
             self.setearIdReferencia(nameCapa, mem_layer.id())
 
             mem_layer.setReadOnly(not edicion)
-
+            
             if data['features'] != []:
                 prov = mem_layer.dataProvider()
                 feats = [ QgsFeature() for i in range(len(geoms)) ]
@@ -2594,7 +2564,7 @@ class ActualizacionCatastralV3:
                 etiquetaField = 'descripcion'
                 colorCapa = QColor(120,0,232)
             elif nameCapa == 'Area de Valor':
-                etiquetaField = 'valor'
+                etiquetaField = 'Descripcion'
                 colorCapa = QColor(0,173,173)
             elif nameCapa.lower() == "construcciones":
                 etiquetaField = " if( cve_const_esp is null, concat(nom_volumen, '\n', num_niveles), concat(nom_volumen, '\n', cve_const_esp))"
@@ -2754,11 +2724,7 @@ class ActualizacionCatastralV3:
 
         payload = json.dumps(payload)
         headers = {'Content-Type': 'application/json', 'Authorization' : token}
-        
-
-        print(self.CFG.urlConsultaReferencia)
         print(payload)
-
         response = requests.post(self.CFG.urlConsultaReferencia, headers = headers, data = payload)
 
         if response.status_code == 200:
@@ -2792,8 +2758,8 @@ class ActualizacionCatastralV3:
         listaCampos['Localidades'] = ['clave', 'cve_cat', 'id', 'nombre']
         listaTipos['Localidades'] = ['string(5)', 'string(30)', 'integer', 'string(100)']
 
-        listaCampos['Sectores'] = ['clave', 'cve_cat', 'id', 'nombre']
-        listaTipos['Sectores'] = ['string(5)', 'string(30)', 'integer', 'string(100)']
+        listaCampos['Sectores'] = ['clave', 'cve_cat', 'id']
+        listaTipos['Sectores'] = ['string(5)', 'string(30)', 'integer']
 
         listaCampos['Codigo Postal'] = ['cve_cp', 'id']
         listaTipos['Codigo Postal'] = ['string(5)', 'integer']
@@ -2801,7 +2767,7 @@ class ActualizacionCatastralV3:
         listaCampos['Colonias'] = ['cve_col', 'descripcion', 'id', 'id_tipo_asentamiento']
         listaTipos['Colonias'] = ['string(5)', 'string(50)', 'integer', 'integer']
         
-        listaCampos['Cooredor de Valor'] = ['clave', 'id']
+        listaCampos['Corredor de Valor'] = ['clave', 'id']
         listaTipos['Corredor de Valor'] = ['string(10)', 'integer']
         
         listaCampos['Zona Uno'] = ['descripcion', 'id']
@@ -2852,7 +2818,7 @@ class ActualizacionCatastralV3:
 
         if respuesta.status_code == 200:
             datos = respuesta.json()
-            
+            n = ""
             for campo in datos:
 
                 longitud = campo['longitud']
@@ -2866,7 +2832,7 @@ class ActualizacionCatastralV3:
 
                 if longitud != None:
                     stringCapa += "("+str(longitud)+")"
-                
+                n = n + name + ', '
             stringCapa += '&index=yes'
             return stringCapa
 
@@ -2944,11 +2910,19 @@ class ActualizacionCatastralV3:
     def guardarCapaReferencia(self):
 
         if QSettings().value('posibleGuardarRef') == 'True':
+
+            # considera las eliminadas
+            listaTempRef = QSettings().value('listaEliminadaRef')
+
             idCapa = self.capaEnEdicion
             capa = QgsProject.instance().mapLayer(self.capaEnEdicion)
             listaAGuardar = []
 
             features = [x for x in capa.getFeatures() if x.id() in self.featuresId]
+
+            if len(features) == 0 and len(listaTempRef) == 0:
+                self.UTI.mostrarAlerta("No se han realizado cambios, sin información que guardar", QMessageBox.Information, "Guardar Cambios")
+                return                
 
             for feat in features:
 
@@ -2987,9 +2961,6 @@ class ActualizacionCatastralV3:
                     campos['accion'] = 'update'
                 listaAGuardar.append(campos)
 
-            # considera las eliminadas
-            listaTempRef = QSettings().value('listaEliminadaRef')
-
             for feat in listaTempRef:
                 listaAGuardar.append(feat)
 
@@ -2998,12 +2969,20 @@ class ActualizacionCatastralV3:
             payload = jsonParaGuardarAtributos
             headers = {'Content-Type': 'application/json', 'Authorization' : self.UTI.obtenerToken()}
             
+            print(payload)
+            print(self.CFG.urlGuardadoRef)
+
             try:
                 response = requests.post(self.CFG.urlGuardadoRef, headers = headers, data = payload)
             
             except requests.exceptions.RequestException:
+
                 self.UTI.mostrarAlerta("No se ha podido conectar al servidor v1", QMessageBox.Critical, "Guardar Cambios v1")#Error en la peticion de consulta
             
+            if not response:
+                self.UTI.mostrarAlerta("Problemas al guardar la información", QMessageBox.Critical, "Guardar Cambios")
+                return
+
             if response.status_code == 200:
                 QSettings().setValue('listaEliminadaRef', [])
                 QSettings().setValue('posibleGuardarRef', 'False') 
@@ -3066,7 +3045,10 @@ class ActualizacionCatastralV3:
         else:
             self.pintarCapasReferencia(xCapa, bBox.asWkt(), False)
 
-        #self.dockwidget.labelCapaEdicionRef.setText('---')
+        self.dockwidget.labelStatusEdicionRef.setText('---')
+        estilo = '''color: rgb(0, 0, 0);'''
+
+        self.dockwidget.labelStatusEdicionRef.setStyleSheet(estilo)
         self.dockwidget.comboCapasEdicion.setEnabled(True)
         self.dockwidget.botonActivarEdicion.setEnabled(True)
         self.dockwidget.botonActivarEdicion.setText('Activar Edicion de \nReferencia')
@@ -3118,6 +3100,7 @@ class ActualizacionCatastralV3:
         self.xVert = QgsProject.instance().mapLayer(xVe)
         self.xCvesVert = QgsProject.instance().mapLayer(xCv)
 
+        print('una vez 3078')
         self.xManzana.selectionChanged.connect(self.cargarTablita)
         self.xPredGeom.selectionChanged.connect(self.cargarTablita)
         self.xPredNum.selectionChanged.connect(self.cargarTablita)
@@ -3324,9 +3307,857 @@ class ActualizacionCatastralV3:
 
 ###################################################################################################
 
+    def event_planoPred(self):
+
+        if not self.validarCombox():
+            self.UTI.mostrarAlerta('No se han seleccionado manzanas para cargar', QMessageBox.Critical, 'Capas de consulta')
+            return
+
+        # pintar la capas de calles y de manzanas
+        try:
+            bound = self.obtenerBoundingBox().asWkt()
+        except:
+            self.UTI.mostrarAlerta('No se ha cargado ninguna Manzana', QMessageBox().Critical, 'Cargar referencia')
+            return
+
+        if not self.fIdImpresion:
+            self.UTI.mostrarAlerta('Selecciona un predio', QMessageBox.Critical, 'Capas de consulta')
+            return
+
+        self.pintarCapasReferencia('Calles', bound, False)
+        self.pintarCapasReferencia('Manzanas', bound, False)
+
+        # obtiene la informacion de las capas complementarias
+        xCalle = QgsProject.instance().mapLayer(QSettings().value('xCalle'))
+        xManza = QgsProject.instance().mapLayer(QSettings().value('xManzanasRef'))
+        xMza = QgsProject.instance().mapLayer(QSettings().value('xManzana'))
+        
+        layer = QgsProject.instance().mapLayer(QSettings().value('xPredGeom'))
+
+        # obtiene los parametros para el reporte
+        cveCata = list(layer.getFeatures([self.fIdImpresion]))[0]['cve_cat']
+        cveCata = cveCata[0:3] + '-' + cveCata[3:5] + '-' + cveCata[5:8] + '-' + cveCata[8:10] + '-' + cveCata[10:] if cveCata else 'NOO ES CADENA'
+
+        propietario = '' # propietarios (no se sabe de donde salen por ahorita 2020-11-09)
+        mpio = QSettings().value('mpio') + ', ESTADO DE MÉXICO'
+        levanto = '' # persona que levanto (no se sabe de donde salen por ahorita 2020-11-09)
+        dibujo = '' # persona que dibujo (no se sabe de donde salen por ahorita 2020-11-09)
+        ubicacion = '' # ubicacion (direccion, no se sabe de donde salen por ahorita 2020-11-09)
+        certifica = '' # la persona que certifica no se sabe quien es...
+        scale = 0 # escala del mapa
+
+        # INICIA PROCESO DE IMPRESION DE PLANO
+        project = QgsProject.instance()
+        manager = project.layoutManager()
+        layoutName = 'Layout1'
+        layouts_list = manager.printLayouts()
+        # remove any duplicate layouts
+        for layout in layouts_list:
+            if layout.name() == layoutName:
+                manager.removeLayout(layout)
+        layout = QgsPrintLayout(project)
+        layout.initializeDefaults()
+        layout.setName(layoutName)
+
+        # define el estilo de la pagina ('Carta' en este caso)
+        pc = layout.pageCollection()
+        pc.pages()[0].setPageSize('letter', QgsLayoutItemPage.Landscape)
+        manager.addLayout(layout)
+
+        # ** DISEÑO **
+        # agrega un rectangulo
+        rectan = QgsLayoutItemShape (layout)
+        rectan.setShapeType(QgsLayoutItemShape.Shape.Rectangle)
+        rectan.attemptMove(QgsLayoutPoint(214, 8, QgsUnitTypes.LayoutMillimeters))
+        rectan.attemptResize(QgsLayoutSize(57.863, 25.009, QgsUnitTypes.LayoutMillimeters))
+        layout.addLayoutItem(rectan)
+
+        # agrega un rectangulo
+        rectan = QgsLayoutItemShape (layout)
+        rectan.setShapeType(QgsLayoutItemShape.Shape.Rectangle)
+        rectan.attemptMove(QgsLayoutPoint(214, 84.870, QgsUnitTypes.LayoutMillimeters))
+        rectan.attemptResize(QgsLayoutSize(57.863, 6.635, QgsUnitTypes.LayoutMillimeters))
+        layout.addLayoutItem(rectan)
+
+        # agrega un rectangulo
+        rectan = QgsLayoutItemShape (layout)
+        rectan.setShapeType(QgsLayoutItemShape.Shape.Rectangle)
+        rectan.attemptMove(QgsLayoutPoint(214, 91.500, QgsUnitTypes.LayoutMillimeters))
+        rectan.attemptResize(QgsLayoutSize(57.863, 6.635, QgsUnitTypes.LayoutMillimeters))
+        layout.addLayoutItem(rectan)
+
+        # agrega un rectangulo
+        rectan = QgsLayoutItemShape (layout)
+        rectan.setShapeType(QgsLayoutItemShape.Shape.Rectangle)
+        rectan.attemptMove(QgsLayoutPoint(214, 98.147, QgsUnitTypes.LayoutMillimeters))
+        rectan.attemptResize(QgsLayoutSize(57.863, 6.958, QgsUnitTypes.LayoutMillimeters))
+        layout.addLayoutItem(rectan)
+
+        # agrega un rectangulo
+        rectan = QgsLayoutItemShape (layout)
+        rectan.setShapeType(QgsLayoutItemShape.Shape.Rectangle)
+        rectan.attemptMove(QgsLayoutPoint(214, 105.118, QgsUnitTypes.LayoutMillimeters))
+        rectan.attemptResize(QgsLayoutSize(57.863, 6.635, QgsUnitTypes.LayoutMillimeters))
+        layout.addLayoutItem(rectan)
+
+        # agrega un rectangulo
+        rectan = QgsLayoutItemShape (layout)
+        rectan.setShapeType(QgsLayoutItemShape.Shape.Rectangle)
+        rectan.attemptMove(QgsLayoutPoint(214, 111.760, QgsUnitTypes.LayoutMillimeters))
+        rectan.attemptResize(QgsLayoutSize(57.863, 5.912, QgsUnitTypes.LayoutMillimeters))
+        layout.addLayoutItem(rectan)
+
+        # agrega un rectangulo
+        rectan = QgsLayoutItemShape (layout)
+        rectan.setShapeType(QgsLayoutItemShape.Shape.Rectangle)
+        rectan.attemptMove(QgsLayoutPoint(214, 117.683, QgsUnitTypes.LayoutMillimeters))
+        rectan.attemptResize(QgsLayoutSize(57.863, 5.912, QgsUnitTypes.LayoutMillimeters))
+        layout.addLayoutItem(rectan)
+
+        # agrega un rectangulo
+        rectan = QgsLayoutItemShape (layout)
+        rectan.setShapeType(QgsLayoutItemShape.Shape.Rectangle)
+        rectan.attemptMove(QgsLayoutPoint(214, 123.600, QgsUnitTypes.LayoutMillimeters))
+        rectan.attemptResize(QgsLayoutSize(57.863, 5.500, QgsUnitTypes.LayoutMillimeters))
+        layout.addLayoutItem(rectan)
+
+        # agrega un rectangulo
+        rectan = QgsLayoutItemShape (layout)
+        rectan.setShapeType(QgsLayoutItemShape.Shape.Rectangle)
+        rectan.attemptMove(QgsLayoutPoint(236.127, 123.600, QgsUnitTypes.LayoutMillimeters))
+        rectan.attemptResize(QgsLayoutSize(19.094, 5.500, QgsUnitTypes.LayoutMillimeters))
+        layout.addLayoutItem(rectan)
+
+        # agrega un rectangulo
+        rectan = QgsLayoutItemShape (layout)
+        rectan.setShapeType(QgsLayoutItemShape.Shape.Rectangle)
+        rectan.attemptMove(QgsLayoutPoint(214.000, 129.110, QgsUnitTypes.LayoutMillimeters))
+        rectan.attemptResize(QgsLayoutSize(57.863, 5.912, QgsUnitTypes.LayoutMillimeters))
+        layout.addLayoutItem(rectan)
+
+        # agrega un rectangulo
+        rectan = QgsLayoutItemShape (layout)
+        rectan.setShapeType(QgsLayoutItemShape.Shape.Rectangle)
+        rectan.attemptMove(QgsLayoutPoint(214.000, 135.024, QgsUnitTypes.LayoutMillimeters))
+        rectan.attemptResize(QgsLayoutSize(57.863, 72.976, QgsUnitTypes.LayoutMillimeters))
+        layout.addLayoutItem(rectan)
+
+        # PINTA EL PREDIO (MAPA GRANDE)
+        # obtiene solo el poligono que se mostrara en el mapa grande
+        stringCapa = 'Polygon?crs=epsg:' + str(QSettings().value('srid')) + '&field=num:string(10)'
+        layerPoly = QgsVectorLayer(stringCapa, 'polygon', 'memory')
+        prov = layerPoly.dataProvider()
+        geom = list(layer.getFeatures([self.fIdImpresion]))[0].geometry()
+        feat = QgsFeature()
+        feat.setGeometry(geom)
+        feat.setAttributes([str(1)])
+        prov.addFeatures([feat])
+
+        #QgsProject.instance().addMapLayers([layerPoly])
+
+        # etiqueta del layer (comportamiento del texto)
+        s = QgsPalLayerSettings()
+        s.placement = QgsPalLayerSettings.OverPoint
+        s.fieldName = "'Superficie: ' || round($area, 2)"
+        s.enabled = True
+        s.isExpression = True
+        s.centroidWhole = True
+        # formato del texto
+        textFormat = QgsTextFormat()
+        textFormat.setColor(QColor(0,0,0))
+        textFormat.setSize(8)
+        textFormat.setNamedStyle('Bold')
+        s.setFormat(textFormat)
+        # asociar el estilo con la capa
+        labeling = QgsVectorLayerSimpleLabeling(s)
+        layerPoly.setLabeling(labeling)
+        layerPoly.setLabelsEnabled(True)
+        layerPoly.triggerRepaint()
+        #estilo de la geometria
+        render = layerPoly.renderer()
+        symbol = QgsFillSymbol.createSimple({'color':'255,0,0,0', 'color_border':'#000000', 'width_border':'0.3'})
+        render.setSymbol(symbol)
+
+        # PINTAR LOS PUNTOS QUE INDICAN SU NUMERACION
+        # obtener la geometria del poligono
+        geom = list(layerPoly.getFeatures())[0].geometry()
+        polygon = geom.asPolygon()
+        vertices = []
+        # obtiene los vertices del poligono
+        n = len(polygon[0])
+        for i in range(n):
+            vertices.append(polygon[0][i])
+            
+        # creacion de la capa de puntos
+        stringCapa = 'Point?crs=epsg:' + str(QSettings().value('srid')) + '&field=num:string(10)'
+        layerPoint = QgsVectorLayer(stringCapa, 'point', 'memory')
+        prov = layerPoint.dataProvider()
+
+        for i, v in enumerate(vertices):
+            feat = QgsFeature()
+            feat.setGeometry(QgsGeometry.fromPointXY(v))
+            if (i + 1) != len(vertices):
+                feat.setAttributes([i+1])
+            prov.addFeatures([feat])
+
+        # etiqueta del layer (comportamiento del texto)
+        s = QgsPalLayerSettings()
+        s.fieldName = "num"
+        s.enabled = True
+        s.isExpression = True
+        s.centroidWhole = True
+        # formato del texto
+        textFormat = QgsTextFormat()
+        textFormat.setColor(QColor(0,0,0))
+        textFormat.setSize(8)
+        textFormat.setNamedStyle('Bold')
+        s.setFormat(textFormat)
+        # asociar el estilo con la capa
+        labeling = QgsVectorLayerSimpleLabeling(s)
+        layerPoint.setLabeling(labeling)
+        layerPoint.setLabelsEnabled(True)
+        layerPoint.triggerRepaint()
+
+        #estilo de la geometria
+        props = layerPoint.renderer().symbol().symbolLayer(0).properties()
+        props['color'] = '#ffffff'
+        symbol = QgsMarkerSymbol.createSimple({'name': 'square', 'color': '255,255,255,0', 'outline_color': '0,0,0,0'})
+        layerPoint.renderer().setSymbol(symbol)
+
+        # PINTAR LAS LINEAS QUE CONFORMAN EL POLIGONO PARA MARCAR LAS DISTANCIAS QUE HAY ENTRE SUS PUNTOS
+        # creacion de la capa de lineas
+        stringCapa = 'LineString?crs=epsg:' + str(QSettings().value('srid')) + '&field=num:string(10)'
+        layerLine = QgsVectorLayer(stringCapa, 'line', 'memory')
+        prov = layerLine.dataProvider()
+        # se toma un punto y su siguiente para la creacion de la linea, asi para todo el poligono
+        for i in range(len(vertices)):
+            listTemp = []
+            listTemp.append(vertices[i])
+            # cuando no hay punto siguiente se toma en cuenta el primero para cerrar el poligono
+            if (i + 1) == len(vertices): 
+                listTemp.append(vertices[0])
+            else:
+                listTemp.append(vertices[i + 1])
+            
+            feat = QgsFeature()
+            feat.setGeometry(QgsGeometry.fromPolylineXY(listTemp))
+            feat.setAttributes([str(round(feat.geometry().length(), 2))])
+            prov.addFeatures([feat])
+
+        # etiqueta del layer (comportamiento del texto)
+        s = QgsPalLayerSettings()
+        s.placement = QgsPalLayerSettings.Line
+        s.fieldName = 'num'
+        s.enabled = True
+        s.isExpression = False
+        s.centroidWhole = True
+        #s.displayAll = True # muestra todas las etiquetas sin importar que se empalmen
+        # muestra todas las etiquetas adentro de la linea, si se empalman las muestra afuera
+        s.placementFlags = QgsPalLayerSettings.BelowLine
+        s.mergeLines = 1
+        # formato del texto
+        textFormat = QgsTextFormat()
+        textFormat.setColor(QColor(0,0,0))
+        textFormat.setSize(5)
+        textFormat.setNamedStyle('Bold')
+        s.setFormat(textFormat)
+        # asociar el estilo con la capa
+        labeling = QgsVectorLayerSimpleLabeling(s)
+        layerLine.setLabeling(labeling)
+        layerLine.setLabelsEnabled(True)
+        layerLine.triggerRepaint()
+
+        #estilo de la geometria
+        render = layerLine.renderer()
+        symbol = QgsLineSymbol.createSimple({'line_style':'SimpleLine', 'color':'0,0,0,0', 'width_border':'0.5'})
+        render.setSymbol(symbol)
+
+        # AGREGAR LINEAS DE CALLES SIN LINEA (SOLO LA ETIQUETA)
+        # se obtiene la geometria del predio
+        geom = list(layerPoly.getFeatures())[0].geometry()
+        geom = geom.simplify(5) # simplificamos para que la geometria no tenga tantos puntos (desaparezcan las curvas)
+        geom = geom.buffer(10, 0)  # buffer de 10 metros para encontrar las calles pegadas a él
+
+        # obtener las geometrias de calles
+        layers = xCalle
+        calles = layers
+        # se obtiene las calles que colindan a la geometria del predio
+        listaTemp = []
+        fCalles = list(calles.getFeatures())
+        rango2 = len(fCalles)
+        for i in range(0, rango2):
+            f2 = fCalles[i] 
+            if (f2.geometry().intersects(geom)):
+                interseccion = f2.geometry().intersection(geom) # intersection() - regresa un QgsGeometry
+                # se validara si la intersecion entre las dos goemetrias es menor a una longitud de 6 metros no se mostrara en el mapa
+                if interseccion.length() > 6:
+                    map = {}
+                    map['geom'] = interseccion
+                    map['nombre'] = f2['calle']
+                    listaTemp.append(map)
+
+        # creacion de la capa de calles colindantes al predio
+        stringCapa = 'LineString?crs=epsg:' + str(QSettings().value('srid')) + '&field=calle:string(10)'
+        layerLinestring = QgsVectorLayer(stringCapa, 'pruebaaa', 'memory')
+        prov = layerLinestring.dataProvider()
+
+        for l in listaTemp:
+            feat = QgsFeature()
+            feat.setGeometry(l['geom'])
+            feat.setAttributes([l['nombre']])
+            prov.addFeatures([feat])
+        # etiqueta del layer (comportamiento del texto)
+        s = QgsPalLayerSettings()
+        s.placement = QgsPalLayerSettings.Line
+        s.fieldName = 'calle'
+        s.enabled = True
+        s.isExpression = False
+        s.centroidWhole = True
+        s.placementFlags = QgsPalLayerSettings.BelowLine | QgsPalLayerSettings.AboveLine
+        s.mergeLines = 1
+        # formato del texto
+        textFormat = QgsTextFormat()
+        textFormat.setColor(QColor(0,0,0))
+        textFormat.setSize(10)
+        textFormat.setNamedStyle('Bold')
+        s.setFormat(textFormat)
+        # asociar el estilo con la capa
+        labeling = QgsVectorLayerSimpleLabeling(s)
+        layerLinestring.setLabeling(labeling)
+        layerLinestring.setLabelsEnabled(True)
+        layerLinestring.triggerRepaint()
+        #estilo de la geometria
+        render = layerLinestring.renderer()
+        symbol = QgsLineSymbol.createSimple({'line_style':'SimpleLine', 'color':'0,0,0,0', 'width_border':'0.5'})
+        render.setSymbol(symbol)
+
+        # OBTENER LOS POLIGONOS QUE TENGA CERCA PARA DEFINIRLOS EN EL MAPA
+        # se obtiene la geometria del predio
+        geomOrig = list(layerPoly.getFeatures())[0].geometry()
+        geom = geomOrig.buffer(2, 0)  # buffer de 5 metros para encontrar los predios pegados a él
+        # obtener las geometrias de los predios
+        predios = layer
+        # se obtiene los predios que colindan a la geometria del predio
+        listaTemp = []
+        fPredios = list(predios.getFeatures())
+        rango2 = len(fPredios)
+        for i in range(0, rango2):
+            f2 = fPredios[i] 
+            if (f2.geometry().intersects(geom)):
+                interseccion = f2.geometry().intersection(geom) # intersection() - regresa un QgsGeometry
+                # se validara si la intersecion entre las dos goemetrias es menor a una longitud de 6 metros no se mostrara en el mapa
+                if round(interseccion.area(), 2) != round(geomOrig.area(), 2):
+                    map = {}
+                    map['geom'] = interseccion
+                    map['nombre'] = 'Propiedad Privada'
+                    listaTemp.append(map)
+
+        # creacion de la capa de predios colindantes al predio
+        stringCapa = 'Polygon?crs=epsg:' + str(QSettings().value('srid')) + '&field=leyenda:string(40)'
+        layerPolygon = QgsVectorLayer(stringCapa, 'pruebaaa', 'memory')
+        prov = layerPolygon.dataProvider()
+
+        for l in listaTemp:
+            feat = QgsFeature()
+            feat.setGeometry(l['geom'])
+            feat.setAttributes([l['nombre']])
+            prov.addFeatures([feat])
+        # etiqueta del layer (comportamiento del texto)
+        s = QgsPalLayerSettings()
+        s.fieldName = 'leyenda'
+        s.enabled = True
+        s.isExpression = False
+        s.centroidWhole = True
+        s.mergeLines = 1
+        s.placement = QgsPalLayerSettings.Placement.Free 
+        # formato del texto
+        textFormat = QgsTextFormat()
+        textFormat.setColor(QColor(0,0,0))
+        textFormat.setSize(10)
+        textFormat.setNamedStyle('Bold')
+        s.setFormat(textFormat)
+        # asociar el estilo con la capa
+        labeling = QgsVectorLayerSimpleLabeling(s)
+        layerPolygon.setLabeling(labeling)
+        layerPolygon.setLabelsEnabled(True)
+        layerPolygon.triggerRepaint()
+        #estilo de la geometria
+        render = layerPolygon.renderer()
+        symbol = QgsFillSymbol.createSimple({'color':'255,0,0,0', 'color_border':'0,0,0,0', 'width_border':'0.0', 'outline_color': '0,0,0,0'})
+        render.setSymbol(symbol)
+
+        # CREACION DEL MAPA GRANDE
+        map = QgsLayoutItemMap(layout)
+        map.setRect(20, 20, 20, 20)
+
+        # define las capas a mostrar
+        map.setLayers([layerPoly, layerPoint, layerLine, layerLinestring, layerPolygon])
+
+        # calcula el rectangulo del area que va a mostrar en el layout
+        rect = list(layerPoly.getFeatures())[0].geometry().buffer(10, 0).boundingBox()
+        # validacion para cuando el bbox resultante sea de manera rectancular con un largo mas grande que el ancho
+        if rect.height() > rect.width():
+            bbox = rect
+            xmin1,ymin1,xmax1,ymax1 = bbox.buffered((rect.height() - rect.width())/2).toRectF().getCoords()
+            xmin2,ymin2,xmax2,ymax2 = bbox.toRectF().getCoords()
+
+            p1 = QgsPointXY(xmin1, ymax2)
+            p2 = QgsPointXY(xmax1, ymin2)
+            rect = QgsRectangle(p1,p2)
+
+        # carga el rectanculo
+        rect.scale(1.0)
+        map.setExtent(rect)
+        map.setBackgroundColor(QColor(255, 255, 255, 0))
+
+        # bloquear capas (para que no se muestre otra mas que la se asigno)
+        map.setKeepLayerSet(True)
+        map.setKeepLayerStyles(True)
+
+        # define el estilo del marco y lo activa
+        measure = QgsLayoutMeasurement(0.30, QgsUnitTypes.LayoutMillimeters)
+        map.setFrameStrokeWidth(measure)
+        map.setFrameEnabled(True)
+
+        # define el estilo del grid que aparece en el mapa
+        mapGrid = QgsLayoutItemMapGrid("grid", map)
+        mapGrid.setAnnotationPrecision(0)
+        mapGrid.setAnnotationFrameDistance(1)
+        mapGrid.setAnnotationFontColor(QColor(0, 0, 0))
+        mapGrid.setIntervalX(15)
+        mapGrid.setIntervalY(25)
+        mapGrid.setStyle(QgsLayoutItemMapGrid.GridStyle.Cross)
+        mapGrid.setCrossLength(2)
+        mapGrid.setFrameStyle(QgsLayoutItemMapGrid.FrameStyle.ExteriorTicks)
+        mapGrid.setAnnotationEnabled(True)
+        mapGrid.setAnnotationDirection(QgsLayoutItemMapGrid.AnnotationDirection.Vertical, QgsLayoutItemMapGrid.BorderSide.Left)
+        mapGrid.setAnnotationDirection(QgsLayoutItemMapGrid.AnnotationDirection.Vertical, QgsLayoutItemMapGrid.BorderSide.Right)
+
+        # agrega el grid al mapa
+        map.grids().addGrid(mapGrid)
+
+        # define la posision y el tamaño del mapa
+        map.attemptMove(QgsLayoutPoint(8, 8, QgsUnitTypes.LayoutMillimeters))
+        map.attemptResize(QgsLayoutSize(142.194, 200, QgsUnitTypes.LayoutMillimeters))
+
+        # obtener la escala
+        scale = map.scale()
+
+        # agrega el mapa al Layout
+        layout.addLayoutItem(map)
+         
+        # SE AGREGA UN SEGUNDO MAPA COMO REFERENCIA DE UBICACION
+        # se utiliza otra capa para agregar la referencia del predio
+        layer1 = xManza if xManza else layer
+
+        map1 = QgsLayoutItemMap(layout)
+        map1.setRect(20, 20, 20, 20)
+
+        # zoom a la capa del mapa pequeño
+        listaM = list(layer1.getFeatures())
+        geometria = QgsGeometry()
+        rango = len(listaM)
+        geometria = listaM[0].geometry()
+        for i in range(0, rango):
+            geometria = geometria.combine(listaM[i].geometry())
+
+        rect = geometria.buffer(3, 0).boundingBox() # zoom realizado
+        rect.scale(1.0)
+
+        if xManza:
+            map1.setLayers([layer1, xMza])
+        else:
+            map1.setLayers([layer1])
+
+        map1.setExtent(rect)
+        map1.setBackgroundColor(QColor(255, 255, 255, 0))
+        map1.setKeepLayerSet(True)
+        map1.setKeepLayerStyles(True)
+        measure = QgsLayoutMeasurement(0.30, QgsUnitTypes.LayoutMillimeters)
+        map1.setFrameStrokeWidth(measure)
+        map1.setFrameEnabled(True)
+        map1.attemptMove(QgsLayoutPoint(214, 33, QgsUnitTypes.LayoutMillimeters))
+        map1.attemptResize(QgsLayoutSize(57.863, 51.863, QgsUnitTypes.LayoutMillimeters))
+
+        # se agrega el overview (referencia en el mapa respecto al predio usado)
+        overview = QgsLayoutItemMapOverview('overview', map1)
+        overview.setLinkedMap(map)
+        symbol = QgsFillSymbol.createSimple({'color':'0,0,0,130', 'color_border':'0,0,0,0', 'width_border':'0'})
+        overview.setFrameSymbol(symbol)
+        map1.overviews().addOverview(overview)
+
+        # agrega el segundo mapa
+        layout.addLayoutItem(map1)
+
+        complemento = ''
+        for i in range(len(vertices) - 1):
+            if (i + 1) == (len(vertices) - 1):
+                complemento = complemento + '<tr><td>' + str(i + 1) + ' - 1</td><td>' + str(round(vertices[i].distance(vertices[0]), 2)) + '</td><td>' + '{:,.2f}'.format(round(vertices[i].x(), 2)) + '</td><td>' + '{:,.2f}'.format(round(vertices[i].y(), 2)) + '</td></tr>'
+            else:
+                complemento = complemento + '<tr><td>' + str(i + 1) + ' - ' + str(i + 2) + '</td><td>' + str(round(vertices[i].distance(vertices[i + 1]), 2)) + '</td><td>' + '{:,.2f}'.format(round(vertices[i].x(), 2)) + '</td><td>' + '{:,.2f}'.format(round(vertices[i].y(), 2)) + '</td></tr>'
+
+        html = '''
+        <head>
+        <style>
+        table {
+          border-collapse: collapse;
+        }
+
+        td, th {
+          border: 1px solid #dddddd;
+          width: 50px;
+          height: 12px;
+          font-family: arial, sans-serif;
+          text-align: center;
+          font-size: 8px;
+        }
+
+        .font1 {
+            font-family: arial;
+            text-align: center;
+            font-size: 10px;
+        }
+
+        </style>
+        </head>
+        <body>
+        <table>
+          <tr>
+            <td colspan="4" class="font1"> CUADRO DE CONSTRUCCIÓN </td>
+          </tr>
+          <tr>
+            <td class="distancia1" rowspan="2">LADO<br/>EST-PV</td>
+            <td class="distancia1" rowspan="2">DISTANCIA (MTS)</td>
+            <td colspan="2">COORDENADAS UTM</td>
+          </tr>
+          <tr>
+            <td style="width:60px">ESTE (X)</td>
+            <td style="width:60px">NORTE (Y)</td>
+          </tr>
+        ''' + complemento + '''
+          <tr>
+            <td colspan="2">SUPERFICIE: _super_ m2</td>
+            <td colspan="2">PERIMETRO: _perim_ m</td>
+          </tr>
+        </table>
+        '''
+
+        geomPTemp = list(layerPoly.getFeatures())[0].geometry()
+        area = round(geomPTemp.area(), 2)
+        peri = round(geomPTemp.length(), 2)
+        html = html.replace('_super_', str('{:,.2f}'.format(area)))
+        html = html.replace('_perim_', str('{:,.2f}'.format(peri)))
+
+        layout_html = QgsLayoutItemHtml(layout)
+        html_frame = QgsLayoutFrame(layout, layout_html)
+        html_frame.attemptSetSceneRect(QRectF(154.145, 5.930, 60, 202.220))
+        html_frame.setFrameEnabled(True)
+        layout_html.addFrame(html_frame)
+        layout_html.setContentMode(QgsLayoutItemHtml.ManualHtml)
+        layout_html.setHtml(html)
+        layout_html.loadHtml()
+        html_frame.setFrameEnabled(False)
+
+        # agregar una imagen (rosa de los vientos)
+        picture = QgsLayoutItemPicture(layout)
+        picture.attemptMove(QgsLayoutPoint(7.85, 7.85, QgsUnitTypes.LayoutMillimeters))
+        picture.attemptResize(QgsLayoutSize(22, 22, QgsUnitTypes.LayoutMillimeters))
+        picture.setPicturePath(':cedula/icons/image4144.png')
+        picture.setLinkedMap(map)
+        picture.setNorthMode(QgsLayoutItemPicture.NorthMode.TrueNorth)
+        layout.addLayoutItem(picture)
+
+        # agregar una imagen (rosa de los vientos, segundo mapa)
+        picture = QgsLayoutItemPicture(layout)
+        picture.attemptMove(QgsLayoutPoint(261.194, 74.220, QgsUnitTypes.LayoutMillimeters))
+        picture.attemptResize(QgsLayoutSize(10, 10, QgsUnitTypes.LayoutMillimeters))
+        picture.setPicturePath(':cedula/icons/image4144.png')
+        #picture.setLinkedMap(map1)
+        picture.setNorthMode(QgsLayoutItemPicture.NorthMode.TrueNorth)
+        layout.addLayoutItem(picture)
+
+        # agregar una imagen (logo de cuautitlan)
+        picture = QgsLayoutItemPicture(layout)
+        picture.attemptMove(QgsLayoutPoint(214.2, 8.2, QgsUnitTypes.LayoutMillimeters))
+        picture.attemptResize(QgsLayoutSize(26.407, 14.486, QgsUnitTypes.LayoutMillimeters))
+        picture.setPicturePath(':cedula/icons/Cuau_bien.jpg')
+        #picture.setLinkedMap(map1)
+        picture.setNorthMode(QgsLayoutItemPicture.NorthMode.TrueNorth)
+        layout.addLayoutItem(picture)
+
+        # CREACION DE ETIQUETAS PARA EL LAYOUT
+        title = QgsLayoutItemLabel(layout)
+        title.setText('COORDINACIÓN DE\nCATASTRO')
+        title.attemptMove(QgsLayoutPoint(248, 9, QgsUnitTypes.LayoutMillimeters))
+        title.attemptResize(QgsLayoutSize(23.194, 10.364, QgsUnitTypes.LayoutMillimeters))
+        title.setFont(QFont('MS Shell Dlg 2', 8))
+        title.setHAlign(Qt.AlignmentFlag.AlignCenter)
+        layout.addLayoutItem(title)
+
+        title = QgsLayoutItemLabel(layout)
+        title.setText('CROQUIS DE LOCALIZACIÓN')
+        title.attemptMove(QgsLayoutPoint(223, 28, QgsUnitTypes.LayoutMillimeters))
+        title.attemptResize(QgsLayoutSize(36.410, 3.480, QgsUnitTypes.LayoutMillimeters))
+        title.setFont(QFont('MS Shell Dlg 2', 8))
+        layout.addLayoutItem(title)
+
+        title = QgsLayoutItemLabel(layout)
+        title.setText('VERIFICACIÓN DE LINDEROS')
+        title.attemptMove(QgsLayoutPoint(218, 23.5, QgsUnitTypes.LayoutMillimeters))
+        title.attemptResize(QgsLayoutSize(30.3, 3.56, QgsUnitTypes.LayoutMillimeters))
+        font = QFont('MS Shell Dlg 2', 8)
+        font.setBold(True)
+        title.setFont(font)
+        layout.addLayoutItem(title)
+
+        title = QgsLayoutItemLabel(layout)
+        title.setText('PROPIETARIO O POSEEDOR DEL INMUEBLE:')
+        title.attemptMove(QgsLayoutPoint(214.200, 85.849, QgsUnitTypes.LayoutMillimeters))
+        title.attemptResize(QgsLayoutSize(45.397, 2.696, QgsUnitTypes.LayoutMillimeters))
+        title.setFont(QFont('MS Shell Dlg 2', 6))
+        layout.addLayoutItem(title)
+
+        title = QgsLayoutItemLabel(layout)
+        title.setText(propietario.upper())
+        title.attemptMove(QgsLayoutPoint(215.493, 87.870, QgsUnitTypes.LayoutMillimeters))
+        title.attemptResize(QgsLayoutSize(55.227, 3.560, QgsUnitTypes.LayoutMillimeters))
+        font = QFont('MS Shell Dlg 2', 8)
+        font.setBold(True)
+        title.setFont(font)
+        layout.addLayoutItem(title)
+
+        title = QgsLayoutItemLabel(layout)
+        title.setText('CLAVE CATASTRAL:')
+        title.attemptMove(QgsLayoutPoint(214.200, 91.994, QgsUnitTypes.LayoutMillimeters))
+        title.attemptResize(QgsLayoutSize(20.491, 2.696, QgsUnitTypes.LayoutMillimeters))
+        title.setFont(QFont('MS Shell Dlg 2', 6))
+        layout.addLayoutItem(title)
+
+        title = QgsLayoutItemLabel(layout)
+        title.setText(cveCata)
+        title.attemptMove(QgsLayoutPoint(215.493, 94.203, QgsUnitTypes.LayoutMillimeters))
+        title.attemptResize(QgsLayoutSize(55.227, 3.560, QgsUnitTypes.LayoutMillimeters))
+        font = QFont('MS Shell Dlg 2', 8)
+        font.setBold(True)
+        title.setFont(font)
+        layout.addLayoutItem(title)
+
+        title = QgsLayoutItemLabel(layout)
+        title.setText('UBICACIÓN:')
+        title.attemptMove(QgsLayoutPoint(214.200, 98.408, QgsUnitTypes.LayoutMillimeters))
+        title.attemptResize(QgsLayoutSize(13.204, 2.695, QgsUnitTypes.LayoutMillimeters))
+        title.setFont(QFont('MS Shell Dlg 2', 6))
+        layout.addLayoutItem(title)
+
+        title = QgsLayoutItemLabel(layout)
+        title.setText(ubicacion.upper())
+        title.attemptMove(QgsLayoutPoint(226.205, 98.408, QgsUnitTypes.LayoutMillimeters))
+        title.attemptResize(QgsLayoutSize(44.989, 7.296, QgsUnitTypes.LayoutMillimeters))
+        font = QFont('MS Shell Dlg 2', 8)
+        font.setBold(True)
+        title.setFont(font)
+        layout.addLayoutItem(title)
+
+        title = QgsLayoutItemLabel(layout)
+        title.setText('MUNICIPIO Y/O ENTIDAD FEDERATIVA:')
+        title.attemptMove(QgsLayoutPoint(214.200, 105.254, QgsUnitTypes.LayoutMillimeters))
+        title.attemptResize(QgsLayoutSize(57.813, 2.696, QgsUnitTypes.LayoutMillimeters))
+        title.setFont(QFont('MS Shell Dlg 2', 6))
+        layout.addLayoutItem(title)
+
+        title = QgsLayoutItemLabel(layout)
+        title.setText(mpio.upper())
+        title.attemptMove(QgsLayoutPoint(215.493, 107.950, QgsUnitTypes.LayoutMillimeters))
+        title.attemptResize(QgsLayoutSize(55.227, 3.560, QgsUnitTypes.LayoutMillimeters))
+        font = QFont('MS Shell Dlg 2', 8)
+        font.setBold(True)
+        title.setFont(font)
+        layout.addLayoutItem(title)
+
+        title = QgsLayoutItemLabel(layout)
+        title.setText('LEVANTO:')
+        title.attemptMove(QgsLayoutPoint(214.200, 112.212, QgsUnitTypes.LayoutMillimeters))
+        title.attemptResize(QgsLayoutSize(10.246, 2.696, QgsUnitTypes.LayoutMillimeters))
+        title.setFont(QFont('MS Shell Dlg 2', 6))
+        layout.addLayoutItem(title)
+
+        title = QgsLayoutItemLabel(layout)
+        title.setText(levanto.upper())
+        title.attemptMove(QgsLayoutPoint(215.493, 114.323, QgsUnitTypes.LayoutMillimeters))
+        title.attemptResize(QgsLayoutSize(55.227, 3.560, QgsUnitTypes.LayoutMillimeters))
+        font = QFont('MS Shell Dlg 2', 8)
+        font.setBold(True)
+        title.setFont(font)
+        layout.addLayoutItem(title)
+
+        title = QgsLayoutItemLabel(layout)
+        title.setText('DIBUJO:')
+        title.attemptMove(QgsLayoutPoint(214.200, 117.883, QgsUnitTypes.LayoutMillimeters))
+        title.attemptResize(QgsLayoutSize(57.813, 2.696, QgsUnitTypes.LayoutMillimeters))
+        title.setFont(QFont('MS Shell Dlg 2', 6))
+        layout.addLayoutItem(title)
+
+        title = QgsLayoutItemLabel(layout)
+        title.setText(dibujo.upper())
+        title.attemptMove(QgsLayoutPoint(215.493, 120.007, QgsUnitTypes.LayoutMillimeters))
+        title.attemptResize(QgsLayoutSize(55.227, 3.560, QgsUnitTypes.LayoutMillimeters))
+        font = QFont('MS Shell Dlg 2', 8)
+        font.setBold(True)
+        title.setFont(font)
+        layout.addLayoutItem(title)
+
+        title = QgsLayoutItemLabel(layout)
+        title.setText('SUPERFICIE:')
+        title.attemptMove(QgsLayoutPoint(214.200, 123.567, QgsUnitTypes.LayoutMillimeters))
+        title.attemptResize(QgsLayoutSize(13.968, 2.696, QgsUnitTypes.LayoutMillimeters))
+        title.setFont(QFont('MS Shell Dlg 2', 6))
+        layout.addLayoutItem(title)
+
+        title = QgsLayoutItemLabel(layout)
+        title.setText(str('{:,.2f}'.format(area)) +  ' M2')
+        title.attemptMove(QgsLayoutPoint(215.493, 125.690, QgsUnitTypes.LayoutMillimeters))
+        title.attemptResize(QgsLayoutSize(55.227, 3.560, QgsUnitTypes.LayoutMillimeters))
+        font = QFont('MS Shell Dlg 2', 8)
+        font.setBold(True)
+        title.setFont(font)
+        layout.addLayoutItem(title)
+
+        title = QgsLayoutItemLabel(layout)
+        title.setText('FECHA:')
+        title.attemptMove(QgsLayoutPoint(236.978, 123.567, QgsUnitTypes.LayoutMillimeters))
+        title.attemptResize(QgsLayoutSize(13.968, 2.696, QgsUnitTypes.LayoutMillimeters))
+        title.setFont(QFont('MS Shell Dlg 2', 6))
+        layout.addLayoutItem(title)
+
+        title = QgsLayoutItemLabel(layout)
+        title.setText(str(date.today()))
+        title.attemptMove(QgsLayoutPoint(237.694, 125.690, QgsUnitTypes.LayoutMillimeters))
+        title.attemptResize(QgsLayoutSize(17.677, 3.560, QgsUnitTypes.LayoutMillimeters))
+        font = QFont('MS Shell Dlg 2', 8)
+        font.setBold(True)
+        title.setFont(font)
+        layout.addLayoutItem(title)
+
+        title = QgsLayoutItemLabel(layout)
+        title.setText('ESCALA:')
+        title.attemptMove(QgsLayoutPoint(256.896, 123.567, QgsUnitTypes.LayoutMillimeters))
+        title.attemptResize(QgsLayoutSize(11.579, 2.696, QgsUnitTypes.LayoutMillimeters))
+        title.setFont(QFont('MS Shell Dlg 2', 6))
+        layout.addLayoutItem(title)
+
+        title = QgsLayoutItemLabel(layout)
+        title.setText('1:' + str(round(scale, 0)))
+        title.attemptMove(QgsLayoutPoint(257.763, 125.690, QgsUnitTypes.LayoutMillimeters))
+        title.attemptResize(QgsLayoutSize(12.956, 3.560, QgsUnitTypes.LayoutMillimeters))
+        font = QFont('MS Shell Dlg 2', 8)
+        font.setBold(True)
+        title.setFont(font)
+        layout.addLayoutItem(title)
+
+        title = QgsLayoutItemLabel(layout)
+        title.setText('METODO DE MEDICIÓN:')
+        title.attemptMove(QgsLayoutPoint(214.200, 129.250, QgsUnitTypes.LayoutMillimeters))
+        title.attemptResize(QgsLayoutSize(26.407, 2.696, QgsUnitTypes.LayoutMillimeters))
+        title.setFont(QFont('MS Shell Dlg 2', 6))
+        layout.addLayoutItem(title)
+
+        title = QgsLayoutItemLabel(layout)
+        title.setText('1:' + str(round(scale, 0)))
+        title.attemptMove(QgsLayoutPoint(215.493, 131.314, QgsUnitTypes.LayoutMillimeters))
+        title.attemptResize(QgsLayoutSize(13.655, 3.560, QgsUnitTypes.LayoutMillimeters))
+        font = QFont('MS Shell Dlg 2', 8)
+        font.setBold(True)
+        title.setFont(font)
+        layout.addLayoutItem(title)
+
+        title = QgsLayoutItemLabel(layout)
+        texto = '''LA QUE SUSCRIBE LIC. LIZETT ORTEGA ALMANZA COORDINADORA DE CATASTRO EN EL MUNICIPIO DE CUAUTITLÁN, ESTADO DE MÉXICO.
+CON FUNDAMENTO EN LO ESTABLECIDO EN LOS ARTICULOS 171 FRACC. VI Y 172 DEL CÓDIGO FINANCIERO DEL ESTADO DE MÉXICO Y MUNICIPIOS.\n\n
+QUE EN EL PADRÓN CATASTRAL SE ENCUENTRA REGISTRADO EL PREDIO CON LA UBICACIÓN Y MEDIDAS RESULTANTES DE LA VISITA FÍSICA DE FECHA 07 DE SEMPTIEMBRE DE 2020\n\n
+LOS DERECHOS CONFORME AL ARTICULO 166 DEL CÓDIGO FINANCIERO DEL ESTADO DE MÉXICO Y MUNICIPIOS SE ACUSAN CUBIERTOS CON EL RECIBO OFICIAL No. AB319353 DE 01 DE SEPTIEMBRE DE 2020\n\n\n\n\n\n\n
+- EL PRESENTE PLANO NO AUTORIZA FUSIÓN, SUBDIVISIÓN O LOTIFICACION ALGUNA
+- EL PRESENTE PLANO NO PREJUZGA DERECHOS DE PROPIEDAD
+- EL PRESENTE PLANO NO DETERMINA INFORMACIÓN AUTORIZADA PARA CUALQUIER TIPO DE VIALIDAD
+- EL PRESENTE PLANO MANZANERO CATASTRAL DEJA SALVO LOS DERECHOS DE TERCERAS PERSONAS\n\n\n
+        '''
+        title.setText(texto)
+        title.attemptMove(QgsLayoutPoint(215.200, 136.576, QgsUnitTypes.LayoutMillimeters))
+        title.attemptResize(QgsLayoutSize(55.520, 71.212, QgsUnitTypes.LayoutMillimeters))
+        title.setFont(QFont('MS Shell Dlg 2', 5))
+        title.setHAlign(Qt.AlignmentFlag.AlignLeft)
+        layout.addLayoutItem(title)
+
+        title = QgsLayoutItemLabel(layout)
+        texto = '''C E R T I F I C A\n\n\n\n\n\n\n
+        A T E N T A M E N T E\n\n\n        
+        ''' + certifica.upper()
+        title.setText(texto)
+        title.attemptMove(QgsLayoutPoint(214.200, 150.000, QgsUnitTypes.LayoutMillimeters))
+        title.attemptResize(QgsLayoutSize(57.433, 40.790, QgsUnitTypes.LayoutMillimeters))
+        font = QFont('MS Shell Dlg 2', 8)
+        font.setBold(True)
+        title.setFont(font)
+        title.setHAlign(Qt.AlignmentFlag.AlignCenter)
+        layout.addLayoutItem(title)
+
+
+
+        '''
+        # Imprimir la lista de capas 
+
+        legend = QgsLayoutItemLegend(layout)
+        legend.setTitle("Legend")
+        layerTree = QgsLayerTree()
+        layerTree.addLayer(layers[0])
+        layerTree.addLayer(layers[1])
+        legend.model().setRootGroup(layerTree)
+        layout.addLayoutItem(legend)
+        legend.attemptMove(QgsLayoutPoint(230, 15, QgsUnitTypes.LayoutMillimeters))
+        '''
+
+        ''' 
+        # barra de escalas
+
+        scalebar = QgsLayoutItemScaleBar(layout)
+        scalebar.setStyle('Line Ticks Up')
+        scalebar.setUnits(QgsUnitTypes.DistanceMeters)
+        scalebar.setNumberOfSegments(5)
+        scalebar.setNumberOfSegmentsLeft(0)
+        scalebar.setUnitsPerSegment(20)
+        scalebar.setLinkedMap(map)
+        scalebar.setUnitLabel('m')
+        scalebar.setFont(QFont('Arial', 14))
+        scalebar.update()
+        layout.addLayoutItem(scalebar)
+        scalebar.attemptMove(QgsLayoutPoint(5, 190, QgsUnitTypes.LayoutMillimeters))
+        '''
+
+        # IMPRESION EN PDF Y PNG
+        layout = manager.layoutByName(layoutName)
+        exporter = QgsLayoutExporter(layout)
+
+        folder = str(QFileDialog.getExistingDirectory(None, "Selecciona la carpeta donde se guardará el reporte", 'c:/'))
+
+        fnPdf = folder + '/verificacion_linderos_' + cveCata + '.pdf'
+
+        # fnPng = 'C:/BORRARRRRRRRRRRRR/qgis/layout_ejemplo.png'
+        # fnPdf = 'C:/BORRARRRRRRRRRRRR/qgis/layout_ejemplo.pdf'
+
+        # exporter.exportToImage(fnPng, QgsLayoutExporter.ImageExportSettings())
+        exporter.exportToPdf(fnPdf, QgsLayoutExporter.PdfExportSettings())
+        
+        self.UTI.mostrarAlerta("Proceso concluido", QMessageBox.Information, 'Plano Manzanero')
+
+        # abrir carpeta del archivo recien creado
+        path = os.path.realpath(folder)
+        os.startfile(path)
+
+        # eliminar el layout 
+        #manager.removeLayout(layout)
+
+
     def event_planoMza(self):
 
-        numL = 7
         if not self.validarCombox():
             self.UTI.mostrarAlerta('No se han seleccionado manzanas para cargar', QMessageBox.Critical, 'Capas de consulta')
             return
@@ -4018,7 +4849,7 @@ class ActualizacionCatastralV3:
         layout.addLayoutItem(title)
 
         title = QgsLayoutItemLabel(layout)
-        title.setText('1:' + str(round(scale, 2)))
+        title.setText('1:' + str(round(scale, 0)))
         title.attemptMove(QgsLayoutPoint(257.763, 125.690, QgsUnitTypes.LayoutMillimeters))
         title.attemptResize(QgsLayoutSize(12.956, 3.560, QgsUnitTypes.LayoutMillimeters))
         font = QFont('MS Shell Dlg 2', 8)
@@ -4034,7 +4865,7 @@ class ActualizacionCatastralV3:
         layout.addLayoutItem(title)
 
         title = QgsLayoutItemLabel(layout)
-        title.setText('1:' + str(round(scale, 2)))
+        title.setText('1:' + str(round(scale, 0)))
         title.attemptMove(QgsLayoutPoint(215.493, 131.314, QgsUnitTypes.LayoutMillimeters))
         title.attemptResize(QgsLayoutSize(13.655, 3.560, QgsUnitTypes.LayoutMillimeters))
         font = QFont('MS Shell Dlg 2', 8)

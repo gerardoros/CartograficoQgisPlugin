@@ -14,11 +14,11 @@ FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'agregarRoles.ui'))
 
 class agregarRoles_usuario(QtWidgets.QDialog, FORM_CLASS):
-    def __init__(self, roles = [], CFG = None, UTI = None, parent=None):
+    def __init__(self, nuevalista = [], CFG = None, UTI = None, parent=None):
         """Constructor."""
         super(agregarRoles_usuario, self).__init__(parent, \
             flags=Qt.WindowCloseButtonHint)
-        # Set up the user interface from Designer.
+        # Set up the user interface from Designer.l
         # After setupUI you can access any designer object by doing
         # self.<objectname>, and you can use autoconnect slots - see
         # http://qt-project.org/doc/qt-4.8/designer-using-a-ui-file.html
@@ -28,9 +28,10 @@ class agregarRoles_usuario(QtWidgets.QDialog, FORM_CLASS):
         self.cargada = False
 
         self._seleccionados = []
-        self.roles = roles
+        
         self.CFG = CFG
         self.UTI = UTI
+        self.nuevalista = nuevalista
 
         self.headers = {'Content-Type': 'application/json'}
 
@@ -49,10 +50,11 @@ class agregarRoles_usuario(QtWidgets.QDialog, FORM_CLASS):
         self.leBusqueda.textChanged.connect(self.event_textChangedLbBusqueda)
 
         # -- Iniciarlizaciones
-        self.cargaRoles(roles = self.roles)
+        self.cargaRoles(nuevalista = self.nuevalista)
 
         # sin edicion en la tabla (QTableWidget)
         self.twRoles.setEditTriggers(QtWidgets.QTableWidget.NoEditTriggers)
+        self.twRoles.setColumnWidth(1,269)
 
         self.cargada = True
 
@@ -170,11 +172,11 @@ class agregarRoles_usuario(QtWidgets.QDialog, FORM_CLASS):
          # Run the dialog event loop
         result = self.msg.exec_()
 
-    def cargaRoles(self, roles = []):
+    def cargaRoles(self, nuevalista = []):
 
         # llena la tabla de roles
-        self.twRoles.setRowCount(len(roles))
-        for i in range(0, len(roles)):
+        self.twRoles.setRowCount(len(nuevalista))
+        for i in range(0, len(nuevalista)):
             
             btnRol = QtWidgets.QPushButton('Quitar')
             btnRol.setStyleSheet('''QPushButton{
@@ -188,10 +190,11 @@ class agregarRoles_usuario(QtWidgets.QDialog, FORM_CLASS):
                                 border: 1px solid #adb2b5;
                                 }''')
 
-            check = QtWidgets.QTableWidgetItem(roles[i])
+            check = QtWidgets.QTableWidgetItem(nuevalista[i]['rol'])
             check.setCheckState(QtCore.Qt.Unchecked)
 
             self.twRoles.setItem(i, 0, check)
+            self.twRoles.setItem(i, 1, QtWidgets.QTableWidgetItem(nuevalista[i]['operaciones']))
             #self.twRoles.setCellWidget(i, 1, btnRol)
 
             #btnRol.clicked.connect(self.event_currentPositionButtonPressed)

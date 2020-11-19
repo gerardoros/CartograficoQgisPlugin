@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/plugins/busqueda_Catastral" >
+        <file>icon.png</file>
+    </qresource>
+</RCC>

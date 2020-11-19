@@ -70,8 +70,8 @@ class TopologiaV3:
         header.setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeToContents)
         self.dockwidget.botonValidar.clicked.connect(self.validarTopologiaManual)
         self.dockwidget.botonValidarRef.clicked.connect(self.validarTopologiaManualRef)
-        #self.dockwidget.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
-        
+        self.dockwidget.tablaErrores.setEditTriggers(QtWidgets.QTableWidget.NoEditTriggers)
+        self.dockwidget.tablaComp.setEditTriggers(QtWidgets.QTableWidget.NoEditTriggers)
         
 
         self.dockwidget.btnVerReglas.clicked.connect(self.verReglas)
@@ -275,7 +275,7 @@ class TopologiaV3:
             self.reglasManuales()
 
             if self.todoEnOrden: #Topologia en orden
-                self.UTI.mostrarAlerta("La topologia es correcta", QMessageBox().Information, "Comprobador de topologia")
+                self.UTI.mostrarAlerta("La topologia es correcta", QMessageBox().Information, "Comprobador de topología")
                 QSettings().setValue("posibleGuardar", "True")
                 root = QgsProject.instance().layerTreeRoot()
                 #Si todo esta bien, borramos el grupo de errores
@@ -289,17 +289,15 @@ class TopologiaV3:
 
                 #if self.CMS.dlg.isVisible():
                 if QSettings().value('integrando') == 'True':
-                   # self.UTI.mostrarAlerta("Ahora puedes integrar", QMessageBox().Information, "Comprobador de topologia")
+                   # self.UTI.mostrarAlerta("Ahora puedes integrar", QMessageBox().Information, "Comprobador de topología")
                     self.preguntarGuardarInte()
                 else:
                     self.preguntarGuardar()
-                    
-
 
             else: #Cuando hay errrpres
-                self.UTI.mostrarAlerta("Se han detectado errores de topologia", QMessageBox().Critical, "Comprobador de topologia")
+                self.UTI.mostrarAlerta("Se han detectado errores de topologia", QMessageBox().Critical, "Comprobador de topología")
         else:
-            self.UTI.mostrarAlerta("El comprobador de topologia no puede proceder hasta que se corrijan las geometrias invalidas", QMessageBox().Critical, "Comprobador de topologia")
+            self.UTI.mostrarAlerta("El comprobador de topología no puede proceder hasta que se corrijan las geometrías inválidas", QMessageBox().Critical, "Comprobador de topología")
 
 
 #############################################################################################################
@@ -357,28 +355,12 @@ class TopologiaV3:
 
             root.insertGroup(0, 'ERRORES DE TOPOLOGIA')
 
-            if self.siendoEditada('Estado'):
-                self.validarPoligonosInvalidosRef('Estado')
-
-            elif self.siendoEditada('Region Catastral'):                
-                self.validarPoligonosInvalidosRef('Region Catastral')
-                self.validarPoligonosInvalidosRef('Estado')
-
-            elif self.siendoEditada('Municipios'):
+            if self.siendoEditada('Municipios'):
                 self.validarPoligonosInvalidosRef('Municipios')
-                self.validarPoligonosInvalidosRef('Region Catastral')
-
-            elif self.siendoEditada('Secciones'):
-                self.validarPoligonosInvalidosRef('Secciones')
-                self.validarPoligonosInvalidosRef('Municipios')
-
-            elif self.siendoEditada('Localidades'):
-                self.validarPoligonosInvalidosRef('Localidades')
-                self.validarPoligonosInvalidosRef('Secciones')
 
             elif self.siendoEditada('Sectores'):
                 self.validarPoligonosInvalidosRef('Sectores')
-                self.validarPoligonosInvalidosRef('Localidades')
+                self.validarPoligonosInvalidosRef('Municipios')
 
             elif self.siendoEditada('Calles'):
                 self.validarPoligonosInvalidosRef('Calles')
@@ -389,12 +371,6 @@ class TopologiaV3:
             elif self.siendoEditada('Codigo Postal'):
                 self.validarPoligonosInvalidosRef('Codigo Postal')
 
-            elif self.siendoEditada('Zona Uno'):
-                self.validarPoligonosInvalidosRef('Zona Uno')
-
-            elif self.siendoEditada('Zona Dos'):
-                self.validarPoligonosInvalidosRef('Zona Dos')
-
             elif self.siendoEditada('Area de Valor'):
                 self.validarPoligonosInvalidosRef('Area de Valor')
 
@@ -403,7 +379,7 @@ class TopologiaV3:
                 self.reglasManualesRef()
 
                 if(self.todoEnOrdenRef): #Topologia en orden
-                    self.UTI.mostrarAlerta("La topologia es correcta", QMessageBox().Information, "Comprobador de topologia")
+                    self.UTI.mostrarAlerta("La topologia es correcta", QMessageBox().Information, "Comprobador de topología")
                     QSettings().setValue("posibleGuardarRef", "True")
                     root = QgsProject.instance().layerTreeRoot()
                     #Si todo esta bien, borramos el grupo de errores
@@ -419,12 +395,12 @@ class TopologiaV3:
                     self.preguntarGuardarRef()
 
                 else: #Cuando hay errrpres
-                    self.UTI.mostrarAlerta("Se han detectado errores de topologia", QMessageBox().Critical, "Comprobador de topologia")
+                    self.UTI.mostrarAlerta("Se han detectado errores de topologia", QMessageBox().Critical, "Comprobador de topología")
             else:
-                self.UTI.mostrarAlerta("El comprobador de topologia no puede proceder hasta que se corrijan las geometrias invalidas", QMessageBox().Critical, "Comprobador de topologia")
+                self.UTI.mostrarAlerta("El comprobador de topología no puede proceder hasta que se corrijan las geometrias inválidas", QMessageBox().Critical, "Comprobador de topología")
 
         else:
-            self.UTI.mostrarAlerta("Debes tener en edicion una capa de referencia para validar la topologia de referencia", QMessageBox().Critical, "Comprobador de topologia")
+            self.UTI.mostrarAlerta("Debes tener en edicion una capa de referencia para validar la topologia de referencia", QMessageBox().Critical, "Comprobador de topología")
 
 
 #############################################################################################################
@@ -493,7 +469,7 @@ class TopologiaV3:
                     self.validarTocar(capa1, capa2)
 
             if(self.todoEnOrden): #Topologia en orden
-                self.UTI.mostrarAlerta("La topologia es correcta", QMessageBox().Information, "Comprobador de topologia")
+                self.UTI.mostrarAlerta("La topologia es correcta", QMessageBox().Information, "Comprobador de topología")
                 QSettings().setValue("posibleGuardar", "True")
                 root = QgsProject.instance().layerTreeRoot()
                 #Si todo esta bien, borramos el grupo de errores
@@ -505,7 +481,7 @@ class TopologiaV3:
                         QgsProject.instance().removeMapLayer(id)
                     root.removeChildNode(group)
             else: #Cuando hay errrpres
-                self.UTI.mostrarAlerta("Se han detectado errores de topologia", QMessageBox().Critical, "Comprobador de topologia")
+                self.UTI.mostrarAlerta("Se han detectado errores de topologia", QMessageBox().Critical, "Comprobador de topología")
 
 
 
@@ -794,7 +770,7 @@ class TopologiaV3:
         self.validarCantidadAreasInscritas()
         
         self.validarLongitudCampo(self.xManzana, 'clave', 3)
-        self.validarLongitudCampo(self.xPredGeom, 'clave', 5)
+        self.validarLongitudCampo(self.xPredGeom, 'clave', 2)
         self.validarLongitudCampo(self.xHoriGeom, 'clave', 6)
         self.validarLongitudCampo(self.xVert, 'clave', 2)
         self.validarLongitudCampo(self.xCvesVert, 'clave', 4)
@@ -817,18 +793,16 @@ class TopologiaV3:
 #############################################################################################################
 
     def reglasManualesRef(self):
-        
+
+        if self.siendoEditada('Municipios'):
+            capa = QgsProject.instance().mapLayer(self.ACA.obtenerIdCapa('Municipios'))
+            self.validarLongitudCampo(capa, 'Clave', 3)
         
         if self.siendoEditada('Sectores'):
-            self.validarInclusionRef('Sectores', 'Localidades')
-        elif self.siendoEditada('Localidades'):
-            self.validarInclusionRef('Localidades', 'Secciones')
-        elif self.siendoEditada('Secciones'):
-            self.validarInclusionRef('Secciones', 'Municipios')
-        elif self.siendoEditada('Municipios'):
-            self.validarInclusionRef('Municipios', 'Region Catastral')
-        elif self.siendoEditada('Region Catastral'):
-            self.validarInclusionRef('Region Catastral', 'Estado')
+            self.validarInclusionRef('Sectores', 'Municipios')
+
+            capa = QgsProject.instance().mapLayer(self.ACA.obtenerIdCapa('Sectores'))
+            self.validarLongitudCampo(capa, 'clave', 2)
         
         capaTraducida = self.ACA.traducirIdCapa(self.ACA.capaEnEdicion)
 

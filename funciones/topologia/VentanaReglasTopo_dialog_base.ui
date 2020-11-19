@@ -23,7 +23,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>Reglas de Topologia</string>
+   <string>Reglas de topología</string>
   </property>
   <property name="styleSheet">
    <string notr="true">QDialog{
@@ -48,7 +48,7 @@ background : rgb(250,238,224);
     </font>
    </property>
    <property name="text">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Reglas de Topologia&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Reglas de topología&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
   </widget>
   <widget class="QTableWidget" name="tablaReglas">
@@ -217,12 +217,12 @@ height:24px
    </item>
    <item row="8" column="0">
     <property name="text">
-     <string>Ninguna capa admite geometrias multiparte</string>
+     <string>Ninguna capa admite geometrías multiparte</string>
     </property>
    </item>
    <item row="9" column="0">
     <property name="text">
-     <string>Ninguna capa admite geoetrias duplicadas</string>
+     <string>Ninguna capa admite geometrías duplicadas</string>
     </property>
    </item>
    <item row="10" column="0">

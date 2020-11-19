@@ -24,6 +24,7 @@
 from PyQt5.QtCore import QSettings, QTranslator, qVersion, QCoreApplication
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QAction
+from PyQt5 import QtWidgets
 
 # Initialize Qt resources from file resources.py
 from .resources import *
@@ -63,6 +64,7 @@ class VentanaReglasTopo:
 
         # Create the dialog (after translation) and keep reference
         self.dlg = VentanaReglasTopoDialog()
+        self.dlg.tablaReglas.setEditTriggers(QtWidgets.QTableWidget.NoEditTriggers)
 
         # Declare instance attributes
         '''
