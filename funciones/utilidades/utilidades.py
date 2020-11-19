@@ -337,29 +337,7 @@ class Utilidad:
 						atributos['num_ofi'] = punto['num_ofi']
 						atributos['geom_num'] = punto.geometry().asWkt()
 
-			'''if idCapa == 'predios.geom':
-				atributos['cve_cat'] = clave + atributos['clave'] + '000000'
-
-			# armar la clave de las construcciones
-			if idCapa == 'construcciones':
-				predios = QgsProject.instance().mapLayer( self.ACA.obtenerIdCapa('predios.geom'))
-				fPredios = predios.getFeatures()
-
-				lista = []
-				# comparar las geometrias de predios con la de la contruccion
-				for f in fPredios:
-					valor = feat.geometry().intersects(f.geometry())
-					if valor > 0:
-						l = {}
-						l['v'] = valor
-						l['c'] = f['clave']
-
-						lista.append(l)
-
-				# obtener el registro con el valor mas grande para saber la clave del predio
-				maxim = max(lista, key=lambda x:x['v'])
-				atributos['cve_catastral'] = clave + maxim['c'] + '000000'
-				''''
+			
 
 			campos['attr'] = atributos
 			if campos['attr']['id'] == None or campos['attr']['id'] == '':
