@@ -25,6 +25,8 @@ from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QAction
 
+from qgis.gui import QgsMapToolEmitPoint 
+
 # Initialize Qt resources from file resources.py
 from .resources import *
 # Import the code for the dialog
@@ -45,6 +47,11 @@ class busquedacordenadas:
         """
         # Save reference to the QGIS interface
         self.iface = iface
+        #Init canvas
+        self.canvas = self.iface.mapCanvas()
+        #Init click tool
+        self.clickTool = QgsMapToolEmitPoint(self.canvas)
+        self.clickTool.canvasClicked.connect( self.handleMouseDown )
         # initialize plugin directory
         self.plugin_dir = os.path.dirname(__file__)
         # initialize locale
@@ -62,10 +69,27 @@ class busquedacordenadas:
         # Declare instance attributes
         self.actions = []
         self.menu = self.tr(u'&busquedacordenadas')
+        self.dockwidget = busquedacordenadasDialog(parent = iface.mainWindow())
+        # -- evento boton de consulta de predio por coordenadas
+        self.dockwidget.btLocalizar.clicked.connect(self.localizarCoordenadas)
+        
+        
 
         # Check if plugin was started the first time in current QGIS session
         # Must be set in initGui() to survive plugin reloads
         self.first_start = None
+    
+
+
+    # --- Metodo que manda a realizar la funcion de localizar coordenadas ####################
+    def localizarCoordenadas(self):
+        print("Boton de localizar")
+    #--- Obtiene las coordenadas #################
+    def handleMouseDown(self, point, button):
+        self.dockwidget.leCordenadasX.setText(str(point.x()))
+        self.dockwidget.leCordenadasY.setText(str(point.y()))
+        print( str(point.x()) + " , " +str(point.y()) )
+
 
     # noinspection PyMethodMayBeStatic
     def tr(self, message):
@@ -170,6 +194,8 @@ class busquedacordenadas:
         # will be set False in run()
         self.first_start = True
 
+        result = QObject.connect(self.clickTool, SIGNAL("canvasClicked(const QgsPoint &, Qt::MouseButton)"), self.handleMouseDown)
+
 
     def unload(self):
         """Removes the plugin menu item and icon from QGIS GUI."""
@@ -189,10 +215,12 @@ class busquedacordenadas:
             self.first_start = False
             self.dlg = busquedacordenadasDialog()
 
+        self.canvas.setMapTool(self.clickTool)
+
         # show the dialog
-        self.dlg.show()
+        self.dockwidget.show()
         # Run the dialog event loop
-        result = self.dlg.exec_()
+        result = self.dockwidget.exec_()
         # See if OK was pressed
         if result:
             # Do something useful here - delete the line containing pass and
