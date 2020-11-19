@@ -5,8 +5,8 @@ class Configuracion():
     def __init__(self):
         
         #Direccion IP del servidor
-        self.servidorIP = 'http://localhost:8080/'
-        #self.servidorIP = 'http://192.168.0.25:8080/'
+        #self.servidorIP = 'http://localhost:8080/'
+        self.servidorIP = 'http://192.168.0.25:8080/'
         #self.servidorIP = 'http://127.0.0.1:8080/'
 
         #Combos de localidades, sectores y manzanas/combo/municipios/
@@ -148,3 +148,4 @@ class Configuracion():
         self.url_tareasByActividad = self.servidorIP + 'autentificacion/api/tareas/actividad/'
         self.url_usuarioByTarea = self.servidorIP + 'autentificacion/api/users/tarea-actividad/'
         self.url_asignaTarea = self.servidorIP + 'autentificacion/api/asignar-tarea-user/nueva'
+        self.url_permisos = self.servidorIP + 'autentificacion/api/account/permisos-carto'
