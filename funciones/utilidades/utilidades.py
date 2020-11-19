@@ -328,7 +328,7 @@ class Utilidad:
 				if capa.id() == self.ACA.obtenerIdCapa('predios.geom'):
 					punto = self.exteriorPredio(feat.geometry())
 					if punto != None:
-						atributos['numExt'] = punto['numExt']
+						atributos['num_ext'] = punto['numExt']
 						atributos['geom_num'] = punto.geometry().asWkt()
 
 				elif capa.id() == self.ACA.obtenerIdCapa('horizontales.geom'):
@@ -337,10 +337,8 @@ class Utilidad:
 						atributos['num_ofi'] = punto['num_ofi']
 						atributos['geom_num'] = punto.geometry().asWkt()
 
-
 			if idCapa == 'predios.geom':
 				atributos['cve_cat'] = clave + atributos['clave']
-
 
 			# armar la clave de las construcciones
 			if idCapa == 'construcciones':
