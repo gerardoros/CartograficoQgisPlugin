@@ -590,10 +590,8 @@ class ActualizacionCatastralV3:
             self.UTI.mostrarAlerta('No se ha cargado ninguna Manzana', QMessageBox().Critical, 'Cargar referencia')
             return
 
-        if self.dockwidget.checkTodasGeom.isChecked():
+        if self.dockwidget.checkTodasGeom.isChecked() and nameCapa != 'Predios':
             bound = None
-
-        # quitar el evento de CargarTablita
 
         # si se trata de predios tambien se cargan las contrucciones
         if nameCapa.lower() == 'predios':
@@ -2456,6 +2454,9 @@ class ActualizacionCatastralV3:
                     properties.append(l)
 
 
+            print('-------------------------')
+            print(data)
+            print('-------------------------')
             # NO es la de calles
             if nameCapa != 'Calles':
                 if data['features'] != []:
@@ -2778,6 +2779,9 @@ class ActualizacionCatastralV3:
 
         listaCampos['Area de Valor'] = ['clave', 'descripcion', 'id', 'valor']
         listaTipos['Area de Valor'] = ['string(10)', 'string(50)', 'integer', 'real']
+
+        listaCampos['Construcciones'] = ['cve_catastral', 'nom_volumen', 'id', 'num_niveles']
+        listaTipos['Construcciones'] = ['string(20)', 'string(50)', 'integer', 'integer']
 
         stringCapa = "Polygon?crs=epsg:" + str(QSettings().value('srid'))
 
