@@ -94,7 +94,7 @@ class VentanaAsignacionRevision:
                     cveCatastral = dato['cveCatastral']
                     cveManzana = cveCatastral[0:20]
                     cveManzanaCorta = cveManzana[-3:]
-                    cvePredio = cveCatastral[-5:]
+                    cvePredio = cveCatastral[-8:] if len(cveCatastral) == 16 else cveCatastral[-5:]
                     item = QtWidgets.QTableWidgetItem(str(cveCatastral))
                     self.dlg.tablaMazPred.setItem(x, 0 , item)
 
@@ -168,7 +168,6 @@ class VentanaAsignacionRevision:
                 self.pluginM.llenadoDeTablas()
 
             else:
-                print(respuesta)
                 self.pluginM.UTI.mostrarAlerta("Error de servidor v1", QMessageBox().Critical, "Liberar asignaciones")
 
         except requests.exceptions.RequestException:

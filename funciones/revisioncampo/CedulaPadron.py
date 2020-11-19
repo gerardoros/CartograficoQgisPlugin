@@ -211,10 +211,9 @@ class CedulaPadron:
                 print(respuesta.json())
                 self.pluginM.pluginM.UTI.mostrarAlerta(str(respuesta), QMessageBox().Critical, "Consulta de padron")
                 return False
-            
-            
+
+            print(self.pluginM.pluginM.CFG.urlGetPadron + idPadron)
             respuesta = requests.get(self.pluginM.pluginM.CFG.urlGetPadron + idPadron, headers = headers)
-            #print(self.pluginM.pluginM.CFG.urlGetPadron + idPadron)
             if respuesta.status_code == 200:
                 
                 if len(respuesta.json() )<= 0:
@@ -308,7 +307,7 @@ class CedulaPadron:
                 self.dlg.fldCPCed.setText(datos["cp"] or '')
                 self.dlg.fldAsentCed.setText(datos["tipoAsentamiento"] or '')
                 self.dlg.fldColCed.setText(datos["colonia"] or '')
-                self.dlg.fldLocCed.setText(datos["localidad"]["nombre"] or '')
+                self.dlg.fldLocCed.setText(datos["localidad"]["nombre"] if datos["localidad"] else '')
                 self.dlg.fldPredCed.setText(datos["cveTipoPred"] or '')
                 self.dlg.fldMunCed.setText(datos["cveMunicipio"] or '')
                 self.dlg.fldRegCed.setText(datos["regimenPropiedad"] or '')

@@ -90,6 +90,7 @@ class ActualizacionCatastralV3:
         self.dockwidget.btnPlanoManzanero.clicked.connect(self.event_planoMza)
         self.dockwidget.btnPlanoPred.clicked.connect(self.event_planoPred)
 
+        self.cve_cat_len = 16
 
         '''
         view = QListView()
@@ -509,6 +510,8 @@ class ActualizacionCatastralV3:
     # cambio a clave de 16
     def obtenerSectoresPorMunicipio(self):
 
+        print("**************** Consultando Sectores! ******************")
+
         id = '1' # hardcodeado el identificador del municipio
         self.dockwidget.comboSector.clear()
 
@@ -525,6 +528,7 @@ class ActualizacionCatastralV3:
 
         if lenJson > 0:
             for sector in respuesta.json():
+                print(sector)
                 self.dockwidget.comboSector.addItem(sector['label'], sector['value']) #Cambiar value por label
             
 

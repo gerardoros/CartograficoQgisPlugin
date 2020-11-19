@@ -85,9 +85,9 @@ class VentanaAsignacionPadron:
                     dato = datos[x]
                     
                     cveCatastral = dato['cveCatastral']
-                    cveManzana = cveCatastral[0:20]
+                    cveManzana = cveCatastral[0:8] if len(cveCatastral) == 16 else cveCatastral[:20]
                     cveManzanaCorta = cveManzana[-3:]
-                    cvePredio = cveCatastral[-11:]
+                    cvePredio = cveCatastral[-8:] if len(cveCatastral) == 16 else cveCatastral[:-11]
                     item = QtWidgets.QTableWidgetItem(str(cveCatastral))
                     self.dlg.tablaMazPred.setItem(x, 0 , item)
 

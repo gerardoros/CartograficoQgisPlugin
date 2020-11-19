@@ -275,6 +275,11 @@ height:24px
       <string>Claves catastrales</string>
      </property>
     </column>
+    <column>
+     <property name="text">
+      <string>OCULTA</string>
+     </property>
+    </column>
    </widget>
    <widget class="QPushButton" name="btnMas">
     <property name="geometry">
@@ -385,6 +390,11 @@ height:24px
     <column>
      <property name="text">
       <string>Predio</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>OCULTA2</string>
      </property>
     </column>
    </widget>
