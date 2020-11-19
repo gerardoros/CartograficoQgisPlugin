@@ -338,7 +338,7 @@ class Utilidad:
 						atributos['geom_num'] = punto.geometry().asWkt()
 
 			if idCapa == 'predios.geom':
-				atributos['cve_cat'] = clave + atributos['clave']
+				atributos['cve_cat'] = clave + atributos['clave'] + '000000'
 
 			# armar la clave de las construcciones
 			if idCapa == 'construcciones':
@@ -358,7 +358,7 @@ class Utilidad:
 
 				# obtener el registro con el valor mas grande para saber la clave del predio
 				maxim = max(lista, key=lambda x:x['v'])
-				atributos['cve_catastral'] = clave + maxim['c']
+				atributos['cve_catastral'] = clave + maxim['c'] + '000000'
 
 			campos['attr'] = atributos
 			if campos['attr']['id'] == None or campos['attr']['id'] == '':
