@@ -658,8 +658,9 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
         
         #muestra las calves de la manzana
         claves = self.obtieneClaMza(self.cveCatastral)
-        for k, v in claves.items():
-            self.cmbClcata.addItem(str(v), str(k))
+        if claves:
+            for k, v in claves.items():
+                self.cmbClcata.addItem(str(v), str(k))
 
         
 
@@ -2270,8 +2271,6 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
     def consumeWSGeneral(self, url_cons = ""):
 
         url = url_cons
-        data = ""
-
         try:
             self.headers['Authorization'] = self.UTI.obtenerToken()
             response = requests.get(url, headers = self.headers)
@@ -2280,8 +2279,8 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
             return
 
         if response.status_code == 200:
-            data = response.content
-           
+            data = b'[]' if response.content == b'' else response.content
+
         else:
             self.createAlert('Error en peticion "consumeWSGeneral()":\n' + response.text, QMessageBox().Critical, "Error de servidor")
             return
@@ -6244,8 +6243,7 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
             clave += cveCata[3:5] + '-'
             clave += cveCata[5:8] + '-'
             clave += cveCata[8:10] + '-'
-            clave += cveCata[10:12] + '-'
-            clave += cveCata[12:16] + '-'
+            clave += cveCata[10:16]
         elif len(cveCata) == 25:
             clave += cveCata[0:2] + '-'
             clave += cveCata[2:5] + '-'
@@ -6261,11 +6259,11 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
     # - muestra clave global
     def muestraClaveGlobal(self, cveCata):
         if len(cveCata) == 16:
-            self.lbEdo.setText('--')
-            self.lbRegCat.setText('---')
+            #self.lbEdo.setText('--')
+            #self.lbRegCat.setText('---')
             self.lbMpio.setText(cveCata[0:3])
-            self.lbSecc.setText('--')
-            self.lbLoc.setText('----')
+            #self.lbSecc.setText('--')
+            #self.lbLoc.setText('----')
             self.lbSec.setText(cveCata[3:5])
             self.lbMza.setText(cveCata[5:8])
             self.lbPredio.setText(cveCata[8:10])
