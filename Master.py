@@ -198,7 +198,7 @@ class Master:
     def asignActionsByRoles(self, iface):
         var = QSettings()
         if var.value('logeado') == 'True':
-            response = self.consumeWSGeneral("http://192.168.0.25:8080/autentificacion/api/account/permisos-carto")
+            response = self.consumeWSGeneral("http://localhost:8080/autentificacion/api/account/permisos-carto")
             
             for rol in response["roles"]:
                 if rol == 'ASIGNACION_TAREAS':

@@ -1478,7 +1478,9 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
                 for prop in self.propPropPred:
                     # agrega un renglon a las coindancias
                     ident = prop['id']
-                    nombre = prop['nombre'] + ' ' + prop['aPaterno'] + ' ' + prop['aMaterno']
+                    print("EEEEEEEEEEEEEEEEE")
+                    nombre = ' '.join([x for x in [prop['nombre'], prop['aPaterno'], prop['aMaterno']] if x])
+                    print("OOOOOOOOOOOOOOOO")
                     tipo = prop['tipo']
                     porcentaje = prop['porcentaje']
 
@@ -6129,18 +6131,18 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
         for indx in range(0, count):
             dataTemp = self.cmbFraccionesP.itemData(indx) if not condo else self.cmbFraccionesC.itemData(indx)
             fra.append(dataTemp)
+        if nivConst:
+            for i in range(0, nivConst):
+                flag = False
+                for f in fra:
+                    if (i + 1) == f['volumen']:
+                        flag = True
+                        break
 
-        for i in range(0, nivConst):
-            flag = False
-            for f in fra:
-                if (i + 1) == f['volumen']:
-                    flag = True
-                    break
+                if flag:
+                    continue
 
-            if flag:
-                continue
-
-            resultado.append(str(i + 1))
+                resultado.append(str(i + 1))
 
         if len(resultado) > 0:
             if not condo:
