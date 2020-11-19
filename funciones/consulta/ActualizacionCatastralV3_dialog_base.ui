@@ -60,7 +60,7 @@ QWidget:item:selected
 </string>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>2</number>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
@@ -1260,6 +1260,11 @@ color: black ;
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Selecciona una geometría&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
       </widget>
+     </widget>
+     <widget class="QWidget" name="tab_3">
+      <attribute name="title">
+       <string>Página</string>
+      </attribute>
      </widget>
     </widget>
    </item>
