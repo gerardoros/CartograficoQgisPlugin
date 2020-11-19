@@ -1214,7 +1214,7 @@ class VentanaEmergente(QWidget):
             except: #Error al obtenre texto
                 banderaCompleta = False
             if self.pluginE.pluginM.UTI.esEntero(texto): #Cuando es entero
-                if len(texto) == 5: #Validacion de longitud
+                if len(texto) == 2: #Validacion de longitud
                     feat['clave'] = texto
                 else:
                     banderaCompleta = False
@@ -1222,7 +1222,7 @@ class VentanaEmergente(QWidget):
                 banderaCompleta = False
             
             if not banderaCompleta: #Mensaje de error
-                self.pluginE.pluginM.UTI.mostrarAlerta('La clave debe estar compuesta por exactamente 5 numeros', QMessageBox().Critical, 'Error de entrada')
+                self.pluginE.pluginM.UTI.mostrarAlerta('La clave debe estar compuesta por exactamente 2 numeros', QMessageBox().Critical, 'Error de entrada')
 
         #.....predios geom....#
         elif nombreCapa == 'predios.num':
