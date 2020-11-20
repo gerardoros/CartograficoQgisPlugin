@@ -47,6 +47,9 @@ from osgeo import ogr, osr
 from .Cedula_MainWindow import CedulaMainWindow
 from ..busquedas.busqueda_catastral import busqueda_Catastral
 
+from ..busquedas.busqueda_cordenadas import busqueda_cordenadas
+
+
 class ActualizacionCatastralV3:
     """QGIS Plugin Implementation."""
 
@@ -61,6 +64,8 @@ class ActualizacionCatastralV3:
         self.ELM = None
         self.DFS = None
         self.TPG = None
+        # BUSQUEDA COORDENADAS
+        self.BUC = busqueda_cordenadas.busquedacordenadas(iface)
 
         # variable que almacenara la capa de referencia que se encuentre en edicion
         self.capaEnEdicion = ''
@@ -135,6 +140,9 @@ class ActualizacionCatastralV3:
         'Area de Valor' : 'e_area_valor',
         'Corredor de Valor' : 'e_corredor_valor'
         }
+
+        # -- evento boton de consulta de predio por coordenadas
+        self.dockwidget.botonBusquedaCoordenadas.clicked.connect(self.abrirBusquedaPorCoordenadas)
 
         # -- evento boton de abrir cedula --
         self.dockwidget.btnAbrirCedula.setIcon(QtGui.QIcon(':cedula/icons/add.png'))
@@ -4942,6 +4950,12 @@ LOS DERECHOS CONFORME AL ARTICULO 166 DEL CÓDIGO FINANCIERO DEL ESTADO DE MÉXI
         self.canvas.setCursor(self.cursorRedondo)
         self.dockwidget.btnAbrirCedula.setEnabled(False)
         self.abrePredio = True
+
+###################################################################################################################
+    # -- metodo para abrir la ventana de busqueda de predios por coordenadas
+    def abrirBusquedaPorCoordenadas(self):
+        self.BUC.run()
+
 
 ###########################################################################################################
 

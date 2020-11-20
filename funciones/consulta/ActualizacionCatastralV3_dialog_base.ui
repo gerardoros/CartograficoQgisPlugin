@@ -1265,17 +1265,74 @@ color: black ;
       <attribute name="title">
        <string>Página</string>
       </attribute>
+      <widget class="QPushButton" name="botonBusquedaCoordenadas">
+       <property name="geometry">
+        <rect>
+         <x>210</x>
+         <y>30</y>
+         <width>149</width>
+         <height>41</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton{
+background : rgb(174, 116, 0);
+color : rgb(255, 255, 255);
+border-radius : 4px;
+}
+QPushButton::hover{
+background : rgb(104, 69, 13);
+color : rgb(255, 255, 255);
+border-radius : 4px;
+}
+QPushButton:disabled {
+background: rgb(217, 217, 217)
+}</string>
+       </property>
+       <property name="text">
+        <string>Busqueda Predio 
+ Por coordenadas</string>
+       </property>
+      </widget>
       <widget class="QPushButton" name="busquedaButton">
        <property name="geometry">
         <rect>
-         <x>20</x>
-         <y>10</y>
-         <width>88</width>
-         <height>34</height>
+         <x>40</x>
+         <y>30</y>
+         <width>149</width>
+         <height>41</height>
         </rect>
        </property>
+       <property name="font">
+        <font>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton{
+background : rgb(174, 116, 0);
+color : rgb(255, 255, 255);
+border-radius : 4px;
+}
+QPushButton::hover{
+background : rgb(104, 69, 13);
+color : rgb(255, 255, 255);
+border-radius : 4px;
+}
+QPushButton:disabled {
+background: rgb(217, 217, 217)
+}</string>
+       </property>
        <property name="text">
-        <string>Busqueda</string>
+        <string>Busqueda Predio 
+ Por clave</string>
        </property>
       </widget>
      </widget>
