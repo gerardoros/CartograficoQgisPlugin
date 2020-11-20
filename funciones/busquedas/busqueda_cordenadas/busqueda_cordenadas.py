@@ -23,16 +23,19 @@
 """
 from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication
 from qgis.PyQt.QtGui import QIcon
-from qgis.PyQt.QtWidgets import QAction
+from qgis.PyQt.QtWidgets import QAction, QMessageBox
 
-from qgis.gui import QgsMapToolEmitPoint 
-
+from qgis.gui import QgsMapToolEmitPoint
+from ....funciones.configuracion import Configuracion
+from ....funciones.utilidades import utilidades
+from osgeo import ogr, osr
 # Initialize Qt resources from file resources.py
 from .resources import *
 # Import the code for the dialog
 from .busqueda_cordenadas_dialog import busquedacordenadasDialog
 import os.path
-
+import json,requests
+from qgis.core import *
 
 class busquedacordenadas:
     """QGIS Plugin Implementation."""
@@ -66,29 +69,30 @@ class busquedacordenadas:
             self.translator.load(locale_path)
             QCoreApplication.installTranslator(self.translator)
 
+        self.CFG = Configuracion.Configuracion()
+        self.UTI = utilidades.Utilidad()
+        self.UTI.CFG = self.CFG
+
         # Declare instance attributes
         self.actions = []
         self.menu = self.tr(u'&busquedacordenadas')
         self.dockwidget = busquedacordenadasDialog(parent = iface.mainWindow())
         # -- evento boton de consulta de predio por coordenadas
         self.dockwidget.btLocalizar.clicked.connect(self.localizarCoordenadas)
-        
-        
+        self.dockwidget.btCerrar.clicked.connect(self.closePlugin)
+
+
 
         # Check if plugin was started the first time in current QGIS session
         # Must be set in initGui() to survive plugin reloads
         self.first_start = None
-    
 
 
-    # --- Metodo que manda a realizar la funcion de localizar coordenadas ####################
-    def localizarCoordenadas(self):
-        print("Boton de localizar")
-    #--- Obtiene las coordenadas #################
-    def handleMouseDown(self, point, button):
-        self.dockwidget.leCordenadasX.setText(str(point.x()))
-        self.dockwidget.leCordenadasY.setText(str(point.y()))
-        print( str(point.x()) + " , " +str(point.y()) )
+
+    def closePlugin(self):
+        self.dockwidget.leCordenadasX.setText("");
+        self.dockwidget.leCordenadasY.setText("");
+        self.dockwidget.close()
 
 
     # noinspection PyMethodMayBeStatic
@@ -199,6 +203,8 @@ class busquedacordenadas:
 
     def unload(self):
         """Removes the plugin menu item and icon from QGIS GUI."""
+        self.dockwidget.leCordenadasX.setText("")
+        self.dockwidget.leCordenadasY.setText("")
         for action in self.actions:
             self.iface.removePluginMenu(
                 self.tr(u'&busquedacordenadas'),
@@ -217,6 +223,9 @@ class busquedacordenadas:
 
         self.canvas.setMapTool(self.clickTool)
 
+        self.dockwidget.leCordenadasX.setText("");
+        self.dockwidget.leCordenadasY.setText("");
+
         # show the dialog
         self.dockwidget.show()
         # Run the dialog event loop
@@ -226,3 +235,97 @@ class busquedacordenadas:
             # Do something useful here - delete the line containing pass and
             # substitute with your code.
             pass
+
+
+
+
+
+    #--- Obtiene las coordenadas #################
+    def handleMouseDown(self, point, button):
+        self.dockwidget.leCordenadasX.setText(str(point.x()))
+        self.dockwidget.leCordenadasY.setText(str(point.y()))
+        print( str(point.x()) + " , " +str(point.y()) )
+
+
+    def consumeWSGeneral(self, url_cons = ""):
+        self.listaCoordenada = [self.dockwidget.leCordenadasX.text(), self.dockwidget.leCordenadasY.text()]
+        self.srid = QSettings().value("srid")
+        self.jsonGuardar = {'src': self.srid, 'coordinates': self.listaCoordenada}
+        jsonParaGuardarAtributos = json.dumps(self.jsonGuardar)
+        url = self.CFG.urlBusquedaPorCoordenadas
+        payload = jsonParaGuardarAtributos
+        headers = {'Content-Type': 'application/json', 'Authorization': self.UTI.obtenerToken()}
+
+        try:
+            response = requests.post(url, headers = headers, data = payload)
+
+        except requests.exceptions.RequestException:
+            self.UTI.mostrarAlerta("No se ha podido conectar al servidor v1", QMessageBox.Critical, "Guardar Cambios v1")#Error en la peticion de consulta
+
+
+        return response.json()
+
+    # --- Metodo que manda a realizar la funcion de localizar coordenadas #################
+    def localizarCoordenadas(self):
+
+        if (self.dockwidget.leCordenadasX.text() == "") or (self.dockwidget.leCordenadasY.text() == "") :
+            self.UTI.mostrarAlerta("No tienes coordenadas en el campo", QMessageBox.Critical, "Busqueda por coordenadas")#Error en la peticion de consulta
+        else:
+            try:
+                mem_layer = QgsProject.instance().mapLayer(QSettings().value('xPredGeom'))
+                nombreCapa = mem_layer.name()
+
+                data = self.consumeWSGeneral(self)
+
+                type(data)
+                srid = QSettings().value("srid")
+                inSpatialRef = osr.SpatialReference()
+                inSpatialRef.ImportFromEPSG(int(srid))
+                outSpatialRef = osr.SpatialReference()
+                outSpatialRef.ImportFromEPSG(int(srid))
+                coordTrans = osr.CoordinateTransformation(inSpatialRef, outSpatialRef)
+                if not bool(data):
+                    self.UTI.mostrarAlerta("Error de servidor pintcap", QMessageBox().Critical, "Cargar capa de consulta")
+                    print('ERROR: CAP000')
+
+                #Obtenemos todos los atributos del JSON
+                if data['features'] == []:
+                    return True
+
+                varKeys = data['features'][0]['properties']
+
+                keys = list(varKeys.keys())
+                properties = []
+                geoms = []
+
+                for feature in data['features']:
+
+                    geom = feature['geometry']
+
+                    property = feature['properties']
+                    geom = json.dumps(geom)
+                    geometry = ogr.CreateGeometryFromJson(geom)
+                    geometry.Transform(coordTrans)
+                    geoms.append(geometry.ExportToWkt())
+                    l = []
+                    for i in range(0, len(keys)):
+                        l.append(property[keys[i]])
+                    properties.append(l)
+
+                prov = mem_layer.dataProvider()
+                feats = [ QgsFeature() for i in range(len(geoms)) ]
+
+                for i, feat in enumerate(feats):
+                    feat.setAttributes(properties[i])
+                    feat.setGeometry(QgsGeometry.fromWkt(geoms[i]))
+                    self.bbox = QgsGeometry.fromWkt(geoms[i]).boundingBox()
+
+                prov.addFeatures(feats)
+
+                mem_layer.triggerRepaint()
+
+                self.iface.mapCanvas().setExtent(self.bbox)
+                self.iface.mapCanvas().refresh()
+                return True
+            except Exception:
+                self.UTI.mostrarAlerta("No se encontró ningún predio", QMessageBox.Critical, "Busqueda de predios por coordenadas")#Error en la peticion de consulta
