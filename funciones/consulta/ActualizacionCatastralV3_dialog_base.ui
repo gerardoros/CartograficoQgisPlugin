@@ -1265,6 +1265,19 @@ color: black ;
       <attribute name="title">
        <string>Página</string>
       </attribute>
+      <widget class="QPushButton" name="busquedaButton">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>10</y>
+         <width>88</width>
+         <height>34</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Busqueda</string>
+       </property>
+      </widget>
      </widget>
     </widget>
    </item>

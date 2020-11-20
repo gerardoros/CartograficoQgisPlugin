@@ -225,6 +225,9 @@
    <property name="text">
     <string/>
    </property>
+   <property name="maxLength">
+    <number>3</number>
+   </property>
    <property name="alignment">
     <set>Qt::AlignCenter</set>
    </property>
@@ -232,9 +235,9 @@
   <widget class="QLineEdit" name="leManz">
    <property name="geometry">
     <rect>
-     <x>120</x>
+     <x>130</x>
      <y>80</y>
-     <width>61</width>
+     <width>41</width>
      <height>21</height>
     </rect>
    </property>
@@ -251,6 +254,9 @@
    </property>
    <property name="text">
     <string/>
+   </property>
+   <property name="maxLength">
+    <number>2</number>
    </property>
    <property name="alignment">
     <set>Qt::AlignCenter</set>
@@ -259,9 +265,9 @@
   <widget class="QLineEdit" name="leLote">
    <property name="geometry">
     <rect>
-     <x>230</x>
+     <x>210</x>
      <y>80</y>
-     <width>51</width>
+     <width>81</width>
      <height>21</height>
     </rect>
    </property>
@@ -278,6 +284,9 @@
    </property>
    <property name="text">
     <string/>
+   </property>
+   <property name="maxLength">
+    <number>5</number>
    </property>
    <property name="alignment">
     <set>Qt::AlignCenter</set>
@@ -306,8 +315,14 @@
    <property name="text">
     <string/>
    </property>
+   <property name="maxLength">
+    <number>6</number>
+   </property>
    <property name="alignment">
     <set>Qt::AlignCenter</set>
+   </property>
+   <property name="clearButtonEnabled">
+    <bool>false</bool>
    </property>
   </widget>
   <widget class="QPushButton" name="btDetalle">

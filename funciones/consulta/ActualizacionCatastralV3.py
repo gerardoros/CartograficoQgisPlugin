@@ -45,6 +45,7 @@ import os, json, requests, datetime, qgis.core
 from datetime import datetime as dt, date
 from osgeo import ogr, osr
 from .Cedula_MainWindow import CedulaMainWindow
+from ..busquedas.busqueda_catastral import busqueda_Catastral
 
 class ActualizacionCatastralV3:
     """QGIS Plugin Implementation."""
@@ -89,6 +90,8 @@ class ActualizacionCatastralV3:
 
         self.dockwidget.btnPlanoManzanero.clicked.connect(self.event_planoMza)
         self.dockwidget.btnPlanoPred.clicked.connect(self.event_planoPred)
+
+        self.dockwidget.busquedaButton.clicked.connect(self.busquedaPorCve)
 
         self.cve_cat_len = 16
 
@@ -5346,4 +5349,8 @@ LOS DERECHOS CONFORME AL ARTICULO 166 DEL CÓDIGO FINANCIERO DEL ESTADO DE MÉXI
                 self.pintarMarcador(vertices, self.verticesConst, color)
         else:
             self.vaciarMarcador(self.verticesConst)
-            
+
+    def busquedaPorCve(self):
+
+        bc = busqueda_Catastral.busquedaCatastral(iface, self.CFG, self.UTI)
+        bc.run()

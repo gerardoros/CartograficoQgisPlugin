@@ -359,7 +359,7 @@ class Utilidad:
 				# obtener el registro con el valor mas grande para saber la clave del predio
 				maxim = max(lista, key=lambda x:x['v'])
 				atributos['cve_catastral'] = clave + maxim['c'] + '000000'
-				''''
+				'''
 
 			campos['attr'] = atributos
 			if campos['attr']['id'] == None or campos['attr']['id'] == '':
