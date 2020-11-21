@@ -45,14 +45,12 @@ import os, json, requests, datetime, qgis.core
 from datetime import datetime as dt, date
 from osgeo import ogr, osr
 from .Cedula_MainWindow import CedulaMainWindow
-<<<<<<< HEAD
 from CartograficoQgisPlugin.funciones.busquedas.periodo.periodo import predio
-=======
+
 from ..busquedas.busqueda_catastral import busqueda_Catastral
 
 from ..busquedas.busqueda_cordenadas import busqueda_cordenadas
 
->>>>>>> 56bb7511a3a7c8b4add08483e93ce76512d758f3
 
 class ActualizacionCatastralV3:
     """QGIS Plugin Implementation."""
