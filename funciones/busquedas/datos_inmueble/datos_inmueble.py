@@ -62,7 +62,7 @@ class datosinmueble:
         # Declare instance attributes
         self.actions = []
         self.menu = self.tr(u'&datosinmueble')
-
+        self.dockwidget = datosinmuebleDialog(parent = iface.mainWindow())
         # Check if plugin was started the first time in current QGIS session
         # Must be set in initGui() to survive plugin reloads
         self.first_start = None
@@ -189,10 +189,13 @@ class datosinmueble:
             self.first_start = False
             self.dlg = datosinmuebleDialog()
 
+        self.canvas.setMapTool(self.clickTool)
+
+
         # show the dialog
-        self.dlg.show()
+        self.dockwidget.show()
         # Run the dialog event loop
-        result = self.dlg.exec_()
+        result = self.dockwidget.exec_()
         # See if OK was pressed
         if result:
             # Do something useful here - delete the line containing pass and

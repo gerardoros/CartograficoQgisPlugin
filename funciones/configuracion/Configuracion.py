@@ -6,7 +6,7 @@ class Configuracion():
         
         #Direccion IP del servidor
         #self.servidorIP = 'http://localhost:8080/'
-        self.servidorIP = 'http://192.168.0.25:8080/'
+        self.servidorIP = 'http://192.168.0.69:8080/'
         #self.servidorIP = 'http://127.0.0.1:8080/'
 
         #Combos de localidades, sectores y manzanas/combo/municipios/
@@ -52,7 +52,7 @@ class Configuracion():
         self.urlMunicipio = self.servidorIP + 'busquedasimplewkn/api/cat/municipio/'
         
         #Cargar capas con web service
-        self.urlCargarCapa = 'http://192.168.0.25:8080/configuracion/api/adm-capas/getAllCapasConfiguration'
+        self.urlCargarCapa = 'http://192.168.0.69:8080/configuracion/api/adm-capas/getAllCapasConfiguration'
 
         #Urls para cedula
         self.urlCedPredio = self.servidorIP + 'busquedasimplewkn/api/cedula/predio/'

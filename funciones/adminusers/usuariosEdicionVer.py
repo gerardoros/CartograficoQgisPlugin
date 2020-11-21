@@ -96,7 +96,7 @@ class usuariosEdicionVer(QtWidgets.QDialog, FORM_CLASS):
         # con un for recorrer la lista de roles
 
         # con cada iteracion consumir el servicio web con el rol
-        #http://192.168.0.25:8080/autentificacion/api/account/permisos-carto-user-distinct/<ROL>
+        #http://192.168.0.69:8080/autentificacion/api/account/permisos-carto-user-distinct/<ROL>
         self.nuevalista = []
         # de la listaque regrese el servicio filtrar las operaciones para al final tener una lista con roles y operaciones
         for x in range(0,len(self.roles)):
