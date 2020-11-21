@@ -45,6 +45,7 @@ import os, json, requests, datetime, qgis.core
 from datetime import datetime as dt, date
 from osgeo import ogr, osr
 from .Cedula_MainWindow import CedulaMainWindow
+from CartograficoQgisPlugin.funciones.busquedas.periodo.periodo import predio
 
 class ActualizacionCatastralV3:
     """QGIS Plugin Implementation."""
@@ -136,6 +137,8 @@ class ActualizacionCatastralV3:
         # -- evento boton de abrir cedula --
         self.dockwidget.btnAbrirCedula.setIcon(QtGui.QIcon(':cedula/icons/add.png'))
         self.dockwidget.btnAbrirCedula.clicked.connect(self.abrirCedula)
+        self.dockwidget.btnAbrirCedula_2.clicked.connect(self.cargapredio)
+
 
         # -- evento boton de cancelar apertura de cedula --
         self.dockwidget.btnCancelAperCedula.clicked.connect(self.cancelarCedula)
@@ -1164,7 +1167,30 @@ class ActualizacionCatastralV3:
         #Metodo que crea un elemento QMessageBox
     
 #########################################################################################################
-    
+    def cargapredio(self):
+        self.capaActiva = iface.activeLayer()
+       
+        if self.capaActiva == None:
+            #self.UTI.mostrarAlerta("No tienes ninguna capa activa", QMessageBox().Critical, 'Edicion de atributos')
+            self.cambiarStatus("---", "error")
+        else:
+            self.seleccion = self.capaActiva.selectedFeatures()
+            self.listaEtiquetas = []
+            if(len(self.seleccion) == 1):
+                if self.capaActiva.id() == self.obtenerIdCapa('manzana'):
+                    self.listaAtributos = ['clave']
+                    self.listaEtiquetas = ['Clave']
+                elif self.capaActiva.id() == self.obtenerIdCapa('predios.geom'):
+                    self.listaAtributos = ['clave']
+                    self.listaEtiquetas = ['Clave']
+
+                    # temporal - Preparacion para la impresion de cedula
+                    self.textoItem = str(self.seleccion[0]['id'])
+                    self.textoItem1 = str(self.seleccion[0]['cve_cat'])
+                    print(self.textoItem1)
+                    self.predio = predio(textoItem = self.textoItem, iface = self.iface, CFG = self.CFG, UTI = self.UTI, textoItem1 = self.textoItem1)
+                    self.predio.run()
+
     def cargarTablita(self):
         
         self.capaActiva = iface.activeLayer()

@@ -137,6 +137,7 @@ class Configuracion():
         self.url_AU_creaUsuario = self.servidorIP + 'autentificacion/api/register'
         self.url_AU_actualizaUsuario = self.servidorIP + 'autentificacion/api/users'
         self.url_AU_getAllRole = self.servidorIP + 'autentificacion/api/account/permisos-carto-user-distinct/'
+        self.url_AU_getAllPredio = self.servidorIP + 'busquedasimplewkn/api/consulta/get-info-predio-by-id-table/'
         self.url_AU_actualizarOperaciones = self.servidorIP + 'autentificacion/api/account/edit-permisos-cartografico'
 
         # Master
