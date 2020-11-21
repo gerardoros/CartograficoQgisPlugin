@@ -45,7 +45,14 @@ import os, json, requests, datetime, qgis.core
 from datetime import datetime as dt, date
 from osgeo import ogr, osr
 from .Cedula_MainWindow import CedulaMainWindow
+<<<<<<< HEAD
 from CartograficoQgisPlugin.funciones.busquedas.periodo.periodo import predio
+=======
+from ..busquedas.busqueda_catastral import busqueda_Catastral
+
+from ..busquedas.busqueda_cordenadas import busqueda_cordenadas
+
+>>>>>>> 56bb7511a3a7c8b4add08483e93ce76512d758f3
 
 class ActualizacionCatastralV3:
     """QGIS Plugin Implementation."""
@@ -61,6 +68,8 @@ class ActualizacionCatastralV3:
         self.ELM = None
         self.DFS = None
         self.TPG = None
+        # BUSQUEDA COORDENADAS
+        self.BUC = busqueda_cordenadas.busquedacordenadas(iface)
 
         # variable que almacenara la capa de referencia que se encuentre en edicion
         self.capaEnEdicion = ''
@@ -90,6 +99,8 @@ class ActualizacionCatastralV3:
 
         self.dockwidget.btnPlanoManzanero.clicked.connect(self.event_planoMza)
         self.dockwidget.btnPlanoPred.clicked.connect(self.event_planoPred)
+
+        self.dockwidget.busquedaButton.clicked.connect(self.busquedaPorCve)
 
         self.cve_cat_len = 16
 
@@ -133,6 +144,9 @@ class ActualizacionCatastralV3:
         'Area de Valor' : 'e_area_valor',
         'Corredor de Valor' : 'e_corredor_valor'
         }
+
+        # -- evento boton de consulta de predio por coordenadas
+        self.dockwidget.botonBusquedaCoordenadas.clicked.connect(self.abrirBusquedaPorCoordenadas)
 
         # -- evento boton de abrir cedula --
         self.dockwidget.btnAbrirCedula.setIcon(QtGui.QIcon(':cedula/icons/add.png'))
@@ -4966,6 +4980,12 @@ LOS DERECHOS CONFORME AL ARTICULO 166 DEL CÓDIGO FINANCIERO DEL ESTADO DE MÉXI
         self.dockwidget.btnAbrirCedula.setEnabled(False)
         self.abrePredio = True
 
+###################################################################################################################
+    # -- metodo para abrir la ventana de busqueda de predios por coordenadas
+    def abrirBusquedaPorCoordenadas(self):
+        self.BUC.run()
+
+
 ###########################################################################################################
 
     # -- metodo boton de cancelar apertura de cedula --
@@ -5372,4 +5392,8 @@ LOS DERECHOS CONFORME AL ARTICULO 166 DEL CÓDIGO FINANCIERO DEL ESTADO DE MÉXI
                 self.pintarMarcador(vertices, self.verticesConst, color)
         else:
             self.vaciarMarcador(self.verticesConst)
-            
+
+    def busquedaPorCve(self):
+
+        bc = busqueda_Catastral.busquedaCatastral(iface, self.CFG, self.UTI)
+        bc.run()

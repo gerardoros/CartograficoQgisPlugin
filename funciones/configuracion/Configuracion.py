@@ -5,8 +5,8 @@ class Configuracion():
     def __init__(self):
         
         #Direccion IP del servidor
-        #self.servidorIP = 'http://localhost:8080/'
-        self.servidorIP = 'http://192.168.0.25:8080/'
+        self.servidorIP = 'http://localhost:8080/'
+        #self.servidorIP = 'http://192.168.0.25:8080/'
         #self.servidorIP = 'http://127.0.0.1:8080/'
 
         #Combos de localidades, sectores y manzanas/combo/municipios/
@@ -52,7 +52,7 @@ class Configuracion():
         self.urlMunicipio = self.servidorIP + 'busquedasimplewkn/api/cat/municipio/'
         
         #Cargar capas con web service
-        self.urlCargarCapa = 'http://192.168.0.21:8080/configuracion/api/adm-capas/getAllCapasConfiguration'
+        self.urlCargarCapa = 'http://192.168.0.25:8080/configuracion/api/adm-capas/getAllCapasConfiguration'
 
         #Urls para cedula
         self.urlCedPredio = self.servidorIP + 'busquedasimplewkn/api/cedula/predio/'
@@ -150,3 +150,9 @@ class Configuracion():
         self.url_usuarioByTarea = self.servidorIP + 'autentificacion/api/users/tarea-actividad/'
         self.url_asignaTarea = self.servidorIP + 'autentificacion/api/asignar-tarea-user/nueva'
         self.url_permisos = self.servidorIP + 'autentificacion/api/account/permisos-carto'
+
+        #Modulo de busqueda
+        self.url_BC_getPredios = self.servidorIP + 'busquedasimplewkn/api/consulta/get-predio-by-cvecat/'
+
+        #Busquedas de predio
+        self.urlBusquedaPorCoordenadas = self.servidorIP + 'busquedasimplewkn/api/consulta/get-predio-by-coordinate/'
