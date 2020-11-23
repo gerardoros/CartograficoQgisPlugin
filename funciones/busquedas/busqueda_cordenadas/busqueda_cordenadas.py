@@ -65,9 +65,7 @@ class busquedacordenadas:
             'i18n',
             'busquedacordenadas_{}.qm'.format(locale))
 
-        #Para abrir el detalle del predio
-        self.DTP = datos_inmueble.datosinmueble(iface)
-
+    
         if os.path.exists(locale_path):
             self.translator = QTranslator()
             self.translator.load(locale_path)
@@ -271,7 +269,20 @@ class busquedacordenadas:
 
     # --- metodo que abre el detalle del INMUEBLE
     def abrirDetallePredio(self):
-        self.DTP.run()
+        #Para abrir el detalle del predio
+        urlDetallePredio = self.CFG.urlDetallePredio
+        headers = {'Content-Type': 'application/json', 'Authorization': self.UTI.obtenerToken()}
+        try:
+            
+            response = requests.get(urlDetallePredio + str(self.consumeWSGeneral(self)['features'][0]['properties']['id']), headers = headers)
+            self.dataPrueba = response.json()
+            self.DTP = datos_inmueble.datosinmueble(self.iface, self.dataPrueba)
+            self.DTP.run()
+
+        except Exception:
+            self.UTI.mostrarAlerta("No se ha podido conectar al servidor v1", QMessageBox.Critical, "Guardar Cambios v1")#Error en la peticion de consulta
+ 
+        
 
     # --- Metodo que manda a realizar la funcion de localizar coordenadas #################
     def localizarCoordenadas(self):

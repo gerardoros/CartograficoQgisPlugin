@@ -21,21 +21,30 @@
  *                                                                         *
  ***************************************************************************/
 """
+from PyQt5 import QtWidgets
 from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QAction
+from qgis.gui import QgsMapToolEmitPoint
 
 # Initialize Qt resources from file resources.py
 from .resources import *
 # Import the code for the dialog
 from .datos_inmueble_dialog import datosinmuebleDialog
-import os.path
+import os.path, base64
+
+
+from PyQt5.QtWidgets import * 
+from PyQt5 import QtCore, QtGui 
+from PyQt5.QtGui import * 
+from PyQt5.QtCore import * 
 
 
 class datosinmueble:
     """QGIS Plugin Implementation."""
 
-    def __init__(self, iface):
+    def __init__(self, iface, data):
+        
         """Constructor.
 
         :param iface: An interface instance that will be passed to this class
@@ -59,13 +68,141 @@ class datosinmueble:
             self.translator.load(locale_path)
             QCoreApplication.installTranslator(self.translator)
 
+        self.data = data
         # Declare instance attributes
         self.actions = []
         self.menu = self.tr(u'&datosinmueble')
+        #Init canvas
+        self.canvas = self.iface.mapCanvas()
+        #Init click tool
+        self.clickTool = QgsMapToolEmitPoint(self.canvas)
         self.dockwidget = datosinmuebleDialog(parent = iface.mainWindow())
         # Check if plugin was started the first time in current QGIS session
         # Must be set in initGui() to survive plugin reloads
         self.first_start = None
+
+        # Declaramos los botones y sus acciones
+        self.dockwidget.btCerrar_2.clicked.connect(self.closePlugin)
+        #Setamos todos los campos de texto
+        #Seteamos todos los campos de texto
+        self.predioDetalle = self.data['datosPredio']
+        self.dockwidget.leReg.setText(self.predioDetalle['cveRegion'])
+        self.dockwidget.leManz.setText(self.predioDetalle['cveManzana'])
+        self.dockwidget.leLote.setText(self.predioDetalle['lote'])
+        self.dockwidget.leCondo.setText("")
+        self.dockwidget.leNombreColonia.setText(self.predioDetalle['dv'])
+        self.dockwidget.leNombreColonia_2.setText(self.predioDetalle['denominacionPredio'])
+        self.dockwidget.leNombreColonia_3.setText(self.predioDetalle['claseCuenta'])
+        self.dockwidget.leNombreColonia_4.setText(self.predioDetalle['marcaFiscal'])
+        self.dockwidget.leNombreColonia_5.setText(self.predioDetalle['docCuenta'])
+        try:
+            self.dockwidget.leNombreColonia_6.setText(self.predioDetalle['calles'][0]['calle'])
+        except Exception:
+            print("No tiene calles")
+        self.dockwidget.leNombreColonia_7.setText(self.predioDetalle['numero'])
+        self.dockwidget.leNombreColonia_8.setText(self.predioDetalle['colonia'])
+        self.dockwidget.leNombreColonia_9.setText(self.predioDetalle['cp'])
+        self.dockwidget.leNombreColonia_10.setText(self.predioDetalle['cveManzana'])
+        self.dockwidget.leNombreColonia_11.setText(self.predioDetalle['delegacion'])
+        self.dockwidget.leNombreColonia_12.setText(str(self.predioDetalle['superTerreno']))
+        self.dockwidget.leNombreColonia_13.setText(str(self.predioDetalle['superConstruccion']))
+        self.dockwidget.leNombreColonia_14.setText(self.predioDetalle['giro'])
+        self.dockwidget.leNombreColonia_15.setText("")
+
+        # --- Cargamos las construcciones a la lista
+        self.construcciones = self.predioDetalle['construcciones']
+        self.dockwidget.twListaVias_3.clearContents()
+        self.dockwidget.twListaVias_3.setRowCount(len(self.construcciones))
+        for row in range(len(self.construcciones)):   
+            self.dockwidget.twListaVias_3.setItem(row, 0, QtWidgets.QTableWidgetItem(str(self.construcciones[row]['id'])))
+            self.dockwidget.twListaVias_3.setItem(row, 3, QtWidgets.QTableWidgetItem(self.construcciones[row]['clase']))
+            self.dockwidget.twListaVias_3.setItem(row, 4, QtWidgets.QTableWidgetItem(self.construcciones[row]['descClase']))
+            self.dockwidget.twListaVias_3.setItem(row, 5, QtWidgets.QTableWidgetItem(str(self.construcciones[row]['nivel'])))
+            self.dockwidget.twListaVias_3.setItem(row, 8, QtWidgets.QTableWidgetItem(str(self.construcciones[row]['anio'])))
+            self.dockwidget.twListaVias_3.setItem(row, 10, QtWidgets.QTableWidgetItem(str(self.construcciones[row]['superficie'])))
+
+        
+        # --- Cargamos la lista de propietarios
+        self.propietarios = self.predioDetalle['propietarios']
+        self.dockwidget.twListaVias_5.clearContents()
+        self.dockwidget.twListaVias_5.setRowCount(len(self.propietarios))
+        for row in range(len(self.propietarios)):   
+            self.dockwidget.twListaVias_5.setItem(row, 0, QtWidgets.QTableWidgetItem(str(self.propietarios[row]['curp'])))
+            self.dockwidget.twListaVias_5.setItem(row, 1, QtWidgets.QTableWidgetItem(self.propietarios[row]['nombre']))
+            self.dockwidget.twListaVias_5.setItem(row, 2, QtWidgets.QTableWidgetItem(self.propietarios[row]['curp']))
+            self.dockwidget.twListaVias_5.setItem(row, 3, QtWidgets.QTableWidgetItem(str(self.propietarios[row]['ife'])))
+            self.dockwidget.twListaVias_5.setItem(row, 4, QtWidgets.QTableWidgetItem(str(self.propietarios[row]['otro'])))
+            self.dockwidget.twListaVias_5.setItem(row, 5, QtWidgets.QTableWidgetItem(str(self.propietarios[row]['derecho'])))
+            self.dockwidget.twListaVias_5.setItem(row, 6, QtWidgets.QTableWidgetItem(str(self.propietarios[row]['porcentaje'])))
+            self.dockwidget.twListaVias_5.setItem(row, 7, QtWidgets.QTableWidgetItem(str(self.propietarios[row]['titulo'])))
+
+        # -- Cargamos la lista de instalaciones especiales
+        self.instalacionesEspeciales = self.predioDetalle['instalacionesEspeciales']
+        self.dockwidget.twListaVias_4.clearContents()
+        self.dockwidget.twListaVias_4.setRowCount(len(self.instalacionesEspeciales))
+        for row in range(len(self.instalacionesEspeciales)):
+            self.dockwidget.twListaVias_4.setItem(row, 0, QtWidgets.QTableWidgetItem(str(self.instalacionesEspeciales[row]['descripcion'])))
+
+        
+
+        #Hacemos la parte de las fotos
+        self.dockwidget.listWidget.setViewMode(QListView.IconMode)
+        self.dockwidget.listWidget.setIconSize(QtCore.QSize(180, 180))  #set icon size
+        self.dockwidget.listWidget.setGridSize(QtCore.QSize(220, 220)) #set icon grid display
+        # self.selectionModel(self.selectedIndexes())
+        self.fotos = self.data['fotos']
+        self.dockwidget.label_40.setText("Número total de fotos.:{}".format(len(self.fotos)))
+        if len(self.fotos) > 0:
+            self.dockwidget.label_41.setText("Mostrando fotos de la 1 a la {}.".format(len(self.fotos)))
+        else:
+            self.dockwidget.label_41.setText("No tiene fotod que mostrar.")
+        for image in self.fotos:
+            pixmap = QPixmap()
+            pixmap.loadFromData(base64.b64decode(image['archivo']))
+            item = QListWidgetItem()
+            icon = QIcon()
+            icon.addPixmap(pixmap, QIcon.Normal, QIcon.Off)
+            item.setIcon(icon)
+            self.dockwidget.listWidget.addItem(item)
+
+        
+        self.dockwidget.twListaVias_3.cellClicked.connect(self.cell_was_clicked)
+        self.dockwidget.label_44.setText(str(self.data['valoracion']['cuentaCatastral']))
+        self.dockwidget.label_46.setText(str(self.data['valoracion']['valorUnitario'])+ " $/m^2")
+        self.dockwidget.label_49.setText(str(self.data['valoracion']['superficie'])+ " m^3")
+        self.dockwidget.label_51.setText("$ " +str(self.data['valoracion']['valorSuelo']))
+
+    
+    #Metodo que actualiza la parte de las construcciones dependendiendo de cual seleccione
+    def cell_was_clicked(self, row, column):
+        construccionId = int(self.dockwidget.twListaVias_3.item(row, 0).text())
+        construccionesValoracion = self.data['valoracion']['construcciones']
+        self.dockwidget.tableWidget.clearContents()
+        self.dockwidget.tableWidget.setRowCount(1)
+        self.dockwidget.tableWidget_2.clearContents()
+        self.dockwidget.tableWidget_2.setRowCount(1)
+        for construccionValoracion  in construccionesValoracion:
+            if construccionValoracion['id']== construccionId:
+                self.dockwidget.tableWidget.setItem(0, 0, QtWidgets.QTableWidgetItem(str(construccionValoracion['uso'])))
+                self.dockwidget.tableWidget.setItem(0, 1, QtWidgets.QTableWidgetItem(str(construccionValoracion['clase'])))
+                self.dockwidget.tableWidget.setItem(0, 2, QtWidgets.QTableWidgetItem(str(construccionValoracion['rangoNiveles'])))
+                self.dockwidget.tableWidget.setItem(0, 3, QtWidgets.QTableWidgetItem(str(construccionValoracion['inmueble'])))
+                self.dockwidget.tableWidget.setItem(0, 4, QtWidgets.QTableWidgetItem(str(construccionValoracion['superficie'])))
+                self.dockwidget.tableWidget.setItem(0, 5, QtWidgets.QTableWidgetItem(str(construccionValoracion['anioConstruccion'])))
+                self.dockwidget.tableWidget.setItem(0, 6, QtWidgets.QTableWidgetItem(str(construccionValoracion['anioRemodelacion'])))
+                self.dockwidget.tableWidget.setItem(0, 7, QtWidgets.QTableWidgetItem(str(construccionValoracion['nivel'])))
+                self.dockwidget.tableWidget.setItem(0, 9, QtWidgets.QTableWidgetItem(str(construccionValoracion['rangoUnico'])))
+                self.dockwidget.tableWidget.setItem(0, 10, QtWidgets.QTableWidgetItem(str(construccionValoracion['habit'])))
+                self.dockwidget.tableWidget.setItem(0, 11, QtWidgets.QTableWidgetItem(str(construccionValoracion['insespect'])))
+
+                self.dockwidget.tableWidget_2.setItem(0, 0, QtWidgets.QTableWidgetItem(str(construccionValoracion['valorUnitario'])))
+                self.dockwidget.tableWidget_2.setItem(0, 1, QtWidgets.QTableWidgetItem(str(construccionValoracion['totalValor'])))
+                self.dockwidget.tableWidget_2.setItem(0, 2, QtWidgets.QTableWidgetItem(str(construccionValoracion['valorInstaEspe'])))
+                self.dockwidget.tableWidget_2.setItem(0, 3, QtWidgets.QTableWidgetItem(str(construccionValoracion['valorAntigu'])))
+
+        
+
+    
 
     # noinspection PyMethodMayBeStatic
     def tr(self, message):
@@ -169,6 +306,9 @@ class datosinmueble:
 
         # will be set False in run()
         self.first_start = True
+    
+    def closePlugin(self):
+        self.dockwidget.close()
 
 
     def unload(self):
@@ -201,3 +341,7 @@ class datosinmueble:
             # Do something useful here - delete the line containing pass and
             # substitute with your code.
             pass
+
+    
+        
+        

@@ -18,7 +18,7 @@ class Referencias:
 
     def consultar(self, egName):
 
-        url='http://192.168.0.69:8080/busquedasimplewkn/api/busqueda/simple'
+        url='http://201.165.150.64:8080/busquedasimplewkn/api/busqueda/simple'
         token = self.obtenerToken()
 
         pagina = None
@@ -133,7 +133,7 @@ class Referencias:
 #####################################################################################################################
 
     def obtenerToken(self):
-        url= 'http://192.168.0.69:8080/auth/login'
+        url= 'http://201.165.150.64:8080/auth/login'
         payload = {"username" : "user", "password" : "user"}
         payload = json.dumps(payload)
         headers = {'Content-Type': 'application/json'}
