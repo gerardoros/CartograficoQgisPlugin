@@ -89,8 +89,6 @@ class usuariosEdicionVer(QtWidgets.QDialog, FORM_CLASS):
         # consultar los roles
         self.roles = self.consumeWSGeneral(url_cons = self.CFG.url_AU_getAllAuthorities)
 
-        print(self.roles)
-
         # tenemos la lista asi ['ROLE_ADMIN', 'ROLE_USER', 'ROLE_GENERAL', 'LINDEROS']
 
         # con un for recorrer la lista de roles
@@ -111,8 +109,7 @@ class usuariosEdicionVer(QtWidgets.QDialog, FORM_CLASS):
             n['operaciones'] = comas[:-1]
 
             self.nuevalista.append(n)
-        print(self.nuevalista)
-        
+
         
         '''nuevalista = []
 
@@ -164,10 +161,25 @@ class usuariosEdicionVer(QtWidgets.QDialog, FORM_CLASS):
             allRows = self.twRoles.rowCount()
             for row in range(0, allRows):
                 item = self.twRoles.item(row, 0)
-                rolesAct.append(item.text())
+                item2 = self.twRoles.item(row, 1)
+
+                m = {}
+                m['rol'] = item.text()
+                m['operaciones'] = item2.text()
+
+                rolesAct.append(m)
 
         # se combinan quitando duplicados
-        lista = list(set(rolesNuevos + rolesAct))
+        # lista = list(set(rolesNuevos + rolesAct))
+
+        print(rolesAct)
+        print(rolesNuevos)
+
+        for l in rolesAct:
+            rolesNuevos.append(l)
+
+        #lista = rolesAct.extend(rolesNuevos)
+        print(rolesNuevos)
 
         # limpiar qTableWidget
         self.twRoles.clearContents()
@@ -177,7 +189,7 @@ class usuariosEdicionVer(QtWidgets.QDialog, FORM_CLASS):
             self.twRoles.removeRow(row) 
 
         # se agrega a la lista
-        self.llenaRoles(lista)
+        self.llenaRoles(rolesNuevos)
 
 
     def event_aceptar(self):

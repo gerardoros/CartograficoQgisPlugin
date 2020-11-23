@@ -21,13 +21,16 @@
  *                                                                         *
  ***************************************************************************/
 """
-from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication
-from qgis.PyQt.QtGui import QIcon
+from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication, QObject
+from qgis.PyQt.QtGui import QIcon, QIntValidator
 from qgis.PyQt.QtWidgets import QAction
 
 # Initialize Qt resources from file resources.py
 from .resources import *
 # Import the code for the dialog
+import json, requests
+from osgeo import ogr, osr
+from qgis.core import *
 from .busqueda_Catastral_dialog import busquedaCatastralDialog
 import os.path
 
@@ -35,7 +38,7 @@ import os.path
 class busquedaCatastral:
     """QGIS Plugin Implementation."""
 
-    def __init__(self, iface):
+    def __init__(self, iface, CFG=None, UTI = None):
         """Constructor.
 
         :param iface: An interface instance that will be passed to this class
@@ -62,10 +65,27 @@ class busquedaCatastral:
         # Declare instance attributes
         self.actions = []
         self.menu = self.tr(u'&busquedaCatastral')
+        self.CFG = CFG
+        self.UTI = UTI
+
+        self.pluginIsActive = False
+        self.dockwidget = busquedaCatastralDialog(parent=iface.mainWindow())
+
+        #Eventos
+        self.dockwidget.btLocalizar.clicked.connect(self.getPredio)
+        self.dockwidget.btCerrar.clicked.connect(self.closeIt)
+
+        #validaciones QLineEdit
+        self.onlyInt = QIntValidator()
+        self.dockwidget.leReg.setValidator(self.onlyInt)
+        self.dockwidget.leManz.setValidator(self.onlyInt)
+        self.dockwidget.leLote.setValidator(self.onlyInt)
+        self.dockwidget.leCondo.setValidator(self.onlyInt)
+
 
         # Check if plugin was started the first time in current QGIS session
         # Must be set in initGui() to survive plugin reloads
-        self.first_start = None
+        self.first_start = True
 
     # noinspection PyMethodMayBeStatic
     def tr(self, message):
@@ -185,16 +205,134 @@ class busquedaCatastral:
 
         # Create the dialog with elements (after translation) and keep reference
         # Only create GUI ONCE in callback, so that it will only load when the plugin is started
-        if self.first_start == True:
-            self.first_start = False
-            self.dlg = busquedaCatastralDialog()
+        self.dockwidget.show()
 
-        # show the dialog
-        self.dlg.show()
-        # Run the dialog event loop
-        result = self.dlg.exec_()
+        if not self.pluginIsActive:
+            self.pluginIsActive = True
+            # dockwidget may not exist if:
+            #    first run of plugin
+            #    removed on close (see self.onClosePlugin method)
+            if self.dockwidget == None:
+                # Create the dockwidget (after translation) and keep reference
+                self.dockwidget = busquedaCatastralDialog()
+
+            # connect to provide cleanup on closing of dockwidget
+
+            # show the dockwidget
+            # TODO: fix to allow choice of dock location
+
+            self.dockwidget.show()
+
+        result = self.dockwidget.exec_()
         # See if OK was pressed
         if result:
             # Do something useful here - delete the line containing pass and
             # substitute with your code.
             pass
+
+    def getPredio(self):
+
+        url = self.CFG.url_BC_getPredios
+
+        cve = self.dockwidget.leReg.text() + self.dockwidget.leManz.text() + self.dockwidget.leLote.text() + self.dockwidget.leCondo.text()
+
+        print(f"cve:{cve}")
+
+        try:
+            headers = {'Content-Type': 'application/json', 'Authorization': self.UTI.obtenerToken()}
+            respuesta = requests.get(url + cve, headers=headers)
+        except requests.exceptions.RequestException:
+            self.UTI.mostrarAlerta("Error de servidor loc2", QMessageBox().Critical, "Busqueda de predio por cve")
+            print('ERROR: BCP0000')
+
+        if respuesta.status_code == 200:
+            data = respuesta.content
+
+        else:
+            self.UTI.mostrarAlerta('Error en peticion:\n' + response.text, QMessageBox().Critical, "Busqueda de predio por cve")
+            print('ERROR: BCP0001')
+
+        res = json.loads(data.decode('utf-8'))
+
+        xPredG = QSettings().value('xPredGeom')
+        self.xPredGeom = QgsProject.instance().mapLayer(xPredG)
+
+        if self.xPredGeom is None:
+            self.UTI.mostrarAlerta('No existe la capa ' + str(xPredG), QMessageBox().Critical, 'Cargar capas')
+            return
+
+        print(self.xPredGeom.name())
+
+        srid = QSettings().value("srid")
+        print(srid)
+        inSpatialRef = osr.SpatialReference()
+        inSpatialRef.ImportFromEPSG(int(srid))
+        outSpatialRef = osr.SpatialReference()
+        outSpatialRef.ImportFromEPSG(int(srid))
+        coordTrans = osr.CoordinateTransformation(inSpatialRef, outSpatialRef)
+        if not bool(res):
+            self.UTI.mostrarAlerta("Error de servidor pintcap", QMessageBox().Critical, "Cargar capa de consulta")
+            print('ERROR: BCP0002')
+
+        # Obtenemos todos los atributos del JSON
+        if res['features'] == []:
+            return
+
+        varKeys = res['features'][0]['properties']
+
+        keys = list(varKeys.keys())
+        properties = []
+        geoms = []
+
+
+        for feature in res['features']:
+
+            geom = feature['geometry']
+
+            property = feature['properties']
+            geom = json.dumps(geom)
+            geometry = ogr.CreateGeometryFromJson(geom)
+            geometry.Transform(coordTrans)
+            geoms.append(geometry.ExportToWkt())
+            l = []
+            for i in range(0, len(keys)):
+                l.append(property[keys[i]])
+            properties.append(l)
+
+        prov = self.xPredGeom.dataProvider()
+        feats = [QgsFeature() for i in range(len(geoms))]
+
+        parsed_geoms = []
+
+        for i, feat in enumerate(feats):
+            feat.setAttributes(properties[i])
+            parse_geom = QgsGeometry.fromWkt(geoms[i])
+            feat.setGeometry(parse_geom)
+            parsed_geoms.append(parse_geom)
+
+        prov.addFeatures(feats)
+
+        geometria = parsed_geoms[0]
+
+        for i in range(1, len(parsed_geoms)):
+            geometria = geometria.combine(geometria[i])
+
+        bbox = geometria.boundingBox()
+        self.iface.mapCanvas().setExtent(bbox)
+        self.iface.mapCanvas().refresh()
+
+
+
+        #if nombreCapa == 'predios.geom':
+         #   self.cargarPrediosEnComboDividir(feats)
+
+        self.xPredGeom.triggerRepaint()
+
+    def closeIt(self):
+        self.dockwidget.close()
+
+
+
+
+
+
