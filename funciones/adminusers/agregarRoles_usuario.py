@@ -92,10 +92,16 @@ class agregarRoles_usuario(QtWidgets.QDialog, FORM_CLASS):
                 # el registro (row) en la posicion 0 (columna 0) 
                 # en este ejmplo solo se cuenta con una columna por eso la posicion 0
                 item = self.twRoles.item(row, 0)
+                item2 = self.twRoles.item(row, 1)
 
                 # se verifica que el checkbox este seleccionado
                 if item.checkState() == 2: # True
-                    self._seleccionados.append(item.text())
+
+                    m = {}
+                    m['rol'] = item.text()
+                    m['opreaciones'] = item2.text()
+
+                    self._seleccionados.append(m)
 
         self.accept()
 
