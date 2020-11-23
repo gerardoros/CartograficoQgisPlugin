@@ -53,7 +53,7 @@ class Configuracion():
         self.urlMunicipio = self.servidorIP + 'busquedasimplewkn/api/cat/municipio/'
         
         #Cargar capas con web service
-        self.urlCargarCapa = 'http://192.168.0.21:8080/configuracion/api/adm-capas/getAllCapasConfiguration'
+        self.urlCargarCapa = 'http://192.168.0.25:8080/configuracion/api/adm-capas/getAllCapasConfiguration'
 
         #Urls para cedula
         self.urlCedPredio = self.servidorIP + 'busquedasimplewkn/api/cedula/predio/'
@@ -138,6 +138,7 @@ class Configuracion():
         self.url_AU_creaUsuario = self.servidorIP + 'autentificacion/api/register'
         self.url_AU_actualizaUsuario = self.servidorIP + 'autentificacion/api/users'
         self.url_AU_getAllRole = self.servidorIP + 'autentificacion/api/account/permisos-carto-user-distinct/'
+        self.url_AU_getAllPredio = self.servidorIP + 'busquedasimplewkn/api/consulta/get-info-predio-by-id-table/'
         self.url_AU_actualizarOperaciones = self.servidorIP + 'autentificacion/api/account/edit-permisos-cartografico'
 
         # Master
@@ -150,3 +151,9 @@ class Configuracion():
         self.url_usuarioByTarea = self.servidorIP + 'autentificacion/api/users/tarea-actividad/'
         self.url_asignaTarea = self.servidorIP + 'autentificacion/api/asignar-tarea-user/nueva'
         self.url_permisos = self.servidorIP + 'autentificacion/api/account/permisos-carto'
+
+        #Modulo de busqueda
+        self.url_BC_getPredios = self.servidorIP + 'busquedasimplewkn/api/consulta/get-predio-by-cvecat/'
+
+        #Busquedas de predio
+        self.urlBusquedaPorCoordenadas = self.servidorIP + 'busquedasimplewkn/api/consulta/get-predio-by-coordinate/'

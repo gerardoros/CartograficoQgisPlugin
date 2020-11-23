@@ -109,8 +109,7 @@ class usuariosEdicionVer(QtWidgets.QDialog, FORM_CLASS):
             n['operaciones'] = comas[:-1]
 
             self.nuevalista.append(n)
-        
-        
+
         
         '''nuevalista = []
 
