@@ -43,7 +43,7 @@ import os.path
 class predio:
     """QGIS Plugin Implementation."""
 
-    def __init__(self, iface = None, textoItem = "", CFG = None, UTI = None, parent=None, textoItem1 = ""):
+    def __init__(self, iface = None, textoItem = "", CFG = None, UTI = None, parent=None, textoItem1 = "", geometria=None):
         """Constructor.
 
 
@@ -73,8 +73,9 @@ class predio:
         self.actions = []
         self.dlg = predioDialog(parent = iface.mainWindow())
         self.textoItem1 = textoItem1
+        self.geometria = geometria
         self.clave = self.textoItem1[0:3] + "-" + self.textoItem1[3:5] + "-" + self.textoItem1[5:8] + "-" + self.textoItem1[8:13]
-        print(self.clave)
+    
         self.dlg.btPrint.setIcon(QtGui.QIcon(':/plugins/periodo/icons/print.ico'))
         self.dlg.btAtras.setIcon(QtGui.QIcon(':/plugins/periodo/icons/atras.ico'))
         self.dlg.btAdelante.setIcon(QtGui.QIcon(':/plugins/periodo/icons/adelante.ico'))
@@ -84,9 +85,11 @@ class predio:
         self.CFG = CFG
         self.UTI = UTI
         self.dlg.btCerrar.clicked.connect(self.event_cancelar)
+        self.dlg.btLocalizar.clicked.connect(self.boton)
         self.headers = {'Content-Type': 'application/json'}
         self.descripcion = []
         self.traerPredio()
+        
     
         # Check if plugin was started the first time in current QGIS session
         # Must be set in initGui() to survive plugin reloads
@@ -223,6 +226,14 @@ class predio:
             # Do something useful here - delete the line containing pass and
             # substitute with your code.
             pass
+    def boton(self):
+        self.zoomPredio(self.geometria)
+
+    def zoomPredio(self, geometria):
+        bbox = geometria.boundingBox()
+        iface.mapCanvas().setExtent(bbox)
+        iface.mapCanvas().refresh()
+        
 
     def event_cancelar(self):
         self.dlg.close()
@@ -234,7 +245,7 @@ class predio:
         #print(self.CFG.url_AU_getAllRole + rol.text())
         #print('---------------')
         self.descripcion = self.consumeWSGeneral(url_cons = self.CFG.url_AU_getAllPredio + str(self.textoItem))
-        print(self.descripcion)
+        
 
         if not self.descripcion:
              return

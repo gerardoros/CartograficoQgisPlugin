@@ -89,7 +89,7 @@ class usuariosEdicionVer(QtWidgets.QDialog, FORM_CLASS):
         # consultar los roles
         self.roles = self.consumeWSGeneral(url_cons = self.CFG.url_AU_getAllAuthorities)
 
-        print(self.roles)
+        #print(self.roles)
 
         # tenemos la lista asi ['ROLE_ADMIN', 'ROLE_USER', 'ROLE_GENERAL', 'LINDEROS']
 
@@ -111,7 +111,7 @@ class usuariosEdicionVer(QtWidgets.QDialog, FORM_CLASS):
             n['operaciones'] = comas[:-1]
 
             self.nuevalista.append(n)
-        print(self.nuevalista)
+        #print(self.nuevalista)
         
         
         '''nuevalista = []

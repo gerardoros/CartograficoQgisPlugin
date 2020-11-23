@@ -1094,6 +1094,7 @@ class ActualizacionCatastralV3:
         bbox = geometria.boundingBox()
         iface.mapCanvas().setExtent(bbox)
         iface.mapCanvas().refresh()
+       
 
 ############################################################################################
 
@@ -1199,8 +1200,22 @@ class ActualizacionCatastralV3:
                     # temporal - Preparacion para la impresion de cedula
                     self.textoItem = str(self.seleccion[0]['id'])
                     self.textoItem1 = str(self.seleccion[0]['cve_cat'])
-                    print(self.textoItem1)
-                    self.predio = predio(textoItem = self.textoItem, iface = self.iface, CFG = self.CFG, UTI = self.UTI, textoItem1 = self.textoItem1)
+                    
+                    listaPredios = list(self.seleccion)
+                    geometria = QgsGeometry()
+
+                    rango = len(listaPredios)
+
+                    if rango == 0:
+                        return
+
+                    geometria = listaPredios[0].geometry()
+
+                    for i in range(0, rango):
+                        geometria = geometria.combine(listaPredios[i].geometry())
+
+                    
+                    self.predio = predio(textoItem = self.textoItem, iface = self.iface, CFG = self.CFG, UTI = self.UTI, textoItem1 = self.textoItem1, geometria = geometria)
                     self.predio.run()
 
     def cargarTablita(self):
