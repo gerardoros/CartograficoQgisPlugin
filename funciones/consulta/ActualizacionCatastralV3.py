@@ -45,6 +45,8 @@ import os, json, requests, datetime, qgis.core
 from datetime import datetime as dt, date
 from osgeo import ogr, osr
 from .Cedula_MainWindow import CedulaMainWindow
+from CartograficoQgisPlugin.funciones.busquedas.periodo.periodo import predio
+
 from ..busquedas.busqueda_catastral import busqueda_Catastral
 from ..busquedas.busqueda_direccion import busqueda_direccion
 
@@ -149,6 +151,8 @@ class ActualizacionCatastralV3:
         # -- evento boton de abrir cedula --
         self.dockwidget.btnAbrirCedula.setIcon(QtGui.QIcon(':cedula/icons/add.png'))
         self.dockwidget.btnAbrirCedula.clicked.connect(self.abrirCedula)
+        self.dockwidget.btnAbrirCedula_2.clicked.connect(self.cargapredio)
+
 
         # -- evento boton de cancelar apertura de cedula --
         self.dockwidget.btnCancelAperCedula.clicked.connect(self.cancelarCedula)
@@ -1092,6 +1096,7 @@ class ActualizacionCatastralV3:
         bbox = geometria.boundingBox()
         iface.mapCanvas().setExtent(bbox)
         iface.mapCanvas().refresh()
+       
 
 ############################################################################################
 
@@ -1177,7 +1182,44 @@ class ActualizacionCatastralV3:
         #Metodo que crea un elemento QMessageBox
     
 #########################################################################################################
-    
+    def cargapredio(self):
+        self.capaActiva = iface.activeLayer()
+       
+        if self.capaActiva == None:
+            #self.UTI.mostrarAlerta("No tienes ninguna capa activa", QMessageBox().Critical, 'Edicion de atributos')
+            self.cambiarStatus("---", "error")
+        else:
+            self.seleccion = self.capaActiva.selectedFeatures()
+            self.listaEtiquetas = []
+            if(len(self.seleccion) == 1):
+                if self.capaActiva.id() == self.obtenerIdCapa('manzana'):
+                    self.listaAtributos = ['clave']
+                    self.listaEtiquetas = ['Clave']
+                elif self.capaActiva.id() == self.obtenerIdCapa('predios.geom'):
+                    self.listaAtributos = ['clave']
+                    self.listaEtiquetas = ['Clave']
+
+                    # temporal - Preparacion para la impresion de cedula
+                    self.textoItem = str(self.seleccion[0]['id'])
+                    self.textoItem1 = str(self.seleccion[0]['cve_cat'])
+                    
+                    listaPredios = list(self.seleccion)
+                    geometria = QgsGeometry()
+
+                    rango = len(listaPredios)
+
+                    if rango == 0:
+                        return
+
+                    geometria = listaPredios[0].geometry()
+
+                    for i in range(0, rango):
+                        geometria = geometria.combine(listaPredios[i].geometry())
+
+                    
+                    self.predio = predio(textoItem = self.textoItem, iface = self.iface, CFG = self.CFG, UTI = self.UTI, textoItem1 = self.textoItem1, geometria = geometria)
+                    self.predio.run()
+
     def cargarTablita(self):
         
         self.capaActiva = iface.activeLayer()

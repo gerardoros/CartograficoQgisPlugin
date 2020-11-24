@@ -92,10 +92,16 @@ class agregarRoles_usuario(QtWidgets.QDialog, FORM_CLASS):
                 # el registro (row) en la posicion 0 (columna 0) 
                 # en este ejmplo solo se cuenta con una columna por eso la posicion 0
                 item = self.twRoles.item(row, 0)
+                item2 = self.twRoles.item(row, 1)
 
                 # se verifica que el checkbox este seleccionado
                 if item.checkState() == 2: # True
-                    self._seleccionados.append(item.text())
+
+                    m = {}
+                    m['rol'] = item.text()
+                    m['opreaciones'] = item2.text()
+
+                    self._seleccionados.append(m)
 
         self.accept()
 
@@ -145,13 +151,32 @@ class agregarRoles_usuario(QtWidgets.QDialog, FORM_CLASS):
     def actualizaRoles(self):
 
         # consultar los roles
-        roles = self.consumeWSGeneral(url_cons = self.CFG.url_AU_getAllAuthorities)
+        self.roles = self.consumeWSGeneral(url_cons = self.CFG.url_AU_getAllAuthorities)
 
-        if not roles:
+        # tenemos la lista asi ['ROLE_ADMIN', 'ROLE_USER', 'ROLE_GENERAL', 'LINDEROS']
+        if not self.roles:
             return
+        # con un for recorrer la lista de roles
+
+        # con cada iteracion consumir el servicio web con el rol
+        #http://192.168.0.25:8080/autentificacion/api/account/permisos-carto-user-distinct/<ROL>
+        self.nuevalista2 = []
+        # de la listaque regrese el servicio filtrar las operaciones para al final tener una lista con roles y operaciones
+        for x in range(0,len(self.roles)):
+            n={}
+            self.listaServicios = self.consumeWSGeneral(url_cons = self.CFG.url_AU_getAllRole + self.roles[x])
+            n['rol'] = self.roles[x]
+            comas = ''
+            for i in range(0,len(self.listaServicios)):
+                if self.listaServicios[i]['asignado'] == True:
+                    comas = comas + self.listaServicios[i]['nombre'] + ','
+
+            n['operaciones'] = comas[:-1]
+
+            self.nuevalista2.append(n)
 
         self.limpiaTabla()
-        self.cargaRoles(roles = roles)
+        self.cargaRoles(self.nuevalista2)
 
     # --- E V E N T O S   Dialog ---
 

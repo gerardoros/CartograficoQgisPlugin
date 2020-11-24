@@ -5,8 +5,18 @@ class Configuracion():
     def __init__(self):
         
         #Direccion IP del servidor
-        self.servidorIP = 'http://localhost:8080/'
-        #self.servidorIP = 'http://192.168.0.25:8080/'
+        #self.servidorIP = 'http://localhost:8080/'
+<<<<<<< HEAD
+        self.servidorIP = 'http://192.168.0.25:8080/'
+        #self.servidorIP = 'https://thesmartflat.cianet.mx/cartografico/api/'
+=======
+
+        #self.servidorIP = 'http://201.165.150.64:8080/'
+
+        self.servidorIP = 'http://192.168.0.25:8080/'
+        #self.servidorIP = 'https://thesmartflat.cianet.mx/cartografico/api/'
+
+>>>>>>> dc0b84b3f0d25e193dab68dcfe3663dfb80eba1e
         #self.servidorIP = 'http://127.0.0.1:8080/'
 
         #Combos de localidades, sectores y manzanas/combo/municipios/
@@ -53,7 +63,7 @@ class Configuracion():
         self.urlMunicipio = self.servidorIP + 'busquedasimplewkn/api/cat/municipio/'
         
         #Cargar capas con web service
-        self.urlCargarCapa = 'http://192.168.0.25:8080/configuracion/api/adm-capas/getAllCapasConfiguration'
+        self.urlCargarCapa = 'http://201.165.150.64:8080/configuracion/api/adm-capas/getAllCapasConfiguration'
 
         #Urls para cedula
         self.urlCedPredio = self.servidorIP + 'busquedasimplewkn/api/cedula/predio/'
@@ -138,6 +148,7 @@ class Configuracion():
         self.url_AU_creaUsuario = self.servidorIP + 'autentificacion/api/register'
         self.url_AU_actualizaUsuario = self.servidorIP + 'autentificacion/api/users'
         self.url_AU_getAllRole = self.servidorIP + 'autentificacion/api/account/permisos-carto-user-distinct/'
+        self.url_AU_getAllPredio = self.servidorIP + 'busquedasimplewkn/api/consulta/get-info-predio-by-id-table/'
         self.url_AU_actualizarOperaciones = self.servidorIP + 'autentificacion/api/account/edit-permisos-cartografico'
 
         # Master
@@ -161,3 +172,5 @@ class Configuracion():
         #Busqueda de vias
         self.urlBusquedaDeVias = self.servidorIP + 'busquedasimplewkn/api/consulta/get-vialidades-by-nombre'
         self.urlPredioByVialidad = self.servidorIP + 'busquedasimplewkn/api/consulta/get-predio-by-vialidad/'
+
+        self.urlDetallePredio = self.servidorIP + 'busquedasimplewkn/api/consulta/get-info-predio-by-id/'
