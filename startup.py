@@ -322,9 +322,9 @@ class Startup():
         # Solicitar SRID para el municipio
         headers = {'Content-Type': 'application/json', 'Authorization' : self.obtenerToken()}
 
-        urlSrid = 'https://thesmartflat.cianet.mx/cartografico/api/busquedasimplewkn/api/cat/municipio/'
+        #urlSrid = 'https://thesmartflat.cianet.mx/cartografico/api/busquedasimplewkn/api/cat/municipio/'
 
-        #urlSrid = 'http://192.168.0.25:8080/busquedasimplewkn/api/cat/municipio/'
+        urlSrid = 'http://192.168.0.25:8080/busquedasimplewkn/api/cat/municipio/'
 
         
         respuesta = requests.get(urlSrid, headers = headers)
@@ -591,7 +591,8 @@ class Startup():
 
         # se compara para verificar que se haya caducado el token
         if currentDate > exp:
-            url= 'https://thesmartflat.cianet.mx/cartografico/api/auth/login'
+            #url= 'https://thesmartflat.cianet.mx/cartografico/api/auth/login'
+            url= 'http://192.168.0.25:8080/auth/login'
             payload = {"username" : self.decodeRot13(var.value('usuario')), "password" : self.decodeRot13(var.value('clave'))}
             payload = json.dumps(payload)
             headers = {'Content-Type': 'application/json'}
@@ -828,9 +829,9 @@ class Startup():
             
             stringTabla = self.diccionarioTabla[capaParam]
 
-            urlCapas = 'https://thesmartflat.cianet.mx/cartografico/api/busquedasimplewkn/api/thematics/lista/campos/' + stringTabla + '/' + 'false'
+            #urlCapas = 'https://thesmartflat.cianet.mx/cartografico/api/busquedasimplewkn/api/thematics/lista/campos/' + stringTabla + '/' + 'false'
 
-            #urlCapas = 'http://192.168.0.25:8080/busquedasimplewkn/api/thematics/lista/campos/' + stringTabla + '/' + 'false'
+            urlCapas = 'http://192.168.0.25:8080/busquedasimplewkn/api/thematics/lista/campos/' + stringTabla + '/' + 'false'
 
             respuesta = requests.post(urlCapas, headers = headers)
             
@@ -1107,7 +1108,8 @@ class Startup():
         payload = json.dumps(payload)
         headers = {'Content-Type': 'application/json', 'Authorization' : token}
 
-        response = requests.post('https://thesmartflat.cianet.mx/cartografico/api/busquedasimplewkn/api/busqueda/simple', headers = headers, data = payload)
+        #response = requests.post('https://thesmartflat.cianet.mx/cartografico/api/busquedasimplewkn/api/busqueda/simple', headers = headers, data = payload)
+        response = requests.post('http://192.168.0.25:8080/busquedasimplewkn/api/busqueda/simple', headers = headers, data = payload)
 
         if response.status_code == 200:
             data = response.content
