@@ -322,10 +322,10 @@ class Startup():
         # Solicitar SRID para el municipio
         headers = {'Content-Type': 'application/json', 'Authorization' : self.obtenerToken()}
 
-        urlSrid = 'https://thesmartflat.cianet.mx/cartografico/api/busquedasimplewkn/api/cat/municipio/'
+        #urlSrid = 'http://201.165.150.64:8080/busquedasimplewkn/api/cat/municipio/'
+        #urlSrid = 'https://thesmartflat.cianet.mx/cartografico/api/busquedasimplewkn/api/cat/municipio/'
 
-        #urlSrid = 'http://192.168.0.25:8080/busquedasimplewkn/api/cat/municipio/'
-
+        urlSrid = 'http://192.168.0.25:8080/busquedasimplewkn/api/cat/municipio/'
         
         respuesta = requests.get(urlSrid, headers = headers)
         cveMpio = 0
@@ -484,7 +484,7 @@ class Startup():
         cabecera = {'Content-type': 'application/json', 'Authorization' : token}
 
             #url del service
-        url = 'http://192.168.0.25:8080/configuracion/api/adm-capas/getAllCapasConfiguration'
+        url = 'http://201.165.150.64:8080/configuracion/api/adm-capas/getAllCapasConfiguration'
 
         respuesta = requests.get(url, headers = cabecera)
 
@@ -827,10 +827,11 @@ class Startup():
             headers = {'Content-Type': 'application/json', 'Authorization' : self.obtenerToken()}
             
             stringTabla = self.diccionarioTabla[capaParam]
+            #urlCapas = 'http://201.165.150.64:8080/busquedasimplewkn/api/thematics/lista/campos/' + stringTabla + '/' + 'false'
 
-            urlCapas = 'https://thesmartflat.cianet.mx/cartografico/api/busquedasimplewkn/api/thematics/lista/campos/' + stringTabla + '/' + 'false'
+            #urlCapas = 'https://thesmartflat.cianet.mx/cartografico/api/busquedasimplewkn/api/thematics/lista/campos/' + stringTabla + '/' + 'false'
 
-            #urlCapas = 'http://192.168.0.25:8080/busquedasimplewkn/api/thematics/lista/campos/' + stringTabla + '/' + 'false'
+            urlCapas = 'http://192.168.0.25:8080/busquedasimplewkn/api/thematics/lista/campos/' + stringTabla + '/' + 'false'
 
             respuesta = requests.post(urlCapas, headers = headers)
             
