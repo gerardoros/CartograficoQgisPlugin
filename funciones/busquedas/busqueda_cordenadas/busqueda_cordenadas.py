@@ -36,6 +36,7 @@ from .busqueda_cordenadas_dialog import busquedacordenadasDialog
 import os.path
 import json,requests
 from qgis.core import *
+from ..datos_inmueble import datos_inmueble
 
 class busquedacordenadas:
     """QGIS Plugin Implementation."""
@@ -64,6 +65,7 @@ class busquedacordenadas:
             'i18n',
             'busquedacordenadas_{}.qm'.format(locale))
 
+    
         if os.path.exists(locale_path):
             self.translator = QTranslator()
             self.translator.load(locale_path)
@@ -80,7 +82,7 @@ class busquedacordenadas:
         # -- evento boton de consulta de predio por coordenadas
         self.dockwidget.btLocalizar.clicked.connect(self.localizarCoordenadas)
         self.dockwidget.btCerrar.clicked.connect(self.closePlugin)
-
+        self.dockwidget.btDetalle.clicked.connect(self.abrirDetallePredio)
 
 
         # Check if plugin was started the first time in current QGIS session
@@ -264,6 +266,23 @@ class busquedacordenadas:
 
 
         return response.json()
+
+    # --- metodo que abre el detalle del INMUEBLE
+    def abrirDetallePredio(self):
+        #Para abrir el detalle del predio
+        urlDetallePredio = self.CFG.urlDetallePredio
+        headers = {'Content-Type': 'application/json', 'Authorization': self.UTI.obtenerToken()}
+        try:
+            
+            response = requests.get(urlDetallePredio + str(self.consumeWSGeneral(self)['features'][0]['properties']['id']), headers = headers)
+            self.dataPrueba = response.json()
+            self.DTP = datos_inmueble.datosinmueble(self.iface, self.dataPrueba)
+            self.DTP.run()
+
+        except Exception:
+            self.UTI.mostrarAlerta("No se ha podido conectar al servidor v1", QMessageBox.Critical, "Guardar Cambios v1")#Error en la peticion de consulta
+ 
+        
 
     # --- Metodo que manda a realizar la funcion de localizar coordenadas #################
     def localizarCoordenadas(self):

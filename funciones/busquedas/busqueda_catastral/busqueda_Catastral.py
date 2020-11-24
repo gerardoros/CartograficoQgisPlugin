@@ -23,7 +23,7 @@
 """
 from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication, QObject
 from qgis.PyQt.QtGui import QIcon, QIntValidator
-from qgis.PyQt.QtWidgets import QAction
+from qgis.PyQt.QtWidgets import QAction, QMessageBox
 
 # Initialize Qt resources from file resources.py
 from .resources import *

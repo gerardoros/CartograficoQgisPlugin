@@ -9,11 +9,13 @@ class Configuracion():
         self.servidorIP = 'http://192.168.0.25:8080/'
         #self.servidorIP = 'https://thesmartflat.cianet.mx/cartografico/api/'
         #self.servidorIP = 'http://127.0.0.1:8080/'
+        #self.servidorIP = 'http://201.165.150.64:8080/'
 
         #Combos de localidades, sectores y manzanas/combo/municipios/
         self.urlMunicipios = self.servidorIP + 'busquedasimplewkn/api/combo/municipios/'
         self.urlLocalidades = self.servidorIP + 'busquedasimplewkn/api/combo/001/localidades/'
         self.urlSectores = self.servidorIP +  'busquedasimplewkn/api/combo/localidades/'
+        self.urlColonias = self.servidorIP + 'busquedasimplewkn/api/cat/colonias'
 
         self.urlSectoresMuni = self.servidorIP + 'busquedasimplewkn/api/combo/municipios/'
         self.urlManzanas = self.servidorIP +  'busquedasimplewkn/api/combo/sector/'
@@ -53,7 +55,7 @@ class Configuracion():
         self.urlMunicipio = self.servidorIP + 'busquedasimplewkn/api/cat/municipio/'
         
         #Cargar capas con web service
-        self.urlCargarCapa = 'http://192.168.0.25:8080/configuracion/api/adm-capas/getAllCapasConfiguration'
+        self.urlCargarCapa = 'http://201.165.150.64:8080/configuracion/api/adm-capas/getAllCapasConfiguration'
 
         #Urls para cedula
         self.urlCedPredio = self.servidorIP + 'busquedasimplewkn/api/cedula/predio/'
@@ -154,6 +156,13 @@ class Configuracion():
 
         #Modulo de busqueda
         self.url_BC_getPredios = self.servidorIP + 'busquedasimplewkn/api/consulta/get-predio-by-cvecat/'
+        self.url_BC_getPredios_id = self.servidorIP + 'busquedasimplewkn/api/consulta/get-predio-by-id/'
 
         #Busquedas de predio
         self.urlBusquedaPorCoordenadas = self.servidorIP + 'busquedasimplewkn/api/consulta/get-predio-by-coordinate/'
+
+        #Busqueda de vias
+        self.urlBusquedaDeVias = self.servidorIP + 'busquedasimplewkn/api/consulta/get-vialidades-by-nombre'
+        self.urlPredioByVialidad = self.servidorIP + 'busquedasimplewkn/api/consulta/get-predio-by-vialidad/'
+
+        self.urlDetallePredio = self.servidorIP + 'busquedasimplewkn/api/consulta/get-info-predio-by-id/'

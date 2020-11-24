@@ -48,6 +48,7 @@ from .Cedula_MainWindow import CedulaMainWindow
 from CartograficoQgisPlugin.funciones.busquedas.periodo.periodo import predio
 
 from ..busquedas.busqueda_catastral import busqueda_Catastral
+from ..busquedas.busqueda_direccion import busqueda_direccion
 
 from ..busquedas.busqueda_cordenadas import busqueda_cordenadas
 
@@ -99,6 +100,7 @@ class ActualizacionCatastralV3:
         self.dockwidget.btnPlanoPred.clicked.connect(self.event_planoPred)
 
         self.dockwidget.busquedaButton.clicked.connect(self.busquedaPorCve)
+        self.dockwidget.busquedaPorDireccionButton.clicked.connect(self.busquedaPorDir)
 
         self.cve_cat_len = 16
 
@@ -1187,8 +1189,10 @@ class ActualizacionCatastralV3:
             #self.UTI.mostrarAlerta("No tienes ninguna capa activa", QMessageBox().Critical, 'Edicion de atributos')
             self.cambiarStatus("---", "error")
         else:
+            print("Si tiene activa")
             self.seleccion = self.capaActiva.selectedFeatures()
             self.listaEtiquetas = []
+            print("Tamano de sele: ", self.seleccion)
             if(len(self.seleccion) == 1):
                 if self.capaActiva.id() == self.obtenerIdCapa('manzana'):
                     self.listaAtributos = ['clave']
@@ -1196,6 +1200,7 @@ class ActualizacionCatastralV3:
                 elif self.capaActiva.id() == self.obtenerIdCapa('predios.geom'):
                     self.listaAtributos = ['clave']
                     self.listaEtiquetas = ['Clave']
+                    print("Adentro de info predio")
 
                     # temporal - Preparacion para la impresion de cedula
                     self.textoItem = str(self.seleccion[0]['id'])
@@ -5410,3 +5415,7 @@ LOS DERECHOS CONFORME AL ARTICULO 166 DEL CÓDIGO FINANCIERO DEL ESTADO DE MÉXI
 
         bc = busqueda_Catastral.busquedaCatastral(iface, self.CFG, self.UTI)
         bc.run()
+
+    def busquedaPorDir(self):
+        bd = busqueda_direccion.busquedadireccion(iface, self.CFG, self.UTI)
+        bd.run()
