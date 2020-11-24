@@ -1335,6 +1335,41 @@ background: rgb(217, 217, 217)
  Por clave</string>
        </property>
       </widget>
+      <widget class="QPushButton" name="busquedaPorDireccionButton">
+       <property name="geometry">
+        <rect>
+         <x>40</x>
+         <y>100</y>
+         <width>149</width>
+         <height>41</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton{
+background : rgb(174, 116, 0);
+color : rgb(255, 255, 255);
+border-radius : 4px;
+}
+QPushButton::hover{
+background : rgb(104, 69, 13);
+color : rgb(255, 255, 255);
+border-radius : 4px;
+}
+QPushButton:disabled {
+background: rgb(217, 217, 217)
+}</string>
+       </property>
+       <property name="text">
+        <string>Busqueda Predio 
+ Por direccion</string>
+       </property>
+      </widget>
      </widget>
     </widget>
    </item>

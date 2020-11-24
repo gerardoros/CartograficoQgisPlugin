@@ -13,6 +13,7 @@ class Configuracion():
         self.urlMunicipios = self.servidorIP + 'busquedasimplewkn/api/combo/municipios/'
         self.urlLocalidades = self.servidorIP + 'busquedasimplewkn/api/combo/001/localidades/'
         self.urlSectores = self.servidorIP +  'busquedasimplewkn/api/combo/localidades/'
+        self.urlColonias = self.servidorIP + 'busquedasimplewkn/api/cat/colonias'
 
         self.urlSectoresMuni = self.servidorIP + 'busquedasimplewkn/api/combo/municipios/'
         self.urlManzanas = self.servidorIP +  'busquedasimplewkn/api/combo/sector/'
@@ -152,6 +153,11 @@ class Configuracion():
 
         #Modulo de busqueda
         self.url_BC_getPredios = self.servidorIP + 'busquedasimplewkn/api/consulta/get-predio-by-cvecat/'
+        self.url_BC_getPredios_id = self.servidorIP + 'busquedasimplewkn/api/consulta/get-predio-by-id/'
 
         #Busquedas de predio
         self.urlBusquedaPorCoordenadas = self.servidorIP + 'busquedasimplewkn/api/consulta/get-predio-by-coordinate/'
+
+        #Busqueda de vias
+        self.urlBusquedaDeVias = self.servidorIP + 'busquedasimplewkn/api/consulta/get-vialidades-by-nombre'
+        self.urlPredioByVialidad = self.servidorIP + 'busquedasimplewkn/api/consulta/get-predio-by-vialidad/'

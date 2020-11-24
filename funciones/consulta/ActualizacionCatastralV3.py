@@ -46,6 +46,7 @@ from datetime import datetime as dt, date
 from osgeo import ogr, osr
 from .Cedula_MainWindow import CedulaMainWindow
 from ..busquedas.busqueda_catastral import busqueda_Catastral
+from ..busquedas.busqueda_direccion import busqueda_direccion
 
 from ..busquedas.busqueda_cordenadas import busqueda_cordenadas
 
@@ -97,6 +98,7 @@ class ActualizacionCatastralV3:
         self.dockwidget.btnPlanoPred.clicked.connect(self.event_planoPred)
 
         self.dockwidget.busquedaButton.clicked.connect(self.busquedaPorCve)
+        self.dockwidget.busquedaPorDireccionButton.clicked.connect(self.busquedaPorDir)
 
         self.cve_cat_len = 16
 
@@ -5368,3 +5370,7 @@ LOS DERECHOS CONFORME AL ARTICULO 166 DEL CÓDIGO FINANCIERO DEL ESTADO DE MÉXI
 
         bc = busqueda_Catastral.busquedaCatastral(iface, self.CFG, self.UTI)
         bc.run()
+
+    def busquedaPorDir(self):
+        bd = busqueda_direccion.busquedadireccion(iface, self.CFG, self.UTI)
+        bd.run()

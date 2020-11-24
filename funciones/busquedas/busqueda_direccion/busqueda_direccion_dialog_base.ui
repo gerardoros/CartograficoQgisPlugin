@@ -173,6 +173,11 @@ QHeaderView {background-color: white;}</string>
      </font>
     </property>
    </column>
+   <column>
+    <property name="text">
+     <string>id_OCULTA</string>
+    </property>
+   </column>
   </widget>
   <widget class="QTableWidget" name="twNumerosExteriores">
    <property name="geometry">
@@ -232,6 +237,11 @@ QHeaderView {background-color: white;}</string>
    <column>
     <property name="text">
      <string>Lote.</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>id_OCULTA</string>
     </property>
    </column>
   </widget>
