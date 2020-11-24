@@ -1189,8 +1189,10 @@ class ActualizacionCatastralV3:
             #self.UTI.mostrarAlerta("No tienes ninguna capa activa", QMessageBox().Critical, 'Edicion de atributos')
             self.cambiarStatus("---", "error")
         else:
+            print("Si tiene activa")
             self.seleccion = self.capaActiva.selectedFeatures()
             self.listaEtiquetas = []
+            print("Tamano de sele: ", self.seleccion)
             if(len(self.seleccion) == 1):
                 if self.capaActiva.id() == self.obtenerIdCapa('manzana'):
                     self.listaAtributos = ['clave']
@@ -1198,6 +1200,7 @@ class ActualizacionCatastralV3:
                 elif self.capaActiva.id() == self.obtenerIdCapa('predios.geom'):
                     self.listaAtributos = ['clave']
                     self.listaEtiquetas = ['Clave']
+                    print("Adentro de info predio")
 
                     # temporal - Preparacion para la impresion de cedula
                     self.textoItem = str(self.seleccion[0]['id'])
