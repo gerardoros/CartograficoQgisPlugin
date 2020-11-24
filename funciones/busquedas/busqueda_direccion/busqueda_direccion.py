@@ -33,6 +33,7 @@ from osgeo import ogr, osr
 from qgis.core import *
 from .busqueda_direccion_dialog import busquedadireccionDialog
 import os.path
+from ..datos_inmueble import datos_inmueble
 
 
 
@@ -90,12 +91,27 @@ class busquedadireccion:
         self.dockwidget.twNumerosExteriores.itemSelectionChanged.connect(self.setIdPredio)
         self.dockwidget.btLocalizar.clicked.connect(self.pintarPredios)
         self.dockwidget.btCerrar.clicked.connect(self.closeIt)
+        self.dockwidget.btDetalle.clicked.connect(self.abrirDetallePredio)
 
 
 
         # Check if plugin was started the first time in current QGIS session
         # Must be set in initGui() to survive plugin reloads
         self.first_start = None
+
+    def abrirDetallePredio(self):
+        #Para abrir el detalle del predio
+        urlDetallePredio = self.CFG.urlDetallePredio
+        headers = {'Content-Type': 'application/json', 'Authorization': self.UTI.obtenerToken()}
+        try:
+            
+            response = requests.get(urlDetallePredio + str(self.datosPredio['id']), headers = headers)
+            self.dataPrueba = response.json()
+            self.DTP = datos_inmueble.datosinmueble(self.iface, self.dataPrueba)
+            self.DTP.run()
+
+        except Exception:
+            self.UTI.mostrarAlerta("No se ha carcado un predio", QMessageBox.Critical, "Detalle del predio")#Error en la peticion de consulta
 
     # noinspection PyMethodMayBeStatic
     def tr(self, message):
@@ -449,7 +465,7 @@ class busquedadireccion:
 
 
         varKeys = res['features'][0]['properties']
-
+        self.datosPredio = varKeys
         keys = list(varKeys.keys())
         properties = []
         geoms = []
