@@ -28,6 +28,7 @@ from PyQt5.QtGui import QIcon, QColor, QCursor, QPixmap, QStandardItemModel
 from qgis.PyQt.QtWidgets import QAction, QMessageBox
 import os, requests, json
 from PyQt5 import QtWidgets
+from qgis.gui import QgsMapToolEmitPoint
 
 # Initialize Qt resources from file resources.py
 from .resources import *
@@ -38,6 +39,7 @@ from PyQt5 import QtGui
 # Import the code for the dialog
 from .periodo_dialog import predioDialog
 import os.path
+from ..datos_inmueble import datos_inmueble
 
 
 class predio:
@@ -72,6 +74,15 @@ class predio:
         # Declare instance attributes
         self.actions = []
         self.dlg = predioDialog(parent = iface.mainWindow())
+
+        #Init canvas
+        self.canvas = self.iface.mapCanvas()
+        #Init click tool
+        self.clickTool = QgsMapToolEmitPoint(self.canvas)
+        # Check if plugin was started the first time in current QGIS session
+        
+
+
         self.textoItem1 = textoItem1
         self.geometria = geometria
         self.clave = self.textoItem1[0:3] + "-" + self.textoItem1[3:5] + "-" + self.textoItem1[5:8] + "-" + self.textoItem1[8:13]
@@ -89,11 +100,28 @@ class predio:
         self.headers = {'Content-Type': 'application/json'}
         self.descripcion = []
         self.traerPredio()
+
+        self.dlg.btDetalle.clicked.connect(self.abrirDetallePredio)
         
     
         # Check if plugin was started the first time in current QGIS session
         # Must be set in initGui() to survive plugin reloads
         self.first_start = None
+
+    # --- metodo que abre el detalle del INMUEBLE
+    def abrirDetallePredio(self):
+        #Para abrir el detalle del predio
+        urlDetallePredio = self.CFG.urlDetallePredio
+        headers = {'Content-Type': 'application/json', 'Authorization': self.UTI.obtenerToken()}
+        try:
+            
+            response = requests.get(urlDetallePredio + str(self.textoItem), headers = headers)
+            self.dataPrueba = response.json()
+            self.DTP = datos_inmueble.datosinmueble(self.iface, self.dataPrueba)
+            self.DTP.run()
+
+        except Exception:
+            self.UTI.mostrarAlerta("No se ha podido conectar al servidor v1", QMessageBox.Critical, "Guardar Cambios v1")#Error en la peticion de consulta
 
     # noinspection PyMethodMayBeStatic
     def tr(self, message):
@@ -216,6 +244,8 @@ class predio:
         if self.first_start == True:
             self.first_start = False
             self.dlg = predioDialog()
+
+        self.canvas.setMapTool(self.clickTool)
 
         # show the dialog
         self.dlg.show()
