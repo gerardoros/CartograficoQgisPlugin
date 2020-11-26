@@ -325,7 +325,7 @@ class operaciones(QtWidgets.QDialog, FORM_CLASS):
                 return
             
             #self.dlg.accept()       
-           #print(envio)  
+            print(envio)  
 
         
 

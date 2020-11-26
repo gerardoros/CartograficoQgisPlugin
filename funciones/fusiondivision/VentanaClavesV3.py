@@ -102,7 +102,7 @@ class VentanaClavesV3:
                 feat['clave'] = f'{nCve:05}'
 
                 # clave anterior
-                feat['cve_cat_ant'] = self.predioOriginal['cve_cat']
+                feat['clave'] = self.predioOriginal['cve_cat']
                 nCve = nCve + 1
 
             feat['cve_cat'] = self.predioOriginal['cve_cat'][0:20] + feat['clave']
@@ -191,7 +191,7 @@ class VentanaClavesV3:
         self.capaPredio.startEditing()
         self.seleccion[0]['clave'] = clave
         self.seleccion[0]['cve_cat'] = self.predioOriginal['cve_cat'][0:20] + clave
-        self.seleccion[0]['cve_cat_ant'] = self.predioOriginal['cve_cat']
+        self.seleccion[0]['cve_cat'] = self.predioOriginal['cve_cat']
 
         self.capaPredio.updateFeature(self.seleccion[0])
         self.capaPredio.triggerRepaint()
