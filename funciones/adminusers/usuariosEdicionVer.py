@@ -376,7 +376,6 @@ class usuariosEdicionVer(QtWidgets.QDialog, FORM_CLASS):
            
         elif response.status_code >= 300:
             #self.createAlert('Error en peticion "guardaUsuario()":\n' + response.text, QMessageBox().Critical, "Error de servidor")
-            print(response.content[6])
             if response.text[170:188] == '"error.userexists"':
                 self.createAlert('El usuario ya existe', QMessageBox().Critical, "Usuarios")
             if response.text[179:198] == '"error.emailexists"':

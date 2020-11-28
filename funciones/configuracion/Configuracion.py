@@ -6,7 +6,7 @@ class Configuracion():
         
         #Direccion IP del servidor
         #self.servidorIP = 'http://localhost:8080/'
-<<<<<<< HEAD
+
 
         self.servidorIP = 'http://192.168.0.25:8080/'
         #self.servidorIP = 'https://thesmartflat.cianet.mx/cartografico/api/'
@@ -17,10 +17,10 @@ class Configuracion():
         self.servidorIP = 'http://192.168.0.25:8080/'
         #self.servidorIP = 'https://thesmartflat.cianet.mx/cartografico/api/'
 
-=======
+
         self.servidorIP = 'http://192.168.0.25:8080/'
         #self.servidorIP = 'https://thesmartflat.cianet.mx/cartografico/api/'
->>>>>>> bd7487049fc1d0b728bd561188144c630dba838c
+
         #self.servidorIP = 'http://127.0.0.1:8080/'
         #self.servidorIP = 'http://201.165.150.64:8080/'
 
@@ -156,6 +156,7 @@ class Configuracion():
         self.url_AU_getAllPredio = self.servidorIP + 'busquedasimplewkn/api/consulta/get-info-predio-by-id-table/'
         self.url_AU_actualizarOperaciones = self.servidorIP + 'autentificacion/api/account/edit-permisos-cartografico'
         self.url_AU_actualizarContrasena = self.servidorIP + 'autentificacion/api/account/change-password/'
+        self.url_AU_getAllfactures = self.servidorIP + 'busquedasimplewkn/api/cedula/predio/id/'
 
         # Master
         self.url_MA_getInfoUser = self.servidorIP + 'autentificacion/api/users/'

@@ -57,7 +57,7 @@ class VentanaFusionV3:
         #self.dlg.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
         # Create the dialog (after translation) and keep reference
         
-        self.listaCampos = ['cve_cat', 'clave', 'cve_cat_ant', 'cve_tipo_pred', 'num_ext', 'fondo', 'frente', 'sup_terr', 'uso_predio']
+        self.listaCampos = ['cveCat', 'clave', 'cveCatAnt', 'cveTipoPred', 'numExt', 'fondo', 'frente', 'supTerr', 'usoPredio']
         self.listaEtiquetas = ['Clave Catastral', 'Clave', 'Cve. Cat. Anterior', 'Clave Tipo Predio', 'Numero Exterior', 'Fondo', 'Frente', 'Superficie de terreno', 'Uso de predio']
 
         self.dlg.btnConfirmar.clicked.connect(self.confirmarFusion)

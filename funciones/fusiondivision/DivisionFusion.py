@@ -31,6 +31,7 @@ from PyQt5 import QtCore
 
 # Initialize Qt resources from file resources.py
 from .resources import *
+import os, json, requests
 # Import the code for the dialog
 from .DivisionFusion_dialog import DivisionFusionDialog
 import os.path
@@ -129,7 +130,7 @@ class DivisionFusion:
         self.enSubdivision = False
         self.enFusion = False
 
-
+        self.headers = {'Content-Type': 'application/json'}
         self.geomsAreas = []
 
     # noinspection PyMethodMayBeStatic
@@ -266,6 +267,7 @@ class DivisionFusion:
         self.dlg.btnApagarHerramientas.setEnabled(False)
         self.dlg.btnConfirmarCortes.setEnabled(False)
         self.dlg.btnDeshacerTodo.setEnabled(False)
+        
 
         # llena los predios en el combo
         self.dlg.comboPredios.clear()
@@ -289,18 +291,34 @@ class DivisionFusion:
             # substitute with your code.
             pass
 
+    '''def consumirPredios(self):
+        listaPredio =[]
+        if iface.activeLayer() != None:
+            seleccion = self.iface.activeLayer().selectedFeatures()
+            for i in seleccion:
+                self.id = self.consumeWSGeneral(url_cons = self.CFG.url_AU_getAllfactures + str(i['id']) )
+                if not self.id:
+                    return
+                listaPredio.append(self.id)
+            print(listaPredio)'''
 #------------------------------------------------------------------------------
 
     #Preguntamos si quiere fusionar
     def preguntarFusion(self):
+        listaPredio =[]
+        #self.consumirPredios()
         if iface.activeLayer() != None:
             seleccion = self.iface.activeLayer().selectedFeatures()
             self.VentanaFusion.dlg.close()
             if self.validarCuentaSeleccion(): #Si la seleccion es valida
-                
+                for i in seleccion:
+                    self.id = self.consumeWSGeneral(url_cons = self.CFG.url_AU_getAllfactures + str(i['id']) )
+                    if not self.id:
+                        return
+                    listaPredio.append(self.id)
                 self.enFusion = True
                 self.VentanaFusion.dlg.show()
-                self.VentanaFusion.llenarTablaComp(seleccion[0], seleccion[1])
+                self.VentanaFusion.llenarTablaComp(listaPredio[0], listaPredio[1])
                 self.dlg.btnCargarPredio.setEnabled(False)
         else:
             self.UTI.mostrarAlerta('La fusion requiere la seleccion de exactamente 2 predios contiguos', QMessageBox().Critical, 'Error de fusion')
@@ -502,7 +520,7 @@ class DivisionFusion:
         self.predioEnDivision = None
 
         for predio in capaPredios.getFeatures(): #Obtenemos el feature a dividr con base en la clave elegida
-            if predio.attributes()[1] == clave:
+            if predio.attributes()[0] == clave:
                 self.predioEnDivision = predio
                 break
 
@@ -1056,5 +1074,29 @@ class DivisionFusion:
             self.rubberMarca.addPoint(listaVertices[x], True)
         self.rubberMarca.show() #Aqui pintamos de amarillito la geometria en division
 
+    def consumeWSGeneral(self, url_cons = ""):
+
+        url = url_cons
+        data = ""
+
+        try:
+            self.headers['Authorization'] = self.UTI.obtenerToken()
+            response = requests.get(url, headers = self.headers)
+        except requests.exceptions.RequestException as e:
+            self.createAlert("Error de servidor--, 'consumeWSGeneral()' '" + str(e) + "'", QMessageBox().Critical, "Error de servidor")
+            return
+
+        if response.status_code == 200:
+            data = response.content
+           
+        elif response.status_code == 403:
+            self.createAlert('Sin Permisos para ejecutar la acción', QMessageBox().Critical, "Usuarios")
+            return None
+           
+        else:
+            self.createAlert('Error en peticion "consumeWSGeneral()":\n' + response.text, QMessageBox().Critical, "Error de servidor")
+            return
+
+        return json.loads(data)
 
 

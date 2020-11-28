@@ -5313,7 +5313,7 @@ LOS DERECHOS CONFORME AL ARTICULO 166 DEL CÓDIGO FINANCIERO DEL ESTADO DE MÉXI
         lista = []
         # lista de features
         for predio in listaPredios:
-            lista.append(str(predio.attributes()[1]))
+            lista.append(str(predio.attributes()[0]))
 
         lista.sort()
         for elemento in lista:

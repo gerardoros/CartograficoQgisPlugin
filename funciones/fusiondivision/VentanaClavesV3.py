@@ -92,17 +92,17 @@ class VentanaClavesV3:
 
             if primera:
                 clave = self.predioOriginal['clave']
-                feat['clave'] = f'{int(clave):05}'
+                feat['clave'] = f'{int(clave):02}'
 
                 if int(clave) == nCve:
                     nCve = nCve + 1
 
                 primera = False
             else:
-                feat['clave'] = f'{nCve:05}'
+                feat['clave'] = f'{nCve:02}'
 
                 # clave anterior
-                feat['clave'] = self.predioOriginal['cve_cat']
+                feat['cve_cat_ant'] = self.predioOriginal['cve_cat']
                 nCve = nCve + 1
 
             feat['cve_cat'] = self.predioOriginal['cve_cat'][0:20] + feat['clave']
@@ -179,7 +179,7 @@ class VentanaClavesV3:
             return
 
         # prepara la clave
-        clave = f'{int(texto):05}'
+        clave = f'{int(texto):02}'
 
         # validar claves repetidas
         for feat in self.capaPredio.getFeatures():
@@ -191,7 +191,7 @@ class VentanaClavesV3:
         self.capaPredio.startEditing()
         self.seleccion[0]['clave'] = clave
         self.seleccion[0]['cve_cat'] = self.predioOriginal['cve_cat'][0:20] + clave
-        self.seleccion[0]['cve_cat'] = self.predioOriginal['cve_cat']
+        self.seleccion[0]['cve_cat_ant'] = self.predioOriginal['cve_cat']
 
         self.capaPredio.updateFeature(self.seleccion[0])
         self.capaPredio.triggerRepaint()

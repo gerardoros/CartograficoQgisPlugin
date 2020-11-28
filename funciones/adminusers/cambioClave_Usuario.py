@@ -102,7 +102,7 @@ class cambioClave_Usuario(QtWidgets.QDialog, FORM_CLASS):
         result = self.msg.exec_()
 
     # --- M E T O D O S   Dialog ---
-
+ 
     # --- S E R V I C I O S   W E B  ---
 
     # - consume ws para informacion de catalogos
