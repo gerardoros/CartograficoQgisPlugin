@@ -391,7 +391,7 @@ class AdminUsers:
 
         print(var)
         print(type(var))
-        obj = cambioClave_Usuario(CFG = self.CFG, UTI = self.UTI, usuario = var)
+        obj = cambioClave_Usuario(CFG = self.CFG, UTI = self.UTI, usuario = var,  nuevo = True)
         obj.exec()
 
     def event_asignaOperaciones(self):

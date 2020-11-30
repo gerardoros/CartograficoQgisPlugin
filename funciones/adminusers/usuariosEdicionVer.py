@@ -359,6 +359,7 @@ class usuariosEdicionVer(QtWidgets.QDialog, FORM_CLASS):
 
             if nuevo:
                 response = requests.post(url, headers = self.headers, data = jsonEnv)
+                print(response)
             else:
 
                 # ejemplo con put, url, header y body o datos a enviar
@@ -371,10 +372,14 @@ class usuariosEdicionVer(QtWidgets.QDialog, FORM_CLASS):
         if response.status_code == 403:
             self.createAlert('Sin Permisos para ejecutar la accion', QMessageBox().Critical, "Usuarios")
             return None
-
+ 
            
         elif response.status_code >= 300:
-            self.createAlert('Error en peticion "guardaUsuario()":\n' + response.text, QMessageBox().Critical, "Error de servidor")
+            #self.createAlert('Error en peticion "guardaUsuario()":\n' + response.text, QMessageBox().Critical, "Error de servidor")
+            if response.text[170:188] == '"error.userexists"':
+                self.createAlert('El usuario ya existe', QMessageBox().Critical, "Usuarios")
+            if response.text[179:198] == '"error.emailexists"':
+                self.createAlert('El correo electrónico ya existe', QMessageBox().Critical, "Usuarios")
             return response.text
 
         return 'OK'
