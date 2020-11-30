@@ -45,7 +45,7 @@ import os, json, requests, datetime, qgis.core
 from datetime import datetime as dt, date
 from osgeo import ogr, osr
 from .Cedula_MainWindow import CedulaMainWindow
-from CartograficoQgisPlugin.funciones.busquedas.periodo.periodo import predio
+from ..busquedas.periodo.periodo import predio
 
 from ..busquedas.busqueda_catastral import busqueda_Catastral
 from ..busquedas.busqueda_direccion import busqueda_direccion

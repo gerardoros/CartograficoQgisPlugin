@@ -6,17 +6,9 @@ class Configuracion():
         
         #Direccion IP del servidor
         #self.servidorIP = 'http://localhost:8080/'
-<<<<<<< HEAD
-        self.servidorIP = 'http://192.168.0.25:8080/'
-        #self.servidorIP = 'https://thesmartflat.cianet.mx/cartografico/api/'
-=======
-
-        #self.servidorIP = 'http://201.165.150.64:8080/'
-
         self.servidorIP = 'http://192.168.0.25:8080/'
         #self.servidorIP = 'https://thesmartflat.cianet.mx/cartografico/api/'
 
->>>>>>> dc0b84b3f0d25e193dab68dcfe3663dfb80eba1e
         #self.servidorIP = 'http://127.0.0.1:8080/'
 
         #Combos de localidades, sectores y manzanas/combo/municipios/
@@ -174,3 +166,9 @@ class Configuracion():
         self.urlPredioByVialidad = self.servidorIP + 'busquedasimplewkn/api/consulta/get-predio-by-vialidad/'
 
         self.urlDetallePredio = self.servidorIP + 'busquedasimplewkn/api/consulta/get-info-predio-by-id/'
+
+        #documentos
+        self.urlCertCveCat = self.servidorIP + 'busquedasimplewkn/api/genera-doc/certificacion/clave-cat/'
+        self.urlCertCveValor = self.servidorIP + 'busquedasimplewkn/api/genera-doc/certificacion/clave-valor/'
+        self.urlCertAportaciones = self.servidorIP + 'busquedasimplewkn/api/genera-doc/certificacion/aportacion/'
+        self.urlConstIdentificacion = self.servidorIP + 'busquedasimplewkn/api/genera-doc/constancia/'
