@@ -60,7 +60,7 @@ QWidget:item:selected
 </string>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>3</number>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
@@ -1318,7 +1318,7 @@ color: black ;
      </widget>
      <widget class="QWidget" name="tab_3">
       <attribute name="title">
-       <string>Página</string>
+       <string>Busquedas</string>
       </attribute>
       <widget class="QPushButton" name="botonBusquedaCoordenadas">
        <property name="geometry">
@@ -1423,6 +1423,148 @@ background: rgb(217, 217, 217)
        <property name="text">
         <string>Busqueda Predio 
  Por direccion</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QWidget" name="tab_4">
+      <attribute name="title">
+       <string>Documentos</string>
+      </attribute>
+      <widget class="QPushButton" name="btnCveYValor">
+       <property name="geometry">
+        <rect>
+         <x>270</x>
+         <y>40</y>
+         <width>171</width>
+         <height>51</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton{
+background : rgb(174, 116, 0);
+color : rgb(255, 255, 255);
+border-radius : 4px;
+}
+QPushButton::hover{
+background : rgb(104, 69, 13);
+color : rgb(255, 255, 255);
+border-radius : 4px;
+}
+QPushButton:disabled {
+background: rgb(217, 217, 217)
+}</string>
+       </property>
+       <property name="text">
+        <string>Cert. Clave y 
+Valor Catastral</string>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>106</width>
+         <height>106</height>
+        </size>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="btnCveCat">
+       <property name="geometry">
+        <rect>
+         <x>80</x>
+         <y>40</y>
+         <width>171</width>
+         <height>51</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton{
+background : rgb(174, 116, 0);
+color : rgb(255, 255, 255);
+border-radius : 4px;
+}
+QPushButton::hover{
+background : rgb(104, 69, 13);
+color : rgb(255, 255, 255);
+border-radius : 4px;
+}
+QPushButton:disabled {
+background: rgb(217, 217, 217)
+}</string>
+       </property>
+       <property name="text">
+        <string>Cert. Clave Catastral</string>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>106</width>
+         <height>106</height>
+        </size>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="btnAportaciones">
+       <property name="geometry">
+        <rect>
+         <x>80</x>
+         <y>120</y>
+         <width>171</width>
+         <height>51</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton{
+background : rgb(174, 116, 0);
+color : rgb(255, 255, 255);
+border-radius : 4px;
+}
+QPushButton::hover{
+background : rgb(104, 69, 13);
+color : rgb(255, 255, 255);
+border-radius : 4px;
+}
+QPushButton:disabled {
+background: rgb(217, 217, 217)
+}</string>
+       </property>
+       <property name="text">
+        <string>Cert. Aportaciones</string>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>106</width>
+         <height>106</height>
+        </size>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="btnConstancia">
+       <property name="geometry">
+        <rect>
+         <x>270</x>
+         <y>120</y>
+         <width>171</width>
+         <height>51</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton{
+background : rgb(174, 116, 0);
+color : rgb(255, 255, 255);
+border-radius : 4px;
+}
+QPushButton::hover{
+background : rgb(104, 69, 13);
+color : rgb(255, 255, 255);
+border-radius : 4px;
+}
+QPushButton:disabled {
+background: rgb(217, 217, 217)
+}</string>
+       </property>
+       <property name="text">
+        <string>Const. Identificacion</string>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>106</width>
+         <height>106</height>
+        </size>
        </property>
       </widget>
      </widget>

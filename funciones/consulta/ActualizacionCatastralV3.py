@@ -51,6 +51,10 @@ from ..busquedas.busqueda_catastral import busqueda_Catastral
 from ..busquedas.busqueda_direccion import busqueda_direccion
 
 from ..busquedas.busqueda_cordenadas import busqueda_cordenadas
+from ..generar_documentos.cert_cve_catastral import CertCveCatastral
+from ..generar_documentos.cert_cve_valor import CertCveValor
+from ..generar_documentos.cert_aportes import CertAportes
+from ..generar_documentos.const_identificacion import ConstIdentificacion
 
 
 class ActualizacionCatastralV3:
@@ -101,6 +105,11 @@ class ActualizacionCatastralV3:
 
         self.dockwidget.busquedaButton.clicked.connect(self.busquedaPorCve)
         self.dockwidget.busquedaPorDireccionButton.clicked.connect(self.busquedaPorDir)
+
+        self.dockwidget.btnCveCat.clicked.connect(self.irACertCveCatastral)
+        self.dockwidget.btnCveYValor.clicked.connect(self.irACertCveValor)
+        self.dockwidget.btnAportaciones.clicked.connect(self.irACertAportes)
+        self.dockwidget.btnConstancia.clicked.connect(self.irAConstIdentificacion)
 
         self.cve_cat_len = 16
 
@@ -5419,3 +5428,35 @@ LOS DERECHOS CONFORME AL ARTICULO 166 DEL CÓDIGO FINANCIERO DEL ESTADO DE MÉXI
     def busquedaPorDir(self):
         bd = busqueda_direccion.busquedadireccion(iface, self.CFG, self.UTI)
         bd.run()
+
+    def irACertCveCatastral(self):
+        CCC = CertCveCatastral(iface)
+        CCC.UTI = self.UTI
+        CCC.ACA = self
+        CCC.CFG = self.CFG
+
+        CCC.run()
+
+    def irACertCveValor(self):
+        CCV = CertCveValor(iface)
+        CCV.UTI = self.UTI
+        CCV.ACA = self
+        CCV.CFG = self.CFG
+
+        CCV.run()
+
+    def irACertAportes(self):
+        CAP = CertAportes(iface)
+        CAP.UTI = self.UTI
+        CAP.ACA = self
+        CAP.CFG = self.CFG
+
+        CAP.run()
+
+    def irAConstIdentificacion(self):
+        CID = ConstIdentificacion(iface)
+        CID.UTI = self.UTI
+        CID.ACA = self
+        CID.CFG = self.CFG
+
+        CID.run()

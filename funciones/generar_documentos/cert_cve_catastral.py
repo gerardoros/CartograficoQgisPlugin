@@ -69,13 +69,16 @@ class CertCveCatastral:
         self.actions = []
         self.menu = self.tr(u'&Cert Cve Catastral')
         self.canvas = iface.mapCanvas()
+        self.abrePredio = False
+        self.directorioAGuardar = None
+        self.cve_catastral = None
 
         #eventos
         self.dlg.btnBrowse.clicked.connect(self.selectDirectory)
         self.dlg.btnGenerar.clicked.connect(self.generarDoc)
         self.dlg.btnSeleccionar.clicked.connect(self.activarSeleccion)
 
-        rx = QRegExp("[0-9]{32}")
+        rx = QRegExp("[A-Z0-9]{31}")
         val = QRegExpValidator(rx)
         self.dlg.fldCveCat.setValidator(val)
 
@@ -234,6 +237,13 @@ class CertCveCatastral:
 
         self.cve_catastral = self.dlg.fldCveCat.text()
 
+        if not (self.directorioAGuardar and self.cve_catastral):
+            self.mostrarAlerta("Por favor llene los campos.", QMessageBox.Critical,
+                                   "Certificacion clave catastral")
+            return
+
+
+
         url = self.CFG.urlCertCveCat
         headers = {'Content-Type': 'application/json', 'Authorization': self.UTI.obtenerToken()}
         try:
@@ -245,19 +255,22 @@ class CertCveCatastral:
             f.write(response.content)
             f.close()
             self.cambiarStatus("Archivo guardado", "ok")
-            return
 
         except requests.exceptions.RequestException:
             self.UTI.mostrarAlerta("No se ha podido conectar al servidor v1", QMessageBox.Critical,
                                    "Certificacion clave catastral")  # Error en la peticion de consulta
-            return
 
+        self.cancelaSeleccion()
 
+    def mostrarAlerta(self, mensaje, icono, titulo):
 
-    def activarSeleccion(self):
-        self.iface.actionSelect().trigger()
-        self.canvas.setCursor(self.UTI.cursorRedondo)
-        self.dlg.btnSeleccionar.setEnabled(False)
+        msg = QMessageBox()
+        msg.setText(mensaje)
+        msg.setIcon(icono)
+        msg.setWindowTitle(titulo)
+        msg.show()
+        msg.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
+        result = msg.exec_()
 
 
     def seleccionaClave(self):
@@ -314,7 +327,42 @@ class CertCveCatastral:
                 self.dlg.btnSeleccionar.setEnabled(True)
         else:
             self.UTI.mostrarAlerta("Elija una capa.", QMessageBox.Critical,
-                                   "Certificacion clave catastral")  # Error en la peticion de consulta
+                                   "Certificacion clave catastral")
+
+
+
+    def activarSeleccion(self):
+        if not self.abrePredio:
+            self.iface.actionSelect().trigger()
+            self.canvas.setCursor(self.UTI.cursorRedondo)
+            self.dlg.btnSeleccionar.setEnabled(False)
+            self.abrePredio = True
+
+    def cancelaSeleccion(self):
+        if self.abrePredio:
+            self.dlg.btnSeleccionar.setEnabled(True)
+            # regresa herramienta de seleccion normal
+            self.iface.actionSelect().trigger()
+            self.cambiarStatus("Listo...", "ok")
+            self.abrePredio = False
+
+
+    # -- funcion para cancelar la apertura de la cedula --
+    def cancelaSeleccionYRepinta(self):
+        if self.abrePredio:
+            self.dlg.btnSeleccionar.setEnabled(True)
+
+            self.xPredGeom.removeSelection()
+            self.xHoriGeom.removeSelection()
+            self.xCvesVert.removeSelection()
+            self.canvas.refresh()
+            # regresa herramienta de seleccion normal
+            self.iface.actionSelect().trigger()
+            self.cambiarStatus("Cerrando...", "ok")
+            self.abrePredio = False
+
+    def closeEvent(self, event):
+        self.cancelaSeleccionYRepinta()
 
 
     def cambiarStatus(self, texto, estado):

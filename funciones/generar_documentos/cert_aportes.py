@@ -74,7 +74,7 @@ class CertAportes:
         self.dlg.btnGenerar.clicked.connect(self.generarDoc)
         self.dlg.btnSeleccionar.clicked.connect(self.activarSeleccion)
 
-        rx = QRegExp("[0-9]{32}")
+        rx = QRegExp("[A-Z0-9]{31}")
         val = QRegExpValidator(rx)
         self.dlg.fldCveCat.setValidator(val)
 

@@ -47,7 +47,6 @@ from .funciones.revisioncampo import CedulaPadron
 from .funciones.revisioncampo import AsignacionPadron
 from .funciones.revisioncampo import IntermedioCedulaRevision
 from .funciones.subir_shape import subir_shape
-from .funciones.generar_documentos import generar_documentos
 
 
 from .funciones.asignatareas import AsignaTareas
@@ -141,9 +140,6 @@ class Master:
 
         # Integracion (Carga masiva)
         self.CMS = Integracion.Integracion(iface)
-
-        # Documentos
-        self.GD = generar_documentos.GenerarDocumentos(iface)
         
         # Asignaciones de campo, revision y padron
         self.ASCM = AsignacionCampo.AsignacionCampo(iface, self.UTI)
@@ -172,7 +168,6 @@ class Master:
         self.dlg.btnAsigPad.clicked.connect(self.irAAsignacionPadron)
 
         self.dlg.btnUpload.clicked.connect(self.irASubirShape)
-        self.dlg.btnDocumentos.clicked.connect(self.irAGenerarDocumentos)
         self.dlg.btnInterPad.clicked.connect(self.irAIntermediarioPad)
         self.dlg.btnInterRev.clicked.connect(self.irAIntermediarioRev)
 
@@ -533,17 +528,6 @@ class Master:
         self.SHP.CFG = self.CFG
 
         self.SHP.run()
-
-
-##############################################################################
-
-    def irAGenerarDocumentos(self):
-
-        self.GD.CFG = self.CFG
-        self.GD.UTI = self.UTI
-        self.GD.ACA = self.ACA
-
-        self.GD.run()
 
 
 

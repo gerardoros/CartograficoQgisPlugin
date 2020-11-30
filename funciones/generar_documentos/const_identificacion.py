@@ -78,7 +78,7 @@ class ConstIdentificacion:
         self.onlyInt = QIntValidator()
         self.dlg.fldNumSolucitud.setValidator(self.onlyInt)
 
-        rx = QRegExp("[0-9]{32}")
+        rx = QRegExp("[A-Z0-9]{31}")
         val = QRegExpValidator(rx)
         self.dlg.fldCveCat.setValidator(val)
 
