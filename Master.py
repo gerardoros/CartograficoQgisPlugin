@@ -48,6 +48,7 @@ from .funciones.revisioncampo import AsignacionPadron
 from .funciones.revisioncampo import IntermedioCedulaRevision
 from .funciones.subir_shape import subir_shape
 
+
 from .funciones.asignatareas import AsignaTareas
 from .funciones.adminusers import AdminUsers
 
@@ -167,7 +168,6 @@ class Master:
         self.dlg.btnAsigPad.clicked.connect(self.irAAsignacionPadron)
 
         self.dlg.btnUpload.clicked.connect(self.irASubirShape)
-
         self.dlg.btnInterPad.clicked.connect(self.irAIntermediarioPad)
         self.dlg.btnInterRev.clicked.connect(self.irAIntermediarioRev)
 
@@ -528,6 +528,7 @@ class Master:
         self.SHP.CFG = self.CFG
 
         self.SHP.run()
+
 
 
 ###############################################################################

@@ -46,6 +46,17 @@ import os, json, requests, datetime, qgis.core
 from datetime import datetime as dt, date
 from osgeo import ogr, osr
 from .Cedula_MainWindow import CedulaMainWindow
+from ..busquedas.periodo.periodo import predio
+
+from ..busquedas.busqueda_catastral import busqueda_Catastral
+from ..busquedas.busqueda_direccion import busqueda_direccion
+
+from ..busquedas.busqueda_cordenadas import busqueda_cordenadas
+from ..generar_documentos.cert_cve_catastral import CertCveCatastral
+from ..generar_documentos.cert_cve_valor import CertCveValor
+from ..generar_documentos.cert_aportes import CertAportes
+from ..generar_documentos.const_identificacion import ConstIdentificacion
+
 
 class ActualizacionCatastralV3:
     """QGIS Plugin Implementation."""
@@ -61,6 +72,8 @@ class ActualizacionCatastralV3:
         self.ELM = None
         self.DFS = None
         self.TPG = None
+        # BUSQUEDA COORDENADAS
+        self.BUC = busqueda_cordenadas.busquedacordenadas(iface)
 
         # variable que almacenara la capa de referencia que se encuentre en edicion
         self.capaEnEdicion = ''
@@ -90,6 +103,14 @@ class ActualizacionCatastralV3:
 
         self.dockwidget.btnPlanoManzanero.clicked.connect(self.event_planoMza)
         self.dockwidget.btnPlanoPred.clicked.connect(self.event_planoPred)
+
+        self.dockwidget.busquedaButton.clicked.connect(self.busquedaPorCve)
+        self.dockwidget.busquedaPorDireccionButton.clicked.connect(self.busquedaPorDir)
+
+        self.dockwidget.btnCveCat.clicked.connect(self.irACertCveCatastral)
+        self.dockwidget.btnCveYValor.clicked.connect(self.irACertCveValor)
+        self.dockwidget.btnAportaciones.clicked.connect(self.irACertAportes)
+        self.dockwidget.btnConstancia.clicked.connect(self.irAConstIdentificacion)
 
         self.cve_cat_len = 16
         # inicializa variables globales para estatus de claves
@@ -138,9 +159,14 @@ class ActualizacionCatastralV3:
         'Corredor de Valor' : 'e_corredor_valor'
         }
 
+        # -- evento boton de consulta de predio por coordenadas
+        self.dockwidget.botonBusquedaCoordenadas.clicked.connect(self.abrirBusquedaPorCoordenadas)
+
         # -- evento boton de abrir cedula --
         self.dockwidget.btnAbrirCedula.setIcon(QtGui.QIcon(':cedula/icons/add.png'))
         self.dockwidget.btnAbrirCedula.clicked.connect(self.abrirCedula)
+        self.dockwidget.btnAbrirCedula_2.clicked.connect(self.cargapredio)
+
 
         # -- evento boton de cancelar apertura de cedula --
         self.dockwidget.btnCancelAperCedula.clicked.connect(self.cancelarCedula)
@@ -1082,6 +1108,7 @@ class ActualizacionCatastralV3:
         bbox = geometria.boundingBox()
         iface.mapCanvas().setExtent(bbox)
         iface.mapCanvas().refresh()
+       
 
 ############################################################################################
 
@@ -1167,7 +1194,47 @@ class ActualizacionCatastralV3:
         #Metodo que crea un elemento QMessageBox
     
 #########################################################################################################
-    
+    def cargapredio(self):
+        self.capaActiva = iface.activeLayer()
+       
+        if self.capaActiva == None:
+            #self.UTI.mostrarAlerta("No tienes ninguna capa activa", QMessageBox().Critical, 'Edicion de atributos')
+            self.cambiarStatus("---", "error")
+        else:
+            print("Si tiene activa")
+            self.seleccion = self.capaActiva.selectedFeatures()
+            self.listaEtiquetas = []
+            print("Tamano de sele: ", self.seleccion)
+            if(len(self.seleccion) == 1):
+                if self.capaActiva.id() == self.obtenerIdCapa('manzana'):
+                    self.listaAtributos = ['clave']
+                    self.listaEtiquetas = ['Clave']
+                elif self.capaActiva.id() == self.obtenerIdCapa('predios.geom'):
+                    self.listaAtributos = ['clave']
+                    self.listaEtiquetas = ['Clave']
+                    print("Adentro de info predio")
+
+                    # temporal - Preparacion para la impresion de cedula
+                    self.textoItem = str(self.seleccion[0]['id'])
+                    self.textoItem1 = str(self.seleccion[0]['cve_cat'])
+                    
+                    listaPredios = list(self.seleccion)
+                    geometria = QgsGeometry()
+
+                    rango = len(listaPredios)
+
+                    if rango == 0:
+                        return
+
+                    geometria = listaPredios[0].geometry()
+
+                    for i in range(0, rango):
+                        geometria = geometria.combine(listaPredios[i].geometry())
+
+                    
+                    self.predio = predio(textoItem = self.textoItem, iface = self.iface, CFG = self.CFG, UTI = self.UTI, textoItem1 = self.textoItem1, geometria = geometria)
+                    self.predio.run()
+
     def cargarTablita(self):
         
         self.capaActiva = iface.activeLayer()
@@ -5114,6 +5181,12 @@ LOS DERECHOS CONFORME AL ARTICULO 166 DEL CÓDIGO FINANCIERO DEL ESTADO DE MÉXI
         self.dockwidget.btnAbrirCedula.setEnabled(False)
         self.abrePredio = True
 
+###################################################################################################################
+    # -- metodo para abrir la ventana de busqueda de predios por coordenadas
+    def abrirBusquedaPorCoordenadas(self):
+        self.BUC.run()
+
+
 ###########################################################################################################
 
     # -- metodo boton de cancelar apertura de cedula --
@@ -5423,7 +5496,7 @@ LOS DERECHOS CONFORME AL ARTICULO 166 DEL CÓDIGO FINANCIERO DEL ESTADO DE MÉXI
         lista = []
         # lista de features
         for predio in listaPredios:
-            lista.append(str(predio.attributes()[1]))
+            lista.append(str(predio.attributes()[0]))
 
         lista.sort()
         for elemento in lista:
@@ -5560,3 +5633,45 @@ LOS DERECHOS CONFORME AL ARTICULO 166 DEL CÓDIGO FINANCIERO DEL ESTADO DE MÉXI
         return json.loads(data)
 
     # --- S E R V I C I O S   W E B   CIERRA ---
+
+
+    def busquedaPorCve(self):
+
+        bc = busqueda_Catastral.busquedaCatastral(iface, self.CFG, self.UTI)
+        bc.run()
+
+    def busquedaPorDir(self):
+        bd = busqueda_direccion.busquedadireccion(iface, self.CFG, self.UTI)
+        bd.run()
+
+    def irACertCveCatastral(self):
+        CCC = CertCveCatastral(iface)
+        CCC.UTI = self.UTI
+        CCC.ACA = self
+        CCC.CFG = self.CFG
+
+        CCC.run()
+
+    def irACertCveValor(self):
+        CCV = CertCveValor(iface)
+        CCV.UTI = self.UTI
+        CCV.ACA = self
+        CCV.CFG = self.CFG
+
+        CCV.run()
+
+    def irACertAportes(self):
+        CAP = CertAportes(iface)
+        CAP.UTI = self.UTI
+        CAP.ACA = self
+        CAP.CFG = self.CFG
+
+        CAP.run()
+
+    def irAConstIdentificacion(self):
+        CID = ConstIdentificacion(iface)
+        CID.UTI = self.UTI
+        CID.ACA = self
+        CID.CFG = self.CFG
+
+        CID.run()

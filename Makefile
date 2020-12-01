@@ -46,7 +46,7 @@ PY_FILES = \
 	__init__.py \
 	Master.py Master_dialog.py
 
-UI_FILES = Master_dialog_base.ui
+UI_FILES = Master_dialog_base_1.ui
 
 EXTRAS = metadata.txt icon.png
 

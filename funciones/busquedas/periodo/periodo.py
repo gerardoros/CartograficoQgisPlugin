@@ -22,21 +22,33 @@
  ***************************************************************************/
 """
 from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication
-from qgis.PyQt.QtGui import QIcon
-from qgis.PyQt.QtWidgets import QAction
+from qgis.PyQt.QtGui import QIcon, QFont
+from qgis.PyQt.QtWidgets import QAction, QTableWidgetItem
+from PyQt5.QtGui import QIcon, QColor, QCursor, QPixmap, QStandardItemModel
+from qgis.PyQt.QtWidgets import QAction, QMessageBox
+import os, requests, json
+from PyQt5 import QtWidgets
+from qgis.gui import QgsMapToolEmitPoint
 
 # Initialize Qt resources from file resources.py
 from .resources import *
+from qgis.core import *
+from qgis.utils import iface
+from qgis.gui import QgsLayerTreeView, QgsVertexMarker
+from PyQt5 import QtGui
 # Import the code for the dialog
 from .periodo_dialog import predioDialog
 import os.path
+from ..datos_inmueble import datos_inmueble
 
 
 class predio:
     """QGIS Plugin Implementation."""
 
-    def __init__(self, iface):
+    def __init__(self, iface = None, textoItem = "", CFG = None, UTI = None, parent=None, textoItem1 = "", geometria=None):
         """Constructor.
+
+
 
         :param iface: An interface instance that will be passed to this class
             which provides the hook by which you can manipulate the QGIS
@@ -61,11 +73,55 @@ class predio:
 
         # Declare instance attributes
         self.actions = []
-        self.menu = self.tr(u'&predio')
+        self.dlg = predioDialog(parent = iface.mainWindow())
 
+        #Init canvas
+        self.canvas = self.iface.mapCanvas()
+        #Init click tool
+        self.clickTool = QgsMapToolEmitPoint(self.canvas)
+        # Check if plugin was started the first time in current QGIS session
+        
+
+
+        self.textoItem1 = textoItem1
+        self.geometria = geometria
+        self.clave = self.textoItem1[0:3] + "-" + self.textoItem1[3:5] + "-" + self.textoItem1[5:8] + "-" + self.textoItem1[8:13]
+    
+        self.dlg.btPrint.setIcon(QtGui.QIcon(':/plugins/periodo/icons/print.ico'))
+        self.dlg.btAtras.setIcon(QtGui.QIcon(':/plugins/periodo/icons/atras.ico'))
+        self.dlg.btAdelante.setIcon(QtGui.QIcon(':/plugins/periodo/icons/adelante.ico'))
+        self.dlg.setWindowTitle('Predio: ' + self.clave)
+        self.menu = self.tr(u'&predio')
+        self.textoItem = textoItem
+        self.CFG = CFG
+        self.UTI = UTI
+        self.dlg.btCerrar.clicked.connect(self.event_cancelar)
+        self.dlg.btLocalizar.clicked.connect(self.boton)
+        self.headers = {'Content-Type': 'application/json'}
+        self.descripcion = []
+        self.traerPredio()
+
+        self.dlg.btDetalle.clicked.connect(self.abrirDetallePredio)
+        
+    
         # Check if plugin was started the first time in current QGIS session
         # Must be set in initGui() to survive plugin reloads
         self.first_start = None
+
+    # --- metodo que abre el detalle del INMUEBLE
+    def abrirDetallePredio(self):
+        #Para abrir el detalle del predio
+        urlDetallePredio = self.CFG.urlDetallePredio
+        headers = {'Content-Type': 'application/json', 'Authorization': self.UTI.obtenerToken()}
+        try:
+            
+            response = requests.get(urlDetallePredio + str(self.textoItem), headers = headers)
+            self.dataPrueba = response.json()
+            self.DTP = datos_inmueble.datosinmueble(self.iface, self.dataPrueba)
+            self.DTP.run()
+
+        except Exception:
+            self.UTI.mostrarAlerta("No se ha podido conectar al servidor v1", QMessageBox.Critical, "Guardar Cambios v1")#Error en la peticion de consulta
 
     # noinspection PyMethodMayBeStatic
     def tr(self, message):
@@ -189,6 +245,8 @@ class predio:
             self.first_start = False
             self.dlg = predioDialog()
 
+        self.canvas.setMapTool(self.clickTool)
+
         # show the dialog
         self.dlg.show()
         # Run the dialog event loop
@@ -198,3 +256,77 @@ class predio:
             # Do something useful here - delete the line containing pass and
             # substitute with your code.
             pass
+    def boton(self):
+        self.zoomPredio(self.geometria)
+
+    def zoomPredio(self, geometria):
+        bbox = geometria.boundingBox()
+        iface.mapCanvas().setExtent(bbox)
+        iface.mapCanvas().refresh()
+        
+
+    def event_cancelar(self):
+        self.dlg.close()
+
+    def traerPredio(self, textoItem = ""):
+        #self.createAlert("Si conecto", QMessageBox().Information, "Si se hizo")
+        #print('---------------')
+        #print(rol.text())
+        #print(self.CFG.url_AU_getAllRole + rol.text())
+        #print('---------------')
+        self.descripcion = self.consumeWSGeneral(url_cons = self.CFG.url_AU_getAllPredio + str(self.textoItem))
+        
+
+        if not self.descripcion:
+             return
+
+                # mostrar usuarios en tabla
+        #self.dlg.twDescripcion.setRowCount(len(self.descripcion))
+        #for x in range(0, len(self.descripcion)):
+
+            #self.twDescripcion.setItem(x,0,check)
+            
+        self.dlg.twDescripcion.setItem(7, 1, QtWidgets.QTableWidgetItem('{:,.2f}'.format(self.descripcion['superficie'])))
+        self.dlg.twDescripcion.setItem(4, 1, QtWidgets.QTableWidgetItem(str(self.descripcion['delegacion'])))
+        self.dlg.twDescripcion.setItem(8, 1, QtWidgets.QTableWidgetItem(str(self.descripcion['condominio'])))
+        self.dlg.twDescripcion.setItem(2, 1, QtWidgets.QTableWidgetItem(str(self.descripcion['lote'])))
+        self.dlg.twDescripcion.setItem(1, 1, QtWidgets.QTableWidgetItem(str(self.descripcion['cveManzana'])))
+        self.dlg.twDescripcion.setItem(6, 1, QtWidgets.QTableWidgetItem('{:,.2f}'.format(self.descripcion['superficieConstruccion'])))
+        self.dlg.twDescripcion.setItem(3, 1, QtWidgets.QTableWidgetItem(str(self.descripcion['nombrePredio'])))
+            
+            
+
+    def consumeWSGeneral(self, url_cons = ""):
+
+        url = url_cons
+        data = ""
+
+        try:
+            self.headers['Authorization'] = self.UTI.obtenerToken()
+            response = requests.get(url, headers = self.headers)
+        except requests.exceptions.RequestException as e:
+            self.createAlert("Error de servidor, 'consumeWSGeneral()'" + str(e) + "'", QMessageBox().Critical, "Error de servidor")
+            return
+
+        if response.status_code == 200:
+            data = response.content
+                   
+        else:
+            self.createAlert('Error en peticion "consumeWSGeneral()":\n' + response.text, QMessageBox().Critical, "Error de servidor")
+            return
+
+        return json.loads(data)
+
+    def createAlert(self, mensaje, icono = QMessageBox().Critical, titulo = 'Operaciones'):
+        #Create QMessageBox
+        self.msg = QMessageBox()
+        #Add message
+        self.msg.setText(mensaje)
+        #Add icon of critical error
+        self.msg.setIcon(icono)
+        #Add tittle
+        self.msg.setWindowTitle(titulo)
+        #Show of message dialog
+        self.msg.show()
+         # Run the dialog event loop
+        result = self.msg.exec_()

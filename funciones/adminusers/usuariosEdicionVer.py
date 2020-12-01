@@ -89,14 +89,14 @@ class usuariosEdicionVer(QtWidgets.QDialog, FORM_CLASS):
         # consultar los roles
         self.roles = self.consumeWSGeneral(url_cons = self.CFG.url_AU_getAllAuthorities)
 
-        print(self.roles)
-
+        if not self.roles:
+            return
         # tenemos la lista asi ['ROLE_ADMIN', 'ROLE_USER', 'ROLE_GENERAL', 'LINDEROS']
 
         # con un for recorrer la lista de roles
 
         # con cada iteracion consumir el servicio web con el rol
-        #http://192.168.0.25:8080/autentificacion/api/account/permisos-carto-user-distinct/<ROL>
+        #http://201.165.150.64:8080/autentificacion/api/account/permisos-carto-user-distinct/<ROL>
         self.nuevalista = []
         # de la listaque regrese el servicio filtrar las operaciones para al final tener una lista con roles y operaciones
         for x in range(0,len(self.roles)):
@@ -111,8 +111,7 @@ class usuariosEdicionVer(QtWidgets.QDialog, FORM_CLASS):
             n['operaciones'] = comas[:-1]
 
             self.nuevalista.append(n)
-        print(self.nuevalista)
-        
+
         
         '''nuevalista = []
 
@@ -164,10 +163,25 @@ class usuariosEdicionVer(QtWidgets.QDialog, FORM_CLASS):
             allRows = self.twRoles.rowCount()
             for row in range(0, allRows):
                 item = self.twRoles.item(row, 0)
-                rolesAct.append(item.text())
+                item2 = self.twRoles.item(row, 1)
+
+                m = {}
+                m['rol'] = item.text()
+                m['opreaciones'] = item2.text()
+
+                rolesAct.append(m)
 
         # se combinan quitando duplicados
-        lista = list(set(rolesNuevos + rolesAct))
+        # lista = list(set(rolesNuevos + rolesAct))
+
+        print(rolesAct)
+        print(rolesNuevos)
+
+        for l in rolesAct:
+            rolesNuevos.append(l)
+
+        #lista = rolesAct.extend(rolesNuevos)
+        print(rolesNuevos)
 
         # limpiar qTableWidget
         self.twRoles.clearContents()
@@ -177,7 +191,7 @@ class usuariosEdicionVer(QtWidgets.QDialog, FORM_CLASS):
             self.twRoles.removeRow(row) 
 
         # se agrega a la lista
-        self.llenaRoles(lista)
+        self.llenaRoles(rolesNuevos)
 
 
     def event_aceptar(self):
@@ -345,6 +359,7 @@ class usuariosEdicionVer(QtWidgets.QDialog, FORM_CLASS):
 
             if nuevo:
                 response = requests.post(url, headers = self.headers, data = jsonEnv)
+                print(response)
             else:
 
                 # ejemplo con put, url, header y body o datos a enviar
@@ -357,9 +372,14 @@ class usuariosEdicionVer(QtWidgets.QDialog, FORM_CLASS):
         if response.status_code == 403:
             self.createAlert('Sin Permisos para ejecutar la accion', QMessageBox().Critical, "Usuarios")
             return None
+ 
            
         elif response.status_code >= 300:
-            self.createAlert('Error en peticion "guardaUsuario()":\n' + response.text, QMessageBox().Critical, "Error de servidor")
+            #self.createAlert('Error en peticion "guardaUsuario()":\n' + response.text, QMessageBox().Critical, "Error de servidor")
+            if response.text[170:188] == '"error.userexists"':
+                self.createAlert('El usuario ya existe', QMessageBox().Critical, "Usuarios")
+            if response.text[179:198] == '"error.emailexists"':
+                self.createAlert('El correo electrónico ya existe', QMessageBox().Critical, "Usuarios")
             return response.text
 
         return 'OK'
@@ -381,7 +401,7 @@ class usuariosEdicionVer(QtWidgets.QDialog, FORM_CLASS):
             data = response.content
            
         elif response.status_code == 403:
-            self.createAlert('Sin Permisos para ejecutar la accion', QMessageBox().Critical, "Usuarios")
+            self.createAlert('Sin Permisos para ejecutar la acción', QMessageBox().Critical, "Usuarios")
             return None
            
         else:

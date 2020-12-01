@@ -341,7 +341,6 @@ class Utilidad:
 						atributos['num_ofi'] = punto['num_ofi']
 						atributos['geom_num'] = punto.geometry().asWkt()
 
-			
 
 			campos['attr'] = atributos
 			if campos['attr']['id'] == None or campos['attr']['id'] == '':
