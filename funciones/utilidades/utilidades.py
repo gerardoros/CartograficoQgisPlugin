@@ -222,11 +222,17 @@ class Utilidad:
 
 			
 			#Formato para solicitar la peticion
-			jsonParaGuardarAtributos = json.dumps(self.listaAGuardar)
+			m = {}
+			m['features'] = self.listaAGuardar
+			m['claves'] = QSettings().value('clavesEstatus')
+
+			#jsonParaGuardarAtributos = json.dumps(self.listaAGuardar)
+			jsonParaGuardarAtributos = json.dumps(m)
+
 
 			print (jsonParaGuardarAtributos)
 			
-			url = self.CFG.urlGuardadoCon
+			url = self.CFG.urlGuardadoConClaves
 			payload = jsonParaGuardarAtributos
 			headers = {'Content-Type': 'application/json', 'Authorization' : self.obtenerToken()}
 			try:
@@ -234,10 +240,7 @@ class Utilidad:
 			
 			except requests.exceptions.RequestException:
 				self.mostrarAlerta("No se ha podido conectar al servidor v1", QMessageBox.Critical, "Guardar Cambios v1")#Error en la peticion de consulta
-				
 
-			print(response.json())
-			print(response.status_code)
 			if response.status_code == 200:
 				self.mostrarAlerta("Cambios guardados con exito", QMessageBox.Information, "Guardar Cambios")
 				QSettings().setValue('listaEliminada', [])
@@ -291,6 +294,7 @@ class Utilidad:
 		
 
 		QSettings().setValue('posibleGuardar', 'False')
+		QSettings().setValue('clavesEstatus', [])
 
 	#-------------------------------------------------------------------------------------------------------------
 

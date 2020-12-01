@@ -29,11 +29,12 @@ from PyQt5.QtWidgets import QAction, QFileDialog
 from .resources import *
 # Import the code for the dialog
 from .ActualizacionCatastralV3_dialog import ActualizacionCatastralV3Dialog
+from ..estatusClave import EstatusClaves_dialog
 import os.path
 
-from PyQt5.QtCore import QSettings, QTranslator, qVersion, QCoreApplication, Qt, QSettings, QSize, QDir
-from PyQt5.QtGui import QIcon, QColor, QCursor, QPixmap, QStandardItemModel
-from PyQt5.QtWidgets import QAction, QMessageBox, QTableWidgetItem, QListView, QCompleter
+from PyQt5.QtCore import  Qt, QSize, QDir
+from PyQt5.QtGui import QColor, QCursor, QPixmap, QStandardItemModel
+from PyQt5.QtWidgets import QMessageBox, QTableWidgetItem, QListView, QCompleter
 from PyQt5 import QtWidgets
 # Initialize Qt resources from file resources.py
 from qgis.core import *
@@ -91,6 +92,10 @@ class ActualizacionCatastralV3:
         self.dockwidget.btnPlanoPred.clicked.connect(self.event_planoPred)
 
         self.cve_cat_len = 16
+        # inicializa variables globales para estatus de claves
+        QSettings().setValue('clavesEstatus', [])
+        QSettings().setValue('clavesEstatusRef', [])
+        
 
         '''
         view = QListView()
@@ -510,8 +515,6 @@ class ActualizacionCatastralV3:
     # cambio a clave de 16
     def obtenerSectoresPorMunicipio(self):
 
-        print("**************** Consultando Sectores! ******************")
-
         id = '1' # hardcodeado el identificador del municipio
         self.dockwidget.comboSector.clear()
 
@@ -528,7 +531,6 @@ class ActualizacionCatastralV3:
 
         if lenJson > 0:
             for sector in respuesta.json():
-                print(sector)
                 self.dockwidget.comboSector.addItem(sector['label'], sector['value']) #Cambiar value por label
             
 
@@ -757,6 +759,7 @@ class ActualizacionCatastralV3:
     def pintarCapas(self):
 
         self.fIdImpresion = None
+        QSettings().setValue('clavesEstatus', [])
 
         # inicializa la lista de geometrias eliminadas
         QSettings().setValue('listaEliminada', [])
@@ -1287,7 +1290,6 @@ class ActualizacionCatastralV3:
                 self.dockwidget.qlPredioImpr.setText('-')
                 self.fIdImpresion = None
 
-        print(self.fIdImpresion, self.dockwidget.qlPredioImpr.text())
         # -- abrir cedula -- 
         if self.abrePredio:
 
@@ -1642,8 +1644,8 @@ class ActualizacionCatastralV3:
 
     def actualizarFeatureRef(self):
 
-        if  self.dockwidget.tablaEdicionRef.rowCount() > 0:       
-
+        if  self.dockwidget.tablaEdicionRef.rowCount() > 0:
+            
             if self.validarEdicionRef():
                 
                 self.UTI.mostrarAlerta('Se actualizó correctamente', QMessageBox().Information, 'Edicion de atributos')
@@ -1728,9 +1730,44 @@ class ActualizacionCatastralV3:
         feat = self.capaActiva.selectedFeatures()[0]
         banderaCompleta = True
         self.capaActiva.startEditing()
+        sector = ''
+        claveFiltro = ''
+        claveAnterior = ''
+
+        if nombreCapa == 'manzana' or nombreCapa == 'predios.geom':
+            # cargar la capa de sectores
+            sectorCapa = QgsProject.instance().mapLayer(self.obtenerIdCapa('Sectores'))
+            manzanaCapa = QgsProject.instance().mapLayer(self.obtenerIdCapa('manzana'))
+
+            # validacion para la capa en edicion
+            if not sectorCapa:
+                # no tiene valor, es momento de pintar la capa
+                self.pintarCapasReferencia('Sectores', None, False)
+                sectorCapa = QgsProject.instance().mapLayer(self.obtenerIdCapa('Sectores'))
+
+            # obtener la clave del sector donde esta contenida la manzana
+            fTemp = sectorCapa.getFeatures()
+            # obtenemos la primer geometria de la maanzana
+            fMAnza = list(manzanaCapa.getFeatures())[0]
+            # se obtienen todos las geometrias con las que coline la manzana
+            lista = []
+            for f in fTemp:
+                valor = fMAnza.geometry().intersects(f.geometry())
+                if valor > 0:
+                    l = {}
+                    l['v'] = valor
+                    l['c'] = f['clave']
+
+                    lista.append(l)
+
+            # obtener el registro con el valor mas grande para saber la clave del sector
+            if len(lista) > 0:
+                maxim = max(lista, key=lambda x:x['v'])
+                sector = maxim['c']
+
 
         if nombreCapa == 'manzana':
-            texto = "Nada"
+            texto = ""
             
             try:
                 texto = self.dockwidget.tablaEdicion.item(0, 1).text()
@@ -1738,18 +1775,44 @@ class ActualizacionCatastralV3:
                 banderaCompleta = False
             if self.UTI.esEntero(texto): #Cuando es entero
                 if len(texto) == 3: #Validacion de longitud
+                    claveAnterior = feat['clave']
                     feat['clave'] = texto
                 else:
                     banderaCompleta = False
             else: #Cuando no es numerico
                 banderaCompleta = False
+
+            if banderaCompleta and claveAnterior == texto:
+                self.capaActiva.commitChanges()
+                self.UTI.mostrarAlerta("Sin cambios por realizar", QMessageBox().Information, 'Actualización de datos')
+                return False
+
+            if banderaCompleta:
+                # consulta para verificacion de clave MANZANA
+                mpio = QSettings().value("cveMpio")
+                claveFiltro = mpio + '-' + sector
+
+                payload = {}
+                payload['clave'] = texto
+                payload['claveFiltro'] = claveFiltro
+                payload['tipo'] = 'MANZANA'
+                respuesta = self.consumeWSGeneral(self.CFG.url_validaClaves, payload)
+                
+                if not respuesta:
+                    self.capaActiva.commitChanges()
+                    return
+
+                if not respuesta['uso']:
+                    self.capaActiva.commitChanges()
+                    self.UTI.mostrarAlerta("La clave '" + texto+ "' se encuentra inactiva, no se puede usar", QMessageBox().Critical, 'Error de entrada')
+                    return False
             
             if not banderaCompleta: #Mensaje de error
-                self.UTI.mostrarAlerta('La clave debe estar compuesta por exactamente 3 numeros', QMessageBox().Critical, 'Error de entrada')
+                self.UTI.mostrarAlerta('La clave debe estar compuesta por exactamente 3 números', QMessageBox().Critical, 'Error de entrada')
 
         #.....predios geom....#
         elif nombreCapa == 'predios.geom':
-            texto = "Nada"
+            texto = ""
             
             try:
                 texto = self.dockwidget.tablaEdicion.item(0, 1).text()
@@ -1757,16 +1820,64 @@ class ActualizacionCatastralV3:
                 banderaCompleta = False
             if self.UTI.esEntero(texto): #Cuando es entero
                 if len(texto) == 2: #Validacion de longitud
+                    claveAnterior = feat['clave']
                     feat['clave'] = texto
                 else:
                     banderaCompleta = False
             else: #Cuando no es numerico
                 banderaCompleta = False
+
+            if banderaCompleta and claveAnterior == texto:
+                self.capaActiva.commitChanges()
+                self.UTI.mostrarAlerta("Sin cambios por realizar", QMessageBox().Information, 'Actualización de datos')
+                return False
+
+            if banderaCompleta:
+
+                manzana = ''
+                # obtener la clave de la manzana donde esta contenido el predio
+                fTemp = manzanaCapa.getFeatures()
+                # obtenemos la geometria seleccionada de la capa activa
+                fPredio = feat
+                # se obtienen todos las geometrias con las que coline el predio
+                lista = []
+                for f in fTemp:
+                    valor = fPredio.geometry().intersects(f.geometry())
+                    if valor > 0:
+                        l = {}
+                        l['v'] = valor
+                        l['c'] = f['clave']
+
+                        lista.append(l)
+
+                # obtener el registro con el valor mas grande para saber la clave de la manzana
+                if len(lista) > 0:
+                    maxim = max(lista, key=lambda x:x['v'])
+                    manzana = maxim['c']
+
+                # consulta para verificacion de clave MANZANA
+                mpio = QSettings().value("cveMpio")
+                claveFiltro = mpio + '-' + sector + '-' + manzana
+
+                payload = {}
+                payload['clave'] = texto
+                payload['claveFiltro'] = claveFiltro
+                payload['tipo'] = 'PREDIO'
+                respuesta = self.consumeWSGeneral(self.CFG.url_validaClaves, payload)
+                print(respuesta)
+                if not respuesta:
+                    self.capaActiva.commitChanges()
+                    return
+
+                if not respuesta['uso']:
+                    self.capaActiva.commitChanges()
+                    self.UTI.mostrarAlerta("La clave '" + texto+ "' se encuentra inactiva, no se puede usar", QMessageBox().Critical, 'Error de entrada')
+                    return False
             
             if not banderaCompleta: #Mensaje de error
-                self.UTI.mostrarAlerta('La clave debe estar compuesta por exactamente 3 numeros', QMessageBox().Critical, 'Error de entrada')
+                self.UTI.mostrarAlerta('La clave debe estar compuesta por exactamente 3 números', QMessageBox().Critical, 'Error de entrada')
 
-        #.....predios geom....#
+        #.....predios num....#
         elif nombreCapa == 'predios.num':
             texto = "Nada"
             
@@ -1785,7 +1896,7 @@ class ActualizacionCatastralV3:
             if not banderaCompleta: #Mensaje de error
                 self.UTI.mostrarAlerta('El numero oficial no debe exceder los 20 caracteres', QMessageBox().Critical, 'Error de entrada')
         
-        #.....predios geom....#
+        #.....horizontales geom....#
         elif nombreCapa == 'horizontales.geom':
             texto = "Nada"
             
@@ -1802,9 +1913,9 @@ class ActualizacionCatastralV3:
                 banderaCompleta = False
             
             if not banderaCompleta: #Mensaje de error
-                self.UTI.mostrarAlerta('La clave debe estar compuesta por exactamente 6 numeros', QMessageBox().Critical, 'Error de entrada')    
+                self.UTI.mostrarAlerta('La clave debe estar compuesta por exactamente 6 números', QMessageBox().Critical, 'Error de entrada')    
 
-        #.....predios geom....#
+        #.....horizontales num....#
         elif nombreCapa == 'horizontales.num':
             texto = "Nada"
             
@@ -1839,9 +1950,9 @@ class ActualizacionCatastralV3:
                 banderaCompleta = False
             
             if not banderaCompleta: #Mensaje de error
-                self.UTI.mostrarAlerta('La clave debe estar compuesta por exactamente 2 numeros', QMessageBox().Critical, 'Error de entrada') 
+                self.UTI.mostrarAlerta('La clave debe estar compuesta por exactamente 2 números', QMessageBox().Critical, 'Error de entrada') 
 
-        #.....clvaees verticales....#
+        #.....claves verticales....#
         elif nombreCapa == 'cves_verticales':
             texto = "Nada"
             
@@ -1858,10 +1969,10 @@ class ActualizacionCatastralV3:
                 banderaCompleta = False
             
             if not banderaCompleta: #Mensaje de error
-                self.UTI.mostrarAlerta('La clave debe estar compuesta por exactamente 4 numeros', QMessageBox().Critical, 'Error de entrada')
+                self.UTI.mostrarAlerta('La clave debe estar compuesta por exactamente 4 números', QMessageBox().Critical, 'Error de entrada')
 
-
-        elif nombreCapa == 'construcciones': #Con Construcciones
+        #.....construcciones....#
+        elif nombreCapa == 'construcciones':
 
             bandera1 = True
               #Combo de construccion especial
@@ -1899,6 +2010,21 @@ class ActualizacionCatastralV3:
 
             banderaCompleta = bandera1 and bandera2
 
+        if banderaCompleta and (nombreCapa == 'predios.geom' or nombreCapa == 'manzana'):
+
+            claves = EstatusClaves_dialog.EstatusClavesDialog(pluginV = self, claveActual = claveAnterior, claveFiltro = claveFiltro, tipo = 'MANZANA' if nombreCapa == 'manzana' else 'PREDIO') 
+
+            # regresa un 0 o un 1
+            # 0 = RECHAZADO = CANCELAR
+            # 1 = ACEPTADO = ACEPTAR
+            respuesta = claves.exec()
+            
+            if respuesta == 0:
+                self.capaActiva.commitChanges()
+                return
+
+            print(QSettings().value('clavesEstatus'))
+
         self.capaActiva.updateFeature(feat)
         self.capaActiva.triggerRepaint()
         self.capaActiva.commitChanges()
@@ -1912,6 +2038,7 @@ class ActualizacionCatastralV3:
         nombreCapa = self.traducirIdCapa( self.capaActiva.id())
         feat = self.capaActiva.selectedFeatures()[0]
         banderaCompleta = True
+        claveAnterior = ''
 
         self.capaActiva.setReadOnly(False)
         self.capaActiva.startEditing()
@@ -1959,7 +2086,6 @@ class ActualizacionCatastralV3:
                 indexCveVus = self.comboCveVus.currentIndex()
                 # feat['clave'] = self.comboCveVus.itemData(indexCveVus)
 
-        
         #----------------------Zona Uno------------------#
         elif nombreCapa == 'Zona Uno':
 
@@ -2055,7 +2181,6 @@ class ActualizacionCatastralV3:
                 indexComboAs = self.comboTipoAs.currentIndex()
                 feat['id_tipo_asentamiento'] = self.comboTipoAs.itemData(indexComboAs)
                 
-        
         #-------------------------Calles------------------------#
         elif nombreCapa == 'Calles':
 
@@ -2121,7 +2246,7 @@ class ActualizacionCatastralV3:
         #----------------------Sectores------------------#
         elif nombreCapa == 'Sectores':
 
-            texto = "Nada"
+            texto = ""
 
             banderaClave = True
             banderaNom = True
@@ -2131,14 +2256,40 @@ class ActualizacionCatastralV3:
                 texto = self.dockwidget.tablaEdicionRef.item(0, 1).text()
             except: #Error al obtenre texto
                 banderaClave = False
+
+            # validacion de longitud de la cadena
             if self.UTI.esEntero(texto): #Cuando es entero
                 if len(texto) == 2: #Validacion de longitud
+                    claveAnterior = feat['clave']
                     feat['clave'] = texto
                 else:
                     banderaClave = False
             else: #Cuando no es numerico
                 banderaClave = False
-            
+
+            if banderaClave and claveAnterior == texto:
+                self.capaActiva.commitChanges()
+                self.UTI.mostrarAlerta("Sin cambios por realizar", QMessageBox().Information, 'Actualización de datos')
+                return False
+
+            if banderaClave:
+                # consulta para verificacion de clave SECTOR
+                mpio = QSettings().value("cveMpio")
+
+                payload = {}
+                payload['clave'] = texto
+                payload['claveFiltro'] = mpio
+                payload['tipo'] = 'SECTOR'
+                respuesta = self.consumeWSGeneral(self.CFG.url_validaClaves, payload)
+                if not respuesta:
+                    self.capaActiva.commitChanges()
+                    return
+
+                if not respuesta['uso']:
+                    self.capaActiva.commitChanges()
+                    self.UTI.mostrarAlerta("La clave '" + texto+ "' se encuentra inactiva, no se puede usar", QMessageBox().Critical, 'Error de entrada')
+                    return False
+
             #Banderas
             if not banderaClave:
                 self.UTI.mostrarAlerta('La clave debe estar compuesta por 2 números', QMessageBox().Critical, 'Error de entrada')
@@ -2369,6 +2520,21 @@ class ActualizacionCatastralV3:
 
             banderaCompleta = banderaNom
 
+        if banderaCompleta and nombreCapa == 'Sectores':
+            claveFiltro = QSettings().value("cveMpio")
+            claves = EstatusClaves_dialog.EstatusClavesDialog(pluginV = self, claveActual = claveAnterior, claveFiltro = claveFiltro, tipo = 'SECTOR', referencia = True)
+
+            # regresa un 0 o un 1
+            # 0 = RECHAZADO = CANCELAR
+            # 1 = ACEPTADO = ACEPTAR
+            respuesta = claves.exec()
+            
+            if respuesta == 0:
+                self.capaActiva.commitChanges()
+                return
+
+            print(QSettings().value('clavesEstatusRef'))
+
         self.capaActiva.updateFeature(feat)
         self.capaActiva.triggerRepaint()
         self.capaActiva.commitChanges()
@@ -2432,7 +2598,6 @@ class ActualizacionCatastralV3:
             if data['features'] != []:
 
                 varKeys = data['features'][0]['properties']
-                print(varKeys)
 
                 keys = list(varKeys.keys())
                 properties = []
@@ -2453,10 +2618,6 @@ class ActualizacionCatastralV3:
                         l.append(property[keys[i]])
                     properties.append(l)
 
-
-            print('-------------------------')
-            print(data)
-            print('-------------------------')
             # NO es la de calles
             if nameCapa != 'Calles':
                 if data['features'] != []:
@@ -2474,8 +2635,6 @@ class ActualizacionCatastralV3:
             else:
                 stringCalles = self.obtenerCamposCalles()
                 uri = stringCalles
-
-            print(uri)
 
             # valida si se debe de pintar de nuevo la capa o utilizar la que ya existe
             if capaAPintar == None:
@@ -2725,7 +2884,6 @@ class ActualizacionCatastralV3:
 
         payload = json.dumps(payload)
         headers = {'Content-Type': 'application/json', 'Authorization' : token}
-        print(payload)
         response = requests.post(self.CFG.urlConsultaReferencia, headers = headers, data = payload)
 
         if response.status_code == 200:
@@ -2848,6 +3006,9 @@ class ActualizacionCatastralV3:
 
         # si NO esta en edicion
         if self.capaEnEdicion == '':
+
+            QSettings().setValue('clavesEstatusRef', [])
+
             nombreCapa = self.dockwidget.comboCapasEdicion.currentText()
             
             root = QgsProject.instance().layerTreeRoot()
@@ -2968,16 +3129,28 @@ class ActualizacionCatastralV3:
             for feat in listaTempRef:
                 listaAGuardar.append(feat)
 
-            jsonParaGuardarAtributos = json.dumps(listaAGuardar)
+
+
+            m = {}
+            m['referencia'] = listaAGuardar
+            m['claves'] = QSettings().value('clavesEstatusRef')
+
+
+
+            jsonParaGuardarAtributos = json.dumps(m)
 
             payload = jsonParaGuardarAtributos
             headers = {'Content-Type': 'application/json', 'Authorization' : self.UTI.obtenerToken()}
-            
-            print(payload)
-            print(self.CFG.urlGuardadoRef)
 
+
+            print(payload)
+            print(QSettings().value('clavesEstatusRef'))
+            print(QSettings().value('clavesEstatus'))
+
+
+            
             try:
-                response = requests.post(self.CFG.urlGuardadoRef, headers = headers, data = payload)
+                response = requests.post(self.CFG.urlGuardadoRefClaves, headers = headers, data = payload)
             
             except requests.exceptions.RequestException:
 
@@ -3018,6 +3191,7 @@ class ActualizacionCatastralV3:
 
                 self.UTI.mostrarAlerta("Cambios guardados con exito", QMessageBox.Information, "Guardar Cambios")
 
+                QSettings().setValue('clavesEstatusRef', [])
             else:
                 self.UTI.mostrarAlerta("Problemas al guardar la información", QMessageBox.Critical, "Guardar Cambios")
             
@@ -5347,3 +5521,42 @@ LOS DERECHOS CONFORME AL ARTICULO 166 DEL CÓDIGO FINANCIERO DEL ESTADO DE MÉXI
         else:
             self.vaciarMarcador(self.verticesConst)
             
+    # --- S E R V I C I O S   W E B  ---
+
+    # POST 
+    def consumeWSGeneral(self, url_cons = "", payload = {}):
+
+        url = url_cons
+        data = ""
+
+        # envio - el objeto de tipo dict, es el json que se va a guardar
+        # se debe hacer la conversion para que sea aceptado por el servicio web
+        jsonEnv = json.dumps(payload)
+
+        try:
+            # header para obtener el token
+            self.headers['Authorization'] = self.UTI.obtenerToken()
+
+            # ejemplo con post, url, header y body o datos a enviar
+            response = requests.post(url, headers = self.headers, data = jsonEnv)
+
+        except requests.exceptions.RequestException as e:
+            self.UTI.mostrarAlerta("Error de servidor, 'consumeWSGeneral()", QMessageBox().Critical, "Error de servidor")
+            print("consumeWSGeneral() '" + str(e) + "'")
+            return None
+
+        if response.status_code == 200 or response.status_code == 201:
+            data = response.content
+
+        elif response.status_code == 403:
+            self.UTI.mostrarAlerta('Sin Permisos para ejecutar la accion', QMessageBox().Critical, "Usuarios")
+            return None
+           
+        else:
+            self.UTI.mostrarAlerta('Error en peticion "consumeWSGeneral()"', QMessageBox().Critical, "Error de servidor")
+            print(response.text)
+            return None
+
+        return json.loads(data)
+
+    # --- S E R V I C I O S   W E B   CIERRA ---

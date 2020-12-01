@@ -269,7 +269,6 @@ class DibujoV3:
     def actualizarCapaActiva(self):
         self.mapTool.capaActiva = iface.activeLayer()
         if self.mapTool.capaActiva is None:
-            print("NO CAPA")
             return
         self.mapTool.nombreCapaActiva = self.ACA.traducirIdCapa(iface.activeLayer().id())
         self.mapTool.primerClick = False
@@ -283,17 +282,17 @@ class DibujoV3:
                 self.dockwidget.botonDibujar.setEnabled(True)
                 self.mapTool.cambiarColorRubber()
                 self.mapTool.ventana.ultimo = 0
-                print(f"------ self.creandoPoli {self.mapTool.creandoPoli }")
-                print(f"---- Saliendo Maptool: {type(iface.mapCanvas().mapTool())}")
+                #print(f"------ self.creandoPoli {self.mapTool.creandoPoli }")
+                #print(f"---- Saliendo Maptool: {type(iface.mapCanvas().mapTool())}")
             else:
-                print("actualizarCapaActiva : False")
+                #print("actualizarCapaActiva : False")
                 self.mapTool.canvas.setCursor(self.mapTool.cursorCruz)
                 self.dockwidget.labelStatus.setText("DESACTIVADO")
                 estilo = 'color: rgb(255, 0, 0);'
                 self.dockwidget.labelStatus.setStyleSheet(estilo)
                 self.dockwidget.botonDibujar.setEnabled(False)
         else: #Cuando no, deshabilitamos el boton
-            print("actualizarCapaActiva : Dunno")
+            #print("actualizarCapaActiva : Dunno")
             self.dockwidget.botonDibujar.setEnabled(False)
 
         ##########################################################################################################################
@@ -304,7 +303,7 @@ class DibujoV3:
         if self.mapTool.capaActiva != None:
             idCapa = self.mapTool.capaActiva.id()
             if self.mapTool.dibujando:  # Apagar modo dibujo cuano esta prendido
-                print("DESACTIVANDO")
+                #print("DESACTIVANDO")
 
                 if self.mapTool.botonAD.isChecked():
                     self.mapTool.botonAD.trigger()
@@ -334,7 +333,7 @@ class DibujoV3:
                     if not self.mapTool.botonAD.isChecked():
                         self.mapTool.botonAD.trigger()
                     iface.mapCanvas().setMapTool(self.mapTool)
-                    print("ACTIVANDO")
+                    #print("ACTIVANDO")
                     self.mapTool.dibujando = True
                     self.mapTool.canvas.setCursor(self.mapTool.cursorRedondo)
                     self.dockwidget.labelStatus.setText("ACTIVADO")
@@ -578,7 +577,7 @@ class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
 ######################################################################################################
 
     def deactivate(self):
-        print(f"------- Deactivate event ---------- {self.dibujando}")
+        #print(f"------- Deactivate event ---------- {self.dibujando}")
 
         self.puntoPoliTemp = None
         self.listaPuntosPoliTemp = []
@@ -678,7 +677,7 @@ class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
                             self.marcador.setCenter(puntoSnap)
                             self.listaPuntosPoliTemp.append(puntoSnap)
                             self.isEmittingPoint = True
-                            print("AQUIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII")
+                            #print("AQUIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII")
                             self.cadDockWidget().addPoint(puntoSnap)
                         else:
                             
@@ -689,7 +688,7 @@ class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
                             self.marcador.setCenter(self.puntoPoliTemp)
                             self.listaPuntosPoliTemp.append(self.puntoPoliTemp)
                             self.isEmittingPoint = True
-                            print("AQUIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII X2")
+                            #print("AQUIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII X2")
                             self.cadDockWidget().addPoint(self.puntoPoliTemp)
 
                         if not self.primerClick:
@@ -783,7 +782,7 @@ class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
                     self.listaPuntosPoliTemp = []
                     self.cuentaClickPoli = 0
                     self.rubberPoli.reset(QgsWkbTypes.PolygonGeometry)
-                    print("------------ RESET 764 ----------")
+                    #print("------------ RESET 764 ----------")
                     #self.marcador.setCenter(None)
                     self.isEmittingPoint = False
                     self.primerClick = False
@@ -810,12 +809,10 @@ class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
 
         if puntoSnap != None:
 
-            print(
-                f"snapX: {puntoSnap.x()}, snapY: {puntoSnap.y()}")
+            #print(f"snapX: {puntoSnap.x()}, snapY: {puntoSnap.y()}")
             self.cadDockWidget().constraintX().setValue(puntoSnap.x())
             self.cadDockWidget().constraintY().setValue(puntoSnap.y())
-            print(
-                f"constraintX: {self.cadDockWidget().constraintX().value()}, onstraintY: {self.cadDockWidget().constraintY().value()}")
+            #print(f"constraintX: {self.cadDockWidget().constraintX().value()}, onstraintY: {self.cadDockWidget().constraintY().value()}")
 
         #print(f"isSnapped:{event.isSnapped()}, mapPoint:{event.mapPoint()}, mapPointMatch:{event.mapPointMatch()}, originalMapPoint:{event.originalMapPoint()}, "
          #     f"originalPixelPoint:{event.originalPixelPoint()}, pixelPoint:{event.pixelPoint()}")
@@ -891,7 +888,7 @@ class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
                     for punto in self.listaPuntosLineaTemp[:-1]:
                         self.rubberLinea.addPoint(punto, False)
                     self.rubberLinea.addPoint(self.listaPuntosLineaTemp[-1], True)
-                    print("PRIMER POINT SHOWING RUBBER LINEA 852")
+                    #print("PRIMER POINT SHOWING RUBBER LINEA 852")
                     self.rubberLinea.show()
                 else:
                     if puntoSnap != None:
@@ -899,11 +896,12 @@ class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
                     else:
                         self.listaPuntosLineaTemp.append(posTemp)
                     self.rubberLinea.addPoint(self.listaPuntosLineaTemp[0], True)
-                    print("PRIMER POINT SHOWING RUBBER ELSE LINEA 860")
+                    #print("PRIMER POINT SHOWING RUBBER ELSE LINEA 860")
                     self.rubberLinea.show()
 
     def mousePressEvent(self, event):
-        print("ENTRANDO AL PRESS EVENT DEL WIDGET")
+        #print("ENTRANDO AL PRESS EVENT DEL WIDGET")
+        pass
 
 
 

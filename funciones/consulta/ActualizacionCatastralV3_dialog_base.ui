@@ -60,11 +60,11 @@ QWidget:item:selected
 </string>
      </property>
      <property name="currentIndex">
-      <number>2</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
-       <string>Actualizacion Cartografica</string>
+       <string>Actualización Cartográfica</string>
       </attribute>
       <widget class="QLabel" name="label">
        <property name="geometry">

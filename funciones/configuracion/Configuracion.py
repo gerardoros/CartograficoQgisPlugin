@@ -47,6 +47,8 @@ class Configuracion():
         #Guardado
         self.urlGuardadoRef = self.servidorIP + 'featureswkn/api/etables/'
         self.urlGuardadoCon = self.servidorIP + 'featureswkn/api/manzana/'
+        self.urlGuardadoConClaves = self.servidorIP + 'featureswkn/api/manzana/claves/'
+        self.urlGuardadoRefClaves = self.servidorIP + 'featureswkn/api/etables/claves/'
         
         #SRID
         self.urlMunicipio = self.servidorIP + 'busquedasimplewkn/api/cat/municipio/'
@@ -148,4 +150,6 @@ class Configuracion():
         self.url_tareasByActividad = self.servidorIP + 'autentificacion/api/tareas/actividad/'
         self.url_usuarioByTarea = self.servidorIP + 'autentificacion/api/users/tarea-actividad/'
         self.url_asignaTarea = self.servidorIP + 'autentificacion/api/asignar-tarea-user/nueva'
+
         self.url_permisos = self.servidorIP + 'autentificacion/api/account/permisos-carto'
+        self.url_validaClaves = self.servidorIP + 'busquedasimplewkn/api/consulta/verify-status-clave'

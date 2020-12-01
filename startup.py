@@ -1279,4 +1279,6 @@ print('aqio-------------------------------')
 #startup.cargarCapas()
 
 
+packageName = 'Master' # Name of your plugin folder
+QSettings().setValue( "PythonPlugins/" + packageName, True )
 
