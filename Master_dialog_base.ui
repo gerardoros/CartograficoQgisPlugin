@@ -569,40 +569,6 @@ background: rgb(217, 217, 217)
      </size>
     </property>
    </widget>
-   <widget class="QPushButton" name="btnDocumentos">
-    <property name="geometry">
-     <rect>
-      <x>130</x>
-      <y>50</y>
-      <width>111</width>
-      <height>51</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">QPushButton{
-background : rgb(174, 116, 0);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton::hover{
-background : rgb(104, 69, 13);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton:disabled {
-background: rgb(217, 217, 217)
-}</string>
-    </property>
-    <property name="text">
-     <string>Documentos</string>
-    </property>
-    <property name="iconSize">
-     <size>
-      <width>112</width>
-      <height>112</height>
-     </size>
-    </property>
-   </widget>
    <zorder>btnAsigPad</zorder>
    <zorder>btnAsigCampo</zorder>
    <zorder>btnAsigRev</zorder>
@@ -618,7 +584,6 @@ background: rgb(217, 217, 217)
    <zorder>btnAdminUsers</zorder>
    <zorder>btnAsigTareas</zorder>
    <zorder>btnUpload</zorder>
-   <zorder>btnDocumentos</zorder>
   </widget>
  </widget>
  <resources/>

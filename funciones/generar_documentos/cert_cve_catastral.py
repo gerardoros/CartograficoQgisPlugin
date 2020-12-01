@@ -52,7 +52,7 @@ class CertCveCatastral:
         self.plugin_dir = os.path.dirname(__file__)
         # initialize locale
 
-        self.dlg = CertCveCatastralDialog()
+        self.dlg = CertCveCatastralDialog(parent = iface.mainWindow())
 
         locale = QSettings().value('locale/userLocale')[0:2]
         locale_path = os.path.join(
@@ -77,8 +77,11 @@ class CertCveCatastral:
         self.dlg.btnBrowse.clicked.connect(self.selectDirectory)
         self.dlg.btnGenerar.clicked.connect(self.generarDoc)
         self.dlg.btnSeleccionar.clicked.connect(self.activarSeleccion)
+        self.dlg.exit_signal.connect(self.closeEvent)
 
-        rx = QRegExp("[A-Z0-9]{31}")
+        self.dlg.fldCveCat.textChanged.connect(self.lineEditToUpper)
+
+        rx = QRegExp("[a-zA-Z0-9]{31}")
         val = QRegExpValidator(rx)
         self.dlg.fldCveCat.setValidator(val)
 
@@ -238,7 +241,7 @@ class CertCveCatastral:
         self.cve_catastral = self.dlg.fldCveCat.text()
 
         if not (self.directorioAGuardar and self.cve_catastral):
-            self.mostrarAlerta("Por favor llene los campos.", QMessageBox.Critical,
+            self.UTI.mostrarAlerta("Por favor llene los campos.", QMessageBox.Critical,
                                    "Certificacion clave catastral")
             return
 
@@ -261,16 +264,6 @@ class CertCveCatastral:
                                    "Certificacion clave catastral")  # Error en la peticion de consulta
 
         self.cancelaSeleccion()
-
-    def mostrarAlerta(self, mensaje, icono, titulo):
-
-        msg = QMessageBox()
-        msg.setText(mensaje)
-        msg.setIcon(icono)
-        msg.setWindowTitle(titulo)
-        msg.show()
-        msg.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
-        result = msg.exec_()
 
 
     def seleccionaClave(self):
@@ -313,10 +306,12 @@ class CertCveCatastral:
                 cond = True
 
             if len(features) == 0:
-                self.cambiarStatus("Seleccione una geometria", "error")
+                self.cambiarStatus("Seleccione una geometria valida", "error")
+                self.cancelaSeleccionYRepinta()
                 return
             if len(features) != 1:
                 self.cambiarStatus("Seleccione una sola geometria", "error")
+                self.cancelaSeleccionYRepinta()
                 return
             else:
                 self.cambiarStatus("Predio seleccionado", "ok")
@@ -342,27 +337,32 @@ class CertCveCatastral:
         if self.abrePredio:
             self.dlg.btnSeleccionar.setEnabled(True)
             # regresa herramienta de seleccion normal
-            self.iface.actionSelect().trigger()
+            self.iface.actionPan().trigger()
             self.cambiarStatus("Listo...", "ok")
             self.abrePredio = False
 
 
-    # -- funcion para cancelar la apertura de la cedula --
     def cancelaSeleccionYRepinta(self):
-        if self.abrePredio:
-            self.dlg.btnSeleccionar.setEnabled(True)
+        self.dlg.btnSeleccionar.setEnabled(True)
 
-            self.xPredGeom.removeSelection()
-            self.xHoriGeom.removeSelection()
-            self.xCvesVert.removeSelection()
-            self.canvas.refresh()
-            # regresa herramienta de seleccion normal
-            self.iface.actionSelect().trigger()
-            self.cambiarStatus("Cerrando...", "ok")
-            self.abrePredio = False
+        self.xPredGeom.removeSelection()
+        self.xHoriGeom.removeSelection()
+        self.xCvesVert.removeSelection()
+        self.xManzana.removeSelection()
+        self.xPredNum.removeSelection()
+        self.xConst.removeSelection()
+        self.xHoriNum.removeSelection()
+        self.xVert.removeSelection()
+        self.canvas.refresh()
+        # regresa herramienta de seleccion normal
+        self.iface.actionPan().trigger()
+        self.abrePredio = False
 
-    def closeEvent(self, event):
-        self.cancelaSeleccionYRepinta()
+    #recibimos el closeEvent del dialog
+    def closeEvent(self, msg):
+        if msg:
+            self.cancelaSeleccionYRepinta()
+
 
 
     def cambiarStatus(self, texto, estado):
@@ -375,6 +375,10 @@ class CertCveCatastral:
             self.dlg.lbEstatusCedula.setStyleSheet('color: red')
         else:
             self.dlg.lbEstatusCedula.setStyleSheet('color: black')
+
+
+    def lineEditToUpper(self):
+        self.dlg.fldCveCat.setText(self.dlg.fldCveCat.text().upper())
 
 
     def obtenerXCapas(self):

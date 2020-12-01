@@ -50,7 +50,7 @@ class CertAportes:
         # initialize plugin directory
         self.plugin_dir = os.path.dirname(__file__)
 
-        self.dlg = CertAportesDialog()
+        self.dlg = CertAportesDialog(parent = iface.mainWindow())
         # initialize locale
         locale = QSettings().value('locale/userLocale')[0:2]
         locale_path = os.path.join(
@@ -66,6 +66,9 @@ class CertAportes:
         # Declare instance attributes
         self.actions = []
         self.menu = self.tr(u'&Certificacion Aportes')
+        self.abrePredio = False
+        self.directorioAGuardar = None
+        self.cve_catastral = None
 
         self.canvas = iface.mapCanvas()
 
@@ -73,8 +76,11 @@ class CertAportes:
         self.dlg.btnBrowse.clicked.connect(self.selectDirectory)
         self.dlg.btnGenerar.clicked.connect(self.generarDoc)
         self.dlg.btnSeleccionar.clicked.connect(self.activarSeleccion)
+        self.dlg.exit_signal.connect(self.closeEvent)
 
-        rx = QRegExp("[A-Z0-9]{31}")
+        self.dlg.fldCveCat.textChanged.connect(self.lineEditToUpper)
+
+        rx = QRegExp("[a-zA-Z0-9]{31}")
         val = QRegExpValidator(rx)
         self.dlg.fldCveCat.setValidator(val)
 
@@ -232,6 +238,11 @@ class CertAportes:
 
         self.cve_catastral = self.dlg.fldCveCat.text()
 
+        if not (self.directorioAGuardar and self.cve_catastral):
+            self.UTI.mostrarAlerta("Por favor llene los campos.", QMessageBox.Critical,
+                               "Certificacion de Aportes")
+            return
+
         url = self.CFG.urlCertAportaciones
         headers = {'Content-Type': 'application/json', 'Authorization': self.UTI.obtenerToken()}
         try:
@@ -243,19 +254,12 @@ class CertAportes:
             f.write(response.content)
             f.close()
             self.cambiarStatus("Archivo guardado", "ok")
-            return
 
         except requests.exceptions.RequestException:
             self.UTI.mostrarAlerta("No se ha podido conectar al servidor v1", QMessageBox.Critical,
                                    "Certificacion de Aportes")  # Error en la peticion de consulta
-            return
 
-
-
-    def activarSeleccion(self):
-        self.iface.actionSelect().trigger()
-        self.canvas.setCursor(self.UTI.cursorRedondo)
-        self.dlg.btnSeleccionar.setEnabled(False)
+        self.cancelaSeleccion()
 
 
     def seleccionaClave(self):
@@ -292,16 +296,17 @@ class CertAportes:
 
             elif capaActiva.id() == self.ACA.obtenerIdCapa('horizontales.geom'):
                 features = self.xHoriGeom.selectedFeatures()
-                cond = True
+
             elif capaActiva.id() == self.ACA.obtenerIdCapa('cves_verticales'):
                 features = self.xCvesVert.selectedFeatures()
-                cond = True
 
             if len(features) == 0:
-                self.cambiarStatus("Seleccione una geometria", "error")
+                self.cambiarStatus("Seleccione una geometria valida", "error")
+                self.cancelaSeleccionYRepinta()
                 return
             if len(features) != 1:
                 self.cambiarStatus("Seleccione una sola geometria", "error")
+                self.cancelaSeleccionYRepinta()
                 return
             else:
                 self.cambiarStatus("Predio seleccionado", "ok")
@@ -314,6 +319,44 @@ class CertAportes:
             self.UTI.mostrarAlerta("Elija una capa.", QMessageBox.Critical,
                                    "Certificacion de Aportes")  # Error en la peticion de consulta
 
+    def activarSeleccion(self):
+        if not self.abrePredio:
+            self.iface.actionSelect().trigger()
+            self.canvas.setCursor(self.UTI.cursorRedondo)
+            self.dlg.btnSeleccionar.setEnabled(False)
+            self.abrePredio = True
+
+    def cancelaSeleccion(self):
+        if self.abrePredio:
+            self.dlg.btnSeleccionar.setEnabled(True)
+            # regresa herramienta de seleccion normal
+            self.iface.actionPan().trigger()
+            self.cambiarStatus("Listo...", "ok")
+            self.abrePredio = False
+
+    def cancelaSeleccionYRepinta(self):
+        self.dlg.btnSeleccionar.setEnabled(True)
+
+
+        self.xPredGeom.removeSelection()
+        self.xHoriGeom.removeSelection()
+        self.xCvesVert.removeSelection()
+        self.xManzana.removeSelection()
+        self.xPredNum.removeSelection()
+        self.xConst.removeSelection()
+        self.xHoriNum.removeSelection()
+        self.xVert.removeSelection()
+
+        self.canvas.refresh()
+        # regresa herramienta de seleccion normal
+        self.iface.actionPan().trigger()
+        self.abrePredio = False
+
+    # recibimos el closeEvent del dialog
+    def closeEvent(self, msg):
+        if msg:
+            self.cancelaSeleccionYRepinta()
+
 
     def cambiarStatus(self, texto, estado):
 
@@ -325,6 +368,10 @@ class CertAportes:
             self.dlg.lbEstatusCedula.setStyleSheet('color: red')
         else:
             self.dlg.lbEstatusCedula.setStyleSheet('color: black')
+
+
+    def lineEditToUpper(self):
+        self.dlg.fldCveCat.setText(self.dlg.fldCveCat.text().upper())
 
 
     def obtenerXCapas(self):
