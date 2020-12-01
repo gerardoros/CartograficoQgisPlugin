@@ -5,12 +5,9 @@ class Configuracion():
     def __init__(self):
         
         #Direccion IP del servidor
-        self.servidorIP = 'http://localhost:8080/'
-        #self.servidorIP = 'http://192.168.0.25:8080/'
+        #self.servidorIP = 'http://localhost:8080/'
+        self.servidorIP = 'http://192.168.0.25:8080/'
         #self.servidorIP = 'https://thesmartflat.cianet.mx/cartografico/api/'
-
-        #self.servidorIP = 'http://127.0.0.1:8080/'
-        #self.servidorIP = 'http://201.165.150.64:8080/'
 
         #Combos de localidades, sectores y manzanas/combo/municipios/
         self.urlMunicipios = self.servidorIP + 'busquedasimplewkn/api/combo/municipios/'
