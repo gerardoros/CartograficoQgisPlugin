@@ -6,8 +6,8 @@ class Configuracion():
         
         #Direccion IP del servidor
         #self.servidorIP = 'http://localhost:8080/'
-        self.servidorIP = 'http://192.168.0.25:8080/'
-        #self.servidorIP = 'https://thesmartflat.cianet.mx/cartografico/api/'
+        #self.servidorIP = 'http://192.168.0.25:8080/'
+        self.servidorIP = 'https://thesmartflat.cianet.mx/cartografico/api/'
 
         #Combos de localidades, sectores y manzanas/combo/municipios/
         self.urlMunicipios = self.servidorIP + 'busquedasimplewkn/api/combo/municipios/'

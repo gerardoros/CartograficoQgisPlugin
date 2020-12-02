@@ -39,9 +39,10 @@ def run():
     mem_layer.triggerRepaint()
     
     
-        
+    
+    servidorIP = 'https://thesmartflat.cianet.mx/cartografico/api/'
     srid = QSettings().value("srid")
-    url = "http://192.168.0.25:8080/busquedasimplewkn/consulta/get-municipio/"+str(srid)
+    url = servidorIP + "/busquedasimplewkn/consulta/get-municipio/" + str(srid)
     headers = {'Content-Type': 'application/json'}
     try:
         response = requests.get(url, headers = headers)
