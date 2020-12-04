@@ -34,3 +34,5 @@ def classFactory(iface):  # pylint: disable=invalid-name
     #
     from .Master import Master
     return Master(iface)
+    #from .Prueba_main import Prueba
+    #return Prueba(iface = iface)

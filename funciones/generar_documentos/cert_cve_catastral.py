@@ -252,6 +252,7 @@ class CertCveCatastral:
         try:
             response = requests.get(url + self.cve_catastral, headers=headers)
             d = response.headers['content-disposition']
+            print(f"DIRECTORIO: {self.directorioAGuardar}")
             fname = re.findall("filename=(.+)", d)[0].strip('"')
             ruta = f"{self.directorioAGuardar }/{fname}"
             f = open( ruta, 'wb')

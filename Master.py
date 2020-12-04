@@ -136,7 +136,7 @@ class Master:
         self.ELM = EliminacionV3.EliminacionV3(iface)
 
         # Verificacion de Topologias
-        self.TPG = TopologiaV3.TopologiaV3(iface, self.ACA)
+        self.TPG = TopologiaV3.TopologiaV3(iface, self.ACA, self.CFG, self.UTI)
 
         # Integracion (Carga masiva)
         self.CMS = Integracion.Integracion(iface)
@@ -487,8 +487,8 @@ class Master:
 
     def irATopologia(self):
 
-        self.TPG.CFG = self.CFG
-        self.TPG.UTI = self.UTI
+        #self.TPG.CFG = self.CFG
+        #self.TPG.UTI = self.UTI
         self.TPG.DFS = self.DFS
         self.TPG.DBJ = self.DBJ
         self.TPG.ELM = self.ELM

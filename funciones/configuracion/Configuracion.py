@@ -5,12 +5,9 @@ class Configuracion():
     def __init__(self):
         
         #Direccion IP del servidor
-        self.servidorIP = 'http://localhost:8080/'
+        #self.servidorIP = 'http://localhost:8080/'
         #self.servidorIP = 'http://192.168.0.25:8080/'
-        #self.servidorIP = 'https://thesmartflat.cianet.mx/cartografico/api/'
-
-        #self.servidorIP = 'http://127.0.0.1:8080/'
-        #self.servidorIP = 'http://201.165.150.64:8080/'
+        self.servidorIP = 'https://thesmartflat.cianet.mx/cartografico/api/'
 
         #Combos de localidades, sectores y manzanas/combo/municipios/
         self.urlMunicipios = self.servidorIP + 'busquedasimplewkn/api/combo/municipios/'
@@ -51,6 +48,8 @@ class Configuracion():
         #Guardado
         self.urlGuardadoRef = self.servidorIP + 'featureswkn/api/etables/'
         self.urlGuardadoCon = self.servidorIP + 'featureswkn/api/manzana/'
+        self.urlGuardadoConClaves = self.servidorIP + 'featureswkn/api/manzana/claves/'
+        self.urlGuardadoRefClaves = self.servidorIP + 'featureswkn/api/etables/claves/'
         
         #SRID
         self.urlMunicipio = self.servidorIP + 'busquedasimplewkn/api/cat/municipio/'
@@ -155,6 +154,11 @@ class Configuracion():
         self.url_tareasByActividad = self.servidorIP + 'autentificacion/api/tareas/actividad/'
         self.url_usuarioByTarea = self.servidorIP + 'autentificacion/api/users/tarea-actividad/'
         self.url_asignaTarea = self.servidorIP + 'autentificacion/api/asignar-tarea-user/nueva'
+
+
+        self.url_permisos = self.servidorIP + 'autentificacion/api/account/permisos-carto'
+        self.url_validaClaves = self.servidorIP + 'busquedasimplewkn/api/consulta/verify-status-clave'
+
         self.url_permisos = self.servidorIP + 'autentificacion/api/account/permisos-carto'
 
         #Modulo de busqueda
@@ -175,3 +179,4 @@ class Configuracion():
         self.urlCertCveValor = self.servidorIP + 'busquedasimplewkn/api/genera-doc/certificacion/clave-valor/'
         self.urlCertAportaciones = self.servidorIP + 'busquedasimplewkn/api/genera-doc/certificacion/aportacion/'
         self.urlConstIdentificacion = self.servidorIP + 'busquedasimplewkn/api/genera-doc/constancia/'
+

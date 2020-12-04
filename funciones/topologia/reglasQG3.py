@@ -13,8 +13,10 @@ import math
 
 class Reglas:
 
-    def __init__(self, ACA):
+    def __init__(self, ACA, CFG = None, UTI = None):
         self.ACA = ACA
+        self.CFG = CFG
+        self.UTI = UTI
         self.idManzanas = self.ACA.obtenerIdCapa('manzana')
         self.idPredios = self.ACA.obtenerIdCapa('predios.geom')
         self.idConst = self.ACA.obtenerIdCapa('construcciones')
@@ -290,7 +292,6 @@ class Reglas:
         temp = QgsVectorLayer('Polygon?crs=epsg:' + self.srid, 'Poligonos Invalidos ' + nombreCapa, 'memory')
 
         self.pintarErrores(temp, geoms)
-
 
 ########################################################################################
 
@@ -648,7 +649,6 @@ class Reglas:
         capa.commitChanges()
         grupoErrores.insertChildNode(0, capaError)
 
-
 #######################################################################################################################
 
     def validarPoligonosDuplicados(self, capa):
@@ -847,7 +847,6 @@ class Reglas:
 
         self.pintarErrores(capa, listaError)
 
-
 ###################################################################################################################
 
     def validarAlMenosUnPunto(self, capaPunto, capaPoligono):
@@ -889,9 +888,6 @@ class Reglas:
 #################################################################################################
 
     def validarInclusionRef(self, nombreObjeto, nombreContenedor):
-        print(nombreObjeto)
-        print(nombreContenedor)
-
         listaObjeto = self.obtenerSoloFeaturesRef(nombreObjeto, 'objeto')
         listaContenedor = self.obtenerSoloFeaturesRef(nombreContenedor, 'contenedor')
 
@@ -978,10 +974,6 @@ class Reglas:
         self.pintarErrores(temp, geoms)
     
 ################################################################################################
-
-    
-#################################################################################################
-
 
     def validarCamposRef(self, nombreCapa):
 
@@ -1119,7 +1111,6 @@ class Reglas:
 
         self.pintarErrores(temp, listaErrores)
         
-
 #############################################################################################
 
     def validarLongitudCampo(self, capa, campo, longitud):
@@ -1152,6 +1143,121 @@ class Reglas:
         else:
             temp = QgsVectorLayer('Point?crs=epsg:' + self.srid,'('+ capa.name() +')'  +  ' Longitud inválida de ' + campo, 'memory')
         self.pintarErrores(temp, listaError)
+
+######################################################################################################################################
+
+    def validarClavesInvalidas(self, capa = None, capa2 = None, capa3 = None, claveFiltro = '', tipo = ''):
+
+        mpio = QSettings().value("cveMpio")
+
+        if capa == None:
+            return
+
+        self.cuentaError = 0
+        self.stringError = "None"
+        listaError = []
+        capa.startEditing()
+
+        if tipo == 'SECTOR':
+
+            for feat in capa.getFeatures():
+
+                texto = str(feat['clave'])
+                # consulta para verificacion de clave SECTOR
+                mpio = QSettings().value("cveMpio")
+
+                payload = {}
+                payload['clave'] = texto
+                payload['claveFiltro'] = mpio
+                payload['tipo'] = tipo
+                respuesta = self.ACA.consumeWSGeneral(self.CFG.url_validaClaves, payload)
+
+                if not respuesta['uso']:
+                    listaError.append(feat.geometry().asWkt())
+                    self.checarMalos(capa, feat)
+
+        if tipo == 'MANZANA':
+
+            fSectores = capa2.getFeatures()
+
+            # iterar la capa de manzanas
+            for fm in capa.getFeatures():
+
+                sector = self.obtieneClaveInterna(fm, fSectores)
+
+                texto = str(fm['clave'])
+
+                payload = {}
+                payload['clave'] = texto
+                payload['claveFiltro'] = mpio + '-' + sector 
+                payload['tipo'] = tipo
+                respuesta = self.ACA.consumeWSGeneral(self.CFG.url_validaClaves, payload)
+
+                if not respuesta['uso']:
+                    listaError.append(fm.geometry().asWkt())
+                    self.checarMalos(capa, fm)
+
+        if tipo == 'PREDIO':
+
+            fSectores = list(capa3.getFeatures())
+            fManzana = list(capa2.getFeatures())
+
+            # iterar la capa de predios
+            for fm in capa.getFeatures():
+
+                sector = self.obtieneClaveInterna(fm, fSectores)
+                manzana = self.obtieneClaveInterna(fm, fManzana)
+
+                texto = str(fm['clave'])
+
+                payload = {}
+                payload['clave'] = texto
+                payload['claveFiltro'] = mpio + '-' + sector + '-' + manzana
+                payload['tipo'] = tipo
+                respuesta = self.ACA.consumeWSGeneral(self.CFG.url_validaClaves, payload)
+
+                if not respuesta['uso']:
+                    listaError.append(fm.geometry().asWkt())
+                    self.checarMalos(capa, fm)
+
+        capa.commitChanges()
+
+        self.cuentaError = len(listaError)
+
+        if (self.cuentaError == 0):
+            return
+
+        self.stringError = "Claves inactivas encontradas"
+
+        if capa.wkbType() == 3 or capa.wkbType() == 6:
+            temp = QgsVectorLayer('Polygon?crs=epsg:' + self.srid,'('+ capa.name() +') Clave inválida ', 'memory')
+        else:
+            temp = QgsVectorLayer('Point?crs=epsg:' + self.srid,'('+ capa.name() +') Clave inválida', 'memory')
+        self.pintarErrores(temp, listaError)
+
+######################################################################################################################################
+
+    # obtiene la clave a la que pertenece el feature segun a 
+    def obtieneClaveInterna(self, feature, listaFeatures = []):
+
+        clave = ''
+        # se obtienen todas las geometrias con las que coline la manzana
+        lista = []
+        for f in listaFeatures:
+            valor = feature.geometry().intersects(f.geometry())
+            if valor > 0:
+                l = {}
+                l['v'] = valor
+                l['c'] = f['clave']
+
+                lista.append(l)
+
+        # obtener el registro con el valor mas grande para saber la clave del sector
+        if len(lista) > 0:
+            maxim = max(lista, key=lambda x:x['v'])
+            clave = maxim['c']
+
+        return clave
 
 ######################################################################################################################################
 
@@ -1265,7 +1371,6 @@ class Reglas:
         else:
             temp = QgsVectorLayer('Point?crs=epsg:' + self.srid,'('+ capaObjeto.name() +')'  +  ' Campo repetido: ' + campo, 'memory')
         self.pintarErrores(temp, listaError)
-
 
 #########################################################################################
 

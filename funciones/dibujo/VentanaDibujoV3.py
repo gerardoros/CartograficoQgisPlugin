@@ -80,6 +80,7 @@ class VentanaDibujoV3:
         
         self.ultimo = 0
         self.posibleCerrar = False
+        self.headers = {'Content-Type': 'application/json'}
 
         #self.dlg.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
 
@@ -98,16 +99,16 @@ class VentanaDibujoV3:
             listaEtiquetas = ['Clave']
         elif nombre == 'predios.num':
             self.listaAtributos = ['numExt']
-            listaEtiquetas = ['Numero Oficial']
+            listaEtiquetas = ['Número Oficial']
         elif nombre == 'construcciones':
-            self.listaAtributos = ['nom_volumen', 'id_tipo_construccion', 'num_niveles', 'cve_const_esp']
-            listaEtiquetas = ['Nombre de Volumen', 'Tipo de Construccion', 'Numero de Niveles']
+            self.listaAtributos = ['nom_volumen', 'num_niveles']
+            listaEtiquetas = ['Nombre de Volumen', 'Número de Niveles']
         elif nombre == 'horizontales.geom':
             self.listaAtributos = ['clave']
             listaEtiquetas = ['Clave']
         elif nombre == 'horizontales.num':
             self.listaAtributos = ['num_ofi']
-            listaEtiquetas = ['Numero Oficial']
+            listaEtiquetas = ['Número Oficial']
         elif nombre == 'verticales':
             self.listaAtributos = ['clave']
             listaEtiquetas = ['Clave']
@@ -115,8 +116,8 @@ class VentanaDibujoV3:
             self.listaAtributos = ['clave']
             listaEtiquetas = ['Clave']
         elif nombre == 'Area de Valor': #Areas de valor
-            self.listaAtributos = ['valor', 'descripcion', 'cve_vus']
-            listaEtiquetas = ['Valor', 'Descripcion', 'vus']
+            self.listaAtributos = ['valor', 'descripcion']
+            listaEtiquetas = ['Valor', 'Descripcion']
         elif nombre == 'Zona Uno' or nombre == 'Zona Dos': #Zonas
             self.listaAtributos = ['descripcion']
             listaEtiquetas = ['Descripcion']
@@ -135,9 +136,12 @@ class VentanaDibujoV3:
         elif nombre == 'Calles': #Calles
             self.listaAtributos = ['valor', 'longitud', 'id_cve_vialidad', 'tipo_vector_calle', 'calle']
             listaEtiquetas = ['Valor', 'Longitud', 'Clave vialidad', 'Tipo de Vector', 'Calle']
+        elif nombre == 'Corredor de Valor': # Corredor de valor
+            self.listaAtributos = ['clave']
+            listaEtiquetas = ['Clave']
         elif nombre == 'Sectores': #Sector
-            self.listaAtributos = ['clave', 'nombre']
-            listaEtiquetas = ['Clave', 'Nombre']
+            self.listaAtributos = ['clave']
+            listaEtiquetas = ['Clave']
         elif nombre == 'Localidades': #Localidades
             self.listaAtributos = ['clave', 'nombre']
             listaEtiquetas = ['Clave', 'Nombre']
@@ -161,9 +165,8 @@ class VentanaDibujoV3:
             item.setFlags( QtCore.Qt.ItemIsSelectable |  QtCore.Qt.ItemIsEnabled )
 
         if nombre == 'construcciones': #Obtener tipos de construccion especial
-
+            '''
             headers = {'Content-Type': 'application/json', 'Authorization' : self.pluginE.pluginM.UTI.obtenerToken()}
-
 
             respuesta = requests.get(self.pluginE.pluginM.CFG.urlTipoConst, headers = headers)
             print(respuesta)
@@ -178,6 +181,8 @@ class VentanaDibujoV3:
             self.comboTipoConst = comboTemp
             comboTemp.currentIndexChanged.connect(self.cambiarTipoConstruccion)
             self.dlg.tablaAtributos.setCellWidget(1,1,comboTemp)
+            '''
+            pass
 
         elif nombre == 'Calles':
             comboTemp = QtWidgets.QComboBox()
@@ -227,20 +232,11 @@ class VentanaDibujoV3:
             self.dlg.tablaAtributos.setCellWidget(1,1,comboTemp)
 
         elif nombre == 'Area de Valor':
-            comboTemp = QtWidgets.QComboBox()
-            headers = {'Content-Type': 'application/json', 'Authorization' : self.pluginE.pluginM.UTI.obtenerToken()}
-            respuesta = requests.get(self.pluginE.pluginM.CFG.urlValoresTerrenos, headers = headers)
-            if respuesta.status_code == 200:
-                for resp in respuesta.json():
-                    comboTemp.addItem(str(resp['descripcion']), str(resp['cveVus']))
+            pass
 
-            else:
-                print(respuesta.status_code)
-                self.pluginE.pluginM.UTI.mostrarAlerta("No se han podido cargar los tipos de cvevus\nError de servidor", QMessageBox().Critical, "Cargar tipos de asentamiento")
-
-
-            self.comboCveVus = comboTemp
-            self.dlg.tablaAtributos.setCellWidget(2,1,comboTemp)
+        header = self.dlg.tablaAtributos.horizontalHeader()
+        header.setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
+        header.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
 
 
 ############################################################################################    
@@ -287,9 +283,44 @@ class VentanaDibujoV3:
         
         feat = self.capaActiva.getFeature(self.ultimo)
         
+
+        # validar las claves invalidas
+        sector = ''
+
+        if nombreCapa == 'manzana' or nombreCapa == 'predios.geom':
+            # cargar la capa de sectores
+            sectorCapa = QgsProject.instance().mapLayer(QSettings().value('xSector'))
+            manzanaCapa = QgsProject.instance().mapLayer(QSettings().value('xManzana'))
+
+            # validacion para la capa en edicion
+            if not sectorCapa:
+                # no tiene valor, es momento de pintar la capa
+                self.pluginE.pluginM.ACA.pintarCapasReferencia('Sectores', None, False)
+                sectorCapa = QgsProject.instance().mapLayer(QSettings().value('xSector'))
+
+            # obtener la clave del sector donde esta contenida la manzana
+            fTemp = sectorCapa.getFeatures()
+            # obtenemos la primer geometria de la maanzana
+            fMAnza = list(manzanaCapa.getFeatures())[0]
+            # se obtienen todos las geometrias con las que coline la manzana
+            lista = []
+            for f in fTemp:
+                valor = fMAnza.geometry().intersects(f.geometry())
+                if valor > 0:
+                    l = {}
+                    l['v'] = valor
+                    l['c'] = f['clave']
+
+                    lista.append(l)
+
+            # obtener el registro con el valor mas grande para saber la clave del sector
+            if len(lista) > 0:
+                maxim = max(lista, key=lambda x:x['v'])
+                sector = maxim['c']
+
         #.....Manzana....#
         if nombreCapa == 'manzana':
-            texto = "Nada"
+            texto = ""
             
             try:
                 texto = self.dlg.tablaAtributos.item(0, 1).text()
@@ -302,9 +333,28 @@ class VentanaDibujoV3:
                     banderaCompleta = False
             else: #Cuando no es numerico
                 banderaCompleta = False
+
+            if banderaCompleta:
+                # consulta para verificacion de clave MANZANA
+                mpio = QSettings().value("cveMpio")
+
+                payload = {}
+                payload['clave'] = texto
+                payload['claveFiltro'] = mpio + '-' + sector
+                payload['tipo'] = 'MANZANA'
+                respuesta = self.consumeWSGeneral(self.pluginE.pluginM.CFG.url_validaClaves, payload)
+                print(respuesta)
+                if not respuesta:
+                    self.capaActiva.commitChanges()
+                    return
+
+                if not respuesta['uso']:
+                    self.capaActiva.commitChanges()
+                    self.pluginE.pluginM.UTI.mostrarAlerta("La clave '" + texto+ "' se encuentra inactiva, no se puede usar", QMessageBox().Critical, 'Error de entrada')
+                    return 
             
             if not banderaCompleta: #Mensaje de error
-                self.pluginE.pluginM.UTI.mostrarAlerta('La clave debe estar compuesta por exactamente 3 numeros', QMessageBox().Critical, 'Error de entrada')
+                self.pluginE.pluginM.UTI.mostrarAlerta('La clave debe estar compuesta por exactamente 3 números', QMessageBox().Critical, 'Error de entrada')
 
         #.....predios geom....#
         elif nombreCapa == 'predios.geom':
@@ -321,9 +371,50 @@ class VentanaDibujoV3:
                     banderaCompleta = False
             else: #Cuando no es numerico
                 banderaCompleta = False
+
+            if banderaCompleta:
+
+                manzana = ''
+                # obtener la clave de la manzana donde esta contenido el predio
+                fTemp = manzanaCapa.getFeatures()
+                # obtenemos la geometria seleccionada de la capa activa
+                fPredio = feat
+                # se obtienen todos las geometrias con las que coline el predio
+                lista = []
+                for f in fTemp:
+                    valor = fPredio.geometry().intersects(f.geometry())
+                    if valor > 0:
+                        l = {}
+                        l['v'] = valor
+                        l['c'] = f['clave']
+
+                        lista.append(l)
+
+                # obtener el registro con el valor mas grande para saber la clave de la manzana
+                if len(lista) > 0:
+                    maxim = max(lista, key=lambda x:x['v'])
+                    manzana = maxim['c']
+
+                # consulta para verificacion de clave MANZANA
+                mpio = QSettings().value("cveMpio")
+
+                payload = {}
+                payload['clave'] = texto
+                payload['claveFiltro'] = mpio + '-' + sector + '-' + manzana
+                payload['tipo'] = 'PREDIO'
+                respuesta = self.consumeWSGeneral(self.pluginE.pluginM.CFG.url_validaClaves, payload)
+                print(respuesta)
+                if not respuesta:
+                    self.capaActiva.commitChanges()
+                    return
+
+                if not respuesta['uso']:
+                    self.capaActiva.commitChanges()
+                    self.pluginE.pluginM.UTI.mostrarAlerta("La clave '" + texto+ "' se encuentra inactiva, no se puede usar", QMessageBox().Critical, 'Error de entrada')
+                    return 
             
             if not banderaCompleta: #Mensaje de error
-                self.pluginE.pluginM.UTI.mostrarAlerta('La clave debe estar compuesta por exactamente 2 numeros', QMessageBox().Critical, 'Error de entrada')
+                self.pluginE.pluginM.UTI.mostrarAlerta('La clave debe estar compuesta por exactamente 2 números', QMessageBox().Critical, 'Error de entrada')
 
         #.....predios geom....#
         elif nombreCapa == 'predios.num':
@@ -342,7 +433,7 @@ class VentanaDibujoV3:
                 banderaCompleta = False
 
             if not banderaCompleta: #Mensaje de error
-                self.pluginE.pluginM.UTI.mostrarAlerta('El numero oficial no debe exceder los 20 caracteres', QMessageBox().Critical, 'Error de entrada')
+                self.pluginE.pluginM.UTI.mostrarAlerta('El número oficial no debe exceder los 20 caracteres', QMessageBox().Critical, 'Error de entrada')
         
         #.....predios geom....#
         elif nombreCapa == 'horizontales.geom':
@@ -361,7 +452,7 @@ class VentanaDibujoV3:
                 banderaCompleta = False
             
             if not banderaCompleta: #Mensaje de error
-                self.pluginE.pluginM.UTI.mostrarAlerta('La clave debe estar compuesta por exactamente 6 numeros', QMessageBox().Critical, 'Error de entrada')    
+                self.pluginE.pluginM.UTI.mostrarAlerta('La clave debe estar compuesta por exactamente 6 números', QMessageBox().Critical, 'Error de entrada')    
 
         #.....predios geom....#
         elif nombreCapa == 'horizontales.num':
@@ -379,7 +470,7 @@ class VentanaDibujoV3:
                 banderaCompleta = False
             
             if not banderaCompleta: #Mensaje de error
-                self.pluginE.pluginM.UTI.mostrarAlerta('El numero oficial no debe exceder los 20 caracteres', QMessageBox().Critical, 'Error de entrada')
+                self.pluginE.pluginM.UTI.mostrarAlerta('El número oficial no debe exceder los 20 caracteres', QMessageBox().Critical, 'Error de entrada')
 
         #.....verticales geom....#
         elif nombreCapa == 'verticales':
@@ -398,7 +489,7 @@ class VentanaDibujoV3:
                 banderaCompleta = False
             
             if not banderaCompleta: #Mensaje de error
-                self.pluginE.pluginM.UTI.mostrarAlerta('La clave debe estar compuesta por exactamente 2 numeros', QMessageBox().Critical, 'Error de entrada') 
+                self.pluginE.pluginM.UTI.mostrarAlerta('La clave debe estar compuesta por exactamente 2 números', QMessageBox().Critical, 'Error de entrada') 
 
         #.....clvaees verticales....#
         elif nombreCapa == 'cves_verticales':
@@ -417,7 +508,7 @@ class VentanaDibujoV3:
                 banderaCompleta = False
             
             if not banderaCompleta: #Mensaje de error
-                self.pluginE.pluginM.UTI.mostrarAlerta('La clave debe estar compuesta por exactamente 4 numeros', QMessageBox().Critical, 'Error de entrada')
+                self.pluginE.pluginM.UTI.mostrarAlerta('La clave debe estar compuesta por exactamente 4 números', QMessageBox().Critical, 'Error de entrada')
 
 
         elif nombreCapa == 'construcciones': #Con Construcciones
@@ -439,28 +530,23 @@ class VentanaDibujoV3:
             
             bandera2 = True
 
-            if comboIndex1 == 1:
-                comboIndex2 = self.comboConstEsp.currentIndex()
-                feat['cve_const_esp'] = self.comboConstEsp.itemData(comboIndex2)
+            try:
+                texto = self.dlg.tablaAtributos.item(1, 1).text()
                 
-            else:
-                try:
-                    texto = self.dlg.tablaAtributos.item(2, 1).text()
+                if len(texto) > 0 and int(texto) < 999 and self.pluginE.pluginM.UTI.esEntero(texto):
+                    feat['num_niveles'] = texto
                     
-                    if len(texto) > 0 and int(texto) < 999 and self.pluginE.pluginM.UTI.esEntero(texto):
-                        feat['num_niveles'] = texto
-                        
-                    else:
-                        bandera2 = False
-                except:
+                else:
                     bandera2 = False
+            except:
+                bandera2 = False
 
             if not bandera2:
-                self.pluginE.pluginM.UTI.mostrarAlerta('El numero de niveles debe ser numerico y no exceder 999', QMessageBox().Critical, 'Error de entrada')
+                self.pluginE.pluginM.UTI.mostrarAlerta('El número de niveles debe ser numérico y no exceder 999', QMessageBox().Critical, 'Error de entrada')
 
             banderaCompleta = bandera1 and bandera2
                 
-
+        #----------------------Area de valorZona------------------#
         elif nombreCapa == 'Area de Valor':
 
             texto = "Nada"
@@ -492,7 +578,7 @@ class VentanaDibujoV3:
 
 
             if not banderaValor:
-                self.pluginE.pluginM.UTI.mostrarAlerta('El valor debe ser un numero decimal cuya longitud de texto no exceda 12 caracteres', QMessageBox().Critical, 'Error de entrada')
+                self.pluginE.pluginM.UTI.mostrarAlerta('El valor debe ser un número decimal cuya longitud de texto no exceda 12 caracteres', QMessageBox().Critical, 'Error de entrada')
 
             if not banderaDesc:
                 self.pluginE.pluginM.UTI.mostrarAlerta('La descripcion no debe exceder 256 caracteres', QMessageBox().Critical, 'Error de entrada')
@@ -503,7 +589,7 @@ class VentanaDibujoV3:
                 indexCveVus = self.comboCveVus.currentIndex()
                 feat['cve_vus'] = self.comboCveVus.itemData(indexCveVus)
         
-        #----------------------Area de valor------------------#
+        #----------------------Zona uno------------------#
         elif nombreCapa == 'Zona Uno':
 
             texto = "Nada"
@@ -521,7 +607,7 @@ class VentanaDibujoV3:
             if not banderaCompleta:
                 self.pluginE.pluginM.UTI.mostrarAlerta('La descripcion no debe exceder 50 caracteres', QMessageBox().Critical, 'Error de entrada')
 
-        #----------------------Area de valor------------------#
+        #----------------------Zona dos------------------#
         elif nombreCapa == 'Zona Dos':
 
             texto = "Nada"
@@ -557,9 +643,9 @@ class VentanaDibujoV3:
                 banderaCompleta = False
             
             if not banderaCompleta:
-                self.pluginE.pluginM.UTI.mostrarAlerta('El codigo postal debe estar compuesto por 5 numeros', QMessageBox().Critical, 'Error de entrada')
+                self.pluginE.pluginM.UTI.mostrarAlerta('El codigo postal debe estar compuesto por 5 números', QMessageBox().Critical, 'Error de entrada')
 
-        #----------------------Codigo Postal------------------#
+        #----------------------Colonias------------------#
         elif nombreCapa == 'Colonias':
 
             texto = "Nada"
@@ -598,7 +684,7 @@ class VentanaDibujoV3:
                 indexComboAs = self.comboTipoAs.currentIndex()
                 feat['id_tipo_asentamiento'] = self.comboTipoAs.itemData(indexComboAs)
 
-         #----------------------Codigo Postal------------------#
+         #----------------------Calles------------------#
         elif nombreCapa == 'Calles':
 
             texto = "Nada"
@@ -661,9 +747,7 @@ class VentanaDibujoV3:
                 feat['c_tipo_vialidad'] = self.comboTipoVia.currentText()
                 feat['longitud'] = float(self.dlg.tablaAtributos.item(1, 1).text())
 
-
-
-        #----------------------Codigo Postal------------------#
+        #----------------------Sectores------------------#
         elif nombreCapa == 'Sectores':
 
             texto = "Nada"
@@ -677,31 +761,36 @@ class VentanaDibujoV3:
             except: #Error al obtenre texto
                 banderaClave = False
             if self.pluginE.pluginM.UTI.esEntero(texto): #Cuando es entero
-                if len(texto) == 3: #Validacion de longitud
+                if len(texto) == 2: #Validacion de longitud
                     feat['clave'] = texto
                 else:
                     banderaClave = False
             else: #Cuando no es numerico
                 banderaClave = False
-            
-            #Comparar el nombre
-            try:
-                texto = self.dlg.tablaAtributos.item(1, 1).text()
-            except: #Error al obtenre texto
-                banderaNom = False
-            if len(texto) <= 256: #Validacion de longitud
-                feat['nombre'] = texto
-            else:
-                banderaNom = False
 
+            if banderaClave:
+                # consulta para verificacion de clave SECTOR
+                mpio = QSettings().value("cveMpio")
+
+                payload = {}
+                payload['clave'] = texto
+                payload['claveFiltro'] = mpio
+                payload['tipo'] = 'SECTOR'
+                print(payload, self.pluginE.pluginM.CFG.url_validaClaves)
+                respuesta = self.consumeWSGeneral(self.pluginE.pluginM.CFG.url_validaClaves, payload)
+                print(respuesta)
+                if not respuesta:
+                    return
+
+                if not respuesta['uso']:
+                    self.pluginE.pluginM.UTI.mostrarAlerta("La clave '" + texto+ "' se encuentra inactiva, no se puede usar", QMessageBox().Critical, 'Error de entrada')
+                    return
+            
             #Banderas
             if not banderaClave:
-                self.pluginE.pluginM.UTI.mostrarAlerta('La clave debe estar compuesta por 3 numeros', QMessageBox().Critical, 'Error de entrada')
+                self.pluginE.pluginM.UTI.mostrarAlerta('La clave debe estar compuesta por 2 números', QMessageBox().Critical, 'Error de entrada')
 
-            if not banderaNom:
-                self.pluginE.pluginM.UTI.mostrarAlerta('La longitud del nombre no debe exceder 256 caracteres', QMessageBox().Critical, 'Error de entrada')
-
-            banderaCompleta = banderaClave and banderaNom
+            banderaCompleta = banderaClave 
 
         #----------------------Codigo Postal------------------#
         elif nombreCapa == 'Localidades':
@@ -736,7 +825,7 @@ class VentanaDibujoV3:
 
             #Banderas
             if not banderaClave:
-                self.pluginE.pluginM.UTI.mostrarAlerta('La clave debe estar compuesta por 4 numeros', QMessageBox().Critical, 'Error de entrada')
+                self.pluginE.pluginM.UTI.mostrarAlerta('La clave debe estar compuesta por 4 números', QMessageBox().Critical, 'Error de entrada')
 
             if not banderaNom:
                 self.pluginE.pluginM.UTI.mostrarAlerta('La longitud del nombre no debe exceder 256 caracteres', QMessageBox().Critical, 'Error de entrada')
@@ -776,7 +865,7 @@ class VentanaDibujoV3:
 
             #Banderas
             if not banderaClave:
-                self.pluginE.pluginM.UTI.mostrarAlerta('La clave debe estar compuesta por 2 numeros', QMessageBox().Critical, 'Error de entrada')
+                self.pluginE.pluginM.UTI.mostrarAlerta('La clave debe estar compuesta por 2 números', QMessageBox().Critical, 'Error de entrada')
 
             if not banderaNom:
                 self.pluginE.pluginM.UTI.mostrarAlerta('La longitud del nombre no debe exceder 64 caracteres', QMessageBox().Critical, 'Error de entrada')
@@ -816,7 +905,7 @@ class VentanaDibujoV3:
 
             #Banderas
             if not banderaClave:
-                self.pluginE.pluginM.UTI.mostrarAlerta('La clave debe estar compuesta por 3 numeros', QMessageBox().Critical, 'Error de entrada')
+                self.pluginE.pluginM.UTI.mostrarAlerta('La clave debe estar compuesta por 3 números', QMessageBox().Critical, 'Error de entrada')
 
             if not banderaNom:
                 self.pluginE.pluginM.UTI.mostrarAlerta('La longitud del nombre no debe exceder 256 caracteres', QMessageBox().Critical, 'Error de entrada')
@@ -856,7 +945,7 @@ class VentanaDibujoV3:
 
             #Banderas
             if not banderaClave:
-                self.pluginE.pluginM.UTI.mostrarAlerta('La clave debe estar compuesta por 3 numeros', QMessageBox().Critical, 'Error de entrada')
+                self.pluginE.pluginM.UTI.mostrarAlerta('La clave debe estar compuesta por 3 números', QMessageBox().Critical, 'Error de entrada')
 
             if not banderaNom:
                 self.pluginE.pluginM.UTI.mostrarAlerta('La longitud del nombre no debe exceder 64 caracteres', QMessageBox().Critical, 'Error de entrada')
@@ -901,7 +990,7 @@ class VentanaDibujoV3:
 
             #Banderas
             if not banderaClave:
-                self.pluginE.pluginM.UTI.mostrarAlerta('La clave debe estar compuesta por 2 numeros', QMessageBox().Critical, 'Error de entrada')
+                self.pluginE.pluginM.UTI.mostrarAlerta('La clave debe estar compuesta por 2 números', QMessageBox().Critical, 'Error de entrada')
 
             if not banderaNom:
                 self.pluginE.pluginM.UTI.mostrarAlerta('La longitud del nombre no debe exceder 64 caracteres', QMessageBox().Critical, 'Error de entrada')
@@ -951,7 +1040,7 @@ class VentanaDibujoV3:
 
         if index == 0:
             #self.dlg.tablaAtributos.insertRow(2)
-            item = QtWidgets.QTableWidgetItem('Numero de niveles')
+            item = QtWidgets.QTableWidgetItem('Número de niveles')
             self.dlg.tablaAtributos.setItem(2, 0 , item)#self.capaActual.getFeatures().attributes()[x])
             item.setFlags( QtCore.Qt.ItemIsSelectable |  QtCore.Qt.ItemIsEnabled )
             self.dlg.tablaAtributos.removeCellWidget(2,1)
@@ -979,3 +1068,42 @@ class VentanaDibujoV3:
             self.dlg.tablaAtributos.setCellWidget(2,1,self.comboConstEsp)
 
 ##################################################################################################
+# --- S E R V I C I O S   W E B  ---
+
+    # POST 
+    def consumeWSGeneral(self, url_cons = "", payload = {}):
+
+        url = url_cons
+        data = ""
+
+        # envio - el objeto de tipo dict, es el json que se va a guardar
+        # se debe hacer la conversion para que sea aceptado por el servicio web
+        jsonEnv = json.dumps(payload)
+
+        try:
+            # header para obtener el token
+            self.headers['Authorization'] = self.pluginE.pluginM.UTI.obtenerToken()
+
+            # ejemplo con post, url, header y body o datos a enviar
+            response = requests.post(url, headers = self.headers, data = jsonEnv)
+
+        except requests.exceptions.RequestException as e:
+            self.pluginE.pluginM.UTI.mostrarAlerta("Error de servidor, 'consumeWSGeneral()", QMessageBox().Critical, "Error de servidor")
+            print("consumeWSGeneral() '" + str(e) + "'")
+            return None
+
+        if response.status_code == 200 or response.status_code == 201:
+            data = response.content
+
+        elif response.status_code == 403:
+            self.pluginE.pluginM.UTI.mostrarAlerta('Sin Permisos para ejecutar la accion', QMessageBox().Critical, "Usuarios")
+            return None
+           
+        else:
+            self.pluginE.pluginM.UTI.mostrarAlerta('Error en peticion "consumeWSGeneral()"', QMessageBox().Critical, "Error de servidor")
+            print(response.text)
+            return None
+
+        return json.loads(data)
+
+    # --- S E R V I C I O S   W E B   CIERRA ---

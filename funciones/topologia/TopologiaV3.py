@@ -47,12 +47,12 @@ from .VentanaReglasTopo import VentanaReglasTopo
 class TopologiaV3:
     """QGIS Plugin Implementation."""
 
-    def __init__(self, iface, ACA):
+    def __init__(self, iface, ACA, CFG, UTI):
         
         self.iface = iface
 
-        self.CFG = None
-        self.UTI = None
+        self.CFG = CFG
+        self.UTI = UTI
         self.DFS = None
         self.DBJ = None
         self.ELM = None
@@ -65,7 +65,7 @@ class TopologiaV3:
         self.dockwidget = None
         self.dockwidget = TopologiaV3Dialog()
         self.ventanaReglas = VentanaReglasTopo(iface)
-        self.reglas = Reglas(self.ACA)
+        self.reglas = Reglas(self.ACA, CFG = self.CFG, UTI = self.UTI)
         header = self.ventanaReglas.dlg.tablaReglas.horizontalHeader()
         header.setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeToContents)
         self.dockwidget.botonValidar.clicked.connect(self.validarTopologiaManual)
@@ -654,6 +654,13 @@ class TopologiaV3:
         self.reglas.validarLongitudCampo(capa, campo, longitud)
         self.llenaTablaErrores()
 
+######################################################################################################################################
+
+    def validarClavesInvalidas(self, capa = None, capa2 = None, capa3 = None, claveFiltro = '', tipo = ''):
+
+        self.reglas.validarClavesInvalidas(capa = capa, capa2 = capa2, capa3 = capa3, claveFiltro = claveFiltro, tipo = tipo)
+        self.llenaTablaErrores()
+
 ####################################################################################
 
     def validarCampoNoNulo(self, capa, campo):
@@ -727,6 +734,8 @@ class TopologiaV3:
     def reglasManuales(self):
         
         self.obtenerXCapas()
+
+        self.validaClavesInvalidasManzanasPredios()
         
         self.validarIntersecciones(self.xPredGeom, self.xPredGeom)
         self.validarIntersecciones(self.xManzana, self.xManzana)
@@ -799,15 +808,41 @@ class TopologiaV3:
             self.validarLongitudCampo(capa, 'Clave', 3)
         
         if self.siendoEditada('Sectores'):
+            # que todos los sectores esten dentro de los municipios
             self.validarInclusionRef('Sectores', 'Municipios')
 
+            # longitud en los campos
             capa = QgsProject.instance().mapLayer(self.ACA.obtenerIdCapa('Sectores'))
             self.validarLongitudCampo(capa, 'clave', 2)
+
+            # las claves no sean invalidas
+            claveFiltro = QSettings().value("cveMpio")
+            tipo = 'SECTOR'
+
+            self.validarClavesInvalidas(capa = capa, claveFiltro = claveFiltro, tipo = tipo)
         
         capaTraducida = self.ACA.traducirIdCapa(self.ACA.capaEnEdicion)
 
         self.validarCamposRef(capaTraducida)
         self.validarInterseccionesRef(capaTraducida, capaTraducida)
+
+################################################################################################
+
+    def validaClavesInvalidasManzanasPredios(self):
+
+        # VALIDAR LAS CLAVES INVALIDAS DE PREDIO Y MANZANA
+        sectorCapa = QgsProject.instance().mapLayer(QSettings().value('xSector'))
+
+        # validacion para la capa en edicion
+        if not sectorCapa:
+            # no tiene valor, es momento de pintar la capa
+            self.ACA.pintarCapasReferencia('Sectores', None, False)
+            sectorCapa = QgsProject.instance().mapLayer(QSettings().value('xSector'))
+
+        self.validarClavesInvalidas(capa = self.xManzana, capa2 = sectorCapa, tipo = 'MANZANA')
+
+        self.validarClavesInvalidas(capa = self.xPredGeom, capa2 = self.xManzana, capa3 = sectorCapa, tipo = 'PREDIO')        
+
 
 ################################################################################################
 
