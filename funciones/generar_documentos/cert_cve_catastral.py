@@ -230,11 +230,11 @@ class CertCveCatastral:
         options = QFileDialog.Options()
         options |= QFileDialog.Directory
         options |= QFileDialog.ShowDirsOnly
-        directory = QFileDialog.getExistingDirectoryUrl(self.dlg, "Elige un directorio", options=options)
+        directory = QFileDialog.getExistingDirectory(self.dlg, "Elige un directorio", options=options)
 
         if directory:
-            self.directorioAGuardar = directory.path()
-            self.dlg.fldDirectorio.setText(directory.path())
+            self.directorioAGuardar = directory
+            self.dlg.fldDirectorio.setText(directory)
 
     def generarDoc(self):
 
