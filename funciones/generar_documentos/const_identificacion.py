@@ -387,8 +387,6 @@ class ConstIdentificacion:
         else:
             self.dlg.lbEstatusCedula.setStyleSheet('color: black')
 
-    def lineEditToUpper(self):
-        self.dlg.fldCveCat.setText(self.dlg.fldCveCat.text().upper())
 
     def obtenerXCapas(self):
 

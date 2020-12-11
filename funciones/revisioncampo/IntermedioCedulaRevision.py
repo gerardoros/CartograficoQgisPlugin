@@ -198,12 +198,15 @@ class IntermedioCedulaRevision:
                 else:
                     self.muestrate = False
                     if self.tipo == 'PAD':
-                        self.UTI.mostrarAlerta('No se tienen pendientes de padron', QMessageBox().Information, "Consulta de asignaciones")
+                        print("No se tienen pendientes de padron")
+                        #self.UTI.mostrarAlerta('No se tienen pendientes de padron', QMessageBox().Information, "Consulta de asignaciones")
                     elif self.tipo == 'REV':
-                        self.UTI.mostrarAlerta('No se tienen pendientes de revision', QMessageBox().Information, "Consulta de asignaciones")
+                        print("No se tienen pendientes de revision")
+                        #self.UTI.mostrarAlerta('No se tienen pendientes de revision', QMessageBox().Information, "Consulta de asignaciones")
 
         else:
-            self.UTI.mostrarAlerta('ERROR AL CARGAR MANZANAS ASIGNADAS', QMessageBox().Critical, "Consulta de asignaciones")
+            print("ERROR AL CARGAR MANZANAS ASIGNADAS")
+            #self.UTI.mostrarAlerta('ERROR AL CARGAR MANZANAS ASIGNADAS', QMessageBox().Critical, "Consulta de asignaciones")
             print(respuesta.json())
 
 #----------------------------------------------------------------------------------------------------------------------

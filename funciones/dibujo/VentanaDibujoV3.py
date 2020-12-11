@@ -266,6 +266,7 @@ class VentanaDibujoV3:
         self.capaActiva.setReadOnly(False)
         self.capaActiva.startEditing()
         banderaCompleta = True
+        bandera2 = True
         nombreCapa = self.pluginE.pluginM.ACA.traducirIdCapa( self.capaActiva.id())
         campos = self.capaActiva.fields()   
         nombres = [campo.name() for campo in campos]
@@ -301,22 +302,26 @@ class VentanaDibujoV3:
             # obtener la clave del sector donde esta contenida la manzana
             fTemp = sectorCapa.getFeatures()
             # obtenemos la primer geometria de la maanzana
-            fMAnza = list(manzanaCapa.getFeatures())[0]
+            if list(manzanaCapa.getFeatures()) == []:
+                bandera2 = False
+            else:
+                fMAnza = list(manzanaCapa.getFeatures())[0]
+           
             # se obtienen todos las geometrias con las que coline la manzana
-            lista = []
-            for f in fTemp:
-                valor = fMAnza.geometry().intersects(f.geometry())
-                if valor > 0:
-                    l = {}
-                    l['v'] = valor
-                    l['c'] = f['clave']
+                lista = []
+                for f in fTemp:
+                    valor = fMAnza.geometry().intersects(f.geometry())
+                    if valor > 0:
+                        l = {}
+                        l['v'] = valor
+                        l['c'] = f['clave']
 
-                    lista.append(l)
+                        lista.append(l)
 
             # obtener el registro con el valor mas grande para saber la clave del sector
-            if len(lista) > 0:
-                maxim = max(lista, key=lambda x:x['v'])
-                sector = maxim['c']
+                if len(lista) > 0:
+                    maxim = max(lista, key=lambda x:x['v'])
+                    sector = maxim['c']
 
         #.....Manzana....#
         if nombreCapa == 'manzana':
@@ -369,8 +374,10 @@ class VentanaDibujoV3:
                     feat['clave'] = texto
                 else:
                     banderaCompleta = False
+                    bandera2 = False
             else: #Cuando no es numerico
                 banderaCompleta = False
+                bandera2 = False
 
             if banderaCompleta:
 
