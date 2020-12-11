@@ -21,8 +21,8 @@ class Startup():
         menuPlug = iface.pluginMenu().actions()
         '''
 
-        #self.servidorIP = 'http://192.168.0.25:8080/'
-        self.servidorIP = 'https://thesmartflat.cianet.mx/cartografico/api/'
+        self.servidorIP = 'http://192.168.0.25:8080/'
+        #self.servidorIP = 'https://thesmartflat.cianet.mx/cartografico/api/'
         
         helpBar = iface.helpToolBar()
 
@@ -1262,7 +1262,7 @@ class Startup():
         return stringCapa
 
 startup = Startup()
-#startup.mostrarConsola()
+startup.mostrarConsola()
 startup.checarLogin()
 #startup.cargarCapas('')
 '''
