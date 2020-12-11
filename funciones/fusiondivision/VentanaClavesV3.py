@@ -77,6 +77,7 @@ class VentanaClavesV3:
         # predios a asignar clave
         totalPredios = []
         cvesPredios = []
+        nCve = 1
         for predio in self.capaPredio.getFeatures():
             if predio['clave'] == '':
                 totalPredios.append(predio)
@@ -84,7 +85,8 @@ class VentanaClavesV3:
                 cvesPredios.append(int(predio['clave']))
 
         cvesPredios.sort(reverse=True)
-        nCve = cvesPredios[0] + 1
+        for i in range(0, len(cvesPredios)):
+            nCve = cvesPredios[i] + 1
         primera = True
 
         for i in range(0, len(totalPredios)):
@@ -105,7 +107,7 @@ class VentanaClavesV3:
                 feat['cve_cat_ant'] = self.predioOriginal['cve_cat']
                 nCve = nCve + 1
 
-            feat['cve_cat'] = self.predioOriginal['cve_cat'][0:20] + feat['clave']
+            feat['cve_cat'] = self.predioOriginal['cve_cat'][0:8] + feat['clave'] + '000000'
 
             self.capaPredio.updateFeature(feat)
 
@@ -190,7 +192,7 @@ class VentanaClavesV3:
         # asigna la clave al predio 
         self.capaPredio.startEditing()
         self.seleccion[0]['clave'] = clave
-        self.seleccion[0]['cve_cat'] = self.predioOriginal['cve_cat'][0:20] + clave
+        self.seleccion[0]['cve_cat'] = self.predioOriginal['cve_cat'][0:8] + clave + '000000'
         self.seleccion[0]['cve_cat_ant'] = self.predioOriginal['cve_cat']
 
         self.capaPredio.updateFeature(self.seleccion[0])
