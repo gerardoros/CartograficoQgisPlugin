@@ -117,7 +117,7 @@ class Utilidad:
 			#Formato para solicitar la peticion
 			jsonParaGuardarAtributos = json.dumps(self.listaAGuardar)
 
-			print (jsonParaGuardarAtributos)
+			#print (jsonParaGuardarAtributos)
 			
 			#try:
 			
@@ -131,8 +131,8 @@ class Utilidad:
 				self.mostrarAlerta("No se ha podido conectar al servidor v1", QMessageBox.Critical, "Guardar Cambios v1")#Error en la peticion de consulta
 				
 
-			print(response.json())
-			print(response.status_code)
+			#print(response.json())
+			#print(response.status_code)
 			if response.status_code == 200:
 				self.mostrarAlerta("Cambios guardados con exito", QMessageBox.Information, "Guardar Cambios")
 				QSettings().setValue('listaEliminada', [])
@@ -177,6 +177,7 @@ class Utilidad:
 			else:
 				self.mostrarAlerta("No se ha podido conectar al servidor v2\n" + str(response.json()[0]['mensaje']), QMessageBox.Critical, "Guardar Cambios v2")
 				#Error al guardar datos
+				#print(response.json())
 			
 			#except ValueError:
 				#self.mostrarAlerta("No se ha podido conectar al servidor v3", QMessageBox.Critical, "Guardar Cambios v3")
