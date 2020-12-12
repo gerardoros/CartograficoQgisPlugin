@@ -26,6 +26,8 @@ import os
 
 from qgis.PyQt import uic
 from qgis.PyQt import QtWidgets
+from qgis.PyQt.QtCore import pyqtSignal
+
 
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
@@ -33,6 +35,7 @@ FORM_CLASS, _ = uic.loadUiType(os.path.join(
 
 
 class gen_doc_calvecatDialog(QtWidgets.QDialog, FORM_CLASS):
+    exit_signal = pyqtSignal(bool)
     def __init__(self, parent=None):
         """Constructor."""
         super(gen_doc_calvecatDialog, self).__init__(parent)
@@ -42,3 +45,7 @@ class gen_doc_calvecatDialog(QtWidgets.QDialog, FORM_CLASS):
         # http://qt-project.org/doc/qt-4.8/designer-using-a-ui-file.html
         # #widgets-and-dialogs-with-auto-connect
         self.setupUi(self)
+
+    def closeEvent(self, event):
+        self.exit_signal.emit(True)
+        event.accept()

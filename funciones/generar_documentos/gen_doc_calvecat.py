@@ -263,7 +263,7 @@ class gen_doc_calvecat:
             return
 
 
-        url = self.CFG.urlConstIdentificacion
+        url = self.CFG.urlManifestacion
         headers = {'Content-Type': 'application/json', 'Authorization': self.UTI.obtenerToken()}
 
         payload = {"claveCatastral": cve_catastral,
@@ -394,6 +394,9 @@ class gen_doc_calvecat:
         else:
             self.dlg.lbEstatusCedula.setStyleSheet('color: black')
 
+
+    def lineEditToUpper(self):
+        self.dlg.fldCveCat.setText(self.dlg.fldCveCat.text().upper())
 
     def obtenerXCapas(self):
 
