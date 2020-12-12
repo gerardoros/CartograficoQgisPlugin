@@ -85,6 +85,7 @@ class PlanoManzanero:
         self.dlg.btnSelEdgeCancl.clicked.connect(self.cancelaSeleccion)
         self.dlg.btnGeneraPDF.clicked.connect(self.generarPDF)
         self.dlg.exit_signal.connect(self.closeEvent)
+        self.dlg.btnComposer.clicked.connect(self.myComposser)
 
         self.dlg.fldRecibo.textEdited.connect(lambda txt: self.lineEditToUpper(txt, self.dlg.fldRecibo))
         self.dlg.fldUbicacion.textEdited.connect(lambda txt: self.lineEditToUpper(txt, self.dlg.fldUbicacion))
@@ -395,6 +396,26 @@ class PlanoManzanero:
             self.event_planoMza()
         else:
             self.event_planoPred()
+
+
+    def myComposser(self):
+
+        map_settings = self.iface.mapCanvas().mapSettings()
+        c = QgsComposition(QgsProject.instance())
+        c.setPaperSize(420, 297)  # width and height (in mm) for the A3 format
+
+        view = iface.openComposer(c)
+
+        composerMap = QgsComposerMap(c, 0, 0, 420, 297)
+
+        composerMap.setBackgroundEnabled(True)
+
+        rect = QgsRectangle(map_settings.fullExtent())
+        composerMap.setNewExtent(rect)
+        composerMap.updateItem()
+        c.addComposerMap(composerMap)
+
+
 
 
     def event_planoMza(self):
@@ -909,6 +930,42 @@ class PlanoManzanero:
         layout_html.setHtml(html)
         layout_html.loadHtml()
         html_frame.setFrameEnabled(False)
+
+        print(layout_html.userStylesheet())
+        ms = self.canvas.mapSettings()
+        renderContext = QgsRenderContext.fromMapSettings(ms)
+
+        mapToPixl = self.canvas.getCoordinateTransform()
+
+        hgh_tmp = (6 + len(vertices)) * 12
+
+        print(
+            f"************* \nog width: {html_frame.sizeWithUnits().width()} \n og height: {html_frame.sizeWithUnits().height()}\n"
+            f"units:{html_frame.sizeWithUnits().units()}\n"
+            f"mapunitperpizel: {mapToPixl.mapUnitsPerPixel()}")
+
+        r_width = renderContext.convertToMapUnits(html_frame.sizeWithUnits().width(),  QgsUnitTypes.RenderMillimeters)
+        r_height = renderContext.convertToMapUnits(hgh_tmp,  QgsUnitTypes.RenderPixels)
+
+        print(
+            f"************* \nconverted width: {r_width} \n converted height: {r_height}\n")
+
+        rectF = QRectF(self.canvas.center().x(), self.canvas.center().y(), r_width, r_height)
+        rect = QgsRectangle(rectF)
+        print(rect.asWktPolygon())
+        poly_rect = QgsGeometry.fromWkt(rect.asWktPolygon())
+        print(poly_rect)
+
+        temp2 = QgsVectorLayer(f"Polygon?crs=epsg:{QSettings().value('srid')}",
+                               "rectangulo", "memory")
+
+        feat = QgsFeature()
+        feat.setGeometry(poly_rect)
+        temp2.dataProvider().addFeatures([feat])
+
+        rect_layer = QgsProject.instance().addMapLayer(temp2)
+        rect_layer.triggerRepaint()
+
 
         # agregar una imagen (rosa de los vientos)
         picture = QgsLayoutItemPicture(layout)

@@ -732,6 +732,19 @@ background: rgb(217, 217, 217)
      <string>Finalizar</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="btnComposer">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>250</y>
+      <width>88</width>
+      <height>34</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Aceptar</string>
+    </property>
+   </widget>
   </widget>
  </widget>
  <resources/>
