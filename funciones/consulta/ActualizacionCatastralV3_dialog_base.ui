@@ -60,7 +60,7 @@ QWidget:item:selected
 </string>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>3</number>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
@@ -1559,6 +1559,40 @@ background: rgb(217, 217, 217)
        </property>
        <property name="text">
         <string>Const. Identificacion</string>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>106</width>
+         <height>106</height>
+        </size>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="btnManifestacion">
+       <property name="geometry">
+        <rect>
+         <x>80</x>
+         <y>200</y>
+         <width>171</width>
+         <height>51</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton{
+background : rgb(174, 116, 0);
+color : rgb(255, 255, 255);
+border-radius : 4px;
+}
+QPushButton::hover{
+background : rgb(104, 69, 13);
+color : rgb(255, 255, 255);
+border-radius : 4px;
+}
+QPushButton:disabled {
+background: rgb(217, 217, 217)
+}</string>
+       </property>
+       <property name="text">
+        <string>Manifestacion de valor catastral</string>
        </property>
        <property name="iconSize">
         <size>

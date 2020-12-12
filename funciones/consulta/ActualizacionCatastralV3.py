@@ -56,6 +56,7 @@ from ..generar_documentos.cert_cve_catastral import CertCveCatastral
 from ..generar_documentos.cert_cve_valor import CertCveValor
 from ..generar_documentos.cert_aportes import CertAportes
 from ..generar_documentos.const_identificacion import ConstIdentificacion
+from ..generar_documentos.gen_doc_calvecat import gen_doc_calvecat
 from .planoManzanero import PlanoManzanero
 
 
@@ -112,6 +113,7 @@ class ActualizacionCatastralV3:
         self.dockwidget.btnCveYValor.clicked.connect(self.irACertCveValor)
         self.dockwidget.btnAportaciones.clicked.connect(self.irACertAportes)
         self.dockwidget.btnConstancia.clicked.connect(self.irAConstIdentificacion)
+        self.dockwidget.btnManifestacion.clicked.connect(self.irAManifestacion)
 
         self.cve_cat_len = 16
         # inicializa variables globales para estatus de claves
@@ -4055,6 +4057,13 @@ class ActualizacionCatastralV3:
         CID.CFG = self.CFG
 
         CID.run()
+
+    def irAManifestacion(self):
+        manifestacion = gen_doc_calvecat(iface)
+        manifestacion.UTI = self.UTI
+        manifestacion.ACA = self
+        manifestacion.CFG = self.CFG
+        manifestacion.run()
 
     def event_planoMza(self):
         PMA = PlanoManzanero(iface, 'manzanero')

@@ -34,6 +34,7 @@ from .cert_cve_catastral import CertCveCatastral
 from .cert_cve_valor import CertCveValor
 from .cert_aportes import CertAportes
 from .const_identificacion import ConstIdentificacion
+from ..generar_documentos.gen_doc_calvecat import gen_doc_calvecat
 
 
 class GenerarDocumentos:

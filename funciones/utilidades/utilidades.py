@@ -230,7 +230,7 @@ class Utilidad:
 			jsonParaGuardarAtributos = json.dumps(m)
 
 
-			print (jsonParaGuardarAtributos)
+			print(jsonParaGuardarAtributos)
 			
 			url = self.CFG.urlGuardadoConClaves
 			payload = jsonParaGuardarAtributos

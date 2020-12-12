@@ -328,7 +328,10 @@ class DivisionFusion:
     #Validamosla seleccion
     def validarCuentaSeleccion(self):
         seleccion = self.iface.activeLayer().selectedFeatures()
-
+        for i in seleccion:
+            if str(i['id']) == '':
+                self.UTI.mostrarAlerta('El predio ' + str(i['clave']) +' no se puede fusionar, guarde los cambios antes de continuar', QMessageBox().Critical, 'Error de fusion')
+                return False
         if len(seleccion) != 2: #Cuando tenemos seleccionados no 2 elementos
             self.UTI.mostrarAlerta('La fusion requiere la seleccion de exactamente 2 predios contiguos', QMessageBox().Critical, 'Error de fusion')
             return False
@@ -1098,5 +1101,20 @@ class DivisionFusion:
             return
 
         return json.loads(data)
+
+
+    def createAlert(self, mensaje, icono = QMessageBox().Critical, titulo = 'Operaciones'):
+        #Create QMessageBox
+        self.msg = QMessageBox()
+        #Add message
+        self.msg.setText(mensaje)
+        #Add icon of critical error
+        self.msg.setIcon(icono)
+        #Add tittle
+        self.msg.setWindowTitle(titulo)
+        #Show of message dialog
+        self.msg.show()
+         # Run the dialog event loop
+        result = self.msg.exec_()
 
 
