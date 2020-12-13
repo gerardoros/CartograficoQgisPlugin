@@ -252,6 +252,7 @@ class busquedaCatastral:
 
         cve = self.dockwidget.leReg.text() + self.dockwidget.leManz.text() + self.dockwidget.leLote.text() + self.dockwidget.leCondo.text()
 
+
         print(f"cve:{cve}")
 
         try:
@@ -260,6 +261,8 @@ class busquedaCatastral:
         except requests.exceptions.RequestException:
             self.UTI.mostrarAlerta("Error de servidor loc2", QMessageBox().Critical, "Busqueda de predio por cve")
             print('ERROR: BCP0000')
+        
+       
 
         if respuesta.status_code == 200:
             data = respuesta.content
@@ -269,7 +272,7 @@ class busquedaCatastral:
             print('ERROR: BCP0001')
 
         res = json.loads(data.decode('utf-8'))
-
+        print(res)
         xPredG = QSettings().value('xPredGeom')
         self.xPredGeom = QgsProject.instance().mapLayer(xPredG)
 
@@ -294,56 +297,58 @@ class busquedaCatastral:
         if res['features'] == []:
             return
 
+        if res['features'] == None:
+            self.UTI.mostrarAlerta("El documento no se genero, intente de nuevo", QMessageBox().Critical, "Cargar capa de consulta")
+        else:
+            varKeys = res['features'][0]['properties'] 
+            self.datosPredio = varKeys
+            keys = list(varKeys.keys())
+            properties = []
+            geoms = []
 
-        varKeys = res['features'][0]['properties']
-        self.datosPredio = varKeys
-        keys = list(varKeys.keys())
-        properties = []
-        geoms = []
 
+            for feature in res['features']:
 
-        for feature in res['features']:
+                geom = feature['geometry']
 
-            geom = feature['geometry']
+                property = feature['properties']
+                geom = json.dumps(geom)
+                geometry = ogr.CreateGeometryFromJson(geom)
+                geometry.Transform(coordTrans)
+                geoms.append(geometry.ExportToWkt())
+                l = []
+                for i in range(0, len(keys)):
+                    l.append(property[keys[i]])
+                properties.append(l)
 
-            property = feature['properties']
-            geom = json.dumps(geom)
-            geometry = ogr.CreateGeometryFromJson(geom)
-            geometry.Transform(coordTrans)
-            geoms.append(geometry.ExportToWkt())
-            l = []
-            for i in range(0, len(keys)):
-                l.append(property[keys[i]])
-            properties.append(l)
+            prov = self.xPredGeom.dataProvider()
+            feats = [QgsFeature() for i in range(len(geoms))]
 
-        prov = self.xPredGeom.dataProvider()
-        feats = [QgsFeature() for i in range(len(geoms))]
+            parsed_geoms = []
 
-        parsed_geoms = []
+            for i, feat in enumerate(feats):
+                feat.setAttributes(properties[i])
+                parse_geom = QgsGeometry.fromWkt(geoms[i])
+                feat.setGeometry(parse_geom)
+                parsed_geoms.append(parse_geom)
 
-        for i, feat in enumerate(feats):
-            feat.setAttributes(properties[i])
-            parse_geom = QgsGeometry.fromWkt(geoms[i])
-            feat.setGeometry(parse_geom)
-            parsed_geoms.append(parse_geom)
+            prov.addFeatures(feats)
 
-        prov.addFeatures(feats)
+            geometria = parsed_geoms[0]
 
-        geometria = parsed_geoms[0]
+            for i in range(1, len(parsed_geoms)):
+                geometria = geometria.combine(geometria[i])
 
-        for i in range(1, len(parsed_geoms)):
-            geometria = geometria.combine(geometria[i])
-
-        bbox = geometria.boundingBox()
-        self.iface.mapCanvas().setExtent(bbox)
-        self.iface.mapCanvas().refresh()
+            bbox = geometria.boundingBox()
+            self.iface.mapCanvas().setExtent(bbox)
+            self.iface.mapCanvas().refresh()
 
 
 
         #if nombreCapa == 'predios.geom':
          #   self.cargarPrediosEnComboDividir(feats)
 
-        self.xPredGeom.triggerRepaint()
+            self.xPredGeom.triggerRepaint()
 
     def closeIt(self):
         self.dockwidget.close()

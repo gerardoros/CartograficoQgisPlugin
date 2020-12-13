@@ -21,8 +21,8 @@
  *                                                                         *
  ***************************************************************************/
 """
-from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication, QRegExp
-from qgis.PyQt.QtGui import QIcon, QRegExpValidator
+from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication, QDate, QRegExp
+from qgis.PyQt.QtGui import QIcon, QIntValidator, QRegExpValidator
 from qgis.PyQt.QtWidgets import QAction, QFileDialog, QMessageBox
 
 # Initialize Qt resources from file resources.py
@@ -31,6 +31,7 @@ from .resources import *
 from .cert_cve_valor_dialog import CertCveValorDialog
 import os.path
 import requests
+import json
 import re
 from qgis.core import *
 
