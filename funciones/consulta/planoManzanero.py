@@ -23,7 +23,7 @@
 """
 from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication, QVariant, QRectF, Qt, QRegExp, QDate
 from qgis.PyQt.QtGui import QIcon, QColor, QFont, QRegExpValidator
-from qgis.PyQt.QtWidgets import QAction, QFileDialog
+from qgis.PyQt.QtWidgets import QAction, QFileDialog, QMessageBox
 
 # Initialize Qt resources from file resources.py
 from .resources import *
@@ -240,6 +240,7 @@ class PlanoManzanero:
     def selEdges(self):
 
         #checamos si la capa de aristas ya existe
+        
         layers = QgsProject.instance().mapLayersByName('colindantesAristas')
         if layers:
             self.xAristas = layers[0]
@@ -250,7 +251,13 @@ class PlanoManzanero:
         else:
 
             if self.tipo_plano == 'manzanero':
-                featCargada = [f for f in self.xManzana.getFeatures()][0]
+                featCargada = [f for f in self.xManzana.getFeatures()]
+                if not featCargada:
+                    self.UTI.mostrarAlerta('La capa manzana no tiene features', QMessageBox.Critical, 'Capas de consulta')
+                    return
+                #for i in featCargada:
+                featCargada = featCargada[0]
+                #featCargada = [f for f in self.xManzana.getFeatures()][0]
             else:
                 self.seleccion = self.xPredGeom.selectedFeatures()
                 if not self.seleccion:
