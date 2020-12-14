@@ -87,8 +87,10 @@ class gen_doc_calvecat:
         val = QRegExpValidator(rx)
         self.dlg.fldCveCat.setValidator(val)
 
-
-        
+        self.onlyInt = QIntValidator()
+        self.dlg.fldNomfolio.setValidator(self.onlyInt)
+        self.onlyInt = QIntValidator()
+        self.dlg.fldCodPostal.setValidator(self.onlyInt)
 
         
         # Check if plugin was started the first time in current QGIS session
