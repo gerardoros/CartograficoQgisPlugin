@@ -441,78 +441,79 @@ class busquedadireccion:
             resArray.append(res)
 
         #si se consulto mas de 1 predio, fusionaremos los features en los resultados de cada consulta
-        res = resArray[0]
-        if len(resArray) > 1:
-            for i in range(1, len(resArray)):
-                res['features'].append(resArray[i]['features'])
+        for j in range(0,len(resArray)):
+            res = resArray[j]
+            if len(resArray) > 1:
+                for i in range(1, len(resArray)):
+                    res['features'].append(resArray[i]['features'])
 
 
 
-        xPredG = QSettings().value('xPredGeom')
-        self.xPredGeom = QgsProject.instance().mapLayer(xPredG)
+            xPredG = QSettings().value('xPredGeom')
+            self.xPredGeom = QgsProject.instance().mapLayer(xPredG)
 
-        if self.xPredGeom is None:
-            self.UTI.mostrarAlerta('No existe la capa ' + str(xPredG), QMessageBox().Critical, 'Cargar capas')
-            return
+            if self.xPredGeom is None:
+                self.UTI.mostrarAlerta('No existe la capa ' + str(xPredG), QMessageBox().Critical, 'Cargar capas')
+                return
 
-        srid = QSettings().value("srid")
+            srid = QSettings().value("srid")
 
-        inSpatialRef = osr.SpatialReference()
-        inSpatialRef.ImportFromEPSG(int(srid))
-        outSpatialRef = osr.SpatialReference()
-        outSpatialRef.ImportFromEPSG(int(srid))
-        coordTrans = osr.CoordinateTransformation(inSpatialRef, outSpatialRef)
-
-
-        varKeys = res['features'][0]['properties']
-        self.datosPredio = varKeys
-        keys = list(varKeys.keys())
-        properties = []
-        geoms = []
+            inSpatialRef = osr.SpatialReference()
+            inSpatialRef.ImportFromEPSG(int(srid))
+            outSpatialRef = osr.SpatialReference()
+            outSpatialRef.ImportFromEPSG(int(srid))
+            coordTrans = osr.CoordinateTransformation(inSpatialRef, outSpatialRef)
 
 
-        for feature in res['features']:
-
-            geom = feature['geometry']
-
-            property = feature['properties']
-            geom = json.dumps(geom)
-            geometry = ogr.CreateGeometryFromJson(geom)
-            geometry.Transform(coordTrans)
-            geoms.append(geometry.ExportToWkt())
-            l = []
-            for i in range(0, len(keys)):
-                l.append(property[keys[i]])
-            properties.append(l)
-
-        prov = self.xPredGeom.dataProvider()
-        feats = [QgsFeature() for i in range(len(geoms))]
-
-        parsed_geoms = []
-
-        for i, feat in enumerate(feats):
-            feat.setAttributes(properties[i])
-            parse_geom = QgsGeometry.fromWkt(geoms[i])
-            feat.setGeometry(parse_geom)
-            parsed_geoms.append(parse_geom)
-
-        prov.addFeatures(feats)
-
-        geometria = parsed_geoms[0]
-
-        for i in range(1, len(parsed_geoms)):
-            geometria = geometria.combine(geometria[i])
-
-        bbox = geometria.boundingBox()
-        self.iface.mapCanvas().setExtent(bbox)
-        self.iface.mapCanvas().refresh()
+            varKeys = res['features'][0]['properties']
+            self.datosPredio = varKeys
+            keys = list(varKeys.keys())
+            properties = []
+            geoms = []
 
 
+            for feature in res['features']:
 
-        #if nombreCapa == 'predios.geom':
-         #   self.cargarPrediosEnComboDividir(feats)
+                geom = feature['geometry']
 
-        self.xPredGeom.triggerRepaint()
+                property = feature['properties']
+                geom = json.dumps(geom)
+                geometry = ogr.CreateGeometryFromJson(geom)
+                geometry.Transform(coordTrans)
+                geoms.append(geometry.ExportToWkt())
+                l = []
+                for i in range(0, len(keys)):
+                    l.append(property[keys[i]])
+                properties.append(l)
+
+            prov = self.xPredGeom.dataProvider()
+            feats = [QgsFeature() for i in range(len(geoms))]
+
+            parsed_geoms = []
+
+            for i, feat in enumerate(feats):
+                feat.setAttributes(properties[i])
+                parse_geom = QgsGeometry.fromWkt(geoms[i])
+                feat.setGeometry(parse_geom)
+                parsed_geoms.append(parse_geom)
+
+            prov.addFeatures(feats)
+
+            geometria = parsed_geoms[0]
+
+            for i in range(1, len(parsed_geoms)):
+                geometria = geometria.combine(geometria[i])
+
+            bbox = geometria.boundingBox()
+            self.iface.mapCanvas().setExtent(bbox)
+            self.iface.mapCanvas().refresh()
+
+
+
+            #if nombreCapa == 'predios.geom':
+             #   self.cargarPrediosEnComboDividir(feats)
+
+            self.xPredGeom.triggerRepaint()
 
     def closeIt(self):
         self.dockwidget.close()
