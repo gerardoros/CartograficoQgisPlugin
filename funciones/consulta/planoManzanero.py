@@ -35,6 +35,7 @@ from qgis.core import *
 from datetime import date
 from osgeo import ogr, osr
 
+
 class PlanoManzanero:
     """QGIS Plugin Implementation."""
 
