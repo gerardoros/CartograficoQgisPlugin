@@ -85,7 +85,6 @@ class PlanoManzanero:
         self.dlg.btnSelEdgeCancl.clicked.connect(self.cancelaSeleccion)
         self.dlg.btnGeneraPDF.clicked.connect(self.generarPDF)
         self.dlg.exit_signal.connect(self.closeEvent)
-        self.dlg.btnComposer.clicked.connect(self.myComposser)
 
         self.dlg.fldRecibo.textEdited.connect(lambda txt: self.lineEditToUpper(txt, self.dlg.fldRecibo))
         self.dlg.fldUbicacion.textEdited.connect(lambda txt: self.lineEditToUpper(txt, self.dlg.fldUbicacion))
@@ -396,26 +395,6 @@ class PlanoManzanero:
             self.event_planoMza()
         else:
             self.event_planoPred()
-
-
-    def myComposser(self):
-
-        map_settings = self.iface.mapCanvas().mapSettings()
-        c = QgsComposition(QgsProject.instance())
-        c.setPaperSize(420, 297)  # width and height (in mm) for the A3 format
-
-        view = iface.openComposer(c)
-
-        composerMap = QgsComposerMap(c, 0, 0, 420, 297)
-
-        composerMap.setBackgroundEnabled(True)
-
-        rect = QgsRectangle(map_settings.fullExtent())
-        composerMap.setNewExtent(rect)
-        composerMap.updateItem()
-        c.addComposerMap(composerMap)
-
-
 
 
     def event_planoMza(self):
