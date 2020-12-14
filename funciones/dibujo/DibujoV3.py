@@ -226,8 +226,6 @@ class DibujoV3:
             self.mapTool = AdvancedMapTool(iface.mapCanvas(), iface.cadDockWidget(), self)
             iface.currentLayerChanged.connect(self.actualizarCapaActiva)
         
-            
-            
 
         for x in iface.mapNavToolToolBar().actions():
             if x.objectName() == 'mActionPan':
