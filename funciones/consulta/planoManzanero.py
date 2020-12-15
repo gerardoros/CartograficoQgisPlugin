@@ -23,7 +23,7 @@
 """
 from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication, QVariant, QRectF, Qt, QRegExp, QDate
 from qgis.PyQt.QtGui import QIcon, QColor, QFont, QRegExpValidator
-from qgis.PyQt.QtWidgets import QAction, QFileDialog
+from qgis.PyQt.QtWidgets import QAction, QFileDialog, QMessageBox
 
 # Initialize Qt resources from file resources.py
 from .resources import *
@@ -34,6 +34,7 @@ import processing
 from qgis.core import *
 from datetime import date
 from osgeo import ogr, osr
+
 
 class PlanoManzanero:
     """QGIS Plugin Implementation."""
@@ -239,6 +240,7 @@ class PlanoManzanero:
     def selEdges(self):
 
         #checamos si la capa de aristas ya existe
+        
         layers = QgsProject.instance().mapLayersByName('colindantesAristas')
         if layers:
             self.xAristas = layers[0]
