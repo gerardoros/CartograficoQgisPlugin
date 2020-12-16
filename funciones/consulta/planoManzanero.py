@@ -251,13 +251,11 @@ class PlanoManzanero:
         else:
 
             if self.tipo_plano == 'manzanero':
-                featCargada = [f for f in self.xManzana.getFeatures()]
-                if not featCargada:
+                featCargadas = self.xManzana.getFeatures()
+                if not featCargadas:
                     self.UTI.mostrarAlerta('La capa manzana no tiene features', QMessageBox.Critical, 'Capas de consulta')
                     return
-                #for i in featCargada:
-                featCargada = featCargada[0]
-                #featCargada = [f for f in self.xManzana.getFeatures()][0]
+                featCargada = featCargadas[0]
             else:
                 self.seleccion = self.xPredGeom.selectedFeatures()
                 if not self.seleccion:
