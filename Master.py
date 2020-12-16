@@ -26,6 +26,7 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QAction, QMessageBox
 from qgis.utils import iface
 from qgis.core import *
+import jwt
 # Initialize Qt resources from file resources.py
 from .resources import *
 # Import the code for the dialog
@@ -104,10 +105,15 @@ class Master:
 
         # consulta informacion del usuario logueado
         usuario = self.UTI.decodeRot13(QSettings().value('usuario'))
+        #print(usuario)
+        var = QSettings()
+        token = var.value('token')
 
-        resultado = self.consumeWSGeneral(url_cons = self.CFG.url_MA_getInfoUser + str(usuario))
-
-
+        # se decodifica el token (JWT)
+        decode = jwt.decode(token, verify=False)
+        #print(decode)
+        resultado = self.consumeWSGeneral(url_cons = self.CFG.url_MA_getInfoUser + str(decode['user_name']))
+        #print(resultado)
         if not resultado:
             return
         self.dlg.btnAsigTareas.hide()
@@ -601,6 +607,14 @@ class Master:
 
         try:
             self.headers['Authorization'] = self.UTI.obtenerToken()
+            #jwt.decode(self.UTI.obtenerToken(), "JWT", algorithms=['RS256'])
+            #print(self.UTI.obtenerToken().encode().decode("RS256"))
+            #var = QSettings()
+            #token = var.value('token')
+
+        # se decodifica el token (JWT)
+            #decode = jwt.decode(token, verify=False)
+            #print(decode)
             response = requests.get(url, headers = self.headers)
         except requests.exceptions.RequestException as e:
             self.UTI.mostrarAlerta("Error de servidor, 'consumeWSGeneral(Master)' '" + str(e) + "'", QMessageBox().Critical, "Error de servidor")
@@ -616,7 +630,7 @@ class Master:
         else:
             self.UTI.mostrarAlerta('Error en peticion "consumeWSGeneral(Master)":\n' + response.text, QMessageBox().Critical, "Error de servidor")
             return
-
+        #print(json.loads(data.decode("utf-8")))
         return json.loads(data.decode("utf-8"))
 
     # --- S E R V I C I O S   W E B   CIERRA ---
