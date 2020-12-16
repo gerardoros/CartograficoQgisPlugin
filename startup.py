@@ -1262,7 +1262,7 @@ class Startup():
         return stringCapa
 
 startup = Startup()
-startup.mostrarConsola()
+#startup.mostrarConsola()
 startup.checarLogin()
 #startup.cargarCapas('')
 '''
