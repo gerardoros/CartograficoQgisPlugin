@@ -226,8 +226,6 @@ class DibujoV3:
             self.mapTool = AdvancedMapTool(iface.mapCanvas(), iface.cadDockWidget(), self)
             iface.currentLayerChanged.connect(self.actualizarCapaActiva)
         
-            
-            
 
         for x in iface.mapNavToolToolBar().actions():
             if x.objectName() == 'mActionPan':
@@ -411,6 +409,9 @@ class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
 
         self.stringPoli = 'POLYGON (('
         self.cierrePoli = None
+
+
+        self.lastMouseButtonClicked = None
 
         self.stringLinea = 'LINESTRING ('
         #Cursor Redondo
@@ -597,12 +598,19 @@ class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
         self.activate()
         self.pluginM.pluginIsActive = False
 
+    def cadCanvasPressEvent(self, event):
+
+        #actualizamos el ultimo boton presionado, pues ReleaseEvent no contiene esta informacion
+        if event.buttons() == Qt.LeftButton:
+            self.lastMouseButtonClicked = "LEFT"
+        elif event.buttons() == Qt.RightButton:
+            self.lastMouseButtonClicked = "RIGHT"
 
 
 ##################################################################################################################
-    def cadCanvasPressEvent(self, event):
+    def cadCanvasReleaseEvent(self, event):
 
-        if self.dibujando :
+        if self.dibujando:
             
             self.capaActiva = iface.activeLayer()
 
@@ -613,11 +621,8 @@ class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
 
             trans = self.canvas.getCoordinateTransform().toMapCoordinates(x, y)
 
-            toAdvanced = (
-                    self.cadDockWidget().constraintAngle().isLocked() or self.cadDockWidget().constraintDistance().isLocked()
-                    or self.cadDockWidget().constraintX().isLocked() or self.cadDockWidget().constraintY().isLocked())
 
-            puntoSnap = self.snapCompleto(startingPoint, toAdvanced)
+            puntoSnap = self.snapCompleto(startingPoint)
 
             if puntoSnap != None:
                 self.cadDockWidget().constraintX().setValue(puntoSnap.x())
@@ -640,7 +645,7 @@ class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
                 self.tipoCapa = self.capaActiva.wkbType()
 
                 #Click Izquiedo
-                if event.buttons() ==  Qt.LeftButton:
+                if self.lastMouseButtonClicked == "LEFT":
 
 
                     #Con puntos
@@ -742,7 +747,7 @@ class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
             else:
                 self.pluginM.UTI.mostrarAlerta("El modo dibujo no podra usarse sin una capa seleccionada", QMessageBox().Information, 'Modo dibujo')
 
-            if event.buttons() == Qt.RightButton:
+            if self.lastMouseButtonClicked == "RIGHT":
 
                 self.primerClick = False
 
@@ -812,11 +817,8 @@ class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
         
         posTemp = self.canvas.getCoordinateTransform().toMapCoordinates(x, y)
 
-        toAdvanced = (
-                    self.cadDockWidget().constraintAngle().isLocked() or self.cadDockWidget().constraintDistance().isLocked()
-                    or self.cadDockWidget().constraintX().isLocked() or self.cadDockWidget().constraintY().isLocked())
 
-        puntoSnap = self.snapCompleto(startingPoint, toAdvanced)
+        puntoSnap = self.snapCompleto(startingPoint)
 
         if puntoSnap != None:
 
@@ -910,21 +912,13 @@ class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
                     #print("PRIMER POINT SHOWING RUBBER ELSE LINEA 860")
                     self.rubberLinea.show()
 
-    def mousePressEvent(self, event):
-        #print("ENTRANDO AL PRESS EVENT DEL WIDGET")
-        pass
-
 
 
 ####################################################################################################################
 
-    def snapCompleto(self, startingPoint, toAdvanced):
+    def snapCompleto(self, startingPoint):
 
-        #Si obedeceremos la herramienta de digitalizacion avanzada...
-        if toAdvanced:
-            cadWidget = self.cadDockWidget()
-            return cadWidget.currentPoint()[0]
-        elif self.esCapaConsulta():
+        if self.esCapaConsulta():
             snap = self.snapVertice(startingPoint, 'manzana')
             if snap != None:
                 return snap
@@ -1149,11 +1143,13 @@ class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
 
     def snapVertice(self, startingPoint, nombreCapa):
 
+
+
         layer = QgsProject.instance().mapLayer(self.pluginM.ACA.obtenerIdCapa(nombreCapa))
         
         self.snapper.setCurrentLayer(layer)
 
-        snapMatch = self.snapper.snapToCurrentLayer(startingPoint, QgsPointLocator.Vertex)
+        snapMatch = self.snapper.snapToMap(startingPoint)
 
         if snapMatch.hasVertex():
             return snapMatch.point()
@@ -1165,7 +1161,7 @@ class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
         layer = QgsProject.instance().mapLayer(self.pluginM.ACA.obtenerIdCapa(nombreCapa))
         
         self.snapper.setCurrentLayer(layer)
-        snapMatch = self.snapper.snapToCurrentLayer(startingPoint, QgsPointLocator.Edge)
+        snapMatch = self.snapper.snapToMap(startingPoint)
 
         if snapMatch.hasEdge():
             return snapMatch.point()

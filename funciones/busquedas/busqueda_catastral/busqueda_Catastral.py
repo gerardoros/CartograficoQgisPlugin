@@ -251,8 +251,9 @@ class busquedaCatastral:
         url = self.CFG.url_BC_getPredios
 
         cve = self.dockwidget.leReg.text() + self.dockwidget.leManz.text() + self.dockwidget.leLote.text() + self.dockwidget.leCondo.text()
-
-
+        if self.dockwidget.leReg.text() == '' and self.dockwidget.leManz.text() == '' and self.dockwidget.leLote.text() == '' and self.dockwidget.leCondo.text() == '':
+            self.UTI.mostrarAlerta("Llene los campos requeridos", QMessageBox().Critical, "Busqueda de predio por cve")
+            return
         print(f"cve:{cve}")
 
         try:
@@ -268,7 +269,7 @@ class busquedaCatastral:
             data = respuesta.content
 
         else:
-            self.UTI.mostrarAlerta('Error en peticion:\n' + response.text, QMessageBox().Critical, "Busqueda de predio por cve")
+            self.UTI.mostrarAlerta('Error en peticion:\n' + respuesta.text, QMessageBox().Critical, "Busqueda de predio por cve")
             print('ERROR: BCP0001')
 
         res = json.loads(data.decode('utf-8'))

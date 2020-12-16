@@ -578,7 +578,7 @@ class Startup():
 
         # se decodifica el token (JWT)
         decode = jwt.decode(token, verify=False)
-        
+        print(decode)
         # se obtiene la fecha de expiracion (timestamp)
         ttFromJWT = decode['exp']
 
