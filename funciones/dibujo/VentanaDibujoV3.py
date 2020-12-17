@@ -271,6 +271,8 @@ class VentanaDibujoV3:
         campos = self.capaActiva.fields()   
         nombres = [campo.name() for campo in campos]
 
+        clavesActiva = [f['clave'] for f in self.capaActiva.getFeatures()]
+
         for x in self.capaActiva.getFeatures():  #Obtener ultimo feateure
             if x.id() > self.ultimo:
                 self.ultimo = x.id()
@@ -361,6 +363,12 @@ class VentanaDibujoV3:
             if not banderaCompleta: #Mensaje de error
                 self.pluginE.pluginM.UTI.mostrarAlerta('La clave debe estar compuesta por exactamente 3 números', QMessageBox().Critical, 'Error de entrada')
 
+            if texto in clavesActiva:
+                self.pluginE.pluginM.UTI.mostrarAlerta(
+                    "La clave '" + texto + "' ya se encuentra en uso", QMessageBox().Critical,
+                    'Error de entrada')
+                return
+
         #.....predios geom....#
         elif nombreCapa == 'predios.geom':
             texto = "Nada"
@@ -423,6 +431,12 @@ class VentanaDibujoV3:
             if not banderaCompleta: #Mensaje de error
                 self.pluginE.pluginM.UTI.mostrarAlerta('La clave debe estar compuesta por exactamente 2 números', QMessageBox().Critical, 'Error de entrada')
 
+            if texto in clavesActiva:
+                self.pluginE.pluginM.UTI.mostrarAlerta(
+                    "La clave '" + texto + "' ya se encuentra en uso", QMessageBox().Critical,
+                    'Error de entrada')
+                return
+
         #.....predios geom....#
         elif nombreCapa == 'predios.num':
             texto = "Nada"
@@ -457,9 +471,15 @@ class VentanaDibujoV3:
                     banderaCompleta = False
             else: #Cuando no es numerico
                 banderaCompleta = False
-            
+
             if not banderaCompleta: #Mensaje de error
                 self.pluginE.pluginM.UTI.mostrarAlerta('La clave debe estar compuesta por exactamente 6 números', QMessageBox().Critical, 'Error de entrada')    
+
+            if texto in clavesActiva:
+                self.pluginE.pluginM.UTI.mostrarAlerta(
+                    "La clave '" + texto + "' ya se encuentra en uso", QMessageBox().Critical,
+                    'Error de entrada')
+                return
 
         #.....predios geom....#
         elif nombreCapa == 'horizontales.num':
@@ -494,9 +514,15 @@ class VentanaDibujoV3:
                     banderaCompleta = False
             else: #Cuando no es numerico
                 banderaCompleta = False
-            
+
             if not banderaCompleta: #Mensaje de error
-                self.pluginE.pluginM.UTI.mostrarAlerta('La clave debe estar compuesta por exactamente 2 números', QMessageBox().Critical, 'Error de entrada') 
+                self.pluginE.pluginM.UTI.mostrarAlerta('La clave debe estar compuesta por exactamente 2 números', QMessageBox().Critical, 'Error de entrada')
+
+            if texto in clavesActiva:
+                self.pluginE.pluginM.UTI.mostrarAlerta(
+                    "La clave '" + texto + "' ya se encuentra en uso", QMessageBox().Critical,
+                    'Error de entrada')
+                return
 
         #.....clvaees verticales....#
         elif nombreCapa == 'cves_verticales':
@@ -796,6 +822,13 @@ class VentanaDibujoV3:
             #Banderas
             if not banderaClave:
                 self.pluginE.pluginM.UTI.mostrarAlerta('La clave debe estar compuesta por 2 números', QMessageBox().Critical, 'Error de entrada')
+
+            if texto in clavesActiva:
+                self.pluginE.pluginM.UTI.mostrarAlerta(
+                    "La clave '" + texto + "' ya se encuentra en uso", QMessageBox().Critical,
+                    'Error de entrada')
+                return
+
 
             banderaCompleta = banderaClave 
 
@@ -1107,8 +1140,8 @@ class VentanaDibujoV3:
             return None
            
         else:
-            self.pluginE.pluginM.UTI.mostrarAlerta('Error en peticion "consumeWSGeneral()"', QMessageBox().Critical, "Error de servidor")
             print(response.text)
+            self.pluginE.pluginM.UTI.mostrarAlerta('Error en peticion "consumeWSGeneral()"', QMessageBox().Critical, "Error de servidor")
             return None
 
         return json.loads(data)

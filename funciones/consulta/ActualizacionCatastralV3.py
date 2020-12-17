@@ -34,7 +34,7 @@ import os.path
 
 from PyQt5.QtCore import  Qt, QSize, QDir
 from PyQt5.QtGui import QColor, QCursor, QPixmap, QStandardItemModel
-from PyQt5.QtWidgets import QMessageBox, QTableWidgetItem, QListView, QCompleter
+from PyQt5.QtWidgets import  QTableWidgetItem, QListView, QCompleter
 from PyQt5 import QtWidgets
 # Initialize Qt resources from file resources.py
 from qgis.core import *
