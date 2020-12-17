@@ -80,28 +80,10 @@ background : rgb(250,238,224);
 background : rgb(255,255,255);
 }</string>
    </property>
-   <widget class="QComboBox" name="cmbLocalidad">
-    <property name="geometry">
-     <rect>
-      <x>30</x>
-      <y>40</y>
-      <width>221</width>
-      <height>22</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">QComboBox QAbstractItemView::item { min-height: 25; font-family: &quot;Century Gothic&quot;;}
-QListView{color: black ; font-size: 16px; outline:none; font-weight:bold; font-family: &quot;Century Gothic&quot;;}
-QListView::item:selected { color: white; background-color:  rgb(250,238,224); font-family: &quot;Century Gothic&quot;;}
-QComboBox{
-background : rgb(250,238,224);
-}</string>
-    </property>
-   </widget>
    <widget class="QLabel" name="label_3">
     <property name="geometry">
      <rect>
-      <x>270</x>
+      <x>10</x>
       <y>20</y>
       <width>111</width>
       <height>20</height>
@@ -120,7 +102,7 @@ background : rgb(250,238,224);
    <widget class="QLabel" name="label_4">
     <property name="geometry">
      <rect>
-      <x>400</x>
+      <x>140</x>
       <y>20</y>
       <width>101</width>
       <height>20</height>
@@ -139,7 +121,7 @@ background : rgb(250,238,224);
    <widget class="QComboBox" name="cmbSector">
     <property name="geometry">
      <rect>
-      <x>270</x>
+      <x>10</x>
       <y>40</y>
       <width>111</width>
       <height>22</height>
@@ -154,29 +136,10 @@ background : rgb(250,238,224);
 }</string>
     </property>
    </widget>
-   <widget class="QLabel" name="label_2">
-    <property name="geometry">
-     <rect>
-      <x>30</x>
-      <y>20</y>
-      <width>221</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <family>Century Gothic</family>
-      <pointsize>10</pointsize>
-     </font>
-    </property>
-    <property name="text">
-     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;Localidad&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-    </property>
-   </widget>
    <widget class="QComboBox" name="cmbManzana">
     <property name="geometry">
      <rect>
-      <x>400</x>
+      <x>140</x>
       <y>40</y>
       <width>101</width>
       <height>22</height>
