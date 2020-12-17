@@ -153,7 +153,6 @@ class TopologiaQG3:
         root.insertGroup(0, 'ERRORES DE TOPOLOGIA')
 
         self.obtenerXCapas()
-
         self.validarPoligonosInvalidos(self.xManzana)
         self.validarPoligonosInvalidos(self.xHoriGeom)
         self.validarPoligonosInvalidos(self.xConst)
@@ -644,8 +643,7 @@ class TopologiaQG3:
     def reglasManuales(self):
         
         self.obtenerXCapas()
-
-        # self.validarClavesNoRepetida()
+        self.validarClavesNoRepetida()
         
         self.validarIntersecciones(self.xPredGeom, self.xPredGeom)
         self.validarIntersecciones(self.xManzana, self.xManzana)

@@ -977,7 +977,6 @@ class Reglas:
 
     def validarClaveNoRepetida(self, nombreCapa):
 
-        print("Entro a validarClaveNoRepetida, capa " + nombreCapa)
         self.cuentaError = 0
         self.stringError = ''
 
@@ -987,7 +986,6 @@ class Reglas:
         clavesUnicas = set()
         clavesDeDuplicados = set(c for c in clavesCapa if c in clavesUnicas or clavesUnicas.add(c))
 
-        print(f"clavesDeDuplicados: {clavesDeDuplicados}")
 
         geoms = []
         for f in capa.getFeatures():
@@ -1000,9 +998,9 @@ class Reglas:
             self.stringError = f"La capa '{nombreCapa}' contiene claves duplicadas"
 
             if nombreCapa == 'Calles':
-                temp = QgsVectorLayer('LineString?crs=epsg:' + self.srid, 'Campos Incompletos ' + nombreCapa, 'memory')
+                temp = QgsVectorLayer('LineString?crs=epsg:' + self.srid, 'Claves duplicadas ' + nombreCapa, 'memory')
             else:
-                temp = QgsVectorLayer('Polygon?crs=epsg:' + self.srid, 'Campos Incompletos ' + nombreCapa, 'memory')
+                temp = QgsVectorLayer('Polygon?crs=epsg:' + self.srid, 'Claves duplicadas ' + nombreCapa, 'memory')
 
             self.pintarErrores(temp, geoms)
         else:

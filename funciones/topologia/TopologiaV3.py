@@ -483,6 +483,11 @@ class TopologiaV3:
             else: #Cuando hay errrpres
                 self.UTI.mostrarAlerta("Se han detectado errores de topologia", QMessageBox().Critical, "Comprobador de topología")
 
+    #############################################################################################################
+
+    def validarClavesNoRepetida(self, nomCapa):
+        self.reglas.validarClaveNoRepetida(nomCapa)
+        self.llenaTablaErrores()
 
 
 #############################################################################################################
@@ -735,6 +740,11 @@ class TopologiaV3:
         
         self.obtenerXCapas()
 
+        self.validarClavesNoRepetida('manzana')
+        self.validarClavesNoRepetida('predios.geom')
+        self.validarClavesNoRepetida('horizontales.geom')
+        self.validarClavesNoRepetida('verticales')
+
         self.validaClavesInvalidasManzanasPredios()
         
         self.validarIntersecciones(self.xPredGeom, self.xPredGeom)
@@ -794,7 +804,7 @@ class TopologiaV3:
         self.validarCampoNoNulo(self.xVert, 'clave')
         self.validarCampoNoNulo(self.xCvesVert, 'clave')
 
-        self.validarCamposDuplicados(self.xManzana, self.xPredGeom, 'clave')
+        #self.validarCamposDuplicados(self.xManzana, self.xPredGeom, 'clave')
         self.validarCamposDuplicados(self.xPredGeom, self.xConst, 'nom_volumen')
 
         self.printearErrores()
@@ -808,6 +818,9 @@ class TopologiaV3:
             self.validarLongitudCampo(capa, 'Clave', 3)
         
         if self.siendoEditada('Sectores'):
+
+            self.validarClavesNoRepetida('Sectores')
+
             # que todos los sectores esten dentro de los municipios
             self.validarInclusionRef('Sectores', 'Municipios')
 
