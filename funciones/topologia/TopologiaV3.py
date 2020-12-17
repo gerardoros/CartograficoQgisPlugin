@@ -239,7 +239,11 @@ class TopologiaV3:
     
 
     def validarTopologiaManual(self):
- 
+        root = QgsProject.instance().layerTreeRoot()
+        group = root.findGroup('consulta')
+        if group is None:
+            self.UTI.mostrarAlerta('No se ha cargado ninguna Manzana', QMessageBox().Critical, 'Asignacion de campo')
+            return
         self.todoEnOrden = True
         QSettings().setValue("posibleGuardar", "False")
 
