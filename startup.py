@@ -578,7 +578,7 @@ class Startup():
 
         # se decodifica el token (JWT)
         decode = jwt.decode(token, verify=False)
-        
+        print(decode)
         # se obtiene la fecha de expiracion (timestamp)
         ttFromJWT = decode['exp']
 
@@ -1262,7 +1262,7 @@ class Startup():
         return stringCapa
 
 startup = Startup()
-startup.mostrarConsola()
+#startup.mostrarConsola()
 startup.checarLogin()
 #startup.cargarCapas('')
 '''

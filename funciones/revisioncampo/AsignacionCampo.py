@@ -38,6 +38,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from qgis.core import *
 import os.path
+from qgis.utils import iface
 import os, json, requests
 from osgeo import ogr, osr
 from .VentanaAsignacionCampo import VentanaAsignacionCampo
@@ -63,12 +64,11 @@ class AsignacionCampo:
 
         self.clavesIzq = []
         self.clavesDer = {}
-
-        self.dlg.cmbLocalidad.currentIndexChanged.connect(self.obtenerSectoresPorLocalidad)
+        #self.dlg.cmbLocalidad.currentIndexChanged.connect(self.obtenerSectoresPorLocalidad)
         self.dlg.cmbSector.currentIndexChanged.connect(self.obtenerManzanasPorSector)
         self.dlg.cmbManzana.currentIndexChanged.connect(self.contactarPintarCampos)
         
-        self.dlg.cmbLocalidad.highlighted.connect(self.bypassSectorLoc)
+        #self.dlg.cmbLocalidad.highlighted.connect(self.bypassSectorLoc)
         self.dlg.cmbSector.highlighted.connect(self.bypassManzanaSector)
         self.dlg.cmbManzana.highlighted.connect(self.bypassPintar)
 
@@ -110,7 +110,8 @@ class AsignacionCampo:
         self.llenarUsuarios()
         self.capaPredios = QgsProject.instance().mapLayer(self.ACA.obtenerIdCapa('predios.geom'))
         #self.contactarPintarCampos()
-        self.obtenerLocalidades()
+        #self.obtenerLocalidades()
+        self.obtenerSectoresPorLocalidad()
         
         # Run the dialog event loop
         result = self.dlg.exec_()
@@ -164,7 +165,7 @@ class AsignacionCampo:
 
             
             self.UTI.extenderCombo(self.dlg.cmbLocalidad, self.completarLocalidad, modeloTemp)
-            self.dlg.cmbLocalidad.model().item(0).setEnabled(False)
+            #self.dlg.cmbLocalidad.model().item(0).setEnabled(False)
         else:
             self.dlg.cmbLocalidad.setEnabled(False)
             self.dlg.cmbLocalidad.clear()
@@ -183,7 +184,7 @@ class AsignacionCampo:
     def obtenerSectoresPorLocalidad(self):
 
         #print('lo tiro una vez')
-        index = self.dlg.cmbLocalidad.currentIndex()
+        '''index = self.dlg.cmbLocalidad.currentIndex()
         
         #print('tenemos ', index, self.indexCompLocalidad, self.bypass)
         if index == self.indexCompLocalidad or self.bypass:
@@ -209,45 +210,46 @@ class AsignacionCampo:
                     self.localidadCargado = idSector
 
                 except:
-                    return
+                    return'''
+        idSector = '1'
+        
+        self.dlg.cmbSector.clear()
+
+        try:
+            headers = {'Content-Type': 'application/json', 'Authorization' : self.UTI.obtenerToken()}
+            respuesta = requests.get(self.CFG.urlSectoresMuni + idSector + '/sector/', headers = headers)
+            print (self.CFG.urlSectores + idSector + '/sector/', "sector por localidad")
+        except requests.exceptions.RequestException:
+            self.UTI.mostrarAlerta("Error de servidor SEC01", QMessageBox().Critical, "Cargar Sectores")
+            print('ERROR: SEC000')
+
+        lenJson = len(list(respuesta.json()))
+
+        if lenJson > 0:
+            listaTemp = ['--Selecciona--']
+            self.enviosSector = ['-']
+            for sector in respuesta.json():
+                listaTemp.append(sector['label'])
+                self.enviosSector.append(sector['value'])
+            modeloTemp = QStandardItemModel()
+            for i,word in enumerate( listaTemp ):   
                 
-                self.dlg.cmbSector.clear()
+                item = QStandardItem(word)
+                modeloTemp.setItem(i, 0, item)
 
-                try:
-                    headers = {'Content-Type': 'application/json', 'Authorization' : self.UTI.obtenerToken()}
-                    respuesta = requests.get(self.CFG.urlSectoresMuni + idSector + '/sector/', headers = headers)
-                    print (self.CFG.urlSectores + idSector + '/sector/', "sector por localidad")
-                except requests.exceptions.RequestException:
-                    self.UTI.mostrarAlerta("Error de servidor SEC01", QMessageBox().Critical, "Cargar Sectores")
-                    print('ERROR: SEC000')
+            
+            self.UTI.extenderCombo(self.dlg.cmbSector, self.completarSector, modeloTemp)
+            self.dlg.cmbSector.model().item(0).setEnabled(False)
+            self.dlg.cmbSector.setEnabled(True)
+        else:
+            self.dlg.cmbSector.setEnabled(False)
+            self.dlg.cmbSector.clear()
+            
+            self.clavesIzq = []
+            self.vaciarTabla(self.dlg.tablaClaves)
+            self.llaveManzana = None
 
-                lenJson = len(list(respuesta.json()))
-
-                if lenJson > 0:
-                    listaTemp = ['--Selecciona--']
-                    self.enviosSector = ['-']
-                    for sector in respuesta.json():
-                        listaTemp.append(sector['label'])
-                        self.enviosSector.append(sector['value'])
-                    modeloTemp = QStandardItemModel()
-                    for i,word in enumerate( listaTemp ):   
-                        
-                        item = QStandardItem(word)
-                        modeloTemp.setItem(i, 0, item)
-
-                    
-                    self.UTI.extenderCombo(self.dlg.cmbSector, self.completarSector, modeloTemp)
-                    self.dlg.cmbSector.model().item(0).setEnabled(False)
-                    self.dlg.cmbSector.setEnabled(True)
-                else:
-                    self.dlg.cmbSector.setEnabled(False)
-                    self.dlg.cmbSector.clear()
-                    
-                    self.clavesIzq = []
-                    self.vaciarTabla(self.dlg.tablaClaves)
-                    self.llaveManzana = None
-
-                    self.UTI.mostrarAlerta("No existen sectores en la localidad", QMessageBox().Information, "Cargar Sectores")
+            self.UTI.mostrarAlerta("No existen sectores en la localidad", QMessageBox().Information, "Cargar Sectores")
 
 #--------------------------------------------------------------------------------------------------------------
 
@@ -319,6 +321,11 @@ class AsignacionCampo:
             #self.indexCompManzana = -1
             self.bypass = False
             if self.validarCombox and index > 0:
+                root = QgsProject.instance().layerTreeRoot()
+                group = root.findGroup('consulta')
+                if group is None:
+                    self.UTI.mostrarAlerta('No se ha cargado ninguna Manzana', QMessageBox().Critical, 'Asignacion de campo')
+                    return
                 self.ACA.obtenerXCapas()
                 cuerpo = {"incluirGeom": "true", "pagina": None, "bbox": "false", "pin": "false", "geomWKT": None, "epsg": None, "properties": None, "epsgGeomWKT": None, "itemsPagina": None, "nombre": "x"}
                 payload = json.dumps(cuerpo)
@@ -384,6 +391,7 @@ class AsignacionCampo:
 #-----------------------------------------------------------------------------------------------------------------
 
     def validarCombox(self):
+
         return (self.dlg.cmbLocalidad.count() > 0 and self.dlg.cmbSector.count() > 0 and self.dlg.cmbManzana.count() >0)
 
 #--------------------------------------------------------------------------------------------------------------------
