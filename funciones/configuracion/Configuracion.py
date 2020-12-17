@@ -5,8 +5,8 @@ class Configuracion():
     def __init__(self):
         
         #Direccion IP del servidor
-        #self.servidorIP = 'http://localhost:8080/'
-        self.servidorIP = 'http://192.168.0.25:8080/'
+        self.servidorIP = 'http://localhost:8080/'
+        #self.servidorIP = 'http://192.168.0.25:8080/'
         #self.servidorIP = 'https://thesmartflat.cianet.mx/cartografico/api/'
 
         #Combos de localidades, sectores y manzanas/combo/municipios/
@@ -181,4 +181,5 @@ class Configuracion():
         self.urlConstIdentificacion = self.servidorIP + 'busquedasimplewkn/api/genera-doc/constancia/'
         self.urlManifestacion = self.servidorIP + 'busquedasimplewkn/api/genera-doc/manifestacion-valor/'
 
+        self.urlValCveExiste = self.servidorIP + 'busquedasimplewkn/api/consulta/val-cve-existance'
 

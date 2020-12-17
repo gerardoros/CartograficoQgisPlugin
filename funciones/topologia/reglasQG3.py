@@ -972,8 +972,44 @@ class Reglas:
         temp = QgsVectorLayer('Polygon?crs=epsg:' + self.srid, 'Poligonos Invalidos ' + nombreCapa, 'memory')
 
         self.pintarErrores(temp, geoms)
-    
-################################################################################################
+
+    ################################################################################################
+
+    def validarClaveNoRepetida(self, nombreCapa):
+
+        print("Entro a validarClaveNoRepetida, capa " + nombreCapa)
+        self.cuentaError = 0
+        self.stringError = ''
+
+        #sectorCapa = QgsProject.instance().mapLayer(QSettings().value('xSector'))
+        capa = QgsProject.instance().mapLayer(self.ACA.obtenerIdCapa(nombreCapa))
+        clavesCapa = [f['clave'] for f in capa.getFeatures()]
+        clavesUnicas = set()
+        clavesDeDuplicados = set(c for c in clavesCapa if c in clavesUnicas or clavesUnicas.add(c))
+
+        print(f"clavesDeDuplicados: {clavesDeDuplicados}")
+
+        geoms = []
+        for f in capa.getFeatures():
+            if f['clave'] in clavesDeDuplicados:
+                geom = f.geometry()
+                geoms.append(geom.asWkt())
+
+        if len(clavesDeDuplicados) > 0:
+            self.cuentaError = len(clavesDeDuplicados)
+            self.stringError = f"La capa '{nombreCapa}' contiene claves duplicadas"
+
+            if nombreCapa == 'Calles':
+                temp = QgsVectorLayer('LineString?crs=epsg:' + self.srid, 'Campos Incompletos ' + nombreCapa, 'memory')
+            else:
+                temp = QgsVectorLayer('Polygon?crs=epsg:' + self.srid, 'Campos Incompletos ' + nombreCapa, 'memory')
+
+            self.pintarErrores(temp, geoms)
+        else:
+            return
+
+
+    ################################################################################################
 
     def validarCamposRef(self, nombreCapa):
 
@@ -1364,7 +1400,7 @@ class Reglas:
         if (self.cuentaError == 0):
             return
 
-        self.stringError = "Capa: " + capaObjeto.name() + " " + str(self.cuentaError) + str(campo) + " repetido"
+        self.stringError = "Capa: " + capaObjeto.name() + " " + str(self.cuentaError) + str(campo) + " repetidos"
 
         if capaObjeto.wkbType() == 3 or capaObjeto.wkbType() == 6:
             temp = QgsVectorLayer('Polygon?crs=epsg:' + self.srid,'('+ capaObjeto.name() +')'  +  ' Campo repetido: ' + campo, 'memory')

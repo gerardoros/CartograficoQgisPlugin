@@ -394,6 +394,13 @@ class TopologiaQG3:
                 self.UTI.mostrarAlerta("Se han detectado errores de topologia", QMessageBox().Critical, "Comprobador de topologia")
 
 
+    def validarClavesNoRepetida(self):
+        self.reglas.validarClaveNoRepetida('manzana')
+        self.reglas.validarClaveNoRepetida('predios.geom')
+        self.reglas.validarClaveNoRepetida('horizontales.geom')
+        self.reglas.validarClaveNoRepetida('verticales')
+        self.llenaTablaErrores()
+
 
 #############################################################################################################
 
@@ -637,6 +644,8 @@ class TopologiaQG3:
     def reglasManuales(self):
         
         self.obtenerXCapas()
+
+        # self.validarClavesNoRepetida()
         
         self.validarIntersecciones(self.xPredGeom, self.xPredGeom)
         self.validarIntersecciones(self.xManzana, self.xManzana)
