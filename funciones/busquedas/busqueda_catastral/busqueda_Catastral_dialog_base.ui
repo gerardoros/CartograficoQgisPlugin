@@ -207,36 +207,6 @@
     <rect>
      <x>10</x>
      <y>80</y>
-     <width>51</width>
-     <height>21</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <family>Arial</family>
-     <pointsize>12</pointsize>
-     <weight>75</weight>
-     <bold>true</bold>
-    </font>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">background : rgb(255,255,255)</string>
-   </property>
-   <property name="text">
-    <string/>
-   </property>
-   <property name="maxLength">
-    <number>3</number>
-   </property>
-   <property name="alignment">
-    <set>Qt::AlignCenter</set>
-   </property>
-  </widget>
-  <widget class="QLineEdit" name="leManz">
-   <property name="geometry">
-    <rect>
-     <x>130</x>
-     <y>80</y>
      <width>41</width>
      <height>21</height>
     </rect>
@@ -262,12 +232,12 @@
     <set>Qt::AlignCenter</set>
    </property>
   </widget>
-  <widget class="QLineEdit" name="leLote">
+  <widget class="QLineEdit" name="leManz">
    <property name="geometry">
     <rect>
-     <x>210</x>
+     <x>120</x>
      <y>80</y>
-     <width>81</width>
+     <width>51</width>
      <height>21</height>
     </rect>
    </property>
@@ -286,7 +256,37 @@
     <string/>
    </property>
    <property name="maxLength">
-    <number>5</number>
+    <number>3</number>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="leLote">
+   <property name="geometry">
+    <rect>
+     <x>230</x>
+     <y>80</y>
+     <width>51</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Arial</family>
+     <pointsize>12</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background : rgb(255,255,255)</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="maxLength">
+    <number>2</number>
    </property>
    <property name="alignment">
     <set>Qt::AlignCenter</set>
