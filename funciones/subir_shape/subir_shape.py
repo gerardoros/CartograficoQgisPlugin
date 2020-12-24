@@ -23,9 +23,9 @@
 """
 from PyQt5.QtCore import QSettings, QTranslator, qVersion, QCoreApplication, QVariant
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QAction, QMessageBox
-from qgis.utils import iface
+from PyQt5.QtWidgets import QAction, QFileDialog, QMessageBox
 from qgis.core import *
+from functools import partial
 
 # Initialize Qt resources from file resources.py
 from .resources import *
@@ -34,6 +34,7 @@ from .subir_shape_dialog import SubirShapeDialog
 import os.path
 import json
 import requests
+import os
 
 
 class SubirShape:
@@ -63,12 +64,24 @@ class SubirShape:
             self.translator.load(locale_path)
             QCoreApplication.installTranslator(self.translator)
 
-        self.dlg = SubirShapeDialog()
-        self.dlg.cargarButton.clicked.connect(self.cargar)
-
         # Declare instance attributes
-        #self.actions = []
-        #self.menu = self.tr(u'&Subir Shape')
+        self.actions = []
+        self.menu = self.tr(u'&Subir Shape')
+        self.dlg = SubirShapeDialog(parent=iface.mainWindow())
+        self.lyrPropertiesDict = {}
+
+        # eventos
+        self.dlg.cargarButton.clicked.connect(self.cargar)
+        self.dlg.altaButton.clicked.connect(self.alta)
+        self.dlg.btnBrowse.clicked.connect(partial(self.selectShape, context="shp"))
+        self.dlg.btnBrowse_2.clicked.connect(partial(self.selectShape, context="shx"))
+        self.dlg.btnBrowse_3.clicked.connect(partial(self.selectShape, context="dbf"))
+        self.dlg.btnBrowse_4.clicked.connect(partial(self.selectShape, context="prj"))
+        self.dlg.btnEdit.clicked.connect(self.editLayer)
+        self.dlg.btnLoadCapa.clicked.connect(self.cargarCapa)
+        self.dlg.btnConmutarABD.clicked.connect(self.conmutar)
+        self.iface.currentLayerChanged.connect(self.cambiarSeleccion)
+
 
         # Check if plugin was started the first time in current QGIS session
         # Must be set in initGui() to survive plugin reloads
@@ -89,18 +102,17 @@ class SubirShape:
         # noinspection PyTypeChecker,PyArgumentList,PyCallByClass
         return QCoreApplication.translate('SubirShape', message)
 
-
     def add_action(
-        self,
-        icon_path,
-        text,
-        callback,
-        enabled_flag=True,
-        add_to_menu=True,
-        add_to_toolbar=True,
-        status_tip=None,
-        whats_this=None,
-        parent=None):
+            self,
+            icon_path,
+            text,
+            callback,
+            enabled_flag=True,
+            add_to_menu=True,
+            add_to_toolbar=True,
+            status_tip=None,
+            whats_this=None,
+            parent=None):
         """Add a toolbar icon to the toolbar.
 
         :param icon_path: Path to the icon for this action. Can be a resource
@@ -177,7 +189,6 @@ class SubirShape:
         # will be set False in run()
         self.first_start = True
 
-
     def unload(self):
         """Removes the plugin menu item and icon from QGIS GUI."""
         for action in self.actions:
@@ -186,12 +197,12 @@ class SubirShape:
                 action)
             self.iface.removeToolBarIcon(action)
 
-
     def run(self):
         """Run method that performs all the real work"""
 
         # show the dialog
         self.dlg.show()
+        self.llenarComboCapas()
         # Run the dialog event loop
         result = self.dlg.exec_()
         # See if OK was pressed
@@ -200,83 +211,357 @@ class SubirShape:
             # substitute with your code.
             pass
 
-    def load_no_ref(self, info_capas):
-
-        for capa in info_capas:
-            vlayer = QgsVectorLayer(capa["path"], capa["name"], "ogr")
-            if not vlayer.isValid():
-                print(f"La capa {capa['name']} no se pudo cargar!")
-            else:
-                QgsProject.instance().addMapLayer(vlayer)
-
-
-
     def cargar(self):
 
-        # TODO: La bandera de abajo deberia poderlo definir el usuario en la interfaz
-        referencia = True
+        path = self.dlg.fldRutaShp.text()
+        nomCapa = self.dlg.fldNomCapa.text()
+        vlayer = QgsVectorLayer(path, nomCapa, "ogr")
+        if not vlayer.isValid():
+            self.UTI.mostrarAlerta(f"La capa {capa['name']} no se pudo cargar!", QMessageBox.Critical,
+                                   "Alta de capa")
+        else:
+            QgsProject.instance().addMapLayer(vlayer)
 
-        capas_no_ref = [{
-                "path" : "/home/oliver/CAPAS A SUBIR/Nuevo Archivo WinRAR ZIP/Predios.shp",
-                "name" : "predios.geom"
-            },
-            {
-                "path": "/home/oliver/CAPAS A SUBIR/Nuevo Archivo WinRAR ZIP_1/Manzanas.shp",
-                "name": "manzana"
-            }]
+        self.dlg.altaButton.setEnabled(True)
 
-        capas_ref = [{
-            "path": "/home/oliver/CAPAS A SUBIR/AH_ZC/ZonaCatastral.shp",
-            "name": "sectores"
-            },
-            {
-                "path": "/home/oliver/CAPAS A SUBIR/Nuevo Archivo WinRAR ZIP_1/Limite_Cuautitlan.shp",
-                "name": "municipio"
-            }
+        # layerList = QgsProject.instance().layerTreeRoot().findLayers()
+        #
+        # list_to_json = []
+        #
+        # for layer in layerList:
+        #     res = self.genera_json(layer.name(), layer.layer())
+        #     list_to_json.extend(res)
+        #
+        # jsonParaGuardarAtributos = json.dumps(list_to_json)
+        #
+        # self.alta_capa(jsonParaGuardarAtributos)
+        # QgsProject.instance().removeAllMapLayers()
+
+    def llenarComboCapas(self):
+
+        url = self.CFG.urlComboShapes
+
+        res = None
+
+        headers = {'Authorization': self.UTI.obtenerToken()}
+        try:
+            response = requests.get(url, headers=headers)
+
+            if response:
+
+                if response.status_code == 200:
+                    res = response.json()
+                elif response.status_code == 400:
+                    self.UTI.mostrarAlerta(f"Error 400", QMessageBox.Critical,
+                                           "Llenas combo capas")
+                else:
+                    self.UTI.mostrarAlerta(f"Error no manejado: {response.status_code}", QMessageBox.Critical,
+                                           "Llenas combo capas")
+            else:
+                self.UTI.mostrarAlerta("Error del servidor, no respuesta.", QMessageBox.Critical,
+                                       "Llenas combo capas")
+
+        except requests.exceptions.RequestException:
+            self.UTI.mostrarAlerta("No se ha podido conectar al servidor v1", QMessageBox.Critical,
+                                   "Llenas combo capas")  # Error en la peticion de consulta
+
+        self.dlg.comboCapas.clear()
+        for lyr in res:
+            self.dlg.comboCapas.addItem(lyr['name'], (lyr['internalName'], lyr['fields']))
+
+    def cargarCapa(self):
+        internalName = self.dlg.comboCapas.currentData()[0]
+        lyrFields = self.dlg.comboCapas.currentData()[1]
+        url = self.CFG.urlCargarCapaByName
+        res = None
+
+        headers = {'Authorization': self.UTI.obtenerToken()}
+        try:
+            response = requests.get(url + internalName, headers=headers)
+
+            if response:
+
+                if response.status_code == 200:
+                    res = response.json()
+                elif response.status_code == 400:
+                    self.UTI.mostrarAlerta(f"Error 400", QMessageBox.Critical,
+                                           "Cargar capa")
+                else:
+                    self.UTI.mostrarAlerta(f"Error no manejado: {response.status_code}", QMessageBox.Critical,
+                                           "Cargar capa")
+            else:
+                self.UTI.mostrarAlerta("Error del servidor, no respuesta.", QMessageBox.Critical,
+                                       "Cargar capa")
+
+        except requests.exceptions.RequestException:
+            self.UTI.mostrarAlerta("No se ha podido conectar al servidor v1", QMessageBox.Critical,
+                                   "Cargar capa")  # Error en la peticion de consulta
+
+        if res['features']:
+
+            featIds = []
+            for feat in res['features']:
+                feat['properties']['id'] = feat['id']
+                featIds.append(feat['id'])
+
+            if internalName in self.lyrPropertiesDict:
+                stored = self.lyrPropertiesDict[internalName]
+                root = QgsProject.instance().layerTreeRoot()
+                layerOpt = root.findLayer(stored['id'])
+                if layerOpt:
+                    layer = layerOpt.layer()
+                    QgsProject.instance().removeMapLayer(layer)
+                else:
+                    self.lyrPropertiesDict.pop(internalName)
+
+            vlayer = QgsVectorLayer(json.dumps(res), self.dlg.comboCapas.currentText(), "ogr")
+            crs = vlayer.crs()
+            crs.createFromId(int(QSettings().value("srid")))
+            vlayer.setCrs(crs)
+            vlayer = QgsProject.instance().addMapLayer(vlayer)
+
+            extent = vlayer.extent()
+            vlayer.setCustomProperty('internal', internalName)
+            self.iface.mapCanvas().setExtent(extent)
+            self.iface.mapCanvas().refresh()
+
+            # guardamos informacion de la capa cargada
+            self.lyrPropertiesDict[internalName] = {'featIds': featIds,
+                                                    'lyrFields': lyrFields,
+                                                    'editable': False,
+                                                    'id': vlayer.id()}
+            self.dlg.btnConmutarABD.setEnabled(False)
+        else:
+            self.UTI.mostrarAlerta("Capa sin features", QMessageBox.Critical,
+                                   "Cargar capa")  # Error en la peticion de consulta
+
+    def editLayer(self):
+        layer = self.iface.activeLayer()
+        if layer:
+            self.creaEditable(layer)
+            self.dlg.btnConmutarABD.setEnabled(True)
+        else:
+            self.UTI.mostrarAlerta("Selecciona una capa", QMessageBox.Critical,
+                                   "Editar capa")
+
+    def creaEditable(self, layer):
+
+        features = list(layer.getFeatures())
+        tipoGeom = QgsWkbTypes.displayString(features[0].geometry().wkbType())
+
+        fieldsStr = self.fieldsHelper(layer)
+
+        vlayer = QgsVectorLayer(f"{tipoGeom}?crs=epsg:{str(QSettings().value('srid'))}&{fieldsStr}&index=yes'",
+                                layer.name(), 'memory')
+        vlayer.startEditing()
+        vlayer.dataProvider().addFeatures(features)
+        vlayer.commitChanges()
+        vlayer = QgsProject.instance().addMapLayer(vlayer)
+        vlayer.setCustomProperty('internal', layer.customProperty('internal'))
+        self.setColumnVisibility(vlayer, 'id', False)
+
+        internamName = layer.customProperty('internal')
+        if internamName in self.lyrPropertiesDict:
+            properties = self.lyrPropertiesDict[internamName]
+            properties['id'] = vlayer.id()
+            properties['editable'] = True
+            self.lyrPropertiesDict[internamName] = properties
+
+        QgsProject.instance().removeMapLayer(layer)
+
+    def fieldsHelper(self, layer):
+        fieldsStr = []
+        for field in layer.fields().toList():
+            fieldsStr.append(f"field={field.name()}:{field.typeName().lower()}")
+        return "&".join(fieldsStr)
+
+    def setColumnVisibility(self, layer, columnName, visible):
+        config = layer.attributeTableConfig()
+        columns = config.columns()
+        for column in columns:
+            if column.name == columnName:
+                column.hidden = not visible
+                break
+        config.setColumns(columns)
+        layer.setAttributeTableConfig(config)
+
+    def alta(self):
+
+        _shp = open(self.dlg.fldRutaShp.text(), 'rb')
+        _shx = open(self.dlg.fldRutaShx.text(), 'rb')
+        _dbf = open(self.dlg.fldRutaDbf.text(), 'rb')
+        _prj = open(self.dlg.fldRutaPrj.text(), 'rb')
+
+        payload = {"nameLayer": self.dlg.fldNomCapa.text()}
+        files = [
+            ('shape', (os.path.basename(_shp.name), _shp, 'application/octet-stream')),
+            ('shx', (os.path.basename(_shx.name), _shx, 'application/octet-stream')),
+            ('prj', (os.path.basename(_prj.name), _prj, 'application/octet-stream')),
+            ('dbf', (os.path.basename(_dbf.name), _dbf, 'application/octet-stream')),
         ]
+        self.alta_capa(payload, files)
+        self.llenarComboCapas()
 
-        if not referencia:
-            self.load_no_ref(capas_no_ref)
+    def selectShape(self, context):
 
-            layerList = QgsProject.instance().layerTreeRoot().findLayers()
+        if context == "shp":
+            header = "Selecciona el archivo .shp"
+            _filter = "Shapefiles(*.shp)"
+        elif context == "shx":
+            header = "Selecciona el archivo .shx"
+            _filter = "Shapefiles(*.shx)"
+        elif context == "dbf":
+            header = "Selecciona el archivo .dbf"
+            _filter = "Shapefiles(*.dbf)"
+        else:
+            header = "Selecciona el archivo .prj"
+            _filter = "Shapefiles(*.prj)"
 
-            list_to_json = []
+        options = QFileDialog.Options()
+        options |= QFileDialog.AnyFile
+        filename = QFileDialog.getOpenFileName(self.dlg, header, filter=_filter, options=options)
+        if filename:
+            if context == "shp":
+                self.dlg.fldRutaShp.setText(filename[0])
+            elif context == "shx":
+                self.dlg.fldRutaShx.setText(filename[0])
+            elif context == "dbf":
+                self.dlg.fldRutaDbf.setText(filename[0])
+            else:
+                self.dlg.fldRutaPrj.setText(filename[0])
 
-            for layer in layerList:
-                res = self.genera_json(layer.name(), layer.layer())
-                list_to_json.extend(res)
+    def alta_capa(self, payload, files=[]):
 
-            jsonParaGuardarAtributos = json.dumps(list_to_json)
+        url = self.CFG.urlAltaPorShape
+        headers = {'Authorization': self.UTI.obtenerToken()}
+        try:
+            response = requests.post(url, headers=headers, data=payload, files=files)
 
-            print(jsonParaGuardarAtributos)
+            if response:
 
-            self.alta_capa(jsonParaGuardarAtributos)
+                if response.status_code in [200, 400]:
+                    self.UTI.mostrarAlerta(response.json()['message'], QMessageBox.Information,
+                                           "Alta de capa")
+                else:
+                    self.UTI.mostrarAlerta(f"Error no manejado: {response.status_code}", QMessageBox.Critical,
+                                           "Alta de capa")
+            else:
+                self.UTI.mostrarAlerta("Error del servidor, no respuesta.", QMessageBox.Critical,
+                                       "Alta de capa")
+
+        except requests.exceptions.RequestException:
+            self.UTI.mostrarAlerta("No se ha podido conectar al servidor v1", QMessageBox.Critical,
+                                   "Guardar Cambios v1")  # Error en la peticion de consulta
+
+    def cambiarSeleccion(self):
+
+        layer = self.iface.activeLayer()
+        if layer:
+            internamName = layer.customProperty('internal')
+            if internamName in self.lyrPropertiesDict:
+                properties = self.lyrPropertiesDict[internamName]
+                self.dlg.btnConmutarABD.setEnabled(properties['editable'])
+
+    # {'featIds': featIds,
+    #  'lyrFields': lyrFields,
+    #  'editable': False,
+    #  'id': vlayer.id()}
+
+    def conmutar(self):
+        url = self.CFG.urlConmutar
+        layer = self.iface.activeLayer()
+        internamName = layer.customProperty('internal')
+        if internamName in self.lyrPropertiesDict:
+            properties = self.lyrPropertiesDict[internamName]
+            idsCurrent = [feature['id'] for feature in layer.getFeatures()]
+            idsDeleted = [id for id in properties['featIds'] if id not in idsCurrent]
+            idsNew = [id for id in idsCurrent if id not in properties['featIds']]
+            features = []
+
+            for id in idsDeleted:
+                features.append({'accion': "DELETE",
+                                 'id':id,
+                                 'conceptos': [],
+                                 'feature': {'geometry':{"type":"Polygon",
+                                                         "coordinates":[]}}})
+
+            for feature in layer.getFeatures():
+
+                # ACCION
+                if feature['id'] in idsDeleted:
+                    accion = "DELETE"
+                elif feature['id'] in idsNew:
+                    accion = "NEW"
+                else:
+                    accion = "UPDATE"
+
+                # CONCEPTOS
+                conceptos = []
+                for field in properties['lyrFields']:
+
+                    if type(feature[field['name']]) == QVariant:
+                        value = feature[field['name']].value()
+                    else:
+                        value = feature[field['name']]
+
+                    concepto = {'type': field['type'],
+                                'name': field['name'],
+                                'value': value}
+                    conceptos.append(concepto)
+
+                # GEOMETRY
+                featureGeom = {'geometry': json.loads(feature.geometry().asJson())}
+
+                #ID
+                if type(feature['id']) == QVariant:
+                    id = None if feature['id'].isNull() else feature['id'].value()
+                else:
+                    id = feature['id']
+
+                features.append({'accion': accion,
+                                 'id':id,
+                                 'conceptos': conceptos,
+                                 'feature': featureGeom})
+            payload = json.dumps({'features': features,
+                                  'layerName': internamName})
+
+            print(payload)
+
+            headers = {'Content-Type': 'application/json', 'Authorization': self.UTI.obtenerToken()}
+            try:
+                response = requests.put(url, headers=headers, data=payload)
+
+                if response:
+
+                    if response.status_code == 200:
+
+                        self.UTI.mostrarAlerta("Actualizaion exitosa", QMessageBox.Information,
+                                               "Conmutar")
+                    else:
+                        self.UTI.mostrarAlerta(f"Error de peticion. Codigo:{response.status_code}",
+                                               QMessageBox.Critical,
+                                               "Conmutar")
+                else:
+                    self.UTI.mostrarAlerta("Error del servidor, no respuesta.", QMessageBox.Critical,
+                                           "Conmutar")
+
+            except requests.exceptions.RequestException:
+                self.UTI.mostrarAlerta("No se ha podido conectar al servidor", QMessageBox.Critical,
+                                       "Conmutar")  # Error en la peticion de consulta
+
 
         else:
-            self.load_no_ref(capas_ref)
+            self.UTI.mostrarAlerta("No es posible conmutar esta capa. Asegurate de que selecionaste "
+                                   "una capa cargada con este widget.", QMessageBox.Critical,
+                                   "Conmutar")
 
-            layerList = QgsProject.instance().layerTreeRoot().findLayers()
-
-            list_to_json = []
-
-            for layer in layerList:
-                res = self.genera_json_ref(layer.name(), layer.layer())
-                list_to_json.extend(res)
-
-            jsonParaGuardarAtributos = json.dumps(list_to_json)
-
-            print(jsonParaGuardarAtributos)
-
-            self.alta_capa_ref(jsonParaGuardarAtributos)
-
-        QgsProject.instance().removeAllMapLayers()
 
 
 
     def genera_json(self, idCapa, capa):
 
         listaAGuardar = []
-        features  = [f for f in capa.getFeatures()]
+        features = [f for f in capa.getFeatures()]
         print(f"NUMERO DE FEATURES: {len(features)}")
         for i, feat in enumerate(features):
 
@@ -291,11 +576,9 @@ class SubirShape:
             campos = {}
             campos['wkt'] = poly.asWkt()
             campos['srid'] = QSettings().value('srid')
-            campos['tabla'] = self.UTI.tablas[capa.name()]
+            campos['tabla'] = capa.name()
             atributos = {}
             nombresAtrbutos = capa.fields()
-
-
 
             if idCapa == 'horizontales.geom':
                 punto = self.exteriorCondom(feat.geometry())
@@ -308,7 +591,6 @@ class SubirShape:
             #     if punto != None:
             #         atributos['numExt'] = punto['numExt']
             #         atributos['geom_num'] = punto.geometry().asWkt()
-
 
             for x, campo in enumerate(nombresAtrbutos):
                 atributo = feat.attributes()[x]
@@ -331,44 +613,12 @@ class SubirShape:
                 else:
                     atributos[campo.name()] = atributo
 
-
                 campos['nuevo'] = True
                 campos['eliminado'] = False
 
             campos['attr'] = atributos
             listaAGuardar.append(campos)
         return listaAGuardar
-
-
-    def alta_capa(self, payload):
-
-        url = 'http://localhost:8080/featureswkn/api/manzana/'
-        headers = {'Content-Type': 'application/json', 'Authorization': self.obtenerToken()}
-        try:
-            response = requests.post(url, headers=headers, data=payload)
-            print(response.json())
-            print(response.status_code)
-
-        except requests.exceptions.RequestException:
-            self.UTI.mostrarAlerta("No se ha podido conectar al servidor v1", QMessageBox.Critical,
-                                   "Guardar Cambios v1")  # Error en la peticion de consulta
-
-
-    def alta_capa_ref(self, payload):
-
-        url = self.CFG.urlGuardadoRef
-        headers = {'Content-Type': 'application/json', 'Authorization': self.UTI.obtenerToken()}
-        try:
-            response = requests.post(url, headers=headers, data=payload)
-            print(response.json())
-            print(response.status_code)
-
-        except requests.exceptions.RequestException:
-            self.UTI.mostrarAlerta("No se ha podido conectar al servidor v1", QMessageBox.Critical,
-                                   "Guardar Cambios v1")  # Error en la peticion de consulta
-
-
-
 
     def genera_json_ref(self, idCapa, capa):
 
@@ -411,7 +661,7 @@ class SubirShape:
             campos['propiedades'] = atributos
 
             if self.ACA.traducirIdCapa(idCapa) == 'Calles':
-            #if self.ACA.traducirIdCapa(idCapa) == 'Calles' and str(feat['id']) in self.diccServiciosCalle.keys():
+                # if self.ACA.traducirIdCapa(idCapa) == 'Calles' and str(feat['id']) in self.diccServiciosCalle.keys():
                 listaServicios = []
                 for lista in self.diccServiciosCalle[str(feat['id'])]:
                     if lista[0] == '2':
@@ -426,129 +676,3 @@ class SubirShape:
             listaAGuardar.append(campos)
 
         return listaAGuardar
-        jsonParaGuardarAtributos = json.dumps(listaAGuardar)
-
-        # try:
-        #     response = requests.post(self.CFG.urlGuardadoRef, headers=headers, data=payload)
-        #
-        # except requests.exceptions.RequestException:
-        #     self.UTI.mostrarAlerta("No se ha podido conectar al servidor v1", QMessageBox.Critical,
-        #                            "Guardar Cambios v1")  # Error en la peticion de consulta
-        #
-        # if response.status_code == 200:
-        #     QSettings().setValue('listaEliminadaRef', [])
-        #     QSettings().setValue('posibleGuardarRef', 'False')
-        #     self.dockwidget.comboCapasEdicion.setEnabled(True)
-        #     self.dockwidget.botonActivarEdicion.setEnabled(True)
-        #     self.dockwidget.botonActualizarRef.setEnabled(False)
-        #     self.dockwidget.botonCancelarReferencia.setEnabled(False)
-        #     self.quitarDeGrupo(self.capaEnEdicion, 'edicion')
-        #
-        #     xCapa = self.traducirIdCapa(self.capaEnEdicion)
-        #     bBox = self.obtenerBoundingBox()
-        #
-        #     if bBox is None:
-        #         self.pintarCapasReferencia(xCapa, None, False)
-        #     else:
-        #         self.pintarCapasReferencia(xCapa, bBox.asWkt(), False)
-        #
-        #     self.capaEnEdicion = ''
-        #     QSettings().setValue('capaRefEdicion', self.capaEnEdicion)
-        #     self.dockwidget.tablaServiciosCalles.setVisible(False)
-        #     self.dockwidget.botonActualizarServiciosCalles.setVisible(False)
-        #     self.dockwidget.tituloServiciosCalles.setVisible(False)
-        #     if self.traducirIdCapa(idCapa) == 'Calles':
-        #         self.diccServiciosCalle = {}
-        #
-        #     # se reinicia la variable que contiene los identificadores de los features modificados o agregados
-        #     self.featuresId = []
-        #
-        #     self.UTI.mostrarAlerta("Cambios guardados con exito", QMessageBox.Information, "Guardar Cambios")
-        #
-        # else:
-        #     self.UTI.mostrarAlerta("Problemas al guardar la información", QMessageBox.Critical, "Guardar Cambios")
-
-    def cargar_old(self):
-
-        xMan = QSettings().value('xManzana')
-        print(xMan)
-        xPredG = QSettings().value('xPredGeom')
-        print(xPredG)
-
-
-        ALTA_LAYER = 0
-
-        path = "/home/oliver/Downloads/fwdpoligono(1)/limitemuni_poo.shp"
-        vlayer = QgsVectorLayer(path, "limitemuni", "ogr")
-        if not vlayer.isValid():
-            print("Layer failed to load!")
-        else:
-            QgsProject.instance().addMapLayer(vlayer)
-
-        capas_cargadas = QgsProject.instance().mapLayers()
-
-        capas = capas_cargadas.items()
-
-        for k, v in capas:
-
-            print("Lyr_source: ", v.source())
-            if ALTA_LAYER == 0:
-
-                fields = QgsFields()
-                fields.append(QgsField("layer", QVariant.String))
-                # fields.append(QgsField("myreal", QVariant.Double))
-
-                exptr = QgsVectorLayerExporter(
-                    u'dbname=\'spatial-mete-oliver\' host=177.225.106.243 port=5432 user=\'sigemun\' key=\'id\' table="public"."e_municipio" (geom) sql=',
-                    'postgres', fields, QgsWkbTypes.MultiPolygon
-                    , QgsCoordinateReferenceSystem(3857)
-                    )
-
-                l_features = v.getFeatures()
-                for feature in l_features:
-                    print(feature)
-                    # exptr.addFeature(feature)
-
-
-            elif ALTA_LAYER == 1:
-                con_string = """dbname='spatial-mete-oliver' host='177.225.106.243' port='5432' user='sigemun' password='sigemun' key=postgres type=MULTIPOLYGON table="public"."e_municipio" (geom)"""
-                err = QgsVectorLayerExporter.exportLayer(v, con_string, 'postgres',
-                                                         QgsCoordinateReferenceSystem(3857), False)
-
-                print(err)
-            elif ALTA_LAYER == 2:
-                for feature in v.getFeatures():
-                    print("Feature ID: ", feature.id())
-                    print("Geom:", feature.geometry())
-                    attrs = feature.attributes()
-                    print(attrs)
-
-                    # TODO: Esto deeria ser dinamico
-                    clave = feature['EntityHand']
-
-                    f = QgsFeature()
-                    f.setGeometry(feature.geometry())
-                    f.setAttributes([100, "", clave, ""])
-                    data_provider = QgsProviderRegistry.instance().createProvider("postgres",
-                                                                                  u'dbname=\'spatial-mete-oliver\' host=177.225.106.243 port=5432 user=\'sigemun\' password=\'sigemun\' key=\'id\' table="public"."e_municipio" (geom) sql=')
-                    print("Data Provider: ", type(data_provider))
-                    print(data_provider.errors())
-                    data_provider.addFeatures([f])
-
-
-    def obtenerToken(self):
-        url= 'http://localhost:8080/auth/login'
-        payload = {"username" : "user", "password" : "user"}
-        payload = json.dumps(payload)
-        headers = {'Content-Type': 'application/json'}
-
-        response = requests.post(url, headers = headers, data = payload)
-        if response.status_code == 200:
-            #print('habemus token')
-            data = response.content
-        else:
-            print(response)
-            self.UTI.mostrarAlerta('No se ha conseguido token del plugin de integracion', QMessageBox().Critical, 'Autenticacion')
-            return
-
-        return 'bearer ' + json.loads(data)['access_token']

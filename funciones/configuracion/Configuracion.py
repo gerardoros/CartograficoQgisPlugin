@@ -183,3 +183,9 @@ class Configuracion():
 
         self.urlValCveExiste = self.servidorIP + 'busquedasimplewkn/api/consulta/val-cve-existance'
 
+        #alta por shape
+        self.urlAltaPorShape = self.servidorIP + 'configuracion/api/save-layer/shape'
+        self.urlComboShapes = self.servidorIP + 'busquedasimplewkn/api/cartografico/get-layers-shapes-fields'
+        self.urlCargarCapaByName = self.servidorIP + 'busquedasimplewkn/api/cartografico/get-geojson-by-name/'
+        self.urlConmutar = self.servidorIP + 'featureswkn/api/update-layer'
+

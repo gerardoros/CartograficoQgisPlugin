@@ -556,11 +556,8 @@ background: rgb(217, 217, 217)
 }</string>
     </property>
     <property name="text">
-     <string/>
-    </property>
-    <property name="icon">
-     <iconset>
-      <normaloff>:/plugins/Master/icons/Eliminar.png</normaloff>:/plugins/Master/icons/Eliminar.png</iconset>
+     <string>Alta y edicion 
+ de capas</string>
     </property>
     <property name="iconSize">
      <size>

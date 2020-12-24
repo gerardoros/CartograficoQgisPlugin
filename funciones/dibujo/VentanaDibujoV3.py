@@ -157,6 +157,9 @@ class VentanaDibujoV3:
         elif nombre == 'Estado': #Estado
             self.listaAtributos = ['clave', 'nombre']
             listaEtiquetas = ['Clave', 'Nombre']
+        else:
+            self.listaAtributos = [f.name() for f in self.capaActiva.fields() if f.name() != 'id']
+            listaEtiquetas = self.listaAtributos
 
         for x in range(0, len(listaEtiquetas)):
             self.dlg.tablaAtributos.insertRow(x)
@@ -1034,7 +1037,13 @@ class VentanaDibujoV3:
 
             if not banderaNom:
                 self.pluginE.pluginM.UTI.mostrarAlerta('La longitud del nombre no debe exceder 64 caracteres', QMessageBox().Critical, 'Error de entrada')
-
+        # ----------------------Capas custom------------------#
+        else:
+            for i in range( self.dlg.tablaAtributos.rowCount()):
+                nomAtrib = self.dlg.tablaAtributos.item(i, 0).text()
+                valAtrib = self.dlg.tablaAtributos.item(i, 1).text() if self.dlg.tablaAtributos.item(i, 1) is not None else "None"
+                feat[nomAtrib] = valAtrib
+            banderaCompleta = True
 
         self.capaActiva.setReadOnly(True)
         if banderaCompleta:
