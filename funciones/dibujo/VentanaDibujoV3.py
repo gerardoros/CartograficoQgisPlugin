@@ -274,7 +274,7 @@ class VentanaDibujoV3:
         campos = self.capaActiva.fields()   
         nombres = [campo.name() for campo in campos]
 
-        clavesActiva = [f['clave'] for f in self.capaActiva.getFeatures()]
+        clavesActiva = [f['clave'] for f in self.capaActiva.getFeatures() if 'clave' in nombres]
 
         for x in self.capaActiva.getFeatures():  #Obtener ultimo feateure
             if x.id() > self.ultimo:
