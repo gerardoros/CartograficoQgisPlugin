@@ -23,7 +23,7 @@
 """
 from PyQt5.QtCore import QSettings, QTranslator, qVersion, QCoreApplication, QRectF
 from PyQt5.QtGui import QIcon, QFont
-from PyQt5.QtWidgets import QAction, QFileDialog
+from PyQt5.QtWidgets import QAction, QFileDialog, QMessageBox
 
 # Initialize Qt resources from file resources.py
 from .resources import *
