@@ -1,6 +1,6 @@
 
 from PyQt5.QtWidgets import *
-from PyQt5 import QtWidgets
+from PyQt5.QtWidgets import QAction, QFileDialog, QTableWidgetItem, QListView, QHeaderView
 import os, json, requests, jwt, datetime
 from datetime import datetime as dt
 from osgeo import ogr, osr
@@ -437,7 +437,7 @@ class Utilidad:
 		header = tabla.horizontalHeader()
 		
 		for x in range(0, tabla.columnCount()):
-			header.setSectionResizeMode(x, QtWidgets.QHeaderView.Stretch)
+			header.setSectionResizeMode(x, QHeaderView.Stretch)
 			header.setStretchLastSection(True)
 
 	def formatoCapa(self, capaParam, nuevaCapa):
@@ -650,6 +650,7 @@ class Utilidad:
 		settings.isExpression = esExpresion
 		
 		settings.centroidWhole = True
+		settings.centroidInside = True
 
 		textFormat = QgsTextFormat()
 		textFormat.setColor(colorCapa)

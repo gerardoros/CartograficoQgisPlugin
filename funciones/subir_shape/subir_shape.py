@@ -81,6 +81,7 @@ class SubirShape:
         self.dlg.btnLoadCapa.clicked.connect(self.cargarCapa)
         self.dlg.btnConmutarABD.clicked.connect(self.conmutar)
         self.iface.currentLayerChanged.connect(self.cambiarSeleccion)
+        self.dlg.btnRollback.clicked.connect(self.rollback)
 
 
         # Check if plugin was started the first time in current QGIS session
@@ -269,8 +270,8 @@ class SubirShape:
         for lyr in res:
             self.dlg.comboCapas.addItem(lyr['name'], (lyr['internalName'], lyr['fields']))
 
-    def cargarCapa(self):
-        internalName = self.dlg.comboCapas.currentData()[0]
+    def cargarCapa(self, internal=None):
+        internalName = internal if internal else self.dlg.comboCapas.currentData()[0]
         lyrFields = self.dlg.comboCapas.currentData()[1]
         url = self.CFG.urlCargarCapaByName
         res = None
@@ -322,6 +323,7 @@ class SubirShape:
 
             extent = vlayer.extent()
             vlayer.setCustomProperty('internal', internalName)
+
             self.iface.mapCanvas().setExtent(extent)
             self.iface.mapCanvas().refresh()
 
@@ -331,15 +333,29 @@ class SubirShape:
                                                     'editable': False,
                                                     'id': vlayer.id()}
             self.dlg.btnConmutarABD.setEnabled(False)
+            self.dlg.btnRollback.setEnabled(False)
+
         else:
             self.UTI.mostrarAlerta("Capa sin features", QMessageBox.Critical,
                                    "Cargar capa")  # Error en la peticion de consulta
+
+    def layerModifiedEvent(self):
+        self.dlg.btnConmutarABD.setEnabled(True)
+        self.dlg.btnRollback.setEnabled(True)
+
+    def rollback(self):
+        layer = self.iface.activeLayer()
+        if layer:
+            internamName = layer.customProperty('internal')
+            QgsProject.instance().removeMapLayer(layer)
+            self.cargarCapa(internamName)
+
+
 
     def editLayer(self):
         layer = self.iface.activeLayer()
         if layer:
             self.creaEditable(layer)
-            self.dlg.btnConmutarABD.setEnabled(True)
         else:
             self.UTI.mostrarAlerta("Selecciona una capa", QMessageBox.Critical,
                                    "Editar capa")
@@ -359,6 +375,8 @@ class SubirShape:
         vlayer = QgsProject.instance().addMapLayer(vlayer)
         vlayer.setCustomProperty('internal', layer.customProperty('internal'))
         self.setColumnVisibility(vlayer, 'id', False)
+
+        vlayer.editingStopped.connect(self.layerModifiedEvent)
 
         internamName = layer.customProperty('internal')
         if internamName in self.lyrPropertiesDict:
@@ -461,6 +479,7 @@ class SubirShape:
             if internamName in self.lyrPropertiesDict:
                 properties = self.lyrPropertiesDict[internamName]
                 self.dlg.btnConmutarABD.setEnabled(properties['editable'])
+                self.dlg.btnRollback.setEnabled(properties['editable'])
 
     # {'featIds': featIds,
     #  'lyrFields': lyrFields,

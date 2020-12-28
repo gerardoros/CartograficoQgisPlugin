@@ -82,6 +82,7 @@ class DibujoV3:
 
         self.pluginIsActive = False
         self.dockwidget.botonDibujar.clicked.connect(self.alternarModoDibujo)
+        self.dockwidget.exit_signal.connect(self.desactivando)
        
         #var = QSettings()
         '''
@@ -303,52 +304,54 @@ class DibujoV3:
 
         self.actualizarCapaActiva()
         if self.mapTool.capaActiva != None:
-            idCapa = self.mapTool.capaActiva.id()
-            if self.mapTool.dibujando:  # Apagar modo dibujo cuano esta prendido
-                #print("DESACTIVANDO")
-
-                if self.mapTool.botonAD.isChecked():
-                    self.mapTool.botonAD.trigger()
-
-                self.mapTool.dibujando = False
-                self.mapTool.canvas.setCursor(self.mapTool.cursorCruz)
-                self.dockwidget.labelStatus.setText("DESACTIVADO")
-                estilo = """color: rgb(255, 0, 0);
-"""
-                self.dockwidget.labelStatus.setStyleSheet(estilo)
-                self.dockwidget.labelStatus.setAlignment(QtCore.Qt.AlignCenter | QtCore.Qt.AlignVCenter)
-                self.mapTool.listaPuntosLineaTemp = []
-                self.mapTool.rubberPoli.reset(QgsWkbTypes.LineGeometry)
-                self.mapTool.marcador.setCenter(QgsPointXY())
-                self.mapTool.cuentaClickLinea = 0
-                self.mapTool.primerClick = False
-                self.mapTool.listaPuntosPoliTemp = []
-                self.mapTool.cuentaClickPoli = 0
-                self.mapTool.rubberPoli.reset(QgsWkbTypes.PolygonGeometry)
-                self.mapTool.marcador.setCenter(QgsPointXY())
-                self.mapTool.isEmittingPoint = False
-
-
+            if self.mapTool.dibujando:  # Apagar modo dibujo cuano esta prendido1
+                self.desactivando()
             else:  # Al reves
-                if self.mapTool.ventana.posibleMostar and ((not self.ACA.esCapaReferencia(
-                        idCapa)) or idCapa == self.ACA.capaEnEdicion):
-                    if not self.mapTool.botonAD.isChecked():
-                        self.mapTool.botonAD.trigger()
-                    iface.mapCanvas().setMapTool(self.mapTool)
-                    #print("ACTIVANDO")
-                    self.mapTool.dibujando = True
-                    self.mapTool.canvas.setCursor(self.mapTool.cursorRedondo)
-                    self.dockwidget.labelStatus.setText("ACTIVADO")
-                    self.dockwidget.labelStatus.setAlignment(QtCore.Qt.AlignCenter | QtCore.Qt.AlignVCenter)
-                    estilo = """color: rgb(1, 230, 1);"""
-                    self.dockwidget.labelStatus.setStyleSheet(estilo)
+                self.activando()
 
     ######################################################################################################
+
+    def desactivando(self):
+        if self.mapTool.botonAD.isChecked():
+            self.mapTool.botonAD.trigger()
+
+        self.mapTool.dibujando = False
+        self.mapTool.canvas.setCursor(self.mapTool.cursorCruz)
+        self.dockwidget.labelStatus.setText("DESACTIVADO")
+        estilo = """color: rgb(255, 0, 0);
+        """
+        self.dockwidget.labelStatus.setStyleSheet(estilo)
+        self.dockwidget.labelStatus.setAlignment(QtCore.Qt.AlignCenter | QtCore.Qt.AlignVCenter)
+        self.mapTool.listaPuntosLineaTemp = []
+        self.mapTool.rubberPoli.reset(QgsWkbTypes.LineGeometry)
+        self.mapTool.cuentaClickLinea = 0
+        self.mapTool.primerClick = False
+        self.mapTool.listaPuntosPoliTemp = []
+        self.mapTool.cuentaClickPoli = 0
+        self.mapTool.rubberPoli.reset(QgsWkbTypes.PolygonGeometry)
+        self.mapTool.marcador.setCenter(QgsPointXY())
+        self.mapTool.isEmittingPoint = False
+
+    def activando(self):
+        idCapa = self.mapTool.capaActiva.id()
+        if self.mapTool.ventana.posibleMostar and ((not self.ACA.esCapaReferencia(
+                idCapa)) or idCapa == self.ACA.capaEnEdicion):
+            if not self.mapTool.botonAD.isChecked():
+                self.mapTool.botonAD.trigger()
+            iface.mapCanvas().setMapTool(self.mapTool)
+            # print("ACTIVANDO")
+            self.mapTool.dibujando = True
+            self.mapTool.canvas.setCursor(self.mapTool.cursorRedondo)
+            self.dockwidget.labelStatus.setText("ACTIVADO")
+            self.dockwidget.labelStatus.setAlignment(QtCore.Qt.AlignCenter | QtCore.Qt.AlignVCenter)
+            estilo = """color: rgb(1, 230, 1);"""
+            self.dockwidget.labelStatus.setStyleSheet(estilo)
 
 
 class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
     def __init__(self, canvas, cadDockWidget, pluginM):
         QgsMapToolAdvancedDigitizing.__init__(self, canvas, cadDockWidget)
+
         #Asignacion inicial
         self.canvas = canvas
         self.pluginM = pluginM
@@ -405,9 +408,7 @@ class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
         
         #Creacion del Snapper
         self.snapper = self.canvas.snappingUtils()
-        config = QgsSnappingConfig()
-        config.setTolerance(240)
-        self.snapper.setConfig(config)
+
 
         self.stringPoli = 'POLYGON (('
         self.cierrePoli = None

@@ -200,7 +200,7 @@ class Reglas:
         
 
         #Dibujamos los errores
-        self.stringError = nombreBase + " no cubiertos por " + nombreCobertura + " " + str(self.cuentaError) + " elementos"
+        self.stringError = nombreBase + " no cubiertos por " + nombreCobertura + " " + str(self.cuentaError) + " elementos 1"
         temp = QgsVectorLayer("Polygon?crs=epsg:" + self.srid, nombreBase + " no cubiertos por " + nombreCobertura, "memory")
         
         
@@ -251,7 +251,7 @@ class Reglas:
         #Los dibujamos
         
 
-        self.stringError = nombreObjetos + " no cubiertos totalmente por " + nombreContenedor + " " + str(self.cuentaError) + " elementos"
+        self.stringError = nombreObjetos + " no cubiertos totalmente por " + nombreContenedor + " " + str(self.cuentaError) + " elementos 2"
         temp = QgsVectorLayer("Polygon?crs=epsg:" + self.srid, nombreObjetos + " no cubiertos totalmente por " + nombreContenedor, "memory")
 
         self.pintarErrores(temp, listaSalidas)
@@ -935,7 +935,7 @@ class Reglas:
         if (self.cuentaError == 0): #Si hay errores...
             return
         #Los dibujamos
-        self.stringError = nombreObjeto + " no cubiertos totalmente por " + nombreContenedor + " " + str(self.cuentaError) + " elementos"
+        self.stringError = nombreObjeto + " no cubiertos totalmente por " + nombreContenedor + " " + str(self.cuentaError) + " elementos 3"
         temp = QgsVectorLayer("Polygon?crs=epsg:" + self.srid, nombreObjeto + " no cubiertos totalmente por " + nombreContenedor, "memory")
 
         self.pintarErrores(temp, listaSalidas)

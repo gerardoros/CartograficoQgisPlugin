@@ -28,12 +28,14 @@ from PyQt5 import uic
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt
 from qgis.utils import iface
+from qgis.PyQt.QtCore import pyqtSignal
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'DibujoV3_dialog_base.ui'))
 
 
 class DibujoV3Dialog(QtWidgets.QDialog, FORM_CLASS):
+    exit_signal = pyqtSignal(bool)
     def __init__(self, parent=iface.mainWindow()):
         """Constructor."""
         super(DibujoV3Dialog, self).__init__(parent, \
@@ -45,4 +47,6 @@ class DibujoV3Dialog(QtWidgets.QDialog, FORM_CLASS):
         # #widgets-and-dialogs-with-auto-connect
         self.setupUi(self)
 
-
+    def closeEvent(self, event):
+        self.exit_signal.emit(True)
+        event.accept()
