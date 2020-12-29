@@ -40,7 +40,7 @@ def run():
     
     
     
-    #servidorIP = 'https://thesmartflat.cianet.mx/cartografico/api/'
+    #servidorIP = 'https://worknest.cianet.mx/jeather/cartografico/'
     servidorIP = 'http://192.168.0.25:8080'
     srid = QSettings().value("srid")
     url = servidorIP + "/busquedasimplewkn/consulta/get-municipio/" + str(srid)

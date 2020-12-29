@@ -22,7 +22,7 @@ class Startup():
         '''
 
         self.servidorIP = 'http://192.168.0.25:8080/'
-        #self.servidorIP = 'https://thesmartflat.cianet.mx/cartografico/api/'
+        #self.servidorIP = 'https://worknest.cianet.mx/jeather/cartografico/'
         
         helpBar = iface.helpToolBar()
 

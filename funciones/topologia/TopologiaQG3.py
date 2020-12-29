@@ -128,7 +128,7 @@ class TopologiaQG3:
 
 
     def validarTopologiaManual(self):
- 
+        print("Entro a validar manual")
         self.todoEnOrden = True
         QSettings().setValue("posibleGuardar", "False")
 
@@ -218,7 +218,7 @@ class TopologiaQG3:
 
 #################################################################################################################
     def validarTopologiaManualRef(self):
-    
+        print("Entro a validar manual ref")
         if self.ACA.capaEnEdicion != '':
 
             self.todoEnOrdenRef = True
@@ -316,7 +316,7 @@ class TopologiaQG3:
 
 
     def validarTopologiaJson(self):
-
+        print("Entro a validar topologiajson")
         
         self.todoEnOrden = True
         self.poligonosValidos = True
