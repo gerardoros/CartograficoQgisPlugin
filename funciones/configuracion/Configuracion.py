@@ -181,7 +181,6 @@ class Configuracion():
         self.urlConstIdentificacion = self.servidorIP + 'busquedasimplewkn/api/genera-doc/constancia/'
         self.urlManifestacion = self.servidorIP + 'busquedasimplewkn/api/genera-doc/manifestacion-valor/'
 
-        self.urlValCveExiste = self.servidorIP + 'busquedasimplewkn/api/consulta/val-cve-existance'
 
         #alta por shape
         self.urlAltaPorShape = self.servidorIP + 'configuracion/api/save-layer/shape'

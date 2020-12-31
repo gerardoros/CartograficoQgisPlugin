@@ -229,7 +229,7 @@ background : rgb(255, 255, 255);
                      <string notr="true">color : rgb(52, 42, 24 )</string>
                     </property>
                     <property name="text">
-                     <string>lbNoExt</string>
+                     <string/>
                     </property>
                    </widget>
                   </item>
@@ -337,7 +337,7 @@ QListView{color: black ; font-size: 16px; outline:none; font-weight:bold}QListVi
                      <string notr="true">color : rgb(52, 42, 24 )</string>
                     </property>
                     <property name="text">
-                     <string>lbNomCalle</string>
+                     <string/>
                     </property>
                    </widget>
                   </item>
@@ -1077,7 +1077,7 @@ height:24px
                         <string notr="true">color : rgb(52, 42, 24 )</string>
                        </property>
                        <property name="text">
-                        <string>lbCodPostalPF</string>
+                        <string/>
                        </property>
                       </widget>
                      </item>
@@ -1122,7 +1122,7 @@ height:24px
                         <string notr="true">color : rgb(52, 42, 24 )</string>
                        </property>
                        <property name="text">
-                        <string>lbNumExtPF</string>
+                        <string/>
                        </property>
                       </widget>
                      </item>
@@ -1159,7 +1159,7 @@ height:24px
                         <string notr="true">color : rgb(52, 42, 24 )</string>
                        </property>
                        <property name="text">
-                        <string>lbColoniaPF</string>
+                        <string/>
                        </property>
                       </widget>
                      </item>
@@ -1183,7 +1183,7 @@ height:24px
                         <string notr="true">color : rgb(52, 42, 24 )</string>
                        </property>
                        <property name="text">
-                        <string>lbNumInteriorPF</string>
+                        <string/>
                        </property>
                       </widget>
                      </item>
@@ -1207,7 +1207,7 @@ height:24px
                         <string notr="true">color : rgb(52, 42, 24 )</string>
                        </property>
                        <property name="text">
-                        <string>lbCallePF</string>
+                        <string/>
                        </property>
                       </widget>
                      </item>
@@ -1340,7 +1340,7 @@ height:24px
                      <string notr="true">color : rgb(52, 42, 24 )</string>
                     </property>
                     <property name="text">
-                     <string>lbNomMpio</string>
+                     <string/>
                     </property>
                    </widget>
                   </item>
@@ -1358,7 +1358,7 @@ height:24px
                      <string notr="true">color : rgb(52, 42, 24 )</string>
                     </property>
                     <property name="text">
-                     <string>lbCveCatAnt</string>
+                     <string/>
                     </property>
                    </widget>
                   </item>
@@ -1406,7 +1406,7 @@ height:24px
                      <string notr="true">color : rgb(52, 42, 24 )</string>
                     </property>
                     <property name="text">
-                     <string>lbCodigoPostal</string>
+                     <string/>
                     </property>
                    </widget>
                   </item>
@@ -1483,7 +1483,7 @@ border: 1px solid #adb2b5;
                      <string notr="true">color : rgb(52, 42, 24 )</string>
                     </property>
                     <property name="text">
-                     <string>lbLocalidad</string>
+                     <string/>
                     </property>
                    </widget>
                   </item>
@@ -1615,7 +1615,7 @@ QListView{color: black ; font-size: 16px; outline:none; font-weight:bold}QListVi
                      <string notr="true">color : rgb(52, 42, 24 )</string>
                     </property>
                     <property name="text">
-                     <string>lbColonia</string>
+                     <string/>
                     </property>
                    </widget>
                   </item>
@@ -1654,7 +1654,7 @@ QListView{color: black ; font-size: 16px; outline:none; font-weight:bold}QListVi
                      <string notr="true">color : rgb(52, 42, 24 )</string>
                     </property>
                     <property name="text">
-                     <string>lbNumNivel</string>
+                     <string/>
                     </property>
                    </widget>
                   </item>
@@ -1670,7 +1670,7 @@ QListView{color: black ; font-size: 16px; outline:none; font-weight:bold}QListVi
                      <string notr="true">color : rgb(52, 42, 24 )</string>
                     </property>
                     <property name="text">
-                     <string>lbTipAsenHum</string>
+                     <string/>
                     </property>
                    </widget>
                   </item>
@@ -1746,7 +1746,7 @@ QListView{color: black ; font-size: 16px; outline:none; font-weight:bold}QListVi
                  <property name="geometry">
                   <rect>
                    <x>0</x>
-                   <y>0</y>
+                   <y>-98</y>
                    <width>708</width>
                    <height>832</height>
                   </rect>
@@ -1892,7 +1892,7 @@ QListView{color: black ; font-size: 16px; outline:none; font-weight:bold}QListVi
                      </font>
                     </property>
                     <property name="text">
-                     <string>lbSupTerr</string>
+                     <string/>
                     </property>
                    </widget>
                   </item>
@@ -2498,7 +2498,7 @@ height:24px
                         <string notr="true">color : rgb(52, 42, 24 )</string>
                        </property>
                        <property name="text">
-                        <string>lbNumNivP</string>
+                        <string/>
                        </property>
                       </widget>
                      </item>
@@ -2543,7 +2543,7 @@ height:24px
                         <string notr="true">color : rgb(52, 42, 24 )</string>
                        </property>
                        <property name="text">
-                        <string>lbTipoConstP</string>
+                        <string/>
                        </property>
                       </widget>
                      </item>
@@ -2721,7 +2721,7 @@ QListView{color: black ; font-size: 16px; outline:none; font-weight:bold}QListVi
                         <string notr="true">color : rgb(52, 42, 24 )</string>
                        </property>
                        <property name="text">
-                        <string>lbCveConstEspP</string>
+                        <string/>
                        </property>
                       </widget>
                      </item>
@@ -2800,7 +2800,7 @@ border: 1px solid #adb2b5;
                         <string notr="true">color : rgb(52, 42, 24 )</string>
                        </property>
                        <property name="text">
-                        <string>lbSupConstrP</string>
+                        <string/>
                        </property>
                       </widget>
                      </item>
@@ -2912,7 +2912,7 @@ border: 1px solid #adb2b5;
                         <string notr="true">color : rgb(52, 42, 24 )</string>
                        </property>
                        <property name="text">
-                        <string>lbCveUsoP</string>
+                        <string/>
                        </property>
                       </widget>
                      </item>
@@ -3044,7 +3044,7 @@ QListView{color: black ; font-size: 16px; outline:none; font-weight:bold}QListVi
                         <string notr="true">color : rgb(52, 42, 24 )</string>
                        </property>
                        <property name="text">
-                        <string>lbValM2P</string>
+                        <string/>
                        </property>
                       </widget>
                      </item>
@@ -3120,7 +3120,7 @@ QListView{color: black ; font-size: 16px; outline:none; font-weight:bold}QListVi
                         <string notr="true">color : rgb(52, 42, 24 )</string>
                        </property>
                        <property name="text">
-                        <string>lbValConstP</string>
+                        <string/>
                        </property>
                       </widget>
                      </item>
@@ -3708,7 +3708,7 @@ QListView{color: black ; font-size: 16px; outline:none; font-weight:bold}QListVi
                         <string notr="true">color : rgb(52, 42, 24 )</string>
                        </property>
                        <property name="text">
-                        <string>lbNvlFraccP</string>
+                        <string/>
                        </property>
                       </widget>
                      </item>
@@ -3779,9 +3779,9 @@ QListView{color: black ; font-size: 16px; outline:none; font-weight:bold}QListVi
                 <widget class="QWidget" name="scrollAreaWidgetContents_6">
                  <property name="geometry">
                   <rect>
-                   <x>0</x>
+                   <x>-46</x>
                    <y>0</y>
-                   <width>775</width>
+                   <width>774</width>
                    <height>714</height>
                   </rect>
                  </property>
@@ -3872,22 +3872,6 @@ height:24px
                     <property name="sizeHint" stdset="0">
                      <size>
                       <width>40</width>
-                      <height>20</height>
-                     </size>
-                    </property>
-                   </spacer>
-                  </item>
-                  <item row="1" column="1">
-                   <spacer name="horizontalSpacer_9">
-                    <property name="orientation">
-                     <enum>Qt::Horizontal</enum>
-                    </property>
-                    <property name="sizeType">
-                     <enum>QSizePolicy::Fixed</enum>
-                    </property>
-                    <property name="sizeHint" stdset="0">
-                     <size>
-                      <width>30</width>
                       <height>20</height>
                      </size>
                     </property>
@@ -4015,7 +3999,7 @@ height:24px
                      <string notr="true">color : rgb(52, 42, 24 )</string>
                     </property>
                     <property name="text">
-                     <string>lbPerimetroCond</string>
+                     <string/>
                     </property>
                    </widget>
                   </item>
@@ -4054,7 +4038,7 @@ height:24px
                      <string notr="true">color : rgb(52, 42, 24 )</string>
                     </property>
                     <property name="text">
-                     <string>lbIndivisoCond</string>
+                     <string>                       </string>
                     </property>
                    </widget>
                   </item>
@@ -4791,6 +4775,22 @@ background : rgb(250,238,224);
                     </layout>
                    </widget>
                   </item>
+                  <item row="1" column="1">
+                   <spacer name="horizontalSpacer_9">
+                    <property name="orientation">
+                     <enum>Qt::Horizontal</enum>
+                    </property>
+                    <property name="sizeType">
+                     <enum>QSizePolicy::Fixed</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>30</width>
+                      <height>20</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
                  </layout>
                 </widget>
                </widget>
@@ -4828,7 +4828,7 @@ background : rgb(250,238,224);
                 <widget class="QWidget" name="scrollAreaWidgetContents_4">
                  <property name="geometry">
                   <rect>
-                   <x>0</x>
+                   <x>-11</x>
                    <y>0</y>
                    <width>956</width>
                    <height>751</height>
@@ -5048,7 +5048,7 @@ border: 1px solid #adb2b5;
                         </font>
                        </property>
                        <property name="text">
-                        <string>lbTipoConstC</string>
+                        <string/>
                        </property>
                       </widget>
                      </item>
@@ -5063,7 +5063,7 @@ border: 1px solid #adb2b5;
                         </font>
                        </property>
                        <property name="text">
-                        <string>lbNumNivC</string>
+                        <string/>
                        </property>
                       </widget>
                      </item>
@@ -5108,7 +5108,7 @@ border: 1px solid #adb2b5;
                         </font>
                        </property>
                        <property name="text">
-                        <string>lbSupConstrC</string>
+                        <string/>
                        </property>
                       </widget>
                      </item>
@@ -5153,7 +5153,7 @@ border: 1px solid #adb2b5;
                         </font>
                        </property>
                        <property name="text">
-                        <string>lbCveConstEspC</string>
+                        <string/>
                        </property>
                       </widget>
                      </item>
@@ -5540,7 +5540,7 @@ QListView{color: black ; font-size: 16px; outline:none; font-weight:bold}QListVi
                         </font>
                        </property>
                        <property name="text">
-                        <string>lbNvlFraccC</string>
+                        <string/>
                        </property>
                       </widget>
                      </item>
@@ -5843,7 +5843,7 @@ border: 1px solid #adb2b5;
                         </font>
                        </property>
                        <property name="text">
-                        <string>lbValM2C</string>
+                        <string/>
                        </property>
                       </widget>
                      </item>
@@ -6049,7 +6049,7 @@ QListView{color: black ; font-size: 16px; outline:none; font-weight:bold}QListVi
                         </font>
                        </property>
                        <property name="text">
-                        <string>lbValConstC</string>
+                        <string/>
                        </property>
                       </widget>
                      </item>
@@ -6064,7 +6064,7 @@ QListView{color: black ; font-size: 16px; outline:none; font-weight:bold}QListVi
                         </font>
                        </property>
                        <property name="text">
-                        <string>lbCveUsoC</string>
+                        <string/>
                        </property>
                       </widget>
                      </item>
@@ -6683,7 +6683,7 @@ height:24px
                   <rect>
                    <x>0</x>
                    <y>0</y>
-                   <width>763</width>
+                   <width>749</width>
                    <height>714</height>
                   </rect>
                  </property>
@@ -7067,7 +7067,7 @@ border: 1px solid #adb2b5;
                         <string notr="true">color : rgb(52, 42, 24 )</string>
                        </property>
                        <property name="text">
-                        <string>lbTotal</string>
+                        <string/>
                        </property>
                       </widget>
                      </item>
@@ -7183,7 +7183,7 @@ border: 1px solid #adb2b5;
                         <string notr="true">color : rgb(52, 42, 24 )</string>
                        </property>
                        <property name="text">
-                        <string>lbTotalC</string>
+                        <string/>
                        </property>
                       </widget>
                      </item>
@@ -7377,7 +7377,7 @@ border: 1px solid #adb2b5;
                         <string notr="true">color : rgb(52, 42, 24 )</string>
                        </property>
                        <property name="text">
-                        <string>lbTotalT</string>
+                        <string/>
                        </property>
                       </widget>
                      </item>
@@ -7408,7 +7408,7 @@ border: 1px solid #adb2b5;
                         <string notr="true">color : rgb(52, 42, 24 )</string>
                        </property>
                        <property name="text">
-                        <string>lbResiduo</string>
+                        <string/>
                        </property>
                       </widget>
                      </item>
@@ -7492,7 +7492,7 @@ border: 1px solid #adb2b5;
                  <property name="geometry">
                   <rect>
                    <x>0</x>
-                   <y>0</y>
+                   <y>-386</y>
                    <width>696</width>
                    <height>1108</height>
                   </rect>
@@ -7642,7 +7642,7 @@ height:24px
                      <string notr="true">QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 2px;}
 QGroupBox, QLabel{
 background : rgb(250,238,224);
-}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 2px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 2px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 2px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 2px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 2px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 2px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 2px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 2px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 2px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 2px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 2px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 2px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 2px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 2px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 2px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 2px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 2px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 2px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 2px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}</string>
+}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 2px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 2px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 2px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 2px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 2px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 2px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 2px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 2px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 2px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 2px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 2px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 2px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 2px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 2px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 2px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 2px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 2px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 2px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 2px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}</string>
                     </property>
                     <property name="title">
                      <string/>
@@ -7689,7 +7689,7 @@ background : rgb(250,238,224);
                         <string notr="true">color : rgb(52, 42, 24 )</string>
                        </property>
                        <property name="text">
-                        <string>lbNumeroPPad</string>
+                        <string/>
                        </property>
                       </widget>
                      </item>
@@ -7707,7 +7707,7 @@ background : rgb(250,238,224);
                         <string notr="true">color : rgb(52, 42, 24 )</string>
                        </property>
                        <property name="text">
-                        <string>lbCallePPad</string>
+                        <string/>
                        </property>
                       </widget>
                      </item>
@@ -7725,7 +7725,7 @@ background : rgb(250,238,224);
                         <string notr="true">color : rgb(52, 42, 24 )</string>
                        </property>
                        <property name="text">
-                        <string>lbNombrePPad</string>
+                        <string/>
                        </property>
                       </widget>
                      </item>
@@ -7779,7 +7779,7 @@ background : rgb(250,238,224);
                         <string notr="true">color : rgb(52, 42, 24 )</string>
                        </property>
                        <property name="text">
-                        <string>lbCodPosPPad</string>
+                        <string/>
                        </property>
                       </widget>
                      </item>
@@ -7818,7 +7818,7 @@ background : rgb(250,238,224);
                         <string notr="true">color : rgb(52, 42, 24 )</string>
                        </property>
                        <property name="text">
-                        <string>lbRazonSocPPad</string>
+                        <string/>
                        </property>
                       </widget>
                      </item>
@@ -7851,7 +7851,7 @@ background : rgb(250,238,224);
                         <string notr="true">color : rgb(52, 42, 24 )</string>
                        </property>
                        <property name="text">
-                        <string>lbColoniaPPad</string>
+                        <string/>
                        </property>
                       </widget>
                      </item>
@@ -7893,7 +7893,7 @@ background : rgb(250,238,224);
                      <string notr="true">QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 2px;}
 QGroupBox, QLabel{
 background : rgb(250,238,224);
-}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}</string>
+}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}</string>
                     </property>
                     <property name="title">
                      <string>Datos Adicionales</string>
@@ -7940,7 +7940,7 @@ background : rgb(250,238,224);
                         <string notr="true">color : rgb(52, 42, 24 )</string>
                        </property>
                        <property name="text">
-                        <string>lbEstadoPPad</string>
+                        <string/>
                        </property>
                       </widget>
                      </item>
@@ -7958,7 +7958,7 @@ background : rgb(250,238,224);
                         <string notr="true">color : rgb(52, 42, 24 )</string>
                        </property>
                        <property name="text">
-                        <string>lbMunicipioPPad</string>
+                        <string/>
                        </property>
                       </widget>
                      </item>
@@ -7976,7 +7976,7 @@ background : rgb(250,238,224);
                         <string notr="true">color : rgb(52, 42, 24 )</string>
                        </property>
                        <property name="text">
-                        <string>lbRFCPPad</string>
+                        <string/>
                        </property>
                       </widget>
                      </item>
@@ -8030,7 +8030,7 @@ background : rgb(250,238,224);
                         <string notr="true">color : rgb(52, 42, 24 )</string>
                        </property>
                        <property name="text">
-                        <string>lbCorreoElecPPad</string>
+                        <string/>
                        </property>
                       </widget>
                      </item>
@@ -8069,7 +8069,7 @@ background : rgb(250,238,224);
                         <string notr="true">color : rgb(52, 42, 24 )</string>
                        </property>
                        <property name="text">
-                        <string>lbTelefonoPPad</string>
+                        <string/>
                        </property>
                       </widget>
                      </item>
@@ -8102,7 +8102,7 @@ background : rgb(250,238,224);
                         <string notr="true">color : rgb(52, 42, 24 )</string>
                        </property>
                        <property name="text">
-                        <string>lbCiudadPPad</string>
+                        <string/>
                        </property>
                       </widget>
                      </item>
@@ -8144,7 +8144,7 @@ background : rgb(250,238,224);
                      <string notr="true">QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 2px;}
 QGroupBox, QLabel{
 background : rgb(250,238,224);
-}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}</string>
+}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}</string>
                     </property>
                     <property name="title">
                      <string>Notificacion</string>
@@ -8170,7 +8170,7 @@ background : rgb(250,238,224);
                         <string notr="true">color : rgb(52, 42, 24 )</string>
                        </property>
                        <property name="text">
-                        <string>lbNumInteriorNPPad</string>
+                        <string/>
                        </property>
                       </widget>
                      </item>
@@ -8230,7 +8230,7 @@ background : rgb(250,238,224);
                         <string notr="true">color : rgb(52, 42, 24 )</string>
                        </property>
                        <property name="text">
-                        <string>lbColoniaNPPad</string>
+                        <string/>
                        </property>
                       </widget>
                      </item>
@@ -8254,7 +8254,7 @@ background : rgb(250,238,224);
                         <string notr="true">color : rgb(52, 42, 24 )</string>
                        </property>
                        <property name="text">
-                        <string>lbCalleNPPad</string>
+                        <string/>
                        </property>
                       </widget>
                      </item>
@@ -8287,7 +8287,7 @@ background : rgb(250,238,224);
                         <string notr="true">color : rgb(52, 42, 24 )</string>
                        </property>
                        <property name="text">
-                        <string>lbNumOfiNPPad</string>
+                        <string/>
                        </property>
                       </widget>
                      </item>
@@ -8362,7 +8362,7 @@ background : rgb(250,238,224);
                         <string notr="true">color : rgb(52, 42, 24 )</string>
                        </property>
                        <property name="text">
-                        <string>lbCodPostNPPad</string>
+                        <string/>
                        </property>
                       </widget>
                      </item>
@@ -8401,7 +8401,7 @@ background : rgb(250,238,224);
                         <string notr="true">color : rgb(52, 42, 24 )</string>
                        </property>
                        <property name="text">
-                        <string>lbCiudadNPPad</string>
+                        <string/>
                        </property>
                       </widget>
                      </item>
@@ -8425,7 +8425,7 @@ background : rgb(250,238,224);
                         <string notr="true">color : rgb(52, 42, 24 )</string>
                        </property>
                        <property name="text">
-                        <string>lbEstadoNPPad</string>
+                        <string/>
                        </property>
                       </widget>
                      </item>
@@ -8452,7 +8452,7 @@ background : rgb(250,238,224);
                      <string notr="true">QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 2px;}
 QGroupBox, QLabel{
 background : rgb(250,238,224);
-}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}</string>
+}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}QgsCollapsibleGroupBoxBasic::title, QgsCollapsibleGroupBox::title {  subcontrol-origin: margin;  subcontrol-position: top left;  margin-left: 20px;  margin-right: 5px;  left: 0px;  top: 1px;}</string>
                     </property>
                     <property name="title">
                      <string/>
@@ -8478,7 +8478,7 @@ background : rgb(250,238,224);
                         <string notr="true">color : rgb(52, 42, 24 )</string>
                        </property>
                        <property name="text">
-                        <string>lbCallePPred</string>
+                        <string/>
                        </property>
                       </widget>
                      </item>
@@ -8502,7 +8502,7 @@ background : rgb(250,238,224);
                         <string notr="true">color : rgb(52, 42, 24 )</string>
                        </property>
                        <property name="text">
-                        <string>lbNombrePPred</string>
+                        <string/>
                        </property>
                       </widget>
                      </item>
@@ -8562,7 +8562,7 @@ background : rgb(250,238,224);
                         <string notr="true">color : rgb(52, 42, 24 )</string>
                        </property>
                        <property name="text">
-                        <string>lbApMaternoPPred</string>
+                        <string/>
                        </property>
                       </widget>
                      </item>
@@ -8595,7 +8595,7 @@ background : rgb(250,238,224);
                         <string notr="true">color : rgb(52, 42, 24 )</string>
                        </property>
                        <property name="text">
-                        <string>lbNumExtPPred</string>
+                        <string/>
                        </property>
                       </widget>
                      </item>
@@ -8628,7 +8628,7 @@ background : rgb(250,238,224);
                         <string notr="true">color : rgb(52, 42, 24 )</string>
                        </property>
                        <property name="text">
-                        <string>lbApPaternoPPred</string>
+                        <string/>
                        </property>
                       </widget>
                      </item>
@@ -8652,7 +8652,7 @@ background : rgb(250,238,224);
                         <string notr="true">color : rgb(52, 42, 24 )</string>
                        </property>
                        <property name="text">
-                        <string>lbColoniaPPred</string>
+                        <string/>
                        </property>
                       </widget>
                      </item>
@@ -8733,7 +8733,7 @@ background : rgb(250,238,224);
                         <string notr="true">color : rgb(52, 42, 24 )</string>
                        </property>
                        <property name="text">
-                        <string>lbMunicipioPPred</string>
+                        <string/>
                        </property>
                       </widget>
                      </item>
@@ -8751,7 +8751,7 @@ background : rgb(250,238,224);
                         <string notr="true">color : rgb(52, 42, 24 )</string>
                        </property>
                        <property name="text">
-                        <string>lbEstadoPPred</string>
+                        <string/>
                        </property>
                       </widget>
                      </item>
@@ -8799,7 +8799,7 @@ background : rgb(250,238,224);
                         <string notr="true">color : rgb(52, 42, 24 )</string>
                        </property>
                        <property name="text">
-                        <string>lbNumInteriorPPred</string>
+                        <string/>
                        </property>
                       </widget>
                      </item>
@@ -8832,7 +8832,7 @@ background : rgb(250,238,224);
                         <string notr="true">color : rgb(52, 42, 24 )</string>
                        </property>
                        <property name="text">
-                        <string>lbCodPosPPred</string>
+                        <string/>
                        </property>
                       </widget>
                      </item>
@@ -8865,7 +8865,7 @@ background : rgb(250,238,224);
                         <string notr="true">color : rgb(52, 42, 24 )</string>
                        </property>
                        <property name="text">
-                        <string>lbPaisPPred</string>
+                        <string/>
                        </property>
                       </widget>
                      </item>

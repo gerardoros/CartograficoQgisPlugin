@@ -115,7 +115,7 @@ class ActualizacionCatastralV3:
         self.dockwidget.btnConstancia.clicked.connect(self.irAConstIdentificacion)
         self.dockwidget.btnManifestacion.clicked.connect(self.irAManifestacion)
 
-        self.cve_cat_len = 16
+        self.cve_cat_len = 10
         # inicializa variables globales para estatus de claves
         QSettings().setValue('clavesEstatus', [])
         QSettings().setValue('clavesEstatusRef', [])
@@ -465,8 +465,6 @@ class ActualizacionCatastralV3:
 
     def obtenerMunicipios(self):
 
-        self.cve_cat_len = 16
-
         self.dockwidget.comboLocalidad.clear()
 
         try:
@@ -489,8 +487,6 @@ class ActualizacionCatastralV3:
 
     #Llenar primer combo
     def obtenerLocalidades(self):
-
-        self.cve_cat_len = 25
 
         self.dockwidget.comboLocalidad.clear()
 
