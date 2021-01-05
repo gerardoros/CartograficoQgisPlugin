@@ -69,21 +69,21 @@ class CertCveValor:
         self.actions = []
         self.menu = self.tr(u'&Certificado clave y valor')
         self.canvas = iface.mapCanvas()
-        self.abrePredio = False
-        self.directorioAGuardar = None
-        self.cve_catastral = None
+        self.abrePredio3 = False
+        self.directorioAGuardar2 = None
+        self.cve_catastral2 = None
 
         # eventos
-        self.dlg.btnBrowse.clicked.connect(self.selectDirectory)
-        self.dlg.btnGenerar.clicked.connect(self.generarDoc)
-        self.dlg.btnSeleccionar.clicked.connect(self.activarSeleccion)
+        self.dlg.btnBrowse_2.clicked.connect(self.selectDirectory2)
+        self.dlg.btnGenerar_2.clicked.connect(self.generarDoc2)
+        self.dlg.btnSeleccionar_2.clicked.connect(self.activarSeleccion2)
         self.dlg.exit_signal.connect(self.closeEvent)
 
-        self.dlg.fldCveCat.textChanged.connect(self.lineEditToUpper)
+        self.dlg.fldCveCat_2.textChanged.connect(self.lineEditToUpper)
 
         rx = QRegExp("[a-zA-Z0-9]{31}")
         val = QRegExpValidator(rx)
-        self.dlg.fldCveCat.setValidator(val)
+        self.dlg.fldCveCat_2.setValidator(val)
 
 
     # noinspection PyMethodMayBeStatic
@@ -202,16 +202,16 @@ class CertCveValor:
     def run(self):
         """Run method that performs all the real work"""
 
-        self.obtenerXCapas()
+        self.obtenerXCapas2()
 
-        self.xManzana.selectionChanged.connect(self.seleccionaClave)
-        self.xPredGeom.selectionChanged.connect(self.seleccionaClave)
-        self.xPredNum.selectionChanged.connect(self.seleccionaClave)
-        self.xConst.selectionChanged.connect(self.seleccionaClave)
-        self.xHoriGeom.selectionChanged.connect(self.seleccionaClave)
-        self.xHoriNum.selectionChanged.connect(self.seleccionaClave)
-        self.xVert.selectionChanged.connect(self.seleccionaClave)
-        self.xCvesVert.selectionChanged.connect(self.seleccionaClave)
+        self.xManzana.selectionChanged.connect(self.seleccionaClave2)
+        self.xPredGeom.selectionChanged.connect(self.seleccionaClave2)
+        self.xPredNum.selectionChanged.connect(self.seleccionaClave2)
+        self.xConst.selectionChanged.connect(self.seleccionaClave2)
+        self.xHoriGeom.selectionChanged.connect(self.seleccionaClave2)
+        self.xHoriNum.selectionChanged.connect(self.seleccionaClave2)
+        self.xVert.selectionChanged.connect(self.seleccionaClave2)
+        self.xCvesVert.selectionChanged.connect(self.seleccionaClave2)
 
         # show the dialog
         self.dlg.show()
@@ -224,7 +224,7 @@ class CertCveValor:
             pass
 
 
-    def selectDirectory(self):
+    def selectDirectory2(self):
         # self.archivo = QtGui.QFileDialog.getOpenFileName(self, 'Abir Archivo')
 
         options = QFileDialog.Options()
@@ -233,14 +233,14 @@ class CertCveValor:
         directory = QFileDialog.getExistingDirectory(self.dlg, "Elige un directorio", options=options)
 
         if directory:
-            self.directorioAGuardar = directory
-            self.dlg.fldDirectorio.setText(directory)
+            self.directorioAGuardar2 = directory
+            self.dlg.fldDirectorio_2.setText(directory)
 
-    def generarDoc(self):
+    def generarDoc2(self):
 
-        self.cve_catastral = self.dlg.fldCveCat.text()
+        self.cve_catastral2 = self.dlg.fldCveCat_2.text()
 
-        if not (self.directorioAGuardar and self.cve_catastral):
+        if not (self.directorioAGuardar2 and self.cve_catastral2):
             self.UTI.mostrarAlerta("Por favor llene los campos.", QMessageBox.Critical,
                                "Certificacion clave y valor catastral")
             return
@@ -248,21 +248,21 @@ class CertCveValor:
         url = self.CFG.urlCertCveValor
         headers = {'Content-Type': 'application/json', 'Authorization': self.UTI.obtenerToken()}
         try:
-            response = requests.get(url + self.cve_catastral, headers=headers)
+            response = requests.get(url + self.cve_catastral2, headers=headers)
             d = response.headers['content-disposition']
             fname = re.findall("filename=(.+)", d)[0].strip('"')
-            ruta = f"{self.directorioAGuardar }/{fname}"
+            ruta = f"{self.directorioAGuardar2 }/{fname}"
             f = open( ruta, 'wb')
             f.write(response.content)
             f.close()
-            self.cambiarStatus("Archivo guardado", "ok")
+            self.cambiarStatus2("Archivo guardado", "ok")
 
         except requests.exceptions.RequestException:
             self.UTI.mostrarAlerta("No se ha podido conectar al servidor v1", QMessageBox.Critical,
                                    "Certificacion clave y valor catastral")  # Error en la peticion de consulta
-        self.cancelaSeleccion()
+        self.cancelaSeleccion2()
 
-    def seleccionaClave(self):
+    def seleccionaClave2(self):
 
         capaActiva = self.iface.activeLayer()
         features = []
@@ -302,41 +302,41 @@ class CertCveValor:
                 cond = True
 
             if len(features) == 0:
-                self.cambiarStatus("Seleccione una geometria valida", "error")
-                self.cancelaSeleccionYRepinta()
+                self.cambiarStatus2("Seleccione una geometria valida", "error")
+                self.cancelaSeleccion2YRepinta()
                 return
             if len(features) != 1:
-                self.cambiarStatus("Seleccione una sola geometria", "error")
-                self.cancelaSeleccionYRepinta()
+                self.cambiarStatus2("Seleccione una sola geometria", "error")
+                self.cancelaSeleccion2YRepinta()
                 return
             else:
-                self.cambiarStatus("Predio seleccionado", "ok")
+                self.cambiarStatus2("Predio seleccionado", "ok")
 
                 feat = features[0]
-                self.cve_catastral = feat['cve_cat']
-                self.dlg.fldCveCat.setText(self.cve_catastral)
-                self.dlg.btnSeleccionar.setEnabled(True)
+                self.cve_catastral2 = feat['cve_cat']
+                self.dlg.fldCveCat_2.setText(self.cve_catastral2)
+                self.dlg.btnSeleccionar_2.setEnabled(True)
         else:
             self.UTI.mostrarAlerta("Elija una capa.", QMessageBox.Critical,
                                    "Certificacion clave y valor catastral")  # Error en la peticion de consulta
 
-    def activarSeleccion(self):
-        if not self.abrePredio:
+    def activarSeleccion2(self):
+        if not self.abrePredio3:
             self.iface.actionSelect().trigger()
             self.canvas.setCursor(self.UTI.cursorRedondo)
-            self.dlg.btnSeleccionar.setEnabled(False)
-            self.abrePredio = True
+            self.dlg.btnSeleccionar_2.setEnabled(False)
+            self.abrePredio3 = True
 
-    def cancelaSeleccion(self):
-        if self.abrePredio:
-            self.dlg.btnSeleccionar.setEnabled(True)
+    def cancelaSeleccion2(self):
+        if self.abrePredio3:
+            self.dlg.btnSeleccionar_2.setEnabled(True)
             # regresa herramienta de seleccion normal
             self.iface.actionPan().trigger()
-            self.cambiarStatus("Listo...", "ok")
-            self.abrePredio = False
+            self.cambiarStatus2("Listo...", "ok")
+            self.abrePredio3 = False
 
-    def cancelaSeleccionYRepinta(self):
-        self.dlg.btnSeleccionar.setEnabled(True)
+    def cancelaSeleccionYRepinta2(self):
+        self.dlg.btnSeleccionar_2.setEnabled(True)
 
         self.xPredGeom.removeSelection()
         self.xHoriGeom.removeSelection()
@@ -349,31 +349,31 @@ class CertCveValor:
         self.canvas.refresh()
         # regresa herramienta de seleccion normal
         self.iface.actionPan().trigger()
-        self.abrePredio = False
+        self.abrePredio3 = False
 
     # recibimos el closeEvent del dialog
     def closeEvent(self, msg):
         if msg:
-            self.cancelaSeleccionYRepinta()
+            self.cancelaSeleccionYRepinta2()
 
 
-    def cambiarStatus(self, texto, estado):
+    def cambiarStatus2(self, texto, estado):
 
-        self.dlg.lbEstatusCedula.setText(texto)
+        self.dlg.lbEstatusCedula_2.setText(texto)
 
         if estado == "ok": # abriendo
-            self.dlg.lbEstatusCedula.setStyleSheet('color: green')
+            self.dlg.lbEstatusCedula_2.setStyleSheet('color: green')
         elif estado == "error": # Seleccione un solo predio
-            self.dlg.lbEstatusCedula.setStyleSheet('color: red')
+            self.dlg.lbEstatusCedula_2.setStyleSheet('color: red')
         else:
-            self.dlg.lbEstatusCedula.setStyleSheet('color: black')
+            self.dlg.lbEstatusCedula_2.setStyleSheet('color: black')
 
 
-    def lineEditToUpper(self):
-        self.dlg.fldCveCat.setText(self.dlg.fldCveCat.text().upper())
+    def lineEditToUpper2(self):
+        self.dlg.fldCveCat_2.setText(self.dlg.fldCveCat_2.text().upper())
 
 
-    def obtenerXCapas(self):
+    def obtenerXCapas2(self):
 
         # carga las capas en caso de no existir
         # self.UTI.cargarCapaVacio()

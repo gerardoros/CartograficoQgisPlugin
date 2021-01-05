@@ -58,17 +58,21 @@ from ..generar_documentos.cert_aportes import CertAportes
 from ..generar_documentos.const_identificacion import ConstIdentificacion
 from ..generar_documentos.gen_doc_calvecat import gen_doc_calvecat
 from .planoManzanero import PlanoManzanero
-
+from CartograficoQgisPlugin.funciones.configuracion import Configuracion
+from CartograficoQgisPlugin.funciones.utilidades import utilidades
 
 class ActualizacionCatastralV3:
     """QGIS Plugin Implementation."""
 
-    def __init__(self, iface):
+    def __init__(self, iface, idManzana = ''):
         
         self.iface = iface
-         
-        self.CFG = None
-        self.UTI = None
+        self.idManzana = idManzana
+        self.CFG = Configuracion.Configuracion()
+        self.UTI = utilidades.Utilidad()
+        self.UTI.CFG = self.CFG
+        #self.CFG = None
+        #self.UTI = None
         self.DFS = None
         self.DBJ = None
         self.ELM = None
@@ -100,6 +104,7 @@ class ActualizacionCatastralV3:
         # self.dockwidget.comboLocalidad.currentIndexChanged.connect(self.obtenerSectoresPorLocalidad)
         self.dockwidget.comboSector.currentIndexChanged.connect(self.obtenerManzanasPorSector)
         self.dockwidget.comboManzana.currentIndexChanged.connect(self.obtenerIdManzana)
+
         self.dockwidget.botonActivarEdicion.clicked.connect(self.activarEdicion)
         self.dockwidget.botonActualizarServiciosCalles.clicked.connect(self.actualizarServiciosCalles)
 
@@ -116,6 +121,11 @@ class ActualizacionCatastralV3:
         self.dockwidget.btnManifestacion.clicked.connect(self.irAManifestacion)
 
         self.cve_cat_len = 16
+        self.modoDesarrollo = False
+        self.cargaRapida = True
+        self.cuerpo = {"incluirGeom": "true", "pagina": None, "bbox": "false", "pin": "false", "geomWKT": None, "epsg": None, "properties": None, "epsgGeomWKT": None, "itemsPagina": None, "nombre": "x"}
+        self.headers = {'Content-Type': 'application/json'}
+        self.payload = json.dumps(self.cuerpo)
         # inicializa variables globales para estatus de claves
         QSettings().setValue('clavesEstatus', [])
         QSettings().setValue('clavesEstatusRef', [])
@@ -148,7 +158,7 @@ class ActualizacionCatastralV3:
         'Estado' : 'e_estado',
         'Region Catastral' : 'e_region_carto',
         'Municipios' : 'e_municipio',
-        'Secciones' : 'e_seccion',		
+        'Secciones' : 'e_seccion',      
         'Localidades' : 'e_localidad',
         'Sectores' : 'e_sector',
         'Manzanas' : 'e_manzana',
@@ -327,8 +337,8 @@ class ActualizacionCatastralV3:
             #self.UTI.strechtTabla(self.dockwidget.tablaEdicion)
             # self.UTI.strechtTabla(self.dockwidget.tablaEdicionRef)
 
-            self.dockwidget.tablaEdicionRef.setColumnWidth(0, 50)
-            self.dockwidget.tablaEdicionRef.setColumnWidth(1, 50)
+            #self.dockwidget.tablaEdicionRef.setColumnWidth(0, 50)
+            #self.dockwidget.tablaEdicionRef.setColumnWidth(1, 50)
 
             if self.capasCompletas():
 
@@ -349,7 +359,7 @@ class ActualizacionCatastralV3:
                     self.dockwidget.comboManzana.clear()
 
                     #Inicializacionde IdManzana
-                    self.idManzana = ' '
+                    #self.idManzana = ' '
 
                     #Modo desarrollor
                     self.modoDesarrollo = False
@@ -390,6 +400,8 @@ class ActualizacionCatastralV3:
                         try:
                             self.obtenerSectoresPorMunicipio()
 
+
+
                         except:
                             self.UTI.mostrarAlerta("Error al cargar Sectores\nError de servidor loc1", QMessageBox().Information, "Cargar Localidades")
 
@@ -428,7 +440,7 @@ class ActualizacionCatastralV3:
         return (self.dockwidget.comboSector.count() > 0 and self.dockwidget.comboManzana.count()) or self.modoDesarrollo
 
 ##########################################################################
-    def obtenerIdManzana(self):
+    def obtenerIdManzana(self, idManzana = ''):
         
         
         #Obtener el identificador de la manzana
@@ -454,8 +466,9 @@ class ActualizacionCatastralV3:
             
 
         else:
-            index = self.dockwidget.comboManzana.currentIndex()
-            self.idManzana = self.dockwidget.comboManzana.itemData(index)
+            #index = self.dockwidget.comboManzana.currentIndex()
+            #self.idManzana = self.dockwidget.comboManzana.itemData(index)
+            self.idManzana = str(idManzana)
 
 
 
@@ -812,75 +825,75 @@ class ActualizacionCatastralV3:
         group = root.findGroup('referencia')
 
         # valida si los combos contienen informacion
-        if self.validarCombox():
+        #if self.validarCombox():
 
-            self.vaciarCapa(self.xManzana)
-            self.vaciarCapa(self.xPredGeom)
-            self.vaciarCapa(self.xPredNum)
-            self.vaciarCapa(self.xConst)
-            self.vaciarCapa(self.xHoriGeom)
-            self.vaciarCapa(self.xHoriNum)
-            self.vaciarCapa(self.xVert)
-            self.vaciarCapa(self.xCvesVert)
+        self.vaciarCapa(self.xManzana)
+        self.vaciarCapa(self.xPredGeom)
+        self.vaciarCapa(self.xPredNum)
+        self.vaciarCapa(self.xConst)
+        self.vaciarCapa(self.xHoriGeom)
+        self.vaciarCapa(self.xHoriNum)
+        self.vaciarCapa(self.xVert)
+        self.vaciarCapa(self.xCvesVert)
 
-            if self.cargaRapida:
-                if not self.pintarUnaCapa(self.xManzana):
-                    return
-                self.zoomManzana()
-                
-                if not self.pintarUnaCapa(self.xPredGeom):
-                    return
-
-                if not self.pintarNum(self.xPredNum):
-                    return
-                
-                if not self.pintarUnaCapa(self.xConst):
-                    return
-
-                if not self.pintarUnaCapa(self.xHoriGeom):
-                    return
-
-                if not self.pintarNum(self.xHoriNum):
-                    return
-                
-                if not self.pintarUnaCapa(self.xVert):
-                    return
-                
-                if not self.pintarUnaCapa(self.xCvesVert):
-                    return
+        if self.cargaRapida:
+            if not self.pintarUnaCapa(self.xManzana):
+                return
+            self.zoomManzana()
             
-                
+            if not self.pintarUnaCapa(self.xPredGeom):
+                return
 
-            else:
-                if not self.pintarUnaCapa(self.xManzana):
-                    return
-                self.zoomManzana()
-                
-                if not self.pintarUnaCapa(self.xPredGeom):
-                    return
-
-                if not self.pintarNum(self.xPredNum):
-                    return
-                
-                if not self.pintarUnaCapa(self.xConst):
-                    return
-                
-                if not self.pintarUnaCapa(self.xHoriGeom):
-                    return
-
-                if not self.pintarNum(self.xHoriNum):
-                    return
-
-                if not self.pintarUnaCapa(self.xVert):
-                    return
-                
-                if not self.pintarUnaCapa(self.xCvesVert):
-                    return
+            if not self.pintarNum(self.xPredNum):
+                return
             
-            print ("Capas cargadas con exito")
+            if not self.pintarUnaCapa(self.xConst):
+                return
+
+            if not self.pintarUnaCapa(self.xHoriGeom):
+                return
+
+            if not self.pintarNum(self.xHoriNum):
+                return
+            
+            if not self.pintarUnaCapa(self.xVert):
+                return
+            
+            if not self.pintarUnaCapa(self.xCvesVert):
+                return
+        
+            
 
         else:
-            self.UTI.mostrarAlerta('No se han seleccionado manzanas para cargar', QMessageBox.Critical, 'Capas de consulta')
+            if not self.pintarUnaCapa(self.xManzana):
+                return
+            self.zoomManzana()
+            
+            if not self.pintarUnaCapa(self.xPredGeom):
+                return
+
+            if not self.pintarNum(self.xPredNum):
+                return
+            
+            if not self.pintarUnaCapa(self.xConst):
+                return
+            
+            if not self.pintarUnaCapa(self.xHoriGeom):
+                return
+
+            if not self.pintarNum(self.xHoriNum):
+                return
+
+            if not self.pintarUnaCapa(self.xVert):
+                return
+            
+            if not self.pintarUnaCapa(self.xCvesVert):
+                return
+        
+        print ("Capas cargadas con exito")
+
+        #else:
+            #self.UTI.mostrarAlerta('No se han seleccionado manzanas para cargar', QMessageBox.Critical, 'Capas de consulta')
 
 ##############################################################################################################
 

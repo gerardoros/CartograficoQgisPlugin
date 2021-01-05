@@ -66,23 +66,23 @@ class CertAportes:
         # Declare instance attributes
         self.actions = []
         self.menu = self.tr(u'&Certificacion Aportes')
-        self.abrePredio = False
-        self.directorioAGuardar = None
-        self.cve_catastral = None
+        self.abrePredio4 = False
+        self.directorioAGuardar4 = None
+        self.cve_catastral4 = None
 
         self.canvas = iface.mapCanvas()
 
         # eventos
-        self.dlg.btnBrowse.clicked.connect(self.selectDirectory)
-        self.dlg.btnGenerar.clicked.connect(self.generarDoc)
-        self.dlg.btnSeleccionar.clicked.connect(self.activarSeleccion)
+        self.dlg.btnBrowse_3.clicked.connect(self.selectDirectory3)
+        self.dlg.btnGenerar_3.clicked.connect(self.generarDoc3)
+        self.dlg.btnSeleccionar_3.clicked.connect(self.activarSeleccion3)
         self.dlg.exit_signal.connect(self.closeEvent)
 
-        self.dlg.fldCveCat.textChanged.connect(self.lineEditToUpper)
+        self.dlg.fldCveCat_3.textChanged.connect(self.lineEditToUpper3)
 
         rx = QRegExp("[a-zA-Z0-9]{31}")
         val = QRegExpValidator(rx)
-        self.dlg.fldCveCat.setValidator(val)
+        self.dlg.fldCveCat_3.setValidator(val)
 
 
     # noinspection PyMethodMayBeStatic
@@ -201,16 +201,16 @@ class CertAportes:
     def run(self):
         """Run method that performs all the real work"""
 
-        self.obtenerXCapas()
+        self.obtenerXCapas3()
 
-        self.xManzana.selectionChanged.connect(self.seleccionaClave)
-        self.xPredGeom.selectionChanged.connect(self.seleccionaClave)
-        self.xPredNum.selectionChanged.connect(self.seleccionaClave)
-        self.xConst.selectionChanged.connect(self.seleccionaClave)
-        self.xHoriGeom.selectionChanged.connect(self.seleccionaClave)
-        self.xHoriNum.selectionChanged.connect(self.seleccionaClave)
-        self.xVert.selectionChanged.connect(self.seleccionaClave)
-        self.xCvesVert.selectionChanged.connect(self.seleccionaClave)
+        self.xManzana.selectionChanged.connect(self.seleccionaClave3)
+        self.xPredGeom.selectionChanged.connect(self.seleccionaClave3)
+        self.xPredNum.selectionChanged.connect(self.seleccionaClave3)
+        self.xConst.selectionChanged.connect(self.seleccionaClave3)
+        self.xHoriGeom.selectionChanged.connect(self.seleccionaClave3)
+        self.xHoriNum.selectionChanged.connect(self.seleccionaClave3)
+        self.xVert.selectionChanged.connect(self.seleccionaClave3)
+        self.xCvesVert.selectionChanged.connect(self.seleccionaClave3)
 
         # show the dialog
         self.dlg.show()
@@ -222,7 +222,7 @@ class CertAportes:
             # substitute with your code.
             pass
 
-    def selectDirectory(self):
+    def selectDirectory3(self):
         # self.archivo = QtGui.QFileDialog.getOpenFileName(self, 'Abir Archivo')
 
         options = QFileDialog.Options()
@@ -231,14 +231,14 @@ class CertAportes:
         directory = QFileDialog.getExistingDirectory(self.dlg, "Elige un directorio", options=options)
 
         if directory:
-            self.directorioAGuardar = directory
-            self.dlg.fldDirectorio.setText(directory)
+            self.directorioAGuardar4 = directory
+            self.dlg.fldDirectorio_3.setText(directory)
 
-    def generarDoc(self):
+    def generarDoc3(self):
 
-        self.cve_catastral = self.dlg.fldCveCat.text()
+        self.cve_catastral4 = self.dlg.fldCveCat_3.text()
 
-        if not (self.directorioAGuardar and self.cve_catastral):
+        if not (self.directorioAGuardar4 and self.cve_catastral4):
             self.UTI.mostrarAlerta("Por favor llene los campos.", QMessageBox.Critical,
                                "Certificacion de Aportes")
             return
@@ -246,23 +246,23 @@ class CertAportes:
         url = self.CFG.urlCertAportaciones
         headers = {'Content-Type': 'application/json', 'Authorization': self.UTI.obtenerToken()}
         try:
-            response = requests.get(url + self.cve_catastral, headers=headers)
+            response = requests.get(url + self.cve_catastral4, headers=headers)
             d = response.headers['content-disposition']
             fname = re.findall("filename=(.+)", d)[0].strip('"')
-            ruta = f"{self.directorioAGuardar }/{fname}"
+            ruta = f"{self.directorioAGuardar4 }/{fname}"
             f = open( ruta, 'wb')
             f.write(response.content)
             f.close()
-            self.cambiarStatus("Archivo guardado", "ok")
+            self.cambiarStatus3("Archivo guardado", "ok")
 
         except requests.exceptions.RequestException:
             self.UTI.mostrarAlerta("No se ha podido conectar al servidor v1", QMessageBox.Critical,
                                    "Certificacion de Aportes")  # Error en la peticion de consulta
 
-        self.cancelaSeleccion()
+        self.cancelaSeleccion3()
 
 
-    def seleccionaClave(self):
+    def seleccionaClave3(self):
 
         capaActiva = self.iface.activeLayer()
         features = []
@@ -301,41 +301,41 @@ class CertAportes:
                 features = self.xCvesVert.selectedFeatures()
 
             if len(features) == 0:
-                self.cambiarStatus("Seleccione una geometria valida", "error")
-                self.cancelaSeleccionYRepinta()
+                self.cambiarStatus3("Seleccione una geometria valida", "error")
+                self.cancelaSeleccionYRepinta3()
                 return
             if len(features) != 1:
-                self.cambiarStatus("Seleccione una sola geometria", "error")
-                self.cancelaSeleccionYRepinta()
+                self.cambiarStatus3("Seleccione una sola geometria", "error")
+                self.cancelaSeleccionYRepinta3()
                 return
             else:
-                self.cambiarStatus("Predio seleccionado", "ok")
+                self.cambiarStatus3("Predio seleccionado", "ok")
 
                 feat = features[0]
-                self.cve_catastral = feat['cve_cat']
-                self.dlg.fldCveCat.setText(self.cve_catastral)
-                self.dlg.btnSeleccionar.setEnabled(True)
+                self.cve_catastral4 = feat['cve_cat']
+                self.dlg.fldCveCat_3.setText(self.cve_catastral4)
+                self.dlg.btnSeleccionar_3.setEnabled(True)
         else:
             self.UTI.mostrarAlerta("Elija una capa.", QMessageBox.Critical,
                                    "Certificacion de Aportes")  # Error en la peticion de consulta
 
-    def activarSeleccion(self):
-        if not self.abrePredio:
+    def activarSeleccion3(self):
+        if not self.abrePredio4:
             self.iface.actionSelect().trigger()
             self.canvas.setCursor(self.UTI.cursorRedondo)
-            self.dlg.btnSeleccionar.setEnabled(False)
-            self.abrePredio = True
+            self.dlg.btnSeleccionar_3.setEnabled(False)
+            self.abrePredio4 = True
 
-    def cancelaSeleccion(self):
-        if self.abrePredio:
-            self.dlg.btnSeleccionar.setEnabled(True)
+    def cancelaSeleccion3(self):
+        if self.abrePredio4:
+            self.dlg.btnSeleccionar_3.setEnabled(True)
             # regresa herramienta de seleccion normal
             self.iface.actionPan().trigger()
-            self.cambiarStatus("Listo...", "ok")
-            self.abrePredio = False
+            self.cambiarStatus3("Listo...", "ok")
+            self.abrePredio4 = False
 
-    def cancelaSeleccionYRepinta(self):
-        self.dlg.btnSeleccionar.setEnabled(True)
+    def cancelaSeleccionYRepinta3(self):
+        self.dlg.btnSeleccionar_3.setEnabled(True)
 
 
         self.xPredGeom.removeSelection()
@@ -350,31 +350,31 @@ class CertAportes:
         self.canvas.refresh()
         # regresa herramienta de seleccion normal
         self.iface.actionPan().trigger()
-        self.abrePredio = False
+        self.abrePredio4 = False
 
     # recibimos el closeEvent del dialog
     def closeEvent(self, msg):
         if msg:
-            self.cancelaSeleccionYRepinta()
+            self.cancelaSeleccionYRepinta3()
 
 
-    def cambiarStatus(self, texto, estado):
+    def cambiarStatus3(self, texto, estado):
 
-        self.dlg.lbEstatusCedula.setText(texto)
+        self.dlg.lbEstatusCedula_3.setText(texto)
 
         if estado == "ok": # abriendo
-            self.dlg.lbEstatusCedula.setStyleSheet('color: green')
+            self.dlg.lbEstatusCedula_3.setStyleSheet('color: green')
         elif estado == "error": # Seleccione un solo predio
-            self.dlg.lbEstatusCedula.setStyleSheet('color: red')
+            self.dlg.lbEstatusCedula_3.setStyleSheet('color: red')
         else:
-            self.dlg.lbEstatusCedula.setStyleSheet('color: black')
+            self.dlg.lbEstatusCedula_3.setStyleSheet('color: black')
 
 
-    def lineEditToUpper(self):
-        self.dlg.fldCveCat.setText(self.dlg.fldCveCat.text().upper())
+    def lineEditToUpper3(self):
+        self.dlg.fldCveCat_3.setText(self.dlg.fldCveCat_3.text().upper())
 
 
-    def obtenerXCapas(self):
+    def obtenerXCapas3(self):
 
         # carga las capas en caso de no existir
         # self.UTI.cargarCapaVacio()

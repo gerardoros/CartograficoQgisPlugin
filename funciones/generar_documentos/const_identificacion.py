@@ -67,24 +67,24 @@ class ConstIdentificacion:
         # Declare instance attributes
         self.actions = []
         self.menu = self.tr(u'&Constancia Identificacion')
-        self.abrePredio = False
-        self.directorioAGuardar = None
-        self.cve_catastral = None
+        self.abrePredio5 = False
+        self.directorioAGuardar5 = None
+        self.cve_catastral5 = None
 
         self.canvas = iface.mapCanvas()
 
         # eventos
-        self.dlg.btnBrowse.clicked.connect(self.selectDirectory)
-        self.dlg.btnGenerar.clicked.connect(self.generarDoc)
-        self.dlg.btnSeleccionar.clicked.connect(self.activarSeleccion)
+        self.dlg.btnBrowse_4.clicked.connect(self.selectDirectory4)
+        self.dlg.btnGenerar_4.clicked.connect(self.generarDoc4)
+        self.dlg.btnSeleccionar_4.clicked.connect(self.activarSeleccion4)
         self.dlg.exit_signal.connect(self.closeEvent)
 
-        self.dlg.fldCveCat.textChanged.connect(self.lineEditToUpper)
+        self.dlg.fldCveCat_4.textChanged.connect(self.lineEditToUpper4)
 
         #validaciones
         rx = QRegExp("[a-zA-Z0-9]{31}")
         val = QRegExpValidator(rx)
-        self.dlg.fldCveCat.setValidator(val)
+        self.dlg.fldCveCat_4.setValidator(val)
 
         rx = QRegExp("[a-zA-ZÀ-ÿ ]{255}")
         val = QRegExpValidator(rx)
@@ -93,7 +93,7 @@ class ConstIdentificacion:
         self.onlyInt = QIntValidator()
         self.dlg.fldNumSolucitud.setValidator(self.onlyInt)
 
-        self.dlg.dateEdit.setDate(QDate.currentDate())
+        self.dlg.dateEdit_2.setDate(QDate.currentDate())
 
 
     # noinspection PyMethodMayBeStatic
@@ -212,16 +212,16 @@ class ConstIdentificacion:
     def run(self):
         """Run method that performs all the real work"""
 
-        self.obtenerXCapas()
+        self.obtenerXCapas4()
 
-        self.xManzana.selectionChanged.connect(self.seleccionaClave)
-        self.xPredGeom.selectionChanged.connect(self.seleccionaClave)
-        self.xPredNum.selectionChanged.connect(self.seleccionaClave)
-        self.xConst.selectionChanged.connect(self.seleccionaClave)
-        self.xHoriGeom.selectionChanged.connect(self.seleccionaClave)
-        self.xHoriNum.selectionChanged.connect(self.seleccionaClave)
-        self.xVert.selectionChanged.connect(self.seleccionaClave)
-        self.xCvesVert.selectionChanged.connect(self.seleccionaClave)
+        self.xManzana.selectionChanged.connect(self.seleccionaClave4)
+        self.xPredGeom.selectionChanged.connect(self.seleccionaClave4)
+        self.xPredNum.selectionChanged.connect(self.seleccionaClave4)
+        self.xConst.selectionChanged.connect(self.seleccionaClave4)
+        self.xHoriGeom.selectionChanged.connect(self.seleccionaClave4)
+        self.xHoriNum.selectionChanged.connect(self.seleccionaClave4)
+        self.xVert.selectionChanged.connect(self.seleccionaClave4)
+        self.xCvesVert.selectionChanged.connect(self.seleccionaClave4)
 
         # show the dialog
         self.dlg.show()
@@ -233,7 +233,7 @@ class ConstIdentificacion:
             # substitute with your code.
             pass
 
-    def selectDirectory(self):
+    def selectDirectory4(self):
         # self.archivo = QtGui.QFileDialog.getOpenFileName(self, 'Abir Archivo')
 
         options = QFileDialog.Options()
@@ -242,17 +242,17 @@ class ConstIdentificacion:
         directory = QFileDialog.getExistingDirectory(self.dlg, "Elige un directorio", options=options)
 
         if directory:
-            self.directorioAGuardar = directory
-            self.dlg.fldDirectorio.setText(directory)
+            self.directorioAGuardar5 = directory
+            self.dlg.fldDirectorio_4.setText(directory)
 
-    def generarDoc(self):
+    def generarDoc4(self):
         #
-        cve_catastral = str(self.dlg.fldCveCat.text())
+        cve_catastral5 = str(self.dlg.fldCveCat_4.text())
         num_solicitud = str(self.dlg.fldNumSolucitud.text())
         nombre_solicitante = str(self.dlg.fldNomSolic.text())
-        fecha = self.dlg.dateEdit.date().toString("dd/MM/yyyy")
+        fecha = self.dlg.dateEdit_2.date().toString("dd/MM/yyyy")
 
-        if not (cve_catastral and num_solicitud and nombre_solicitante and fecha and self.directorioAGuardar):
+        if not (cve_catastral5 and num_solicitud and nombre_solicitante and fecha and self.directorioAGuardar5):
             self.UTI.mostrarAlerta("Por favor llene los campos.", QMessageBox.Critical,
                                "Constancia de identificacion catastral")
             return
@@ -261,7 +261,7 @@ class ConstIdentificacion:
         url = self.CFG.urlConstIdentificacion
         headers = {'Content-Type': 'application/json', 'Authorization': self.UTI.obtenerToken()}
 
-        payload = {"claveCatastral": cve_catastral,
+        payload = {"claveCatastral": cve_catastral5,
                    "fechaSolicitud": fecha,
                    "nombrePersona": nombre_solicitante,
                    "numeroSolicitud": num_solicitud}
@@ -272,19 +272,19 @@ class ConstIdentificacion:
             response = requests.post(url, headers=headers, data=payload)
             d = response.headers['content-disposition']
             fname = re.findall("filename=(.+)", d)[0].strip('"')
-            ruta = f"{self.directorioAGuardar}/{fname}"
+            ruta = f"{self.directorioAGuardar5}/{fname}"
             f = open(ruta, 'wb')
             f.write(response.content)
             f.close()
-            self.cambiarStatus("Archivo guardado", "ok")
+            self.cambiarStatus4("Archivo guardado", "ok")
 
         except requests.exceptions.RequestException:
             self.UTI.mostrarAlerta("No se ha podido conectar al servidor v1", QMessageBox.Critical,
                                    "Constancia de identificacion catastral")  # Error en la peticion de consulta
-        self.cancelaSeleccion()
+        self.cancelaSeleccion4()
 
 
-    def seleccionaClave(self):
+    def seleccionaClave4(self):
 
         capaActiva = self.iface.activeLayer()
         features = []
@@ -322,41 +322,41 @@ class ConstIdentificacion:
                 features = self.xCvesVert.selectedFeatures()
 
             if len(features) == 0:
-                self.cambiarStatus("Seleccione una geometria valida", "error")
-                self.cancelaSeleccionYRepinta()
+                self.cambiarStatus4("Seleccione una geometria valida", "error")
+                self.cancelaSeleccionYRepinta4()
                 return
             if len(features) != 1:
-                self.cambiarStatus("Seleccione una sola geometria", "error")
-                self.cancelaSeleccionYRepinta()
+                self.cambiarStatus4("Seleccione una sola geometria", "error")
+                self.cancelaSeleccionYRepinta4()
                 return
             else:
-                self.cambiarStatus("Predio seleccionado", "ok")
+                self.cambiarStatus4("Predio seleccionado", "ok")
 
                 feat = features[0]
-                self.cve_catastral = feat['cve_cat']
-                self.dlg.fldCveCat.setText(self.cve_catastral)
-                self.dlg.btnSeleccionar.setEnabled(True)
+                self.cve_catastral5 = feat['cve_cat']
+                self.dlg.fldCveCat_4.setText(self.cve_catastral5)
+                self.dlg.btnSeleccionar_4.setEnabled(True)
         else:
             self.UTI.mostrarAlerta("Elija una capa.", QMessageBox.Critical,
                                    "Constancia de identificacion catastral")  # Error en la peticion de consulta
 
-    def activarSeleccion(self):
-        if not self.abrePredio:
+    def activarSeleccion4(self):
+        if not self.abrePredio5:
             self.iface.actionSelect().trigger()
             self.canvas.setCursor(self.UTI.cursorRedondo)
-            self.dlg.btnSeleccionar.setEnabled(False)
-            self.abrePredio = True
+            self.dlg.btnSeleccionar_4.setEnabled(False)
+            self.abrePredio5 = True
 
-    def cancelaSeleccion(self):
-        if self.abrePredio:
-            self.dlg.btnSeleccionar.setEnabled(True)
+    def cancelaSeleccion4(self):
+        if self.abrePredio5:
+            self.dlg.btnSeleccionar_4.setEnabled(True)
             # regresa herramienta de seleccion normal
             self.iface.actionPan().trigger()
-            self.cambiarStatus("Listo...", "ok")
-            self.abrePredio = False
+            self.cambiarStatus4("Listo...", "ok")
+            self.abrePredio5 = False
 
-    def cancelaSeleccionYRepinta(self):
-        self.dlg.btnSeleccionar.setEnabled(True)
+    def cancelaSeleccionYRepinta4(self):
+        self.dlg.btnSeleccionar_4.setEnabled(True)
 
         self.xPredGeom.removeSelection()
         self.xHoriGeom.removeSelection()
@@ -369,28 +369,28 @@ class ConstIdentificacion:
         self.canvas.refresh()
         # regresa herramienta de seleccion normal
         self.iface.actionPan().trigger()
-        self.abrePredio = False
+        self.abrePredio5 = False
 
     # recibimos el closeEvent del dialog
     def closeEvent(self, msg):
         if msg:
-            self.cancelaSeleccionYRepinta()
+            self.cancelaSeleccionYRepinta4()
 
-    def cambiarStatus(self, texto, estado):
+    def cambiarStatus4(self, texto, estado):
 
-        self.dlg.lbEstatusCedula.setText(texto)
+        self.dlg.lbEstatusCedula_5.setText(texto)
 
         if estado == "ok":  # abriendo
-            self.dlg.lbEstatusCedula.setStyleSheet('color: green')
+            self.dlg.lbEstatusCedula_5.setStyleSheet('color: green')
         elif estado == "error":  # Seleccione un solo predio
-            self.dlg.lbEstatusCedula.setStyleSheet('color: red')
+            self.dlg.lbEstatusCedula_5.setStyleSheet('color: red')
         else:
-            self.dlg.lbEstatusCedula.setStyleSheet('color: black')
+            self.dlg.lbEstatusCedula_5.setStyleSheet('color: black')
 
-    def lineEditToUpper(self):
-        self.dlg.fldCveCat.setText(self.dlg.fldCveCat.text().upper())
+    def lineEditToUpper4(self):
+        self.dlg.fldCveCat_4.setText(self.dlg.fldCveCat_4.text().upper())
 
-    def obtenerXCapas(self):
+    def obtenerXCapas4(self):
 
         # carga las capas en caso de no existir
         # self.UTI.cargarCapaVacio()

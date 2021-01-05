@@ -674,7 +674,8 @@ class Utilidad:
 
 			root = QgsProject.instance().layerTreeRoot() 
 			root.addGroup('consulta')
-			root.addGroup('referencia') 
+			root.addGroup('referencia')
+			
 
 
 		# Se crea una lista de vectores a partir de una fuente de datos

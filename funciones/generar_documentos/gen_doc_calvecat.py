@@ -68,24 +68,24 @@ class gen_doc_calvecat:
         # Declare instance attributes
         self.actions = []
         self.menu = self.tr(u'&gen_doc_calvecat')
-        self.abrePredio = False
-        self.directorioAGuardar = None
-        self.cve_catastral = None
+        self.abrePredio6 = False
+        self.directorioAGuardar6 = None
+        self.cve_catastral6 = None
 
         self.canvas = iface.mapCanvas()
 
         # eventos
-        self.dlg.btnBrowse.clicked.connect(self.selectDirectory)
-        self.dlg.btnGenerar.clicked.connect(self.generarDoc)
-        self.dlg.btnSeleccionar.clicked.connect(self.activarSeleccion)
+        self.dlg.btnBrowse_5.clicked.connect(self.selectDirectory5)
+        self.dlg.btnGenerar_5.clicked.connect(self.generarDoc5)
+        self.dlg.btnSeleccionar_5.clicked.connect(self.activarSeleccion5)
         self.dlg.exit_signal.connect(self.closeEvent)
 
-        self.dlg.fldCveCat.textChanged.connect(self.lineEditToUpper)
+        self.dlg.fldCveCat_5.textChanged.connect(self.lineEditToUpper5)
 
         #validaciones
         rx = QRegExp("[a-zA-Z0-9]{31}")
         val = QRegExpValidator(rx)
-        self.dlg.fldCveCat.setValidator(val)
+        self.dlg.fldCveCat_5.setValidator(val)
 
         self.onlyInt = QIntValidator()
         self.dlg.fldNomfolio.setValidator(self.onlyInt)
@@ -215,16 +215,16 @@ class gen_doc_calvecat:
 
         # Create the dialog with elements (after translation) and keep reference
         # Only create GUI ONCE in callback, so that it will only load when the plugin is started
-        self.obtenerXCapas()
+        self.obtenerXCapas5()
 
-        self.xManzana.selectionChanged.connect(self.seleccionaClave)
-        self.xPredGeom.selectionChanged.connect(self.seleccionaClave)
-        self.xPredNum.selectionChanged.connect(self.seleccionaClave)
-        self.xConst.selectionChanged.connect(self.seleccionaClave)
-        self.xHoriGeom.selectionChanged.connect(self.seleccionaClave)
-        self.xHoriNum.selectionChanged.connect(self.seleccionaClave)
-        self.xVert.selectionChanged.connect(self.seleccionaClave)
-        self.xCvesVert.selectionChanged.connect(self.seleccionaClave)
+        self.xManzana.selectionChanged.connect(self.seleccionaClave5)
+        self.xPredGeom.selectionChanged.connect(self.seleccionaClave5)
+        self.xPredNum.selectionChanged.connect(self.seleccionaClave5)
+        self.xConst.selectionChanged.connect(self.seleccionaClave5)
+        self.xHoriGeom.selectionChanged.connect(self.seleccionaClave5)
+        self.xHoriNum.selectionChanged.connect(self.seleccionaClave5)
+        self.xVert.selectionChanged.connect(self.seleccionaClave5)
+        self.xCvesVert.selectionChanged.connect(self.seleccionaClave5)
 
         # show the dialog
         self.dlg.show()
@@ -236,7 +236,7 @@ class gen_doc_calvecat:
             # substitute with your code.
             pass
 
-    def selectDirectory(self):
+    def selectDirectory5(self):
         # self.archivo = QtGui.QFileDialog.getOpenFileName(self, 'Abir Archivo')
 
         options = QFileDialog.Options()
@@ -245,13 +245,13 @@ class gen_doc_calvecat:
         directory = QFileDialog.getExistingDirectory(self.dlg, "Elige un directorio", options=options)
 
         if directory:
-            self.directorioAGuardar = directory
-            self.dlg.fldDirectorio.setText(directory)
+            self.directorioAGuardar6 = directory
+            self.dlg.fldDirectorio_5.setText(directory)
 
 
-    def generarDoc(self):
+    def generarDoc5(self):
         #
-        cve_catastral = str(self.dlg.fldCveCat.text())
+        cve_catastral6 = str(self.dlg.fldCveCat_5.text())
         nom_folio = str(self.dlg.fldNomfolio.text())
         dom_notificaciones = str(self.dlg.fldDomNoti.text())
         area = str(self.dlg.fldAreaApro.text()) 
@@ -259,7 +259,7 @@ class gen_doc_calvecat:
         codigo = str(self.dlg.fldCodPostal.text())        
        
 
-        if not (cve_catastral and nom_folio and dom_notificaciones and area and colonia and codigo and self.directorioAGuardar):
+        if not (cve_catastral6 and nom_folio and dom_notificaciones and area and colonia and codigo and self.directorioAGuardar6):
             self.UTI.mostrarAlerta("Por favor llene los campos.", QMessageBox.Critical,
                                "Constancia de identificacion catastral")
             return
@@ -268,7 +268,7 @@ class gen_doc_calvecat:
         url = self.CFG.urlManifestacion
         headers = {'Content-Type': 'application/json', 'Authorization': self.UTI.obtenerToken()}
 
-        payload = {"claveCatastral": cve_catastral,
+        payload = {"claveCatastral": cve_catastral6,
                     "nombrefolio": nom_folio,
                     "notificaciones": dom_notificaciones,
                     "area": area,
@@ -281,19 +281,19 @@ class gen_doc_calvecat:
             response = requests.post(url, headers=headers, data=payload)
             d = response.headers['content-disposition']
             fname = re.findall("filename=(.+)", d)[0].strip('"')
-            ruta = f"{self.directorioAGuardar}/{fname}"
+            ruta = f"{self.directorioAGuardar6}/{fname}"
             f = open(ruta, 'wb')
             f.write(response.content)
             f.close()
-            self.cambiarStatus("Archivo guardado", "ok")
+            self.cambiarStatus5("Archivo guardado", "ok")
 
         except requests.exceptions.RequestException:
             self.UTI.mostrarAlerta("No se ha podido conectar al servidor v1", QMessageBox.Critical,
                                    "Constancia de identificacion catastral")  # Error en la peticion de consulta
-        self.cancelaSeleccion()
+        self.cancelaSeleccion5()
 
 
-    def seleccionaClave(self):
+    def seleccionaClave5(self):
 
         capaActiva = self.iface.activeLayer()
         features = []
@@ -331,41 +331,41 @@ class gen_doc_calvecat:
                 features = self.xCvesVert.selectedFeatures()
 
             if len(features) == 0:
-                self.cambiarStatus("Seleccione una geometria valida", "error")
-                self.cancelaSeleccionYRepinta()
+                self.cambiarStatus5("Seleccione una geometria valida", "error")
+                self.cancelaSeleccionYRepinta5()
                 return
             if len(features) != 1:
-                self.cambiarStatus("Seleccione una sola geometria", "error")
-                self.cancelaSeleccionYRepinta()
+                self.cambiarStatus5("Seleccione una sola geometria", "error")
+                self.cancelaSeleccionYRepinta5()
                 return
             else:
-                self.cambiarStatus("Predio seleccionado", "ok")
+                self.cambiarStatus5("Predio seleccionado", "ok")
 
                 feat = features[0]
-                self.cve_catastral = feat['cve_cat']
-                self.dlg.fldCveCat.setText(self.cve_catastral)
-                self.dlg.btnSeleccionar.setEnabled(True)
+                self.cve_catastral6 = feat['cve_cat']
+                self.dlg.fldCveCat_5.setText(self.cve_catastral6)
+                self.dlg.btnSeleccionar_5.setEnabled(True)
         else:
             self.UTI.mostrarAlerta("Elija una capa.", QMessageBox.Critical,
                                    "Constancia de identificacion catastral")  # Error en la peticion de consulta
 
-    def activarSeleccion(self):
-        if not self.abrePredio:
+    def activarSeleccion5(self):
+        if not self.abrePredio6:
             self.iface.actionSelect().trigger()
             self.canvas.setCursor(self.UTI.cursorRedondo)
-            self.dlg.btnSeleccionar.setEnabled(False)
-            self.abrePredio = True
+            self.dlg.btnSeleccionar_5.setEnabled(False)
+            self.abrePredio6 = True
 
-    def cancelaSeleccion(self):
-        if self.abrePredio:
-            self.dlg.btnSeleccionar.setEnabled(True)
+    def cancelaSeleccion5(self):
+        if self.abrePredio6:
+            self.dlg.btnSeleccionar_5.setEnabled(True)
             # regresa herramienta de seleccion normal
             self.iface.actionPan().trigger()
-            self.cambiarStatus("Listo...", "ok")
-            self.abrePredio = False
+            self.cambiarStatus5("Listo...", "ok")
+            self.abrePredio6 = False
 
-    def cancelaSeleccionYRepinta(self):
-        self.dlg.btnSeleccionar.setEnabled(True)
+    def cancelaSeleccionYRepinta5(self):
+        self.dlg.btnSeleccionar_5.setEnabled(True)
 
         self.xPredGeom.removeSelection()
         self.xHoriGeom.removeSelection()
@@ -378,29 +378,29 @@ class gen_doc_calvecat:
         self.canvas.refresh()
         # regresa herramienta de seleccion normal
         self.iface.actionPan().trigger()
-        self.abrePredio = False
+        self.abrePredio6 = False
 
     # recibimos el closeEvent del dialog
     def closeEvent(self, msg):
         if msg:
-            self.cancelaSeleccionYRepinta()
+            self.cancelaSeleccionYRepinta5()
 
-    def cambiarStatus(self, texto, estado):
+    def cambiarStatus5(self, texto, estado):
 
-        self.dlg.lbEstatusCedula.setText(texto)
+        self.dlg.lbEstatusCedula_6.setText(texto)
 
         if estado == "ok":  # abriendo
-            self.dlg.lbEstatusCedula.setStyleSheet('color: green')
+            self.dlg.lbEstatusCedula_6.setStyleSheet('color: green')
         elif estado == "error":  # Seleccione un solo predio
-            self.dlg.lbEstatusCedula.setStyleSheet('color: red')
+            self.dlg.lbEstatusCedula_6.setStyleSheet('color: red')
         else:
-            self.dlg.lbEstatusCedula.setStyleSheet('color: black')
+            self.dlg.lbEstatusCedula_6.setStyleSheet('color: black')
 
 
-    def lineEditToUpper(self):
-        self.dlg.fldCveCat.setText(self.dlg.fldCveCat.text().upper())
+    def lineEditToUpper5(self):
+        self.dlg.fldCveCat_5.setText(self.dlg.fldCveCat_5.text().upper())
 
-    def obtenerXCapas(self):
+    def obtenerXCapas5(self):
 
         # carga las capas en caso de no existir
         # self.UTI.cargarCapaVacio()

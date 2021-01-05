@@ -35,6 +35,7 @@ import requests
 import re
 from qgis.core import *
 
+
 class CertCveCatastral:
     """QGIS Plugin Implementation."""
 
@@ -201,7 +202,7 @@ class CertCveCatastral:
 
     def run(self):
         """Run method that performs all the real work"""
-        self.obtenerXCapas()
+        self.obtenerXCapas1()
 
         self.xManzana.selectionChanged.connect(self.seleccionaClave)
         self.xPredGeom.selectionChanged.connect(self.seleccionaClave)
@@ -382,7 +383,7 @@ class CertCveCatastral:
         self.dlg.fldCveCat.setText(self.dlg.fldCveCat.text().upper())
 
 
-    def obtenerXCapas(self):
+    def obtenerXCapas1(self):
 
         # carga las capas en caso de no existir
         # self.UTI.cargarCapaVacio()
