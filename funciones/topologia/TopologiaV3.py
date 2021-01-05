@@ -43,6 +43,7 @@ from .reglasQG3 import Reglas
 from qgis.utils import iface
 from PyQt5.QtWidgets import QAction, QMessageBox, QTableWidgetItem
 from .VentanaReglasTopo import VentanaReglasTopo
+from .errores_topologicos import errores_topologicos
 
 class TopologiaV3:
     """QGIS Plugin Implementation."""
@@ -58,6 +59,7 @@ class TopologiaV3:
         self.ELM = None
         self.DFS = None
         self.ACA = ACA
+
 
         #print "** INITIALIZING TopologiaQG3"
 
@@ -775,7 +777,11 @@ class TopologiaV3:
 ######################################################################################################################
 
     def reglasManuales(self):
-        
+        self.erroresPredio = []
+        self.erroresManzana = []
+        self.erroresHorizonatales = []
+        self.erroresVerticales = []
+        self.erroresConstrucciones = []
         self.obtenerXCapas()
 
         self.validarClavesNoRepetida('manzana')
@@ -929,13 +935,11 @@ class TopologiaV3:
         self.validarCamposDuplicados(self.xPredGeom, self.xConst, 'nom_volumen')
 
         self.printearErrores()
+        # Ventana errores
+        self.VET = errores_topologicos.errores_topologicos(iface, self.erroresPredio, self.erroresManzana, self.erroresConstrucciones, self.erroresVerticales, self.erroresHorizonatales)
+        self.VET.run()
+        return
 
-        print("Estos son la lista de errores")
-        print(self.erroresVerticales)
-        print(self.erroresPredio)
-        print(self.erroresManzana)
-        print(self.erroresHorizonatales)
-        print(self.erroresConstrucciones)
 
 #############################################################################################################
 
