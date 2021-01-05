@@ -21,7 +21,7 @@ FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'mainWindow.ui'))
 
 class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
-    def __init__(self, cveCatas = "0", cond = False, parent=None, CFG=None, UTI = None, cargandoRevision = False, cve_len = 25):
+    def __init__(self, cveCatas = "0", cond = False, parent=None, CFG=None, UTI = None, cargandoRevision = False, cve_len = 10):
         """Constructor."""
         super(CedulaMainWindow, self).__init__(parent, \
             flags=Qt.WindowMinimizeButtonHint|Qt.WindowMaximizeButtonHint|Qt.WindowCloseButtonHint)
@@ -33,6 +33,7 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
 
         # clave catastral global
         self.cve_len = cve_len
+        self.cveCompleta = cveCatas
         self.cveCatastral = cveCatas[0:cve_len]
         self.CFG = CFG
         self.UTI = UTI
@@ -477,7 +478,7 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
         if self.cargandoRevision:
             try:
                 self.headers['Authorization'] = self.UTI.obtenerToken()
-                response = requests.get(self.CFG.urlObtenerIdPredio + self.cveCatastral, headers = self.headers)
+                response = requests.get(self.CFG.urlObtenerIdPredio + self.cveCompleta, headers = self.headers)
             except requests.exceptions.RequestException as e:
                 self.createAlert("Error de servidor, 'IdPredio()' '" + str(e) + "'", QMessageBox().Critical, "Error de servidor")
                 return
@@ -514,14 +515,13 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
             if self.cargandoRevision:
                 
                 headers = {'Content-Type': 'application/json', 'Authorization' : self.UTI.obtenerToken()}
-                respuesta = requests.get(self.CFG.urlObtenerIdPredioEc + self.cveCatastral, headers = headers)
+                respuesta = requests.get(self.CFG.urlObtenerIdPredioEc + self.cveCompleta, headers = headers)
                 if respuesta.status_code == 200:
                     idPredio = respuesta.json()
 
                 dataCond = self.consumeWSGeneral(self.CFG.urlReviCondominios + str(idPredio))
             else:
-                dataCond = self.consumeWSGeneral(self.CFG.urlCedCondominios + self.cveCatastral)
-
+                dataCond = self.consumeWSGeneral(self.CFG.urlCedCondominios + self.cveCatastral[:10])
             self.defineComboCond(dataCond)
 
             # carga indivisos
@@ -668,7 +668,7 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
         self.tabwCedula.setCurrentIndex(0)
 
         # -- carga informacion de construcciones de PREDIO
-        dataConstP = self.consumeWSConstr(self.cveCatastral)
+        dataConstP = self.consumeWSConstr(self.cveCompleta)
 
         self.cargaConstrPred(dataConstP)
 
@@ -708,7 +708,7 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
 
         for dc in dataCond:
 
-            clave = dc['label'][self.cve_len:]
+            clave = dc['label'][10:]
             self.cmbCondo.addItem(clave, dc['other'])
 
     # - carga los indivisos de los condominios
@@ -931,7 +931,6 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
         return self.consumeWSGuardadoIndiv(listaInd, self.CFG.urlGuardaIndivisos + complemento)
     
     def obtieneClaMza(self, cveCata):
-        print(f"clave de obtieneClaMza: {cveCata}")
         return self.consumeWSGeneral(self.CFG.urlGetManzana + cveCata)
 
     def obtieneImagen(self, idImagen, tipo):
@@ -1340,7 +1339,7 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
     def cargaPadron(self, dataPadron):
 
         #try:
-
+        print(dataPadron)
         if len(dataPadron) == 0:
             self.muestraComparativoFiscal()
             self.vaciarDomPadFis()
@@ -1479,9 +1478,7 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
                 for prop in self.propPropPred:
                     # agrega un renglon a las coindancias
                     ident = prop['id']
-                    print("EEEEEEEEEEEEEEEEE")
                     nombre = ' '.join([x for x in [prop['nombre'], prop['aPaterno'], prop['aMaterno']] if x])
-                    print("OOOOOOOOOOOOOOOO")
                     tipo = prop['tipo']
                     porcentaje = prop['porcentaje']
 
@@ -1910,7 +1907,7 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
     def condoTemp(self, claveCata):
 
         condos = []
-        dataTemp = []
+        dataTemp = {}
 
         # quita el condominio a guardar, para poder actualizar sus datos
         for cond in self.condominios:
@@ -2544,7 +2541,7 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
             # se busca si ya se habia consumido informacion del condominio seleccionado
             for condo in self.condominios:
 
-                if condo['cveCat'] == (self.cveCatastral + clave):
+                if 'cveCat' in condo and condo['cveCat'] == (self.cveCatastral + clave):
                     consume = False
                     dataCond.append(condo)
                     break
@@ -2556,6 +2553,7 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
                     dataCond = self.consumeWSGeneral(self.CFG.urlReviCondConsulta + self.cveCatastral + clave + '/' + tipoCond + '/' + str(self.cedula['id']))
                 else:
                     dataCond = self.consumeWSGeneral(self.CFG.urlCedCondByCveCatTipoPred + self.cveCatastral + clave + '/' + tipoCond)
+                    print(f"url:{self.CFG.urlCedCondByCveCatTipoPred + self.cveCatastral + clave + '/' + tipoCond}, \n res:{dataCond}")
               
                 if len(dataCond) == 0:
                     return
@@ -4110,7 +4108,7 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
         # se busca si ya se habia consumido informacion del condominio seleccionado
         for condo in self.condominios:
 
-            if condo['cveCat'] == (self.cveCatastral + clave):
+            if 'cveCat' in condo and condo['cveCat'] == (self.cveCatastral + clave):
                 consume = False
                 dataCond.append(condo)
                 break
@@ -6238,12 +6236,11 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
 
         clave = ''
 
-        if len(cveCata) == 16:
+        if len(cveCata) == 10:
             clave += cveCata[0:3] + '-'
             clave += cveCata[3:5] + '-'
             clave += cveCata[5:8] + '-'
-            clave += cveCata[8:10] + '-'
-            clave += cveCata[10:16]
+            clave += cveCata[8:]
         elif len(cveCata) == 25:
             clave += cveCata[0:2] + '-'
             clave += cveCata[2:5] + '-'
@@ -6258,7 +6255,7 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
 
     # - muestra clave global
     def muestraClaveGlobal(self, cveCata):
-        if len(cveCata) == 16:
+        if len(cveCata) == 10:
             #self.lbEdo.setText('--')
             #self.lbRegCat.setText('---')
             self.lbMpio.setText(cveCata[0:3])

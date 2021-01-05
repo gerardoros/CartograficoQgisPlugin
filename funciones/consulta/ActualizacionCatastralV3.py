@@ -115,7 +115,7 @@ class ActualizacionCatastralV3:
         self.dockwidget.btnConstancia.clicked.connect(self.irAConstIdentificacion)
         self.dockwidget.btnManifestacion.clicked.connect(self.irAManifestacion)
 
-        self.cve_cat_len = 16
+        self.cve_cat_len = 10
         # inicializa variables globales para estatus de claves
         QSettings().setValue('clavesEstatus', [])
         QSettings().setValue('clavesEstatusRef', [])
@@ -465,8 +465,6 @@ class ActualizacionCatastralV3:
 
     def obtenerMunicipios(self):
 
-        self.cve_cat_len = 16
-
         self.dockwidget.comboLocalidad.clear()
 
         try:
@@ -489,8 +487,6 @@ class ActualizacionCatastralV3:
 
     #Llenar primer combo
     def obtenerLocalidades(self):
-
-        self.cve_cat_len = 25
 
         self.dockwidget.comboLocalidad.clear()
 
@@ -615,14 +611,12 @@ class ActualizacionCatastralV3:
     def intermediarioReferencia(self):
         nameCapa = self.dockwidget.comboCapaReferencia.currentText()
         
-        try:
-            bound = self.obtenerBoundingBox().asWkt()
-        except:
-            self.UTI.mostrarAlerta('No se ha cargado ninguna Manzana', QMessageBox().Critical, 'Cargar referencia')
-            return
+        bound_tmp = self.obtenerBoundingBox()
 
-        if self.dockwidget.checkTodasGeom.isChecked() and nameCapa != 'Predios':
+        if not bound_tmp or (self.dockwidget.checkTodasGeom.isChecked() and nameCapa != 'Predios'):
             bound = None
+        else:
+            bound = bound_tmp.asWkt()
 
         # si se trata de predios tambien se cargan las contrucciones
         if nameCapa.lower() == 'predios':
@@ -762,10 +756,9 @@ class ActualizacionCatastralV3:
         xManzana = QgsProject.instance().mapLayer(self.obtenerIdCapa('manzana'))
 
         if xManzana is None:
-            return
+            return None
 
         listaManzanas = list(self.manzanaPrincipal.getFeatures())
-        geometria = QgsGeometry()
 
         rango = len(listaManzanas)
         if rango == 0:
@@ -1044,7 +1037,8 @@ class ActualizacionCatastralV3:
         settings.fieldName = etiquetaField
         settings.enabled = True
         settings.isExpression = False
-        
+
+        settings.centroidInside = True
         settings.centroidWhole = True
 
         textFormat = QgsTextFormat()
@@ -2812,7 +2806,8 @@ class ActualizacionCatastralV3:
             settings.fieldName = etiquetaField
             settings.enabled = True
             settings.isExpression = esExpresion
-            
+
+            settings.centroidInside = True
             settings.centroidWhole = True
 
             textFormat = QgsTextFormat()

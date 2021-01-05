@@ -82,6 +82,7 @@ class DibujoV3:
 
         self.pluginIsActive = False
         self.dockwidget.botonDibujar.clicked.connect(self.alternarModoDibujo)
+        self.dockwidget.exit_signal.connect(self.desactivando)
        
         #var = QSettings()
         '''
@@ -269,30 +270,32 @@ class DibujoV3:
         self.mapTool.capaActiva = iface.activeLayer()
         if self.mapTool.capaActiva is None:
             return
-        self.mapTool.nombreCapaActiva = self.ACA.traducirIdCapa(iface.activeLayer().id())
+        nomTmp = self.ACA.traducirIdCapa(iface.activeLayer().id())
+        self.mapTool.nombreCapaActiva = nomTmp if nomTmp else iface.activeLayer().name()
         self.mapTool.primerClick = False
         if self.mapTool.capaActiva is not None: #Cuando la capa es seleccionada habilitamos
             self.dockwidget.labelCapa.setText(self.mapTool.nombreCapaActiva)
             self.dockwidget.labelCapa.setAlignment(QtCore.Qt.AlignCenter | QtCore.Qt.AlignVCenter)
 
-            if self.mapTool.esCapaValida():
+            self.mapTool.tipoCapa = self.mapTool.capaActiva.wkbType()
+            self.dockwidget.botonDibujar.setEnabled(True)
+            self.mapTool.cambiarColorRubber()
+            self.mapTool.ventana.ultimo = 0
 
-                self.mapTool.tipoCapa = self.mapTool.capaActiva.wkbType()
-                self.dockwidget.botonDibujar.setEnabled(True)
-                self.mapTool.cambiarColorRubber()
-                self.mapTool.ventana.ultimo = 0
-
-                #print(f"------ self.creandoPoli {self.mapTool.creandoPoli }")
-                #print(f"---- Saliendo Maptool: {type(iface.mapCanvas().mapTool())}")
-            else:
-                #print("actualizarCapaActiva : False")
-                self.mapTool.canvas.setCursor(self.mapTool.cursorCruz)
-                self.dockwidget.labelStatus.setText("DESACTIVADO")
-                estilo = 'color: rgb(255, 0, 0);'
-                self.dockwidget.labelStatus.setStyleSheet(estilo)
-                self.dockwidget.botonDibujar.setEnabled(False)
+            # if self.mapTool.esCapaValida():
+            #
+            #     self.mapTool.tipoCapa = self.mapTool.capaActiva.wkbType()
+            #     self.dockwidget.botonDibujar.setEnabled(True)
+            #     self.mapTool.cambiarColorRubber()
+            #     self.mapTool.ventana.ultimo = 0
+            # else:
+            #     #print("actualizarCapaActiva : False")
+            #     self.mapTool.canvas.setCursor(self.mapTool.cursorCruz)
+            #     self.dockwidget.labelStatus.setText("DESACTIVADO")
+            #     estilo = 'color: rgb(255, 0, 0);'
+            #     self.dockwidget.labelStatus.setStyleSheet(estilo)
+            #     self.dockwidget.botonDibujar.setEnabled(False)
         else: #Cuando no, deshabilitamos el boton
-            #print("actualizarCapaActiva : Dunno")
             self.dockwidget.botonDibujar.setEnabled(False)
 
         ##########################################################################################################################
@@ -301,52 +304,54 @@ class DibujoV3:
 
         self.actualizarCapaActiva()
         if self.mapTool.capaActiva != None:
-            idCapa = self.mapTool.capaActiva.id()
-            if self.mapTool.dibujando:  # Apagar modo dibujo cuano esta prendido
-                #print("DESACTIVANDO")
-
-                if self.mapTool.botonAD.isChecked():
-                    self.mapTool.botonAD.trigger()
-
-                self.mapTool.dibujando = False
-                self.mapTool.canvas.setCursor(self.mapTool.cursorCruz)
-                self.dockwidget.labelStatus.setText("DESACTIVADO")
-                estilo = """color: rgb(255, 0, 0);
-"""
-                self.dockwidget.labelStatus.setStyleSheet(estilo)
-                self.dockwidget.labelStatus.setAlignment(QtCore.Qt.AlignCenter | QtCore.Qt.AlignVCenter)
-                self.mapTool.listaPuntosLineaTemp = []
-                self.mapTool.rubberPoli.reset(QgsWkbTypes.LineGeometry)
-                self.mapTool.marcador.setCenter(QgsPointXY())
-                self.mapTool.cuentaClickLinea = 0
-                self.mapTool.primerClick = False
-                self.mapTool.listaPuntosPoliTemp = []
-                self.mapTool.cuentaClickPoli = 0
-                self.mapTool.rubberPoli.reset(QgsWkbTypes.PolygonGeometry)
-                self.mapTool.marcador.setCenter(QgsPointXY())
-                self.mapTool.isEmittingPoint = False
-
-
+            if self.mapTool.dibujando:  # Apagar modo dibujo cuano esta prendido1
+                self.desactivando()
             else:  # Al reves
-                if self.mapTool.ventana.posibleMostar and ((not self.ACA.esCapaReferencia(
-                        idCapa)) or idCapa == self.ACA.capaEnEdicion):
-                    if not self.mapTool.botonAD.isChecked():
-                        self.mapTool.botonAD.trigger()
-                    iface.mapCanvas().setMapTool(self.mapTool)
-                    #print("ACTIVANDO")
-                    self.mapTool.dibujando = True
-                    self.mapTool.canvas.setCursor(self.mapTool.cursorRedondo)
-                    self.dockwidget.labelStatus.setText("ACTIVADO")
-                    self.dockwidget.labelStatus.setAlignment(QtCore.Qt.AlignCenter | QtCore.Qt.AlignVCenter)
-                    estilo = """color: rgb(1, 230, 1);"""
-                    self.dockwidget.labelStatus.setStyleSheet(estilo)
+                self.activando()
 
     ######################################################################################################
+
+    def desactivando(self):
+        if self.mapTool.botonAD.isChecked():
+            self.mapTool.botonAD.trigger()
+
+        self.mapTool.dibujando = False
+        self.mapTool.canvas.setCursor(self.mapTool.cursorCruz)
+        self.dockwidget.labelStatus.setText("DESACTIVADO")
+        estilo = """color: rgb(255, 0, 0);
+        """
+        self.dockwidget.labelStatus.setStyleSheet(estilo)
+        self.dockwidget.labelStatus.setAlignment(QtCore.Qt.AlignCenter | QtCore.Qt.AlignVCenter)
+        self.mapTool.listaPuntosLineaTemp = []
+        self.mapTool.rubberPoli.reset(QgsWkbTypes.LineGeometry)
+        self.mapTool.cuentaClickLinea = 0
+        self.mapTool.primerClick = False
+        self.mapTool.listaPuntosPoliTemp = []
+        self.mapTool.cuentaClickPoli = 0
+        self.mapTool.rubberPoli.reset(QgsWkbTypes.PolygonGeometry)
+        self.mapTool.marcador.setCenter(QgsPointXY())
+        self.mapTool.isEmittingPoint = False
+
+    def activando(self):
+        idCapa = self.mapTool.capaActiva.id()
+        if self.mapTool.ventana.posibleMostar and ((not self.ACA.esCapaReferencia(
+                idCapa)) or idCapa == self.ACA.capaEnEdicion):
+            if not self.mapTool.botonAD.isChecked():
+                self.mapTool.botonAD.trigger()
+            iface.mapCanvas().setMapTool(self.mapTool)
+            # print("ACTIVANDO")
+            self.mapTool.dibujando = True
+            self.mapTool.canvas.setCursor(self.mapTool.cursorRedondo)
+            self.dockwidget.labelStatus.setText("ACTIVADO")
+            self.dockwidget.labelStatus.setAlignment(QtCore.Qt.AlignCenter | QtCore.Qt.AlignVCenter)
+            estilo = """color: rgb(1, 230, 1);"""
+            self.dockwidget.labelStatus.setStyleSheet(estilo)
 
 
 class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
     def __init__(self, canvas, cadDockWidget, pluginM):
         QgsMapToolAdvancedDigitizing.__init__(self, canvas, cadDockWidget)
+
         #Asignacion inicial
         self.canvas = canvas
         self.pluginM = pluginM
@@ -403,9 +408,7 @@ class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
         
         #Creacion del Snapper
         self.snapper = self.canvas.snappingUtils()
-        config = QgsSnappingConfig()
-        config.setTolerance(240)
-        self.snapper.setConfig(config)
+
 
         self.stringPoli = 'POLYGON (('
         self.cierrePoli = None
@@ -520,7 +523,10 @@ class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
             self.creandoLinea = True
         else:
             color = QColor(255,0,0)
-            self.creandoPoli = True
+            if self.capaActiva.wkbType() in [QgsWkbTypes.MultiPolygon, QgsWkbTypes.Polygon]:
+                self.creandoPoli = True
+            elif self.capaActiva.wkbType() == QgsWkbTypes.LineString:
+                self.creandoLinea = True
 
         if self.creandoPoli:
             self.rubberPoli.setStrokeColor(color)
@@ -690,7 +696,6 @@ class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
                             self.listaPuntosPoliTemp.append(puntoSnap)
                             self.isEmittingPoint = True
 
-                            #print("AQUIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII")
                             self.cadDockWidget().addPoint(puntoSnap)
                         else:
                             
@@ -702,8 +707,6 @@ class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
                             self.listaPuntosPoliTemp.append(self.puntoPoliTemp)
                             self.isEmittingPoint = True
                             
-                            print(str(geoTemp.x()), str(geoTemp.y()))
-                            #print("AQUIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII X2")
                             self.cadDockWidget().addPoint(self.puntoPoliTemp)
 
                         if not self.primerClick:
@@ -743,9 +746,6 @@ class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
                         self.cadDockWidget().setPoints(self.listaPuntosLineaTemp)
                         self.cadDockWidget().updateCadPaintItem()
 
-                        
-            else:
-                self.pluginM.UTI.mostrarAlerta("El modo dibujo no podra usarse sin una capa seleccionada", QMessageBox().Information, 'Modo dibujo')
 
             if self.lastMouseButtonClicked == "RIGHT":
 
@@ -781,18 +781,17 @@ class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
                 elif self.tipoCapa == 3 or self.tipoCapa == 6:
 
                     if self.cuentaClickPoli >= 3:
-
                         if self.botonAD.isChecked():
                             self.botonAD.toggle()
 
                         self.stringPoli += str(self.cierrePoli.x()) + " " + str(self.cierrePoli.y()) + '))'
                         self.stringPoli = self.stringPoli.replace(', ))', '))')
-                        self.capaActiva.startEditing() 
+                        succ_efitable = self.capaActiva.startEditing()
                         poli = QgsFeature()
-                        poli.setGeometry(QgsGeometry.fromWkt(self.stringPoli)) 
+                        poli.setGeometry(QgsGeometry.fromWkt(self.stringPoli))
                         self.capaActiva.dataProvider().addFeatures([poli])
                         self.capaActiva.triggerRepaint()
-                        self.capaActiva.commitChanges()
+                        succ_commit = self.capaActiva.commitChanges()
                         self.ventana.mostrarTabla()
 
                     self.listaPuntosPoliTemp = []
@@ -1144,22 +1143,23 @@ class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
     def snapVertice(self, startingPoint, nombreCapa):
 
 
+        idCapa = self.pluginM.ACA.obtenerIdCapa(nombreCapa)
+        layer = QgsProject.instance().mapLayer(idCapa) if idCapa != 'None' else self.capaActiva
 
-        layer = QgsProject.instance().mapLayer(self.pluginM.ACA.obtenerIdCapa(nombreCapa))
-        
         self.snapper.setCurrentLayer(layer)
-
         snapMatch = self.snapper.snapToMap(startingPoint)
 
         if snapMatch.hasVertex():
             return snapMatch.point()
 
+
 ################################################################################################################
 
     def snapArista(self, startingPoint, nombreCapa):
 
-        layer = QgsProject.instance().mapLayer(self.pluginM.ACA.obtenerIdCapa(nombreCapa))
-        
+        idCapa = self.pluginM.ACA.obtenerIdCapa(nombreCapa)
+        layer = QgsProject.instance().mapLayer(idCapa) if idCapa != 'None' else self.capaActiva
+
         self.snapper.setCurrentLayer(layer)
         snapMatch = self.snapper.snapToMap(startingPoint)
 

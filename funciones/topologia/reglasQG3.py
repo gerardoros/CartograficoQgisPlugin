@@ -96,7 +96,7 @@ class Reglas:
 
         if capa1 == None or capa2 == None:
             return
-        
+
         #Lista de errores
         listaErrores = []
 
@@ -120,7 +120,7 @@ class Reglas:
             for i in range(0, rango1):
                 feat1 = listaCapa1[i]
                 for j in range(0, rango2):
-                    feat2 = listaCapa2[j] 
+                    feat2 = listaCapa2[j]
                     #Comparamos las intersecciones
                     if (feat1.geometry().intersects(feat2.geometry())):
                         interseccion = feat1.geometry().buffer(-0.0000001,1).intersection(feat2.geometry().buffer(-0.0000001,1))
@@ -166,7 +166,7 @@ class Reglas:
 
         listaBase = list(capaBase.getFeatures()) #Obtenemos la lista de las features
         listaCobertura = list(capaCobertura.getFeatures())
-        
+
         #OBtenemos las variables para los errores
         self.cuentaError = 0
         self.stringError = "None"
@@ -180,7 +180,7 @@ class Reglas:
 
         nombreBase = capaBase.name()
         nombreCobertura = capaCobertura.name()
-        
+
         #Checamos ls errores
         for i in range(0, rangoBase):
             objBase = listaBase[i].geometry()
@@ -198,8 +198,8 @@ class Reglas:
 
         if (self.cuentaError == 0):
             return
-        
-        
+
+
 
         #Dibujamos los errores
         self.stringError = nombreBase + " no cubiertos por " + nombreCobertura + " " + str(self.cuentaError) + " elementos"
@@ -658,7 +658,7 @@ class Reglas:
             props = capa.renderer().symbol().symbolLayer(0).properties()
             props['color'] = '#FF0000'
             capa.renderer().setSymbol(QgsMarkerSymbol.createSimple(props))
-        
+
         #Renderizamos la capa con los cambios
         capa.triggerRepaint()
         capa.commitChanges()
@@ -946,7 +946,7 @@ class Reglas:
                     else:
                         claveObjeto = featObj['clave']
                         claveCont = featCont.attributes()[self.valorInteresado]
-                        
+
                         #if claveCont != None:
                         claveTotal = claveCont + claveObjeto
                         capaObjeto.startEditing()
@@ -962,10 +962,12 @@ class Reglas:
         if (self.cuentaError == 0): #Si hay errores...
             return
         #Los dibujamos
-        self.stringError = nombreObjeto + " no cubiertos totalmente por " + nombreContenedor + " " + str(self.cuentaError) + " elementos"
+        self.stringError = nombreObjeto + " no cubiertos totalmente por " + nombreContenedor + " " + str(self.cuentaError) + " elementos 3"
+        self.stringError = nombreObjeto + " no cubiertos totalmente por " + nombreContenedor
         temp = QgsVectorLayer("Polygon?crs=epsg:" + self.srid, nombreObjeto + " no cubiertos totalmente por " + nombreContenedor, "memory")
 
         self.pintarErrores(temp, listaSalidas)
+        return self.stringError
 
 ####################################################################################################
 
@@ -1071,7 +1073,7 @@ class Reglas:
 
         for feat in features:
             for campo in listaCampos:
-                if feat[campo] == None or feat[campo] == '':
+                if feat[campo] is None or feat[campo] == '':
                     geom = feat.geometry()
                     geoms.append(geom.asWkt())
 
@@ -1081,7 +1083,7 @@ class Reglas:
             return
 
 
-        self.stringError = "Capa: " + nombreCapa + " " + str(self.cuentaError) + " geometrias invalidas"
+        self.stringError = "Capa: " + nombreCapa + " " + str(self.cuentaError) + " features sin campos necesarios"
 
 
         if nombreCapa == 'Calles':
@@ -1110,7 +1112,7 @@ class Reglas:
         if featuresCapa1 == None or featuresCapa2 == None: 
             return
 
-        
+
         #Lista de errores
         listaErrores = []
 
@@ -1138,14 +1140,14 @@ class Reglas:
             for i in range(0, rango1):
                 feat1 = featuresCapa1[i]
                 for j in range(0, rango2):
-                    feat2 = featuresCapa2[j] 
+                    feat2 = featuresCapa2[j]
                     #Comparamos las intersecciones
                     if (feat1.geometry().intersects(feat2.geometry())):
                         interseccion = feat1.geometry().buffer(tamanoBuffer1,1).intersection(feat2.geometry().buffer(tamanoBuffer,1))
                         
                         if (interseccion.area() > tolerancia):
                             listaErrores.append(interseccion.asWkt())
-        
+
         #Cuandolas capas a comparar son la misma
         else:
             rango1 = len(featuresCapa1)
@@ -1163,7 +1165,7 @@ class Reglas:
         if (self.cuentaError == 0):
             return
 
-        self.stringError = "Interseccion: " + nombreCapa1 + " - " + nombreCapa2 + " " + str(self.cuentaError) + " elementos"   
+        self.stringError = "Interseccion: " + nombreCapa1 + " - " + nombreCapa2 + " " + str(self.cuentaError) + " elementos"
 
         #if nombreCapa1 != 'Calles':
             
@@ -1252,7 +1254,7 @@ class Reglas:
 
                 payload = {}
                 payload['clave'] = texto
-                payload['claveFiltro'] = mpio + '-' + sector 
+                payload['claveFiltro'] = mpio + '-' + sector
                 payload['tipo'] = tipo
                 respuesta = self.ACA.consumeWSGeneral(self.CFG.url_validaClaves, payload)
 
@@ -1325,7 +1327,7 @@ class Reglas:
 ######################################################################################################################################
 
     def validarCampoNoNulo(self, capa, campo):
-        
+
         if capa == None:
             return
 
@@ -1359,7 +1361,7 @@ class Reglas:
 ##################################################################################################
 
     def validarCampoNoNuloDoble(self, capa, campo1, campo2):
-        
+
         if capa == None:
             return
 
@@ -1411,9 +1413,9 @@ class Reglas:
                 geomObj = obj.geometry()
                 if geomCont.intersects(geomObj.buffer(-0.0000001,1)) or geomCont.intersection(geomObj.buffer(0.0000001,1)).area() >0.0000000001 and self.contarIntegraciones(geomObj.buffer(-0.0000001,1), 'predios.geom') == 0:
                     listaDentro.append(obj)
-            
+
             listaDatos = [feat[campo] for feat in listaDentro]
-            
+
             for dentro in listaDentro:
                 campoV = dentro[campo]
                 if campoV == '' or campoV == 'NULL' or campoV == None:
@@ -1478,14 +1480,14 @@ class Reglas:
             return QSettings().value('xRegion')
         elif nombreCapa == "Estado":
             return QSettings().value('xEstado')
-        
+
         return 'None'
 
 ##################################################################################################################
 
     def estaEscuadradito(self, geometria):
         vertices = self.obtenerVertices(geometria)
-            
+
         rango = len(vertices)
         total = 0
         listaGrados = []
@@ -1504,10 +1506,10 @@ class Reglas:
             listaGrados.append(grados)
 
         for x in range(0, len(listaGrados)):
-            
+
             if listaGrados.count(listaGrados[x]) != 2:
                 return False
-                
+
         return True
 
 ##########################################################################################################
