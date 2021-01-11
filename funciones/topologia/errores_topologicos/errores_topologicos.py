@@ -36,7 +36,7 @@ from qgis.core import *
 class errores_topologicos:
     """QGIS Plugin Implementation."""
 
-    def __init__(self, iface, predios, manzana, construcciones, verticales, horizontales):
+    def __init__(self, iface, predios, manzana, construcciones, restantes):
         """Constructor.
 
         :param iface: An interface instance that will be passed to this class
@@ -70,14 +70,13 @@ class errores_topologicos:
         self.dockwidget = errores_topologicosDialog(parent=iface.mainWindow())
         self.erroresPredio = predios
         self.erroresManzana = manzana
-        self.erroresHorizonatales = horizontales
-        self.erroresVerticales = verticales
+        self.erroresRestantes = restantes
         self.erroresConstrucciones = construcciones
 
         self.dockwidget.labelManzana.setText("Manzanas "+ str(len(self.erroresManzana))+ " errores");
         self.dockwidget.labelPredio.setText("Predios "+ str(len(self.erroresPredio))+ " errores");
         #self.dockwidget.labelHorizontal.setText("Cons Horizo "+ str(len(self.erroresHorizonatales))+ " errores");
-        #self.dockwidget.labelVertical.setText("Cons Verticales "+ str(len(self.erroresVerticales))+ " errores");
+        self.dockwidget.labelConstruccion_2.setText("Restantes "+ str(len(self.erroresRestantes))+ " errores");
         self.dockwidget.labelConstruccion.setText("Construcciones "+ str(len(self.erroresConstrucciones))+ " errores");
 
         self.dockwidget.listWidgetPredio.addItems(self.erroresPredio)
@@ -86,6 +85,7 @@ class errores_topologicos:
         self.dockwidget.btLocalizarErrorPredio.clicked.connect(self.localiZarErrorPredio)
         self.dockwidget.btLocalizarErrorManzana.clicked.connect(self.localiZarErrorManzana)
         self.dockwidget.btLocalizarErrorConstruccion.clicked.connect(self.localiZarErrorConstruccion)
+        self.dockwidget.btLocalizarErrorRestante.clicked.connect(self.localiZarErrorRestante)
         # Check if plugin was started the first time in current QGIS session
         # Must be set in initGui() to survive plugin reloads
         self.first_start = None
@@ -93,6 +93,23 @@ class errores_topologicos:
     def localiZarErrorPredio(self):
         try:
             error = self.dockwidget.listWidgetPredio.currentItem().text()
+            root = QgsProject.instance().layerTreeRoot()
+            group = root.findGroup('ERRORES DE TOPOLOGIA')
+            layers = group.findLayers()
+
+            for layer in layers:
+                if layer.name() == error:
+                    capita = layer.layer()
+                    self.iface.setActiveLayer(capita)
+                    self.iface.zoomToActiveLayer()
+        except:
+            return
+
+        return
+
+    def localiZarErrorRestante(self):
+        try:
+            error = self.dockwidget.listWidgetRestante.currentItem().text()
             root = QgsProject.instance().layerTreeRoot()
             group = root.findGroup('ERRORES DE TOPOLOGIA')
             layers = group.findLayers()
