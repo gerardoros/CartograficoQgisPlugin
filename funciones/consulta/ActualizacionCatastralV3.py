@@ -64,10 +64,11 @@ from CartograficoQgisPlugin.funciones.utilidades import utilidades
 class ActualizacionCatastralV3:
     """QGIS Plugin Implementation."""
 
-    def __init__(self, iface, idManzana = ''):
+    def __init__(self, iface, idManzana = '', cla = ''):
         
         self.iface = iface
         self.idManzana = idManzana
+        self.cla = cla
         self.CFG = Configuracion.Configuracion()
         self.UTI = utilidades.Utilidad()
         self.UTI.CFG = self.CFG
@@ -222,6 +223,12 @@ class ActualizacionCatastralV3:
         self.dockwidget.btnActMarc.clicked.connect(self.actualizarMarcadores)
 
         self.dockwidget.tablaServiciosCalles.setEditTriggers(QtWidgets.QTableWidget.NoEditTriggers)
+        self.llenarComboReferencias()
+        self.obtenerXCapas()
+        self.capaActiva = iface.activeLayer()
+       
+
+
 
     # noinspection PyMethodMayBeStatic
     def tr(self, message):
@@ -466,9 +473,10 @@ class ActualizacionCatastralV3:
             
 
         else:
-            #index = self.dockwidget.comboManzana.currentIndex()
-            #self.idManzana = self.dockwidget.comboManzana.itemData(index)
-            self.idManzana = str(idManzana)
+            index = self.dockwidget.comboManzana.currentIndex()
+            self.idManzana = self.dockwidget.comboManzana.itemData(index)
+            #self.idManzana = str(idManzana)
+            print(idManzana)
 
 
 
@@ -625,16 +633,17 @@ class ActualizacionCatastralV3:
 
 #####################################################################################################
 
-    def intermediarioReferencia(self):
-        nameCapa = self.dockwidget.comboCapaReferencia.currentText()
-        
+    def intermediarioReferencia(self, combo, check):
+        #nameCapa = self.dockwidget.comboCapaReferencia.currentText()
+        nameCapa = combo
         try:
             bound = self.obtenerBoundingBox().asWkt()
         except:
             self.UTI.mostrarAlerta('No se ha cargado ninguna Manzana', QMessageBox().Critical, 'Cargar referencia')
             return
 
-        if self.dockwidget.checkTodasGeom.isChecked() and nameCapa != 'Predios':
+        #if self.dockwidget.checkTodasGeom.isChecked() and nameCapa != 'Predios':
+        if check and nameCapa != 'Predios':
             bound = None
 
         # si se trata de predios tambien se cargan las contrucciones
@@ -892,6 +901,7 @@ class ActualizacionCatastralV3:
         
         print ("Capas cargadas con exito")
 
+
         #else:
             #self.UTI.mostrarAlerta('No se han seleccionado manzanas para cargar', QMessageBox.Critical, 'Capas de consulta')
 
@@ -1092,7 +1102,7 @@ class ActualizacionCatastralV3:
         #Iteramos para eliminar Features
         for f in mem_layer.getFeatures():
             mem_layer.deleteFeature(f.id())
-        
+    
         #Reasignamos los fields al VectorLayer
         mem_layer.dataProvider().addAttributes(inFields.toList())
         #Guardamos los cambios
@@ -1465,15 +1475,15 @@ class ActualizacionCatastralV3:
 
     def actualizarFeature(self):
 
-        if  self.dockwidget.tablaEdicion.rowCount() > 0:       
+        #if  self.dockwidget.tablaEdicion.rowCount() > 0:       
 
-            if self.validarEdicion():
-                
-                self.UTI.mostrarAlerta('Se actualizó correctamente', QMessageBox().Information, 'Edicion de atributos')
-                self.cargarTablita()
+        if self.validarEdicion():
             
-        else:
-            self.UTI.mostrarAlerta("Necesitas seleccionar una capa", QMessageBox.Warning, 'Edicion de atributos')
+            self.UTI.mostrarAlerta('Se actualizó correctamente', QMessageBox().Information, 'Edicion de atributos')
+            self.cargarTablita()
+            
+        #else:
+            #self.UTI.mostrarAlerta("Necesitas seleccionar una capa", QMessageBox.Warning, 'Edicion de atributos')
 
 #############################################################################################################################
 
@@ -1807,125 +1817,38 @@ class ActualizacionCatastralV3:
 
 #########################################################################################################################
 
-    def validarEdicion(self):
+    def validarEdicion(self, cla = '', cla2 = ''):
+        if self.capaActiva == None:
+            self.UTI.mostrarAlerta("Seleccione una manzana", QMessageBox().Information, 'Actualización de datos')
+        else:
 
-        nombreCapa = self.traducirIdCapa( self.capaActiva.id())
-        feat = self.capaActiva.selectedFeatures()[0]
-        banderaCompleta = True
-        self.capaActiva.startEditing()
-        sector = ''
-        claveFiltro = ''
-        claveAnterior = ''
-
-        if nombreCapa == 'manzana' or nombreCapa == 'predios.geom':
-            # cargar la capa de sectores
-            sectorCapa = QgsProject.instance().mapLayer(self.obtenerIdCapa('Sectores'))
-            manzanaCapa = QgsProject.instance().mapLayer(self.obtenerIdCapa('manzana'))
-
-            # validacion para la capa en edicion
-            if not sectorCapa:
-                # no tiene valor, es momento de pintar la capa
-                self.pintarCapasReferencia('Sectores', None, False)
+            nombreCapa = self.traducirIdCapa(self.capaActiva.id())
+            feat = self.capaActiva.selectedFeatures()[0]
+            banderaCompleta = True
+            self.capaActiva.startEditing()
+            sector = ''
+            claveFiltro = ''
+            claveAnterior = ''
+            
+            if nombreCapa == 'manzana' or nombreCapa == 'predios.geom':
+                # cargar la capa de sectores
                 sectorCapa = QgsProject.instance().mapLayer(self.obtenerIdCapa('Sectores'))
+                manzanaCapa = QgsProject.instance().mapLayer(self.obtenerIdCapa('manzana'))
 
-            # obtener la clave del sector donde esta contenida la manzana
-            fTemp = sectorCapa.getFeatures()
-            # obtenemos la primer geometria de la maanzana
-            fMAnza = list(manzanaCapa.getFeatures())[0]
-            # se obtienen todos las geometrias con las que coline la manzana
-            lista = []
-            for f in fTemp:
-                valor = fMAnza.geometry().intersects(f.geometry())
-                if valor > 0:
-                    l = {}
-                    l['v'] = valor
-                    l['c'] = f['clave']
+                # validacion para la capa en edicion
+                if not sectorCapa:
+                    # no tiene valor, es momento de pintar la capa
+                    self.pintarCapasReferencia('Sectores', None, False)
+                    sectorCapa = QgsProject.instance().mapLayer(self.obtenerIdCapa('Sectores'))
 
-                    lista.append(l)
-
-            # obtener el registro con el valor mas grande para saber la clave del sector
-            if len(lista) > 0:
-                maxim = max(lista, key=lambda x:x['v'])
-                sector = maxim['c']
-
-
-        if nombreCapa == 'manzana':
-            texto = ""
-            
-            try:
-                texto = self.dockwidget.tablaEdicion.item(0, 1).text()
-            except: #Error al obtenre texto
-                banderaCompleta = False
-            if self.UTI.esEntero(texto): #Cuando es entero
-                if len(texto) == 3: #Validacion de longitud
-                    claveAnterior = feat['clave']
-                    feat['clave'] = texto
-                else:
-                    banderaCompleta = False
-            else: #Cuando no es numerico
-                banderaCompleta = False
-
-            if banderaCompleta and claveAnterior == texto:
-                self.capaActiva.commitChanges()
-                self.UTI.mostrarAlerta("Sin cambios por realizar", QMessageBox().Information, 'Actualización de datos')
-                return False
-
-            if banderaCompleta:
-                # consulta para verificacion de clave MANZANA
-                mpio = QSettings().value("cveMpio")
-                claveFiltro = mpio + '-' + sector
-
-                payload = {}
-                payload['clave'] = texto
-                payload['claveFiltro'] = claveFiltro
-                payload['tipo'] = 'MANZANA'
-                respuesta = self.consumeWSGeneral(self.CFG.url_validaClaves, payload)
-                
-                if not respuesta:
-                    self.capaActiva.commitChanges()
-                    return
-
-                if not respuesta['uso']:
-                    self.capaActiva.commitChanges()
-                    self.UTI.mostrarAlerta("La clave '" + texto+ "' se encuentra inactiva, no se puede usar", QMessageBox().Critical, 'Error de entrada')
-                    return False
-            
-            if not banderaCompleta: #Mensaje de error
-                self.UTI.mostrarAlerta('La clave debe estar compuesta por exactamente 3 números', QMessageBox().Critical, 'Error de entrada')
-
-        #.....predios geom....#
-        elif nombreCapa == 'predios.geom':
-            texto = ""
-            
-            try:
-                texto = self.dockwidget.tablaEdicion.item(0, 1).text()
-            except: #Error al obtenre texto
-                banderaCompleta = False
-            if self.UTI.esEntero(texto): #Cuando es entero
-                if len(texto) == 2: #Validacion de longitud
-                    claveAnterior = feat['clave']
-                    feat['clave'] = texto
-                else:
-                    banderaCompleta = False
-            else: #Cuando no es numerico
-                banderaCompleta = False
-
-            if banderaCompleta and claveAnterior == texto:
-                self.capaActiva.commitChanges()
-                self.UTI.mostrarAlerta("Sin cambios por realizar", QMessageBox().Information, 'Actualización de datos')
-                return False
-
-            if banderaCompleta:
-
-                manzana = ''
-                # obtener la clave de la manzana donde esta contenido el predio
-                fTemp = manzanaCapa.getFeatures()
-                # obtenemos la geometria seleccionada de la capa activa
-                fPredio = feat
-                # se obtienen todos las geometrias con las que coline el predio
+                # obtener la clave del sector donde esta contenida la manzana
+                fTemp = sectorCapa.getFeatures()
+                # obtenemos la primer geometria de la maanzana
+                fMAnza = list(manzanaCapa.getFeatures())[0]
+                # se obtienen todos las geometrias con las que coline la manzana
                 lista = []
                 for f in fTemp:
-                    valor = fPredio.geometry().intersects(f.geometry())
+                    valor = fMAnza.geometry().intersects(f.geometry())
                     if valor > 0:
                         l = {}
                         l['v'] = valor
@@ -1933,186 +1856,286 @@ class ActualizacionCatastralV3:
 
                         lista.append(l)
 
-                # obtener el registro con el valor mas grande para saber la clave de la manzana
+                # obtener el registro con el valor mas grande para saber la clave del sector
                 if len(lista) > 0:
                     maxim = max(lista, key=lambda x:x['v'])
-                    manzana = maxim['c']
+                    sector = maxim['c']
 
-                # consulta para verificacion de clave MANZANA
-                mpio = QSettings().value("cveMpio")
-                claveFiltro = mpio + '-' + sector + '-' + manzana
 
-                payload = {}
-                payload['clave'] = texto
-                payload['claveFiltro'] = claveFiltro
-                payload['tipo'] = 'PREDIO'
-                respuesta = self.consumeWSGeneral(self.CFG.url_validaClaves, payload)
-                print(respuesta)
-                if not respuesta:
+            if nombreCapa == 'manzana':
+                texto = ""
+                
+                try:
+                    texto = cla
+                    #texto = self.dockwidget.tablaEdicion.item(0, 1).text()
+                except: #Error al obtenre texto
+                    banderaCompleta = False
+                if self.UTI.esEntero(texto): #Cuando es entero
+                    if len(texto) == 3: #Validacion de longitud
+                        claveAnterior = feat['clave']
+                        feat['clave'] = texto
+                    else:
+                        banderaCompleta = False
+                else: #Cuando no es numerico
+                    banderaCompleta = False
+
+                if banderaCompleta and claveAnterior == texto:
+                    self.capaActiva.commitChanges()
+                    self.UTI.mostrarAlerta("Sin cambios por realizar", QMessageBox().Information, 'Actualización de datos')
+                    return False
+
+                if banderaCompleta:
+                    # consulta para verificacion de clave MANZANA
+                    mpio = QSettings().value("cveMpio")
+                    claveFiltro = mpio + '-' + sector
+
+                    payload = {}
+                    payload['clave'] = texto
+                    payload['claveFiltro'] = claveFiltro
+                    payload['tipo'] = 'MANZANA'
+                    respuesta = self.consumeWSGeneral(self.CFG.url_validaClaves, payload)
+                    
+                    if not respuesta:
+                        self.capaActiva.commitChanges()
+                        return
+
+                    if not respuesta['uso']:
+                        self.capaActiva.commitChanges()
+                        self.UTI.mostrarAlerta("La clave '" + texto+ "' se encuentra inactiva, no se puede usar", QMessageBox().Critical, 'Error de entrada')
+                        return False
+                
+                if not banderaCompleta: #Mensaje de error
+                    self.UTI.mostrarAlerta('La clave debe estar compuesta por exactamente 3 números', QMessageBox().Critical, 'Error de entrada')
+                    print('clave: ' + str(cla))
+            #.....predios geom....#
+            elif nombreCapa == 'predios.geom':
+                texto = ""
+                
+                try:
+                    texto = cla
+                    #texto = self.dockwidget.tablaEdicion.item(0, 1).text()
+                except: #Error al obtenre texto
+                    banderaCompleta = False
+                if self.UTI.esEntero(texto): #Cuando es entero
+                    if len(texto) == 2: #Validacion de longitud
+                        claveAnterior = feat['clave']
+                        feat['clave'] = texto
+                    else:
+                        banderaCompleta = False
+                else: #Cuando no es numerico
+                    banderaCompleta = False
+
+                if banderaCompleta and claveAnterior == texto:
+                    self.capaActiva.commitChanges()
+                    self.UTI.mostrarAlerta("Sin cambios por realizar", QMessageBox().Information, 'Actualización de datos')
+                    return False
+
+                if banderaCompleta:
+
+                    manzana = ''
+                    # obtener la clave de la manzana donde esta contenido el predio
+                    fTemp = manzanaCapa.getFeatures()
+                    # obtenemos la geometria seleccionada de la capa activa
+                    fPredio = feat
+                    # se obtienen todos las geometrias con las que coline el predio
+                    lista = []
+                    for f in fTemp:
+                        valor = fPredio.geometry().intersects(f.geometry())
+                        if valor > 0:
+                            l = {}
+                            l['v'] = valor
+                            l['c'] = f['clave']
+
+                            lista.append(l)
+
+                    # obtener el registro con el valor mas grande para saber la clave de la manzana
+                    if len(lista) > 0:
+                        maxim = max(lista, key=lambda x:x['v'])
+                        manzana = maxim['c']
+
+                    # consulta para verificacion de clave MANZANA
+                    mpio = QSettings().value("cveMpio")
+                    claveFiltro = mpio + '-' + sector + '-' + manzana
+
+                    payload = {}
+                    payload['clave'] = texto
+                    payload['claveFiltro'] = claveFiltro
+                    payload['tipo'] = 'PREDIO'
+                    respuesta = self.consumeWSGeneral(self.CFG.url_validaClaves, payload)
+                    print(respuesta)
+                    if not respuesta:
+                        self.capaActiva.commitChanges()
+                        return
+
+                    if not respuesta['uso']:
+                        self.capaActiva.commitChanges()
+                        self.UTI.mostrarAlerta("La clave '" + texto+ "' se encuentra inactiva, no se puede usar", QMessageBox().Critical, 'Error de entrada')
+                        return False
+                
+                if not banderaCompleta: #Mensaje de error
+                    self.UTI.mostrarAlerta('La clave debe estar compuesta por exactamente 2 números', QMessageBox().Critical, 'Error de entrada')
+
+            #.....predios num....#
+            elif nombreCapa == 'predios.num':
+                texto = "Nada"
+                
+                try:
+                    texto = cla
+                    #texto = self.dockwidget.tablaEdicion.item(0, 1).text()
+                except: #Error al obtenre texto
+                    banderaCompleta = False
+
+                lenText = len(texto.strip())
+
+                if lenText < 21 and lenText > 0: #Validacion de longitud
+                    feat['numExt'] = texto
+                else:
+                    banderaCompleta = False
+
+                if not banderaCompleta: #Mensaje de error
+                    self.UTI.mostrarAlerta('El numero oficial no debe exceder los 20 caracteres', QMessageBox().Critical, 'Error de entrada')
+            
+            #.....horizontales geom....#
+            elif nombreCapa == 'horizontales.geom':
+                texto = "Nada"
+                
+                try:
+                    texto = cla
+                    #texto = self.dockwidget.tablaEdicion.item(0, 1).text()
+                except: #Error al obtenre texto
+                    banderaCompleta = False
+                if self.UTI.esEntero(texto): #Cuando es entero
+                    if len(texto) == 6: #Validacion de longitud
+                        feat['clave'] = texto
+                    else:
+                        banderaCompleta = False
+                else: #Cuando no es numerico
+                    banderaCompleta = False
+                
+                if not banderaCompleta: #Mensaje de error
+                    self.UTI.mostrarAlerta('La clave debe estar compuesta por exactamente 6 números', QMessageBox().Critical, 'Error de entrada')    
+
+            #.....horizontales num....#
+            elif nombreCapa == 'horizontales.num':
+                texto = "Nada"
+                
+                try:
+                    texto = cla
+                    #texto = self.dockwidget.tablaEdicion.item(0, 1).text()
+                except: #Error al obtenre texto
+                    banderaCompleta = False
+
+                lenText = len(texto.strip())
+                if lenText < 21 and lenText > 0: #Validacion de longitud
+                    feat['num_ofi'] = texto
+                else:
+                    banderaCompleta = False
+                
+                if not banderaCompleta: #Mensaje de error
+                    self.UTI.mostrarAlerta('El numero oficial no debe exceder los 20 caracteres', QMessageBox().Critical, 'Error de entrada')
+
+            #.....verticales geom....#
+            elif nombreCapa == 'verticales':
+                texto = "Nada"
+                
+                try:
+                    texto = cla
+                    #texto = self.dockwidget.tablaEdicion.item(0, 1).text()
+                except: #Error al obtenre texto
+                    banderaCompleta = False
+                if self.UTI.esEntero(texto): #Cuando es entero
+                    if len(texto) == 2: #Validacion de longitud
+                        feat['clave'] = texto
+                    else:
+                        banderaCompleta = False
+                else: #Cuando no es numerico
+                    banderaCompleta = False
+                
+                if not banderaCompleta: #Mensaje de error
+                    self.UTI.mostrarAlerta('La clave debe estar compuesta por exactamente 2 números', QMessageBox().Critical, 'Error de entrada') 
+
+            #.....claves verticales....#
+            elif nombreCapa == 'cves_verticales':
+                texto = "Nada"
+                
+                try:
+                    texto = cla
+                    #texto = self.dockwidget.tablaEdicion.item(0, 1).text()
+                except: #Error al obtenre texto
+                    banderaCompleta = False
+                if self.UTI.esEntero(texto): #Cuando es entero
+                    if len(texto) == 4: #Validacion de longitud
+                        feat['clave'] = texto
+                    else:
+                        banderaCompleta = False
+                else: #Cuando no es numerico
+                    banderaCompleta = False
+                
+                if not banderaCompleta: #Mensaje de error
+                    self.UTI.mostrarAlerta('La clave debe estar compuesta por exactamente 4 números', QMessageBox().Critical, 'Error de entrada')
+
+            #.....construcciones....#
+            elif nombreCapa == 'construcciones':
+
+                bandera1 = True
+                  #Combo de construccion especial
+                try:
+                    texto = cla
+                    #texto = self.dockwidget.tablaEdicion.item(0, 1).text()
+                    if len(texto) > 0 and len(texto) <=3:
+                        feat['nom_volumen'] = texto
+                    else:
+                        bandera1 = False
+                except:
+                    bandera1 = False
+
+                if not bandera1:
+                    self.UTI.mostrarAlerta('El volumen no debe exceder los 3 caracteres', QMessageBox().Critical, 'Error de entrada')
+                
+                bandera2 = True
+
+                if feat['cve_const_esp'] != None:
+                    comboIndex2 = self.comboConstEsp.currentIndex()
+                    feat['cve_const_esp'] = self.comboConstEsp.itemData(comboIndex2)
+                    
+                else:
+                    #try:
+                    texto = cla2
+                    #texto = self.dockwidget.tablaEdicion.item(1, 1).text()
+                    try:
+                        if len(texto) > 0 and int(texto) < 999 and self.UTI.esEntero(texto):
+                            feat['num_niveles'] = texto
+                        else:
+                            bandera2 = False
+                    except:
+                        bandera2 = False
+
+                if not bandera2:
+                    self.UTI.mostrarAlerta('El numero de niveles debe ser numerico y no exceder 999', QMessageBox().Critical, 'Error de entrada')
+                    print(texto)
+
+                banderaCompleta = bandera1 and bandera2
+
+            if banderaCompleta and (nombreCapa == 'predios.geom' or nombreCapa == 'manzana'):
+
+                claves = EstatusClaves_dialog.EstatusClavesDialog(pluginV = self, claveActual = claveAnterior, claveFiltro = claveFiltro, tipo = 'MANZANA' if nombreCapa == 'manzana' else 'PREDIO') 
+
+                # regresa un 0 o un 1
+                # 0 = RECHAZADO = CANCELAR
+                # 1 = ACEPTADO = ACEPTAR
+                respuesta = claves.exec()
+                
+                if respuesta == 0:
                     self.capaActiva.commitChanges()
                     return
 
-                if not respuesta['uso']:
-                    self.capaActiva.commitChanges()
-                    self.UTI.mostrarAlerta("La clave '" + texto+ "' se encuentra inactiva, no se puede usar", QMessageBox().Critical, 'Error de entrada')
-                    return False
-            
-            if not banderaCompleta: #Mensaje de error
-                self.UTI.mostrarAlerta('La clave debe estar compuesta por exactamente 3 números', QMessageBox().Critical, 'Error de entrada')
+                print(QSettings().value('clavesEstatus'))
 
-        #.....predios num....#
-        elif nombreCapa == 'predios.num':
-            texto = "Nada"
-            
-            try:
-                texto = self.dockwidget.tablaEdicion.item(0, 1).text()
-            except: #Error al obtenre texto
-                banderaCompleta = False
+            self.capaActiva.updateFeature(feat)
+            self.capaActiva.triggerRepaint()
+            self.capaActiva.commitChanges()
 
-            lenText = len(texto.strip())
-
-            if lenText < 21 and lenText > 0: #Validacion de longitud
-                feat['numExt'] = texto
-            else:
-                banderaCompleta = False
-
-            if not banderaCompleta: #Mensaje de error
-                self.UTI.mostrarAlerta('El numero oficial no debe exceder los 20 caracteres', QMessageBox().Critical, 'Error de entrada')
-        
-        #.....horizontales geom....#
-        elif nombreCapa == 'horizontales.geom':
-            texto = "Nada"
-            
-            try:
-                texto = self.dockwidget.tablaEdicion.item(0, 1).text()
-            except: #Error al obtenre texto
-                banderaCompleta = False
-            if self.UTI.esEntero(texto): #Cuando es entero
-                if len(texto) == 6: #Validacion de longitud
-                    feat['clave'] = texto
-                else:
-                    banderaCompleta = False
-            else: #Cuando no es numerico
-                banderaCompleta = False
-            
-            if not banderaCompleta: #Mensaje de error
-                self.UTI.mostrarAlerta('La clave debe estar compuesta por exactamente 6 números', QMessageBox().Critical, 'Error de entrada')    
-
-        #.....horizontales num....#
-        elif nombreCapa == 'horizontales.num':
-            texto = "Nada"
-            
-            try:
-                texto = self.dockwidget.tablaEdicion.item(0, 1).text()
-            except: #Error al obtenre texto
-                banderaCompleta = False
-
-            lenText = len(texto.strip())
-            if lenText < 21 and lenText > 0: #Validacion de longitud
-                feat['num_ofi'] = texto
-            else:
-                banderaCompleta = False
-            
-            if not banderaCompleta: #Mensaje de error
-                self.UTI.mostrarAlerta('El numero oficial no debe exceder los 20 caracteres', QMessageBox().Critical, 'Error de entrada')
-
-        #.....verticales geom....#
-        elif nombreCapa == 'verticales':
-            texto = "Nada"
-            
-            try:
-                texto = self.dockwidget.tablaEdicion.item(0, 1).text()
-            except: #Error al obtenre texto
-                banderaCompleta = False
-            if self.UTI.esEntero(texto): #Cuando es entero
-                if len(texto) == 2: #Validacion de longitud
-                    feat['clave'] = texto
-                else:
-                    banderaCompleta = False
-            else: #Cuando no es numerico
-                banderaCompleta = False
-            
-            if not banderaCompleta: #Mensaje de error
-                self.UTI.mostrarAlerta('La clave debe estar compuesta por exactamente 2 números', QMessageBox().Critical, 'Error de entrada') 
-
-        #.....claves verticales....#
-        elif nombreCapa == 'cves_verticales':
-            texto = "Nada"
-            
-            try:
-                texto = self.dockwidget.tablaEdicion.item(0, 1).text()
-            except: #Error al obtenre texto
-                banderaCompleta = False
-            if self.UTI.esEntero(texto): #Cuando es entero
-                if len(texto) == 4: #Validacion de longitud
-                    feat['clave'] = texto
-                else:
-                    banderaCompleta = False
-            else: #Cuando no es numerico
-                banderaCompleta = False
-            
-            if not banderaCompleta: #Mensaje de error
-                self.UTI.mostrarAlerta('La clave debe estar compuesta por exactamente 4 números', QMessageBox().Critical, 'Error de entrada')
-
-        #.....construcciones....#
-        elif nombreCapa == 'construcciones':
-
-            bandera1 = True
-              #Combo de construccion especial
-            try:
-                texto = self.dockwidget.tablaEdicion.item(0, 1).text()
-                if len(texto) > 0 and len(texto) <=3:
-                    feat['nom_volumen'] = texto
-                else:
-                    bandera1 = False
-            except:
-                bandera1 = False
-
-            if not bandera1:
-                self.UTI.mostrarAlerta('El volumen no debe exceder los 3 caracteres', QMessageBox().Critical, 'Error de entrada')
-            
-            bandera2 = True
-
-            if feat['cve_const_esp'] != None:
-                comboIndex2 = self.comboConstEsp.currentIndex()
-                feat['cve_const_esp'] = self.comboConstEsp.itemData(comboIndex2)
-                
-            else:
-                #try:
-                texto = self.dockwidget.tablaEdicion.item(1, 1).text()
-                try:
-                    if len(texto) > 0 and int(texto) < 999 and self.UTI.esEntero(texto):
-                        feat['num_niveles'] = texto
-                    else:
-                        bandera2 = False
-                except:
-                    bandera2 = False
-
-            if not bandera2:
-                self.UTI.mostrarAlerta('El numero de niveles debe ser numerico y no exceder 999', QMessageBox().Critical, 'Error de entrada')
-
-            banderaCompleta = bandera1 and bandera2
-
-        if banderaCompleta and (nombreCapa == 'predios.geom' or nombreCapa == 'manzana'):
-
-            claves = EstatusClaves_dialog.EstatusClavesDialog(pluginV = self, claveActual = claveAnterior, claveFiltro = claveFiltro, tipo = 'MANZANA' if nombreCapa == 'manzana' else 'PREDIO') 
-
-            # regresa un 0 o un 1
-            # 0 = RECHAZADO = CANCELAR
-            # 1 = ACEPTADO = ACEPTAR
-            respuesta = claves.exec()
-            
-            if respuesta == 0:
-                self.capaActiva.commitChanges()
-                return
-
-            print(QSettings().value('clavesEstatus'))
-
-        self.capaActiva.updateFeature(feat)
-        self.capaActiva.triggerRepaint()
-        self.capaActiva.commitChanges()
-
-        return banderaCompleta
+            return banderaCompleta
 
 #####################################################################################################
 
@@ -3953,12 +3976,13 @@ class ActualizacionCatastralV3:
 
 #-------------------------------------------------------------------
 
-    def actualizarMarcadores(self):
+    def actualizarMarcadores(self, ceck, ceck1, ceck2):
         capaManzana = QgsProject.instance().mapLayer(self.obtenerIdCapa('manzana'))
         capaPredios = QgsProject.instance().mapLayer(self.obtenerIdCapa('predios.geom'))
         capaConst = QgsProject.instance().mapLayer(self.obtenerIdCapa('construcciones'))
 
-        if self.dockwidget.checkVertManzana.isChecked():
+        #if self.dockwidget.checkVertManzana.isChecked():
+        if ceck:
             for feat in capaManzana.getFeatures():
                 geom = feat.geometry()
                 vertices = self.obtenerVertices2(geom)
@@ -3966,7 +3990,8 @@ class ActualizacionCatastralV3:
         else:
             self.vaciarMarcador(self.verticesManzana)
 
-        if self.dockwidget.checkVertPredio.isChecked():
+        #if self.dockwidget.checkVertPredio.isChecked():
+        if ceck1:
             for feat in capaPredios.getFeatures():
                 geom = feat.geometry()
                 vertices = self.obtenerVertices2(geom)
@@ -3975,7 +4000,8 @@ class ActualizacionCatastralV3:
             self.vaciarMarcador(self.verticesPredio)
 
         
-        if self.dockwidget.checkVertConst.isChecked():
+        #if self.dockwidget.checkVertConst.isChecked():
+        if ceck2:
             for feat in capaConst.getFeatures():
                 geom = feat.geometry()
                 color = QColor(0,0,0)

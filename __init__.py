@@ -33,6 +33,6 @@ def classFactory(iface):  # pylint: disable=invalid-name
     """
     #
     from .menu import menu
-    return menu(iface)            
+    return menu(iface)           
     #from .Prueba_main import Prueba
     #return Prueba(iface = iface)

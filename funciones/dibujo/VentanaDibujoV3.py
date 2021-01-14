@@ -57,13 +57,15 @@ from qgis.gui import QgsLayerTreeView, QgsMapToolEmitPoint, QgsMapTool, QgsRubbe
 import os.path
 import os, json, requests, sys
 from osgeo import ogr, osr
+#from ...menu import desact
 
 class VentanaDibujoV3:
     """QGIS Plugin Implementation."""
 
     def __init__(self, iface, pluginE):
        
-        self.pluginE = pluginE  
+        self.pluginE = pluginE 
+
         self.dlg = VentanaDibujoV3Dialog(pluginV=self, parent = iface.mainWindow())
         self.dlg.botonAgregar.clicked.connect(self.confirmarFeature)
         self.dlg.botonCancelar.clicked.connect(self.cancelarFeature)
@@ -270,8 +272,10 @@ class VentanaDibujoV3:
         nombreCapa = self.pluginE.pluginM.ACA.traducirIdCapa( self.capaActiva.id())
         campos = self.capaActiva.fields()   
         nombres = [campo.name() for campo in campos]
-
-        clavesActiva = [f['clave'] for f in self.capaActiva.getFeatures()]
+        if nombreCapa == 'horizontales.num':
+            clavesActiva = [f['num_ofi'] for f in self.capaActiva.getFeatures()]
+        else:
+            clavesActiva = [f['clave'] for f in self.capaActiva.getFeatures()]
 
         for x in self.capaActiva.getFeatures():  #Obtener ultimo feateure
             if x.id() > self.ultimo:

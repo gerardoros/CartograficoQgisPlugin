@@ -82,7 +82,8 @@ class DibujoV3:
 
         self.pluginIsActive = False
         self.dockwidget.botonDibujar.clicked.connect(self.alternarModoDibujo)
-       
+        self.mapTool = AdvancedMapTool(iface.mapCanvas(), iface.cadDockWidget(), self)
+        iface.mapCanvas().setMapTool(self.mapTool)
         #var = QSettings()
         '''
         #if var.value('logeado') == 'True':
@@ -297,8 +298,7 @@ class DibujoV3:
 
         ##########################################################################################################################
 
-    def alternarModoDibujo(self):
-
+    def alternarModoDibujo(self, ):
         self.actualizarCapaActiva()
         if self.mapTool.capaActiva != None:
             idCapa = self.mapTool.capaActiva.id()
@@ -605,6 +605,8 @@ class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
             self.lastMouseButtonClicked = "LEFT"
         elif event.buttons() == Qt.RightButton:
             self.lastMouseButtonClicked = "RIGHT"
+        
+
 
 
 ##################################################################################################################
@@ -675,7 +677,7 @@ class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
 
                             # global_point = self.canvas.getCoordinateTransform().transform(puntoSnap)
                             # cursor = QCursor()
-                            # cursor.setPos(global_point.x(), global_point.y())
+                            # cursor.setPos(global_point.x(), global_point#.y())
 
 
                             if not self.primerClick:

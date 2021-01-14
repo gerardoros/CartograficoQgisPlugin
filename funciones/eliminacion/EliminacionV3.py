@@ -35,7 +35,7 @@ from PyQt5.QtCore import QSettings, QTranslator, qVersion, QCoreApplication, Qt,
 from PyQt5.QtGui import QIcon, QColor, QCursor, QPixmap
 from PyQt5.QtWidgets import QAction, QWidget,QVBoxLayout, QPushButton, QMessageBox, QTableWidget, QTableWidgetItem
 from PyQt5 import QtWidgets
-
+from CartograficoQgisPlugin.funciones.consulta import ActualizacionCatastralV3
 from qgis.gui import * #QgsLayerTreeView, QgsMapToolEmitPoint, QgsMapTool, QgsRubberBand, QgsVertexMarker
 from qgis.core import * #QgsProject
 from qgis.utils import *
@@ -60,7 +60,7 @@ class EliminacionV3:
         self.UTI = None
         self.DFS = None
         self.DBJ = None
-        self.ACA = None
+        self.ACA = ActualizacionCatastralV3.ActualizacionCatastralV3(iface)
         self.DFS = None
         self.TPG = None
 
@@ -138,7 +138,7 @@ class EliminacionV3:
         self.modoEliminar = False
         self.capaVictima = None
 
-        
+        self.agregarFuncionEliminar()
         #self.dockwidget.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
         # Declare instance attributes
         '''

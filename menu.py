@@ -36,8 +36,12 @@ from .funciones.generar_documentos.cert_aportes import CertAportes
 from .funciones.generar_documentos.const_identificacion import ConstIdentificacion
 from .funciones.generar_documentos.gen_doc_calvecat import gen_doc_calvecat
 from .funciones.consulta.ActualizacionCatastralV3 import ActualizacionCatastralV3
+from .funciones.dibujo import DibujoV3
+from .funciones.eliminacion import EliminacionV3
+from .funciones.dibujo.VentanaDibujoV3 import VentanaDibujoV3
 import os.path
-from qgis.utils import iface
+from qgis.utils import iface, loadPlugin, startPlugin, reloadPlugin
+from inspect import getframeinfo, stack
 from PyQt5.QtWidgets import QApplication, QWidget, QGridLayout, QVBoxLayout, QLabel, QToolBox, QPushButton, QTextEdit, QLineEdit
 from PyQt5.QtGui import QColor
 from PyQt5.QtCore import QSettings, QTranslator, qVersion, QCoreApplication, QRectF
@@ -46,7 +50,7 @@ from PyQt5.QtWidgets import QAction, QFileDialog, QMessageBox
 from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication, QRegExp
 from qgis.PyQt.QtGui import QIcon, QRegExpValidator
 from qgis.PyQt.QtWidgets import QAction, QFileDialog, QMessageBox
-
+from qgis.gui import QgsLayerTreeView, QgsMapToolEmitPoint, QgsMapTool, QgsRubberBand, QgsVertexMarker, QgsMapToolAdvancedDigitizing
 # Initialize Qt resources from file resources.py
 from .resources import *
 # Import the code for the dialog
@@ -115,8 +119,8 @@ class menu:
         self.UTI.CFG = self.CFG
         self.UTI.ACA = self.ACA
         self.DFS = DivisionFusion.DivisionFusion(iface, self.ACA)
-        self.DBJ = None
-        self.ELM = None
+        self.DBJ = DibujoV3.DibujoV3(iface)
+        self.ELM = EliminacionV3.EliminacionV3(iface)
         
         self.TPG = None
         # initialize plugin directory
@@ -137,6 +141,8 @@ class menu:
         self.actions = []
         self.menu = self.tr(u'&menu')
         self.dlg = menuDialog(parent = iface.mainWindow())
+        self.mapTool = AdvancedMapTool(iface.mapCanvas(), iface.cadDockWidget(), self)
+        iface.mapCanvas().setMapTool(self.mapTool)
         #self.dlg.toolBox.currentChanged.connect(self.cambio)
         an = self.dlg.width()
         al = self.dlg.height()
@@ -158,8 +164,12 @@ class menu:
         self.abrePredio6 = False
         self.directorioAGuardar6 = None
         self.cve_catastral6 = None
+        self.modoEliminar = False
+        self.mododibujo = False
+        self.click  = False 
         self.zona = []
         self.manzana = []
+        self.lastMouseButtonClicked = None
         # eventos
         self.dlg.btnBrowse_5.clicked.connect(self.fun19)
         self.dlg.btnGenerar_5.clicked.connect(self.fun20)
@@ -235,9 +245,21 @@ class menu:
 
         self.dlg.btCodnadas.setIcon(QtGui.QIcon(':/plugins/Master/icons/local.ico'))
         self.dlg.btCodnadas.clicked.connect(self.fun6)
+        self.dlg.btnUbicar.clicked.connect(self.fun6)
+        self.dlg.btnLimpiar.clicked.connect(self.funlimpiar)
+        self.dlg.botonDibujar.clicked.connect(self.fundibujo)
+        self.dlg.botonEliminar.clicked.connect(self.funeliminar)
+        self.dlg.btnGuardar.clicked.connect(self.funguardar)
+        self.dlg.btnActMarc_2.clicked.connect(self.funmarcadores)
+        self.dlg.btnLimpiar_3.clicked.connect(self.funlimpiar)
+        self.dlg.botonCargarReferencia_2.clicked.connect(self.funcarga)
         self.dlg.comboSector.currentIndexChanged.connect(self.obtenerManzanasPorSector)
         self.dlg.comboManzana.currentIndexChanged.connect(self.obtenerIdManzana)
+        self.dlg.comboSector_3.currentIndexChanged.connect(self.obtenerManzanasPorSector2)
+        self.dlg.comboManzana_3.currentIndexChanged.connect(self.obtenerIdManzana2)
         self.dlg.btnAbrirCedula.clicked.connect(self.fun4)
+        self.dlg.btnAbrirCedula_3.clicked.connect(self.fun4)
+
         
         self.cve_cat_len = 16
         self.dlg.lista = {}
@@ -276,11 +298,14 @@ class menu:
         self.dlg.mGroupBox_2.collapsedStateChanged.connect(self.colapsar2)
         self.dlg.mGroupBox_3.collapsedStateChanged.connect(self.colapsar3)
         self.dlg.mGroupBox_4.collapsedStateChanged.connect(self.colapsar4)
+        self.dlg.mGroupBox_8.collapsedStateChanged.connect(self.colapsar5)
+        self.dlg.mGroupBox_9.collapsedStateChanged.connect(self.colapsar6)
         #self.cambio()
         #self.dlg.mdiArea.addSubWindow(self.dlg.subwindow_2)
         #self.dlg.mdiArea.closeAllSubWindows()
         # Check if plugin was started the first time in current QGIS session
         # Must be set in initGui() to survive plugin reloads
+
        
     # noinspection PyMethodMayBeStatic
     def tr(self, message):
@@ -411,6 +436,12 @@ class menu:
         #el error aqui es que estabas asignando la funcion 'obtenerXCapas' a self.ACA
         #y self.ACA contiene la referencia a la clase
         #self.ACA = ActualizacionCatastralV3.ActualizacionCatastralV3.obtenerXCapas(self)
+        self.mapTool = AdvancedMapTool(iface.mapCanvas(), iface.cadDockWidget(), self)
+        for x in iface.mapNavToolToolBar().actions():
+            if x.objectName() == 'mActionPan':
+                x.trigger()
+        if not self.mapTool.botonAD.isChecked():
+            self.mapTool.botonAD.trigger()
         self.mem_layer = None
         #esto es lo que debes hacer
         #con la referencia hecha (self.ACA == ActualizacionCatastralV3....) solo mandas a llamar el metodo que ocupas
@@ -423,7 +454,6 @@ class menu:
         self.cuerpo = {"incluirGeom": "true", "pagina": None, "bbox": "false", "pin": "false", "geomWKT": None, "epsg": None, "properties": None, "epsgGeomWKT": None, "itemsPagina": None, "nombre": "x"}
         self.headers = {'Content-Type': 'application/json'}
         self.payload = json.dumps(self.cuerpo)
-
         self.dlg.comboSector.clear()
         #self.dlg.comboLocalidad.clear()
         self.dlg.comboManzana.clear()
@@ -433,11 +463,15 @@ class menu:
 
         #Modo desarrollor
         self.modoDesarrollo = False
+        self.modoDesarrollo2 = False
         self.cargaRapida = True
         #01001001020004054011
         #01001001020004027003
         #01001001020004063010
         self.obtenerSectoresPorMunicipio()
+        self.obtenerSectoresPorMunicipio2()
+        self.ELM.agregarFuncionEliminar()
+        self.funedicionatributos()
         '''for count in range(self.dlg.comboSector.count()):
             #print (self.dlg.comboSector.itemText(count))
             self.zona.append(self.dlg.comboSector.itemText(count))
@@ -462,8 +496,17 @@ class menu:
         self.xHoriNum = QgsProject.instance().mapLayer(xHoriN)
         self.xVert = QgsProject.instance().mapLayer(xVe)
         self.xCvesVert = QgsProject.instance().mapLayer(xCv)
-        #self.ACA = ActualizacionCatastralV3.ActualizacionCatastralV3(iface, self.zona, self.manzana)
 
+        self.xManzana.selectionChanged.connect(self.funedicionatributos)
+        self.xPredGeom.selectionChanged.connect(self.funedicionatributos)
+        self.xPredNum.selectionChanged.connect(self.funedicionatributos)
+        self.xConst.selectionChanged.connect(self.funedicionatributos)
+        self.xHoriGeom.selectionChanged.connect(self.funedicionatributos)
+        self.xHoriNum.selectionChanged.connect(self.funedicionatributos)
+        self.xVert.selectionChanged.connect(self.funedicionatributos)
+        self.xCvesVert.selectionChanged.connect(self.funedicionatributos)
+        #self.ACA = ActualizacionCatastralV3.ActualizacionCatastralV3(iface, self.zona, self.manzana)
+        self.llenarComboReferencias()
         
 
         #Asignar eventos de cambio de seleccion
@@ -478,6 +521,7 @@ class menu:
         
         # show the dialog
         self.dlg.show()
+        iface.mapCanvas().setMapTool(self.mapTool)
         # Run the dialog event loop
         result = self.dlg.exec_()
         # See if OK was pressed
@@ -485,626 +529,45 @@ class menu:
             # Do something useful here - delete the line containing pass and
             # substitute with your code.
             pass
-    def colapsar(self):
+
+    #funcionalidad de los grupbox desplegables
+           
+        #print(self.dlg.mGroupBox_2.isCollapsed())
+
+    #funciones de diferentes clases
+    def colapsar5(self):
         #self.dlg.mGroupBox_5.isCollapsed()
-        if self.dlg.mGroupBox_5.isCollapsed() == True:
-            self.dlg.mGroupBox.setGeometry(11,30,481,169)
-            if self.dlg.mGroupBox.isCollapsed() == True:
-                if self.dlg.mGroupBox_2.isCollapsed() == False:
-                    if self.dlg.mGroupBox_3.isCollapsed() == True:
-                        if self.dlg.mGroupBox_4.isCollapsed() == True:
-                            self.dlg.mGroupBox_6.setGeometry(11,266,481,169)
-                        if self.dlg.mGroupBox_4.isCollapsed() == False:
-                            self.dlg.mGroupBox_6.setGeometry(11,500,481,169)
-                        self.dlg.mGroupBox_4.setGeometry(11,246,481,251)
-                    if self.dlg.mGroupBox_3.isCollapsed() == False:
-                        if self.dlg.mGroupBox_4.isCollapsed() == True:
-                            self.dlg.mGroupBox_6.setGeometry(11,421,481,169)
-                        if self.dlg.mGroupBox_4.isCollapsed() == False:
-                            self.dlg.mGroupBox_6.setGeometry(11,660,481,169)
-                        self.dlg.mGroupBox_4.setGeometry(11,401,481,251)
-                    self.dlg.mGroupBox_3.setGeometry(11,226,481,169)
-                self.dlg.mGroupBox_2.setGeometry(11,50,481,169)
-                if self.dlg.mGroupBox_2.isCollapsed() == True:
-                    if self.dlg.mGroupBox_3.isCollapsed() == False:
-                        if self.dlg.mGroupBox_4.isCollapsed() == False:
-                            self.dlg.mGroupBox_6.setGeometry(11,500,481,169)
-                        if self.dlg.mGroupBox_4.isCollapsed() == True:
-                            self.dlg.mGroupBox_6.setGeometry(11,266,481,169)
-                        self.dlg.mGroupBox_4.setGeometry(11,246,481,251)
-                    if self.dlg.mGroupBox_3.isCollapsed() == True:
-                        if self.dlg.mGroupBox_4.isCollapsed() == False:
-                            self.dlg.mGroupBox_6.setGeometry(11,346,481,169)
-                        if self.dlg.mGroupBox_4.isCollapsed() == True:
-                            self.dlg.mGroupBox_6.setGeometry(11,110,481,169)
-                        self.dlg.mGroupBox_4.setGeometry(11,90,481,251)
-                    self.dlg.mGroupBox_3.setGeometry(11,70,481,169)
-
-
-            else:
-                if self.dlg.mGroupBox_2.isCollapsed() == True:
-                    if self.dlg.mGroupBox_3.isCollapsed() == False:
-                        if self.dlg.mGroupBox_4.isCollapsed() == False:
-                            self.dlg.mGroupBox_6.setGeometry(11,660,481,169)
-                        if self.dlg.mGroupBox_4.isCollapsed() == True:
-                            self.dlg.mGroupBox_6.setGeometry(11,421,481,169)
-                        self.dlg.mGroupBox_4.setGeometry(11,401,481,251)
-                    if self.dlg.mGroupBox_3.isCollapsed() == True:
-                        if self.dlg.mGroupBox_4.isCollapsed() == True:
-                            self.dlg.mGroupBox_6.setGeometry(11,266,481,169)
-                        if self.dlg.mGroupBox_4.isCollapsed() == False:
-                            self.dlg.mGroupBox_6.setGeometry(11,500,481,169)
-                        self.dlg.mGroupBox_4.setGeometry(11,246,481,251)
-                    self.dlg.mGroupBox_3.setGeometry(11,226,481,169)
-                self.dlg.mGroupBox_2.setGeometry(11,206,481,169)
-                if self.dlg.mGroupBox_2.isCollapsed() == False:
-                    if self.dlg.mGroupBox_3.isCollapsed() == True:
-                        if self.dlg.mGroupBox_4.isCollapsed() == True:
-                            self.dlg.mGroupBox_6.setGeometry(11,421,481,169)
-                        if self.dlg.mGroupBox_4.isCollapsed() == False:
-                            self.dlg.mGroupBox_6.setGeometry(11,660,481,169)
-                        self.dlg.mGroupBox_4.setGeometry(11,401,481,251)
-                    if self.dlg.mGroupBox_3.isCollapsed() == False:
-                        if self.dlg.mGroupBox_4.isCollapsed() == True:
-                            self.dlg.mGroupBox_6.setGeometry(11,575,481,169)
-                        if self.dlg.mGroupBox_4.isCollapsed() == False:
-                            self.dlg.mGroupBox_6.setGeometry(11,810,481,169)
-                        self.dlg.mGroupBox_4.setGeometry(11,555,481,251)
-                    self.dlg.mGroupBox_3.setGeometry(11,381,481,169)
-            self.dlg.mGroupBox_5.setFixedSize(481,20)
+        if self.dlg.mGroupBox_8.isCollapsed() == True:
+            self.dlg.mGroupBox_9.setGeometry(11,170,481,81)
+            if self.dlg.mGroupBox_9.isCollapsed() == True:
+                self.dlg.mGroupBox_10.setGeometry(11,190,481,141)
+            elif self.dlg.mGroupBox_9.isCollapsed() == False:
+                self.dlg.mGroupBox_10.setGeometry(11,260,481,141)
             #self.dlg.mGroupBox_4.setGeometry(11,555,481,251)
             
-        elif self.dlg.mGroupBox_5.isCollapsed() == False:
-            if self.dlg.mGroupBox.isCollapsed() == False:
-                if self.dlg.mGroupBox_2.isCollapsed() == False:
-                    if self.dlg.mGroupBox_3.isCollapsed() == True:
-                        if self.dlg.mGroupBox_4.isCollapsed() == True:
-                            self.dlg.mGroupBox_6.setGeometry(11,575,481,169)
-                        if self.dlg.mGroupBox_4.isCollapsed() == False:
-                            self.dlg.mGroupBox_6.setGeometry(11,810,481,169)
-                        self.dlg.mGroupBox_4.setGeometry(11,555,481,251)
-                    if self.dlg.mGroupBox_3.isCollapsed() == False:
-                        if self.dlg.mGroupBox_4.isCollapsed() == True:
-                            self.dlg.mGroupBox_6.setGeometry(11,730,481,169)
-                        if self.dlg.mGroupBox_4.isCollapsed() == False:
-                            self.dlg.mGroupBox_6.setGeometry(11,967,481,169)
-                        self.dlg.mGroupBox_4.setGeometry(11,710,481,251)
-                    self.dlg.mGroupBox_3.setGeometry(11,535,481,169)
-                if self.dlg.mGroupBox_2.isCollapsed() == True:
-                    if self.dlg.mGroupBox_3.isCollapsed() == False:
-                        if self.dlg.mGroupBox_4.isCollapsed() == False:
-                            self.dlg.mGroupBox_6.setGeometry(11,810,481,169)
-                        if self.dlg.mGroupBox_4.isCollapsed() == True:
-                            self.dlg.mGroupBox_6.setGeometry(11,575,481,169)
-                        self.dlg.mGroupBox_4.setGeometry(11,555,481,251)
-                    if self.dlg.mGroupBox_3.isCollapsed() == True:
-                        if self.dlg.mGroupBox_4.isCollapsed() == True:
-                            self.dlg.mGroupBox_6.setGeometry(11,421,481,169)
-                        if self.dlg.mGroupBox_4.isCollapsed() == False:
-                            self.dlg.mGroupBox_6.setGeometry(11,660,481,169)
-                        self.dlg.mGroupBox_4.setGeometry(11,401,481,251)
-                    self.dlg.mGroupBox_3.setGeometry(11,381,481,169)
-            if self.dlg.mGroupBox.isCollapsed() == True:
-                if self.dlg.mGroupBox_2.isCollapsed() == False:
-                    if self.dlg.mGroupBox_3.isCollapsed() == False:
-                        if self.dlg.mGroupBox_4.isCollapsed() == True:
-                            self.dlg.mGroupBox_6.setGeometry(11,575,481,169)
-                        if self.dlg.mGroupBox_4.isCollapsed() == False:
-                            self.dlg.mGroupBox_6.setGeometry(11,810,481,169)
-                        self.dlg.mGroupBox_4.setGeometry(11,555,481,251)
-                    if self.dlg.mGroupBox_3.isCollapsed() == True:
-                        if self.dlg.mGroupBox_4.isCollapsed() == True:
-                            self.dlg.mGroupBox_6.setGeometry(11,421,481,169)
-                        if self.dlg.mGroupBox_4.isCollapsed() == False:
-                            self.dlg.mGroupBox_6.setGeometry(11,660,481,169)
-                        self.dlg.mGroupBox_4.setGeometry(11,401,481,251)
-
-                    self.dlg.mGroupBox_3.setGeometry(11,381,481,169)
-                self.dlg.mGroupBox_2.setGeometry(11,206,481,169)
-                if self.dlg.mGroupBox_2.isCollapsed() == True:
-                    if self.dlg.mGroupBox_3.isCollapsed() == False:
-                        if self.dlg.mGroupBox_4.isCollapsed() == False:
-                            self.dlg.mGroupBox_6.setGeometry(11,660,481,169)
-                        if self.dlg.mGroupBox_4.isCollapsed() == True:
-                            self.dlg.mGroupBox_6.setGeometry(11,421,481,169)
-                        self.dlg.mGroupBox_4.setGeometry(11,401,481,251)
-                    if self.dlg.mGroupBox_3.isCollapsed() == True:
-                        if self.dlg.mGroupBox_4.isCollapsed() == False:
-                            self.dlg.mGroupBox_6.setGeometry(11,500,481,169)
-                        if self.dlg.mGroupBox_4.isCollapsed() == True:
-                            self.dlg.mGroupBox_6.setGeometry(11,266,481,169)
-                        self.dlg.mGroupBox_4.setGeometry(11,246,481,251)
-                    self.dlg.mGroupBox_3.setGeometry(11,226,481,169)
-            else:
-                self.dlg.mGroupBox_2.setGeometry(11,361,481,169)
-            self.dlg.mGroupBox.setGeometry(11,186,481,169)
+        elif self.dlg.mGroupBox_8.isCollapsed() == False:
+            self.dlg.mGroupBox_9.setGeometry(11,300,481,81)
+            if self.dlg.mGroupBox_9.isCollapsed() == True:
+                self.dlg.mGroupBox_10.setGeometry(11,320,481,141)
+            elif self.dlg.mGroupBox_9.isCollapsed() == False:
+                self.dlg.mGroupBox_10.setGeometry(11,390,481,141)
+    def colapsar6(self):
+        #self.dlg.mGroupBox_5.isCollapsed()
+        if self.dlg.mGroupBox_8.isCollapsed() == True:
+            if self.dlg.mGroupBox_9.isCollapsed() == True:
+                self.dlg.mGroupBox_10.setGeometry(11,190,481,141)
+            elif self.dlg.mGroupBox_9.isCollapsed() == False:
+                self.dlg.mGroupBox_10.setGeometry(11,260,481,141)
+            #self.dlg.mGroupBox_4.setGeometry(11,555,481,251)
+            
+        elif self.dlg.mGroupBox_8.isCollapsed() == False:
+            self.dlg.mGroupBox_9.setGeometry(11,300,481,81)
+            if self.dlg.mGroupBox_9.isCollapsed() == True:
+                self.dlg.mGroupBox_10.setGeometry(11,320,481,141)
+            elif self.dlg.mGroupBox_9.isCollapsed() == False:
+                self.dlg.mGroupBox_10.setGeometry(11,390,481,141)
             
             #self.dlg.mGroupBox_4.setGeometry(11,710,481,251)
-            self.dlg.mGroupBox_5.setFixedSize(481,169)
-
-        print(self.dlg.mGroupBox_5.isCollapsed())
-    def colapsar1(self):
-        if self.dlg.mGroupBox_5.isCollapsed() == True:
-            if self.dlg.mGroupBox.isCollapsed() == True:
-                self.dlg.mGroupBox_2.setGeometry(11,50,481,169)
-                if self.dlg.mGroupBox_2.isCollapsed() == True:
-                    if self.dlg.mGroupBox_3.isCollapsed() == False:
-                        if self.dlg.mGroupBox_4.isCollapsed() == False:
-                            self.dlg.mGroupBox_6.setGeometry(11,500,481,169)
-                        if self.dlg.mGroupBox_4.isCollapsed() == True:
-                            self.dlg.mGroupBox_6.setGeometry(11,266,481,169)
-                        self.dlg.mGroupBox_4.setGeometry(11,246,481,251)
-                    if self.dlg.mGroupBox_3.isCollapsed() == True:
-                        if self.dlg.mGroupBox_4.isCollapsed() == True:
-                            self.dlg.mGroupBox_6.setGeometry(11,421,481,169)
-                        if self.dlg.mGroupBox_4.isCollapsed() == False:
-                            self.dlg.mGroupBox_6.setGeometry(11,346,481,169)
-                        if self.dlg.mGroupBox_4.isCollapsed() == True:
-                            self.dlg.mGroupBox_6.setGeometry(11,110,481,169)
-                        self.dlg.mGroupBox_4.setGeometry(11,90,481,251)
-                    self.dlg.mGroupBox_3.setGeometry(11,70,481,169)
-                elif self.dlg.mGroupBox_2.isCollapsed() == False:
-                    if self.dlg.mGroupBox_3.isCollapsed() == True:
-                        if self.dlg.mGroupBox_4.isCollapsed() == True:
-                            self.dlg.mGroupBox_6.setGeometry(11,266,481,169)
-                        if self.dlg.mGroupBox_4.isCollapsed() == False:
-                            self.dlg.mGroupBox_6.setGeometry(11,500,481,169)
-                        self.dlg.mGroupBox_4.setGeometry(11,246,481,251)
-                    if self.dlg.mGroupBox_3.isCollapsed() == False:
-                        if self.dlg.mGroupBox_4.isCollapsed() == True:
-                            self.dlg.mGroupBox_6.setGeometry(11,421,481,169)
-                        if self.dlg.mGroupBox_4.isCollapsed() == False:
-                            self.dlg.mGroupBox_6.setGeometry(11,660,481,169)
-                        self.dlg.mGroupBox_4.setGeometry(11,401,481,251)
-                    if self.dlg.mGroupBox_2.isCollapsed() == True:
-                        self.dlg.mGroupBox_3.setGeometry(11,226,481,169)
-                    self.dlg.mGroupBox_3.setGeometry(11,226,481,169)
-            elif self.dlg.mGroupBox.isCollapsed() == False:
-                if self.dlg.mGroupBox_2.isCollapsed() == False:
-                    if self.dlg.mGroupBox_3.isCollapsed() == True:
-                        if self.dlg.mGroupBox_4.isCollapsed() == True:
-                            self.dlg.mGroupBox_6.setGeometry(11,421,481,169)
-                        if self.dlg.mGroupBox_4.isCollapsed() == False:
-                            self.dlg.mGroupBox_6.setGeometry(11,660,481,169)
-                        self.dlg.mGroupBox_4.setGeometry(11,401,481,251)
-                    if self.dlg.mGroupBox_3.isCollapsed() == False:
-                        if self.dlg.mGroupBox_4.isCollapsed() == True:
-                            self.dlg.mGroupBox_6.setGeometry(11,575,481,169)
-                        if self.dlg.mGroupBox_4.isCollapsed() == False:
-                            self.dlg.mGroupBox_6.setGeometry(11,810,481,169)
-                        self.dlg.mGroupBox_4.setGeometry(11,555,481,251)
-                    self.dlg.mGroupBox_3.setGeometry(11,381,481,169)
-                if self.dlg.mGroupBox_2.isCollapsed() == True:
-                    if self.dlg.mGroupBox_3.isCollapsed() == False:
-                        if self.dlg.mGroupBox_4.isCollapsed() == False:
-                            self.dlg.mGroupBox_6.setGeometry(11,660,481,169)
-                        if self.dlg.mGroupBox_4.isCollapsed() == True:
-                            self.dlg.mGroupBox_6.setGeometry(11,421,481,169)
-                        self.dlg.mGroupBox_4.setGeometry(11,401,481,251)
-                    if self.dlg.mGroupBox_3.isCollapsed() == True:
-                        if self.dlg.mGroupBox_4.isCollapsed() == False:
-                            self.dlg.mGroupBox_6.setGeometry(11,500,481,169)
-                        if self.dlg.mGroupBox_4.isCollapsed() == True:
-                            self.dlg.mGroupBox_6.setGeometry(11,266,481,169)
-                        self.dlg.mGroupBox_4.setGeometry(11,246,481,251)
-                    self.dlg.mGroupBox_3.setGeometry(11,226,481,169)
-            
-                self.dlg.mGroupBox_2.setGeometry(11,206,481,169)
-                
-        else:
-            if self.dlg.mGroupBox.isCollapsed() == True:
-                if self.dlg.mGroupBox_2.isCollapsed() == False:
-                    if self.dlg.mGroupBox_3.isCollapsed() == True:
-                        if self.dlg.mGroupBox_4.isCollapsed() == True:
-                            self.dlg.mGroupBox_6.setGeometry(11,421,481,169)
-                        if self.dlg.mGroupBox_4.isCollapsed() == False:
-                            self.dlg.mGroupBox_6.setGeometry(11,660,481,169)
-                        self.dlg.mGroupBox_4.setGeometry(11,401,481,251)
-                    if self.dlg.mGroupBox_3.isCollapsed() == False:
-                        if self.dlg.mGroupBox_4.isCollapsed() == False:
-                            self.dlg.mGroupBox_6.setGeometry(11,810,481,169)
-                        if self.dlg.mGroupBox_4.isCollapsed() == True:
-                            self.dlg.mGroupBox_6.setGeometry(11,575,481,169)
-                        self.dlg.mGroupBox_4.setGeometry(11,555,481,251)
-                    self.dlg.mGroupBox_3.setGeometry(11,381,481,169)
-                if self.dlg.mGroupBox_2.isCollapsed() == True:
-                    if self.dlg.mGroupBox_3.isCollapsed() == False:
-                        if self.dlg.mGroupBox_4.isCollapsed() == False:
-                            self.dlg.mGroupBox_6.setGeometry(11,660,481,169)
-                        self.dlg.mGroupBox_4.setGeometry(11,401,481,251)
-                    if self.dlg.mGroupBox_3.isCollapsed() == True:
-                        if self.dlg.mGroupBox_4.isCollapsed() == False:
-                            self.dlg.mGroupBox_6.setGeometry(11,500,481,169)
-                        if self.dlg.mGroupBox_4.isCollapsed() == True:
-                            self.dlg.mGroupBox_6.setGeometry(11,266,481,169)
-                        self.dlg.mGroupBox_4.setGeometry(11,246,481,251)
-                    self.dlg.mGroupBox_3.setGeometry(11,226,481,169)
-                self.dlg.mGroupBox_2.setGeometry(11,206,481,169)
-            elif self.dlg.mGroupBox.isCollapsed() == False:
-                if self.dlg.mGroupBox_2.isCollapsed() == False:
-                    if self.dlg.mGroupBox_3.isCollapsed() == True:
-                        if self.dlg.mGroupBox_4.isCollapsed() == True:
-                            self.dlg.mGroupBox_6.setGeometry(11,575,481,169)
-                        if self.dlg.mGroupBox_4.isCollapsed() == False:
-                            self.dlg.mGroupBox_6.setGeometry(11,810,481,169)
-                        self.dlg.mGroupBox_4.setGeometry(11,555,481,251)
-                    if self.dlg.mGroupBox_3.isCollapsed() == False:
-                        if self.dlg.mGroupBox_4.isCollapsed() == False:
-                            self.dlg.mGroupBox_6.setGeometry(11,967,481,169)
-                        if self.dlg.mGroupBox_4.isCollapsed() == True:
-                            self.dlg.mGroupBox_6.setGeometry(11,730,481,169)
-                        self.dlg.mGroupBox_4.setGeometry(11,710,481,251)
-                    self.dlg.mGroupBox_3.setGeometry(11,535,481,169)
-                if self.dlg.mGroupBox_2.isCollapsed() == True:
-                    if self.dlg.mGroupBox_3.isCollapsed() == False:
-                            self.dlg.mGroupBox_4.setGeometry(11,555,481,251)
-                            if self.dlg.mGroupBox_4.isCollapsed() == False:
-                                self.dlg.mGroupBox_6.setGeometry(11,810,481,169)
-                    if self.dlg.mGroupBox_3.isCollapsed() == True:
-                        if self.dlg.mGroupBox_4.isCollapsed() == False:
-                            self.dlg.mGroupBox_6.setGeometry(11,660,481,169)
-                        if self.dlg.mGroupBox_4.isCollapsed() == True:
-                            self.dlg.mGroupBox_6.setGeometry(11,421,481,169)
-                        self.dlg.mGroupBox_4.setGeometry(11,401,481,251)
-                    self.dlg.mGroupBox_3.setGeometry(11,381,481,169)
-                self.dlg.mGroupBox_2.setGeometry(11,361,481,169)
-
-        print(self.dlg.mGroupBox.isCollapsed())
-    def colapsar2(self):
-        if self.dlg.mGroupBox_5.isCollapsed() == True:
-            if self.dlg.mGroupBox.isCollapsed() == True:
-                if self.dlg.mGroupBox_2.isCollapsed() == True:
-                    if self.dlg.mGroupBox_3.isCollapsed() == False:
-                        if self.dlg.mGroupBox_4.isCollapsed() == True:
-                            self.dlg.mGroupBox_6.setGeometry(11,266,481,169)
-                        if self.dlg.mGroupBox_4.isCollapsed() == False:
-                            self.dlg.mGroupBox_6.setGeometry(11,500,481,169)
-                        self.dlg.mGroupBox_4.setGeometry(11,246,481,251)
-                    if self.dlg.mGroupBox_3.isCollapsed() == True:
-                        if self.dlg.mGroupBox_4.isCollapsed() == False:
-                            self.dlg.mGroupBox_6.setGeometry(11,346,481,169)
-                        if self.dlg.mGroupBox_4.isCollapsed() == True:
-                            self.dlg.mGroupBox_6.setGeometry(11,110,481,169)
-                        self.dlg.mGroupBox_4.setGeometry(11,90,481,251)
-                    self.dlg.mGroupBox_2.setFixedSize(481,20)
-                    if self.dlg.mGroupBox_3.isCollapsed() == False:
-                        self.dlg.mGroupBox_4.setGeometry(11,246,481,251)
-                    self.dlg.mGroupBox_3.setGeometry(11,70,481,169)
-                elif self.dlg.mGroupBox_2.isCollapsed() == False:
-                    if self.dlg.mGroupBox_4.isCollapsed() == False:
-                            self.dlg.mGroupBox_6.setGeometry(11,660,481,169)
-                    if self.dlg.mGroupBox_3.isCollapsed() == True:
-                        if self.dlg.mGroupBox_4.isCollapsed() == False:
-                            self.dlg.mGroupBox_6.setGeometry(11,500,481,169)
-                        if self.dlg.mGroupBox_4.isCollapsed() == True:
-                            self.dlg.mGroupBox_6.setGeometry(11,266,481,169)
-                        self.dlg.mGroupBox_4.setGeometry(11,246,481,251)
-                    if self.dlg.mGroupBox_3.isCollapsed() == False:
-                        if self.dlg.mGroupBox_4.isCollapsed() == True:
-                            self.dlg.mGroupBox_6.setGeometry(11,421,481,169)
-                        self.dlg.mGroupBox_4.setGeometry(11,401,481,251)
-                    if self.dlg.mGroupBox_3.isCollapsed() == True:
-                        self.dlg.mGroupBox_4.setGeometry(11,246,481,251)
-                    self.dlg.mGroupBox_3.setGeometry(11,226,481,169)
-                    self.dlg.mGroupBox_2.setFixedSize(481,169)
-            else:
-                if self.dlg.mGroupBox_2.isCollapsed() == True:
-                    if self.dlg.mGroupBox_3.isCollapsed() == True:
-                        if self.dlg.mGroupBox_4.isCollapsed() == True:
-                            self.dlg.mGroupBox_6.setGeometry(11,266,481,169)
-                        if self.dlg.mGroupBox_4.isCollapsed() == False:
-                            self.dlg.mGroupBox_6.setGeometry(11,500,481,169)
-                        self.dlg.mGroupBox_4.setGeometry(11,246,481,251)
-                    if self.dlg.mGroupBox_3.isCollapsed() == False:
-                        if self.dlg.mGroupBox_4.isCollapsed() == True:
-                            self.dlg.mGroupBox_6.setGeometry(11,421,481,169)
-                        if self.dlg.mGroupBox_4.isCollapsed() == False:
-                            self.dlg.mGroupBox_6.setGeometry(11,660,481,169)
-                        self.dlg.mGroupBox_4.setGeometry(11,401,481,251)
-                    self.dlg.mGroupBox_2.setFixedSize(481,20)
-                    self.dlg.mGroupBox_3.setGeometry(11,226,481,169)
-                elif self.dlg.mGroupBox_2.isCollapsed() == False:
-                    if self.dlg.mGroupBox_3.isCollapsed() == True:
-                        if self.dlg.mGroupBox_4.isCollapsed() == True:
-                            self.dlg.mGroupBox_6.setGeometry(11,421,481,169)
-                        if self.dlg.mGroupBox_4.isCollapsed() == False:
-                            self.dlg.mGroupBox_6.setGeometry(11,660,481,169)
-                        self.dlg.mGroupBox_4.setGeometry(11,401,481,251)
-                    if self.dlg.mGroupBox_3.isCollapsed() == False:
-                        if self.dlg.mGroupBox_4.isCollapsed() == True:
-                            self.dlg.mGroupBox_6.setGeometry(11,575,481,169)
-                        if self.dlg.mGroupBox_4.isCollapsed() == False:
-                            self.dlg.mGroupBox_6.setGeometry(11,810,481,169)
-                        self.dlg.mGroupBox_4.setGeometry(11,555,481,251)
-                    self.dlg.mGroupBox_2.setFixedSize(481,169)
-                    self.dlg.mGroupBox_3.setGeometry(11,381,481,169)
-        else:
-            if self.dlg.mGroupBox.isCollapsed() == True:
-                if self.dlg.mGroupBox_2.isCollapsed() == True:
-                    if self.dlg.mGroupBox_3.isCollapsed() == False:
-                        if self.dlg.mGroupBox_4.isCollapsed() == False:
-                            self.dlg.mGroupBox_6.setGeometry(11,660,481,169)
-                        if self.dlg.mGroupBox_4.isCollapsed() == True:
-                            self.dlg.mGroupBox_6.setGeometry(11,421,481,169)
-                        self.dlg.mGroupBox_4.setGeometry(11,401,481,251)
-                    if self.dlg.mGroupBox_3.isCollapsed() == True:
-                        if self.dlg.mGroupBox_4.isCollapsed() == False:
-                            self.dlg.mGroupBox_6.setGeometry(11,500,481,169)
-                        if self.dlg.mGroupBox_4.isCollapsed() == True:
-                            self.dlg.mGroupBox_6.setGeometry(11,266,481,169)
-                        self.dlg.mGroupBox_4.setGeometry(11,246,481,251)
-                    self.dlg.mGroupBox_2.setFixedSize(481,20)
-                    self.dlg.mGroupBox_3.setGeometry(11,226,481,169)
-                elif self.dlg.mGroupBox_2.isCollapsed() == False:
-                    if self.dlg.mGroupBox_3.isCollapsed() == True:
-                        if self.dlg.mGroupBox_4.isCollapsed() == False:
-                            self.dlg.mGroupBox_6.setGeometry(11,660,481,169)
-                        if self.dlg.mGroupBox_4.isCollapsed() == True:
-                            self.dlg.mGroupBox_6.setGeometry(11,421,481,169)
-                        self.dlg.mGroupBox_4.setGeometry(11,401,481,251)
-                    if self.dlg.mGroupBox_3.isCollapsed() == False:
-                        if self.dlg.mGroupBox_4.isCollapsed() == False:
-                            self.dlg.mGroupBox_6.setGeometry(11,810,481,169)
-                        if self.dlg.mGroupBox_4.isCollapsed() == True:
-                            self.dlg.mGroupBox_6.setGeometry(11,575,481,169)
-                        self.dlg.mGroupBox_4.setGeometry(11,555,481,251)
-                    self.dlg.mGroupBox_3.setGeometry(11,381,481,169)
-                    self.dlg.mGroupBox_2.setFixedSize(481,169)
-            else:
-                
-                if self.dlg.mGroupBox_2.isCollapsed() == True:
-                    if self.dlg.mGroupBox_3.isCollapsed() == True:
-                        if self.dlg.mGroupBox_4.isCollapsed() == False:
-                            self.dlg.mGroupBox_6.setGeometry(11,660,481,169)
-                        if self.dlg.mGroupBox_4.isCollapsed() == True:
-                            self.dlg.mGroupBox_6.setGeometry(11,421,481,169)
-                        self.dlg.mGroupBox_4.setGeometry(11,401,481,251)
-                    if self.dlg.mGroupBox_3.isCollapsed() == False:
-                        if self.dlg.mGroupBox_4.isCollapsed() == True:
-                            self.dlg.mGroupBox_6.setGeometry(11,575,481,169)
-                        if self.dlg.mGroupBox_4.isCollapsed() == False:
-                            self.dlg.mGroupBox_6.setGeometry(11,810,481,169)
-                        self.dlg.mGroupBox_4.setGeometry(11,555,481,251)
-                    self.dlg.mGroupBox_2.setFixedSize(481,20)
-                    self.dlg.mGroupBox_3.setGeometry(11,381,481,169)
-                elif self.dlg.mGroupBox_2.isCollapsed() == False:
-                    if self.dlg.mGroupBox_3.isCollapsed() == True:
-                        if self.dlg.mGroupBox_4.isCollapsed() == False:
-                            self.dlg.mGroupBox_6.setGeometry(11,810,481,169)
-                        if self.dlg.mGroupBox_4.isCollapsed() == True:
-                            self.dlg.mGroupBox_6.setGeometry(11,575,481,169)
-                        self.dlg.mGroupBox_4.setGeometry(11,555,481,251)
-                    if self.dlg.mGroupBox_3.isCollapsed() == False:
-                        if self.dlg.mGroupBox_4.isCollapsed() == True:
-                            self.dlg.mGroupBox_6.setGeometry(11,730,481,169)
-                        if self.dlg.mGroupBox_4.isCollapsed() == False:
-                            self.dlg.mGroupBox_6.setGeometry(11,967,481,169)
-                        self.dlg.mGroupBox_4.setGeometry(11,710,481,251)
-                    self.dlg.mGroupBox_2.setFixedSize(481,169)
-                    self.dlg.mGroupBox_3.setGeometry(11,535,481,169)
-
-        print(self.dlg.mGroupBox_2.isCollapsed())
-    def colapsar3(self):
-        if self.dlg.mGroupBox_5.isCollapsed() == True:
-            if self.dlg.mGroupBox.isCollapsed() == True:
-                if self.dlg.mGroupBox_2.isCollapsed() == True:
-                    if self.dlg.mGroupBox_3.isCollapsed() == True:
-                        if self.dlg.mGroupBox_4.isCollapsed() == False:
-                            self.dlg.mGroupBox_6.setGeometry(11,340,481,169)
-                        if self.dlg.mGroupBox_4.isCollapsed() == True:
-                            self.dlg.mGroupBox_6.setGeometry(11,110,481,169)
-                        self.dlg.mGroupBox_4.setGeometry(11,90,481,169)
-                    elif self.dlg.mGroupBox_3.isCollapsed() == False:
-                        if self.dlg.mGroupBox_4.isCollapsed() == False:
-                            self.dlg.mGroupBox_6.setGeometry(11,500,481,169)
-                        if self.dlg.mGroupBox_4.isCollapsed() == True:
-                            self.dlg.mGroupBox_6.setGeometry(11,266,481,169)
-                        self.dlg.mGroupBox_4.setGeometry(11,246,481,169)
-                else:
-                    if self.dlg.mGroupBox_3.isCollapsed() == True:
-                        if self.dlg.mGroupBox_4.isCollapsed() == True:
-                            self.dlg.mGroupBox_6.setGeometry(11,266,481,169)
-                        if self.dlg.mGroupBox_4.isCollapsed() == False:
-                            self.dlg.mGroupBox_6.setGeometry(11,500,481,169)
-                        self.dlg.mGroupBox_4.setGeometry(11,246,481,169)
-                    elif self.dlg.mGroupBox_3.isCollapsed() == False:
-                        if self.dlg.mGroupBox_4.isCollapsed() == True:
-                            self.dlg.mGroupBox_6.setGeometry(11,421,481,169)
-                        if self.dlg.mGroupBox_4.isCollapsed() == False:
-                            self.dlg.mGroupBox_6.setGeometry(11,660,481,169)
-                        self.dlg.mGroupBox_4.setGeometry(11,401,481,169)
-            else:
-                if self.dlg.mGroupBox_2.isCollapsed() == True:
-                    if self.dlg.mGroupBox_3.isCollapsed() == True:
-                        if self.dlg.mGroupBox_4.isCollapsed() == True:
-                            self.dlg.mGroupBox_6.setGeometry(11,266,481,169)
-                        if self.dlg.mGroupBox_4.isCollapsed() == False:
-                            self.dlg.mGroupBox_6.setGeometry(11,500,481,169)
-                        self.dlg.mGroupBox_4.setGeometry(11,246,481,169)
-                    elif self.dlg.mGroupBox_3.isCollapsed() == False:
-                        if self.dlg.mGroupBox_4.isCollapsed() == True:
-                            self.dlg.mGroupBox_6.setGeometry(11,421,481,169)
-                        if self.dlg.mGroupBox_4.isCollapsed() == False:
-                            self.dlg.mGroupBox_6.setGeometry(11,660,481,169)
-                        self.dlg.mGroupBox_4.setGeometry(11,401,481,169)
-                else:
-                    if self.dlg.mGroupBox_3.isCollapsed() == True:
-                        if self.dlg.mGroupBox_4.isCollapsed() == False:
-                            self.dlg.mGroupBox_6.setGeometry(11,660,481,169)
-                        if self.dlg.mGroupBox_4.isCollapsed() == True:
-                            self.dlg.mGroupBox_6.setGeometry(11,421,481,169)
-                        self.dlg.mGroupBox_4.setGeometry(11,401,481,169)
-                    elif self.dlg.mGroupBox_3.isCollapsed() == False:
-                        if self.dlg.mGroupBox_4.isCollapsed() == False:
-                            self.dlg.mGroupBox_6.setGeometry(11,810,481,169)
-                        if self.dlg.mGroupBox_4.isCollapsed() == True:
-                            self.dlg.mGroupBox_6.setGeometry(11,575,481,169)
-                        self.dlg.mGroupBox_4.setGeometry(11,555,481,169)
-        else:
-            if self.dlg.mGroupBox.isCollapsed() == True:
-                if self.dlg.mGroupBox_2.isCollapsed() == True:
-                    if self.dlg.mGroupBox_3.isCollapsed() == True:
-                        if self.dlg.mGroupBox_4.isCollapsed() == True:
-                            self.dlg.mGroupBox_6.setGeometry(11,266,481,169)
-                        if self.dlg.mGroupBox_4.isCollapsed() == False:
-                            self.dlg.mGroupBox_6.setGeometry(11,500,481,169)
-                        self.dlg.mGroupBox_4.setGeometry(11,246,481,169)
-                    elif self.dlg.mGroupBox_3.isCollapsed() == False:
-                        if self.dlg.mGroupBox_4.isCollapsed() == True:
-                            self.dlg.mGroupBox_6.setGeometry(11,421,481,169)
-                        if self.dlg.mGroupBox_4.isCollapsed() == False:
-                            self.dlg.mGroupBox_6.setGeometry(11,660,481,169)
-                        self.dlg.mGroupBox_4.setGeometry(11,401,481,169)
-                else:
-                    if self.dlg.mGroupBox_3.isCollapsed() == True:
-                        if self.dlg.mGroupBox_4.isCollapsed() == True:
-                            self.dlg.mGroupBox_6.setGeometry(11,421,481,169)
-                        if self.dlg.mGroupBox_4.isCollapsed() == False:
-                            self.dlg.mGroupBox_6.setGeometry(11,660,481,169)
-                        self.dlg.mGroupBox_4.setGeometry(11,401,481,169)
-                    elif self.dlg.mGroupBox_3.isCollapsed() == False:
-                        if self.dlg.mGroupBox_4.isCollapsed() == True:
-                            self.dlg.mGroupBox_6.setGeometry(11,573,481,169)
-                        if self.dlg.mGroupBox_4.isCollapsed() == False:
-                            self.dlg.mGroupBox_6.setGeometry(11,810,481,169)
-                        self.dlg.mGroupBox_4.setGeometry(11,555,481,169)
-            else:
-                if self.dlg.mGroupBox_2.isCollapsed() == True:
-                    if self.dlg.mGroupBox_3.isCollapsed() == True:
-                        if self.dlg.mGroupBox_4.isCollapsed() == False:
-                            self.dlg.mGroupBox_6.setGeometry(11,660,481,169)
-                        if self.dlg.mGroupBox_4.isCollapsed() == True:
-                            self.dlg.mGroupBox_6.setGeometry(11,421,481,169)
-                        self.dlg.mGroupBox_4.setGeometry(11,401,481,169)
-                    elif self.dlg.mGroupBox_3.isCollapsed() == False:
-                        if self.dlg.mGroupBox_4.isCollapsed() == False:
-                            self.dlg.mGroupBox_6.setGeometry(11,810,481,169)
-                        if self.dlg.mGroupBox_4.isCollapsed() == True:
-                            self.dlg.mGroupBox_6.setGeometry(11,575,481,169)
-                        self.dlg.mGroupBox_4.setGeometry(11,555,481,169)
-                else:
-                    if self.dlg.mGroupBox_3.isCollapsed() == True:
-                        if self.dlg.mGroupBox_4.isCollapsed() == False:
-                            self.dlg.mGroupBox_6.setGeometry(11,810,481,169)
-                        if self.dlg.mGroupBox_4.isCollapsed() == True:
-                            self.dlg.mGroupBox_6.setGeometry(11,575,481,169)
-                        self.dlg.mGroupBox_4.setGeometry(11,555,481,169)
-                    elif self.dlg.mGroupBox_3.isCollapsed() == False:
-                        if self.dlg.mGroupBox_4.isCollapsed() == False:
-                            self.dlg.mGroupBox_6.setGeometry(11,967,481,169)
-                        if self.dlg.mGroupBox_4.isCollapsed() == True:
-                            self.dlg.mGroupBox_6.setGeometry(11,730,481,169)
-                        self.dlg.mGroupBox_4.setGeometry(11,710,481,169)
-
-        print(self.dlg.mGroupBox_2.isCollapsed())
-
-    def colapsar4(self):
-        if self.dlg.mGroupBox_5.isCollapsed() == True:
-            if self.dlg.mGroupBox.isCollapsed() == True:
-                if self.dlg.mGroupBox_2.isCollapsed() == True:
-                    if self.dlg.mGroupBox_3.isCollapsed() == True:
-                    
-                        if self.dlg.mGroupBox_4.isCollapsed() == True:
-                            self.dlg.mGroupBox_6.setGeometry(11,110,481,169)
-                        elif self.dlg.mGroupBox_4.isCollapsed() == False:
-                            self.dlg.mGroupBox_6.setGeometry(11,346,481,169)
-                    else:
-                        if self.dlg.mGroupBox_4.isCollapsed() == True:
-                            self.dlg.mGroupBox_6.setGeometry(11,266,481,169)
-                        elif self.dlg.mGroupBox_4.isCollapsed() == False:
-                            self.dlg.mGroupBox_6.setGeometry(11,500,481,169)
-                else:
-                    if self.dlg.mGroupBox_3.isCollapsed() == True:
-                    
-                        if self.dlg.mGroupBox_4.isCollapsed() == True:
-                            self.dlg.mGroupBox_6.setGeometry(11,266,481,169)
-                        elif self.dlg.mGroupBox_4.isCollapsed() == False:
-                            self.dlg.mGroupBox_6.setGeometry(11,500,481,169)
-                    else:
-                        if self.dlg.mGroupBox_4.isCollapsed() == True:
-                            self.dlg.mGroupBox_6.setGeometry(11,421,481,169)
-                        elif self.dlg.mGroupBox_4.isCollapsed() == False:
-                            self.dlg.mGroupBox_6.setGeometry(11,660,481,169)
-            else:
-                if self.dlg.mGroupBox_2.isCollapsed() == True:
-                    if self.dlg.mGroupBox_3.isCollapsed() == True:
-                    
-                        if self.dlg.mGroupBox_4.isCollapsed() == True:
-                            self.dlg.mGroupBox_6.setGeometry(11,266,481,169)
-                        elif self.dlg.mGroupBox_4.isCollapsed() == False:
-                            self.dlg.mGroupBox_6.setGeometry(11,500,481,169)
-                    else:
-                        if self.dlg.mGroupBox_4.isCollapsed() == True:
-                            self.dlg.mGroupBox_6.setGeometry(11,421,481,169)
-                        elif self.dlg.mGroupBox_4.isCollapsed() == False:
-                            self.dlg.mGroupBox_6.setGeometry(11,660,481,169)
-                else:
-                    if self.dlg.mGroupBox_3.isCollapsed() == True:
-                    
-                        if self.dlg.mGroupBox_4.isCollapsed() == True:
-                            self.dlg.mGroupBox_6.setGeometry(11,421,481,169)
-                        elif self.dlg.mGroupBox_4.isCollapsed() == False:
-                            self.dlg.mGroupBox_6.setGeometry(11,660,481,169)
-                    else:
-                        if self.dlg.mGroupBox_4.isCollapsed() == True:
-                            self.dlg.mGroupBox_6.setGeometry(11,575,481,169)
-                        elif self.dlg.mGroupBox_4.isCollapsed() == False:
-                            self.dlg.mGroupBox_6.setGeometry(11,810,481,169)
-        else:
-            if self.dlg.mGroupBox.isCollapsed() == True:
-                if self.dlg.mGroupBox_2.isCollapsed() == True:
-                    if self.dlg.mGroupBox_3.isCollapsed() == True:
-                    
-                        if self.dlg.mGroupBox_4.isCollapsed() == True:
-                            self.dlg.mGroupBox_6.setGeometry(11,266,481,169)
-                        elif self.dlg.mGroupBox_4.isCollapsed() == False:
-                            self.dlg.mGroupBox_6.setGeometry(11,500,481,169)
-                    else:
-                        if self.dlg.mGroupBox_4.isCollapsed() == True:
-                            self.dlg.mGroupBox_6.setGeometry(11,421,481,169)
-                        elif self.dlg.mGroupBox_4.isCollapsed() == False:
-                            self.dlg.mGroupBox_6.setGeometry(11,660,481,169)
-                else:
-                    if self.dlg.mGroupBox_3.isCollapsed() == True:
-                    
-                        if self.dlg.mGroupBox_4.isCollapsed() == True:
-                            self.dlg.mGroupBox_6.setGeometry(11,421,481,169)
-                        elif self.dlg.mGroupBox_4.isCollapsed() == False:
-                            self.dlg.mGroupBox_6.setGeometry(11,660,481,169)
-                    else:
-                        if self.dlg.mGroupBox_4.isCollapsed() == True:
-                            self.dlg.mGroupBox_6.setGeometry(11,575,481,169)
-                        elif self.dlg.mGroupBox_4.isCollapsed() == False:
-                            self.dlg.mGroupBox_6.setGeometry(11,810,481,169)
-            else:
-                if self.dlg.mGroupBox_2.isCollapsed() == True:
-                    if self.dlg.mGroupBox_3.isCollapsed() == True:
-                        if self.dlg.mGroupBox_4.isCollapsed() == True:
-                            self.dlg.mGroupBox_6.setGeometry(11,421,481,169)
-                        elif self.dlg.mGroupBox_4.isCollapsed() == False:
-                            self.dlg.mGroupBox_6.setGeometry(11,660,481,169)
-                    else:
-                        if self.dlg.mGroupBox_4.isCollapsed() == True:
-                            self.dlg.mGroupBox_6.setGeometry(11,575,481,169)
-                        elif self.dlg.mGroupBox_4.isCollapsed() == False:
-                            self.dlg.mGroupBox_6.setGeometry(11,810,481,169)
-                else:
-                    if self.dlg.mGroupBox_3.isCollapsed() == True:
-                        if self.dlg.mGroupBox_4.isCollapsed() == True:
-                            self.dlg.mGroupBox_6.setGeometry(11,575,481,169)
-                        elif self.dlg.mGroupBox_4.isCollapsed() == False:
-                            self.dlg.mGroupBox_6.setGeometry(11,810,481,169)
-                    else:
-                        if self.dlg.mGroupBox_4.isCollapsed() == True:
-                            self.dlg.mGroupBox_6.setGeometry(11,730,481,169)
-                        elif self.dlg.mGroupBox_4.isCollapsed() == False:
-                            self.dlg.mGroupBox_6.setGeometry(11,967,481,169)
-               
-           
-        print(self.dlg.mGroupBox_2.isCollapsed())
-
-
-
     def fun7(self):
         self.CCV = CertCveValor.selectDirectory2(self) 
     def fun8(self):
@@ -1247,6 +710,314 @@ class menu:
         self.ACA.DFS = self.DFS
         self.ACA.pintarCapas()
         self.ACA.UTI = self.UTI
+    def funlimpiar(self):
+        self.ACA.limpiaArea()
+    def funmarcadores(self):
+        self.ACA.CFG = self.CFG
+        self.ACA.UTI = self.UTI
+        self.ACA.DFS = self.DFS
+        self.ACA.DBJ = self.ACA
+        self.ACA.ELM = self.ELM
+        self.ACA.TPG = self.TPG
+        self.ceck = self.dlg.checkVertManzana_2.isChecked()
+        self.ceck1 = self.dlg.checkVertPredio_2.isChecked()
+        self.ceck2 = self.dlg.checkVertConst_2.isChecked()
+        #print(self.ceck)
+        self.ACA.actualizarMarcadores(self.ceck, self.ceck1, self.ceck2)
+    def funcarga(self):
+        self.combo = self.dlg.comboCapaReferencia_2.currentText()
+        self.check = self.dlg.checkTodasGeom_2.isChecked()
+        self.ACA.intermediarioReferencia(self.combo, self.check)
+    def funlimpiar(self):
+        self.ACA.limpiarReferencias()
+        #print(self.combo)
+    def llenarComboReferencias(self):
+        self.dlg.comboCapaReferencia_2.clear()
+        #self.dlg.comboCapaReferencia_2.addItem('Estado', 'e_estado')
+        #self.dlg.comboCapaReferencia_2.addItem('Region Catastral', 'e_region_carto')
+        self.dlg.comboCapaReferencia_2.addItem('Municipios', 'e_municipio')
+        #self.dlg.comboCapaReferencia_2.addItem('Secciones', 'e_seccion')
+        #self.dlg.comboCapaReferencia_2.addItem('Localidades', 'e_localidad')
+        self.dlg.comboCapaReferencia_2.addItem('Sectores', 'e_sector')
+        self.dlg.comboCapaReferencia_2.addItem('Manzanas', 'e_manzana')
+        self.dlg.comboCapaReferencia_2.addItem('Predios', 'e_predio')
+        self.dlg.comboCapaReferencia_2.addItem('Calles', 'vw_calle')
+        self.dlg.comboCapaReferencia_2.addItem('Colonias', 'e_colonia')
+        self.dlg.comboCapaReferencia_2.addItem('Codigo Postal', 'e_cp')
+        #self.dlg.comboCapaReferencia_2.addItem('Zona Uno', 'e_zona_uno')
+        #self.dlg.comboCapaReferencia_2.addItem('Zona Dos', 'e_zona_dos')
+        self.dlg.comboCapaReferencia_2.addItem('Area de Valor', 'e_area_valor')
+        self.dlg.comboCapaReferencia_2.addItem('Corredor de Valor', 'e_corredor_valor')
+    def fundibujo(self):
+        self.DBJ.CFG = self.CFG
+        self.DBJ.UTI = self.UTI
+        self.DBJ.DFS = self.DFS
+        self.DBJ.ACA = self.ACA
+        self.DBJ.ELM = self.ELM
+        self.DBJ.DFS = self.DFS
+        self.DBJ.TPG = self.TPG
+        self.capaActiva = iface.activeLayer()
+        self.DBJ.actualizarCapaActiva()
+        self.DBJ.alternarModoDibujo()
+        self.ventana = DibujoV3.VentanaDibujoV3(iface, self)
+        #idCapa = self.capaActiva.id()
+        #self.posibleMostar = True
+        if self.capaActiva is not None: #Cuando la capa es seleccionada habilitamos
+
+            if self.esCapaValida():
+                if self.mododibujo:
+                    
+                    self.mododibujo = False
+                    self.dlg.label_21.setText("DESACTIVADO")
+                    estilo = """color: rgb(255, 0, 0);
+        """ 
+                    self.dlg.label_21.setStyleSheet(estilo)
+
+                else:
+                    self.mododibujo = True
+                    self.dlg.label_21.setText("ACTIVADO")
+                    estilo = """color: rgb(1, 239, 1);
+    """               
+                    self.dlg.label_21.setStyleSheet(estilo)
+                    self.desactivar() 
+                    if self.click == True:
+                        self.tool = AdvancedMapTool(iface.mapCanvas(), iface.cadDockWidget(), self)
+                        iface.mapCanvas().setMapTool(self.tool)
+                    #self.mapTool.canvas.setCursor(self.cursorRedondo)
+                    
+        
+        else:
+            self.UTI.mostrarAlerta("Seleccione una capa", QMessageBox().Critical, "Dibujo")       #if self.ventana.posibleMostar:
+                  #self.desactivar()
+
+        
+
+
+            #print("actualizarCapaActiva : False")
+
+    def esCapaValida(self):
+        
+        if self.capaActiva.id() == self.ACA.obtenerIdCapa('manzana'):
+            return True
+        elif self.capaActiva.id() == self.ACA.obtenerIdCapa('predios.geom'):
+            return True
+        elif self.capaActiva.id() == self.ACA.obtenerIdCapa('predios.num'):
+            return True
+        elif self.capaActiva.id() == self.ACA.obtenerIdCapa('construcciones'):
+            return True
+        elif self.capaActiva.id() == self.ACA.obtenerIdCapa('horizontales.geom'):
+            return True
+        elif self.capaActiva.id() == self.ACA.obtenerIdCapa('horizontales.num'):
+            return True
+        elif self.capaActiva.id() == self.ACA.obtenerIdCapa('verticales'):
+            return True
+        elif self.capaActiva.id() == self.ACA.obtenerIdCapa('cves_verticales'):
+            return True
+        
+        elif self.capaActiva.id() == self.ACA.obtenerIdCapa('Area de Valor'):
+            return True
+        elif self.capaActiva.id() == self.ACA.obtenerIdCapa('Zona Uno'):
+            return True
+        elif self.capaActiva.id() == self.ACA.obtenerIdCapa('Zona Dos'):
+            return True
+        elif self.capaActiva.id() == self.ACA.obtenerIdCapa('Codigo Postal'):
+            return True
+        elif self.capaActiva.id() == self.ACA.obtenerIdCapa('Colonias'):
+            return True
+        elif self.capaActiva.id() == self.ACA.obtenerIdCapa('Calles'):
+            return True
+        elif self.capaActiva.id() == self.ACA.obtenerIdCapa('Sectores'):
+            return True
+        elif self.capaActiva.id() == self.ACA.obtenerIdCapa('Localidades'):
+            return True
+        elif self.capaActiva.id() == self.ACA.obtenerIdCapa('Secciones'):
+            return True
+        elif self.capaActiva.id() == self.ACA.obtenerIdCapa('Municipios'):
+            return True
+        elif self.capaActiva.id() == self.ACA.obtenerIdCapa('Region Catastral'):
+            return True
+        elif self.capaActiva.id() == self.ACA.obtenerIdCapa('Estado'):
+            return True
+
+
+        else:
+            return False
+
+    def funeliminar(self):
+        self.ELM.CFG = self.CFG
+        self.ELM.UTI = self.UTI
+        self.ELM.DFS = self.DFS
+        self.ELM.DBJ = self.DBJ
+        self.ELM.ACA = self.ACA
+        self.ELM.DFS = self.DFS
+        self.ELM.TPG = self.TPG
+        self.ELM.alternarEliminar()
+        self.alternarEliminar()
+        self.ELM.agregarFuncionEliminar()
+    def alternarEliminar(self):
+
+        if self.modoEliminar:
+            
+            self.modoEliminar = False
+            self.dlg.label_22.setText("DESACTIVADO")
+            estilo = """color: rgb(255, 0, 0);
+"""
+            self.dlg.label_22.setStyleSheet(estilo)
+
+
+        else:
+
+            iface.actionSelect().trigger()
+            self.modoEliminar = True
+            self.dlg.label_22.setText("ACTIVADO")
+            estilo = """color: rgb(1, 239, 1);
+"""
+            self.dlg.label_22.setStyleSheet(estilo)
+    def funguardar(self, nombreCapa):
+        self.ACA.DFS = self.DFS
+        #self.ACA.validarEdicion()
+        #self.ACA.actualizarFeature()
+        self.ACA.UTI = self.UTI
+        self.clave = self.dlg.fldPredio.text()
+        self.clave2 = self.dlg.fldConst.text()
+        self.ACA.validarEdicion(cla = str(self.clave), cla2 = str(self.clave2))
+        #print(self.clave)
+        #print(self.clave2)
+        
+    def funedicionatributos(self):
+        self.capaActiva = iface.activeLayer()
+       
+        if self.capaActiva == None:
+            return
+            #self.cambiarStatus("---", "error")
+        else:
+            self.seleccion = self.capaActiva.selectedFeatures()
+            self.listaEtiquetas = []
+            if(len(self.seleccion) == 1):
+                if self.capaActiva.id() == self.obtenerIdCapa('manzana'):
+                    self.listaAtributos = ['clave']
+                    self.listaEtiquetas = ['Clave']
+                    textoItem = str(self.seleccion[0]['clave'])
+                    self.dlg.fldPredio.setText(textoItem)
+                    self.dlg.label_26.setText('     Clave')
+                    self.dlg.label_27.setText('      ----')
+                    self.dlg.fldConst.setEnabled(False)
+                elif self.capaActiva.id() == self.obtenerIdCapa('predios.geom'):
+                    self.listaAtributos = ['clave']
+                    self.listaEtiquetas = ['Clave']
+                    self.dlg.label_26.setText('     Clave')
+                    self.dlg.label_27.setText('      ----')
+
+                    textoItem = str(self.seleccion[0]['clave'])
+                    self.dlg.fldPredio.setText(textoItem)
+                    self.dlg.fldConst.setEnabled(False)
+                elif self.capaActiva.id() == self.obtenerIdCapa('predios.num'):
+                    self.listaAtributos = ['clave']
+                    self.listaEtiquetas = ['Clave']
+                    self.dlg.label_26.setText('   No Exterior')
+                    self.dlg.label_27.setText('      ----')
+                    
+                    textoItem = str(self.seleccion[0]['numExt'])
+                    self.dlg.fldPredio.setText(textoItem)
+                    self.dlg.fldConst.setEnabled(False)  
+                elif self.capaActiva.id() == self.obtenerIdCapa('horizontales.geom'):
+                    self.listaAtributos = ['clave']
+                    self.listaEtiquetas = ['Clave']
+                    self.dlg.label_26.setText('     Clave')
+                    self.dlg.label_27.setText('      ----')
+                    
+                    textoItem = str(self.seleccion[0]['clave'])
+                    self.dlg.fldPredio.setText(textoItem)
+                    self.dlg.fldConst.setEnabled(False)
+                elif self.capaActiva.id() == self.obtenerIdCapa('horizontales.num'):
+                    self.listaAtributos = ['clave']
+                    self.listaEtiquetas = ['Clave']
+                    self.dlg.label_26.setText(' Numero Oficial')
+                    self.dlg.label_27.setText('      ----')
+                    
+                    textoItem = str(self.seleccion[0]['num_ofi'])
+                    self.dlg.fldPredio.setText(textoItem)
+                    self.dlg.fldConst.setEnabled(False)
+                elif self.capaActiva.id() == self.obtenerIdCapa('verticales'):
+                    self.listaAtributos = ['clave']
+                    self.listaEtiquetas = ['Clave']
+                    self.dlg.label_26.setText('     Clave')
+                    self.dlg.label_27.setText('      ----')
+                    
+                    textoItem = str(self.seleccion[0]['clave'])
+                    self.dlg.fldPredio.setText(textoItem)
+                    self.dlg.fldConst.setEnabled(False)
+                elif self.capaActiva.id() == self.obtenerIdCapa('cves_verticales'):
+                    self.listaAtributos = ['clave']
+                    self.listaEtiquetas = ['Clave']
+                    self.dlg.label_26.setText('     Clave')
+                    self.dlg.label_27.setText('      ----')
+                    textoItem = str(self.seleccion[0]['clave'])
+                    self.dlg.fldPredio.setText(textoItem)
+                    self.dlg.fldConst.setEnabled(False)
+                elif self.capaActiva.id() == self.obtenerIdCapa('construcciones'):
+                    self.listaAtributos = ['clave']
+                    self.listaEtiquetas = ['Clave']
+                    self.dlg.label_26.setText('     Volumen')
+                    self.dlg.label_27.setText('     Niveles')
+                    
+                    textoItem = str(self.seleccion[0]['nom_volumen'])
+                    self.dlg.fldPredio.setText(textoItem)
+                    textoItem2 = str(self.seleccion[0]['num_niveles'])
+                    self.dlg.fldConst.setText(textoItem2)
+                    self.dlg.fldConst.setEnabled(True)
+    def obtenerIdCapa(self, nombreCapa):
+
+        if nombreCapa == "manzana":
+            return QSettings().value('xManzana')
+        elif nombreCapa == "predios.geom":
+            return QSettings().value('xPredGeom')
+        elif nombreCapa == "predios.num":
+            return QSettings().value('xPredNum')
+        elif nombreCapa == "construcciones":
+            return QSettings().value('xConst')
+        elif nombreCapa == "horizontales.geom":
+            return QSettings().value('xHoriGeom')
+        elif nombreCapa == "horizontales.num":
+            return QSettings().value('xHoriNum')
+        elif nombreCapa == "verticales":
+            return QSettings().value('xVert')
+        elif nombreCapa == "cves_verticales":
+            return QSettings().value('xCvesVert')
+        elif nombreCapa == "Area de Valor":
+            return QSettings().value('xAreaValor')
+        elif nombreCapa == "Zona Uno":
+            return QSettings().value('xZonaUno')
+        elif nombreCapa == "Zona Dos":
+            return QSettings().value('xZonaDos')
+        elif nombreCapa == "Codigo Postal":
+            return QSettings().value('xCP')
+        elif nombreCapa == "Corredor de Valor":
+            return QSettings().value('xCorrValor')
+        elif nombreCapa == "Colonias":
+            return QSettings().value('xColonia')
+        elif nombreCapa == "Calles":
+            return QSettings().value('xCalle')
+        elif nombreCapa == "Sectores":
+            return QSettings().value('xSector')
+        elif nombreCapa == "Localidades":
+            return QSettings().value('xLocal')
+        elif nombreCapa == "Secciones":
+            return QSettings().value('xSeccion')
+        elif nombreCapa == "Municipios":
+            return QSettings().value('xMunicipio')
+        elif nombreCapa == "Region Catastral":
+            return QSettings().value('xRegion')
+        elif nombreCapa == "Estado":
+            return QSettings().value('xEstado')
+        elif nombreCapa == "Manzanas":
+            return QSettings().value('xManzanasRef')
+        elif nombreCapa == "Predios":
+            return QSettings().value('xPredRef')
+        elif nombreCapa == "Construcciones":
+            return QSettings().value('xConstRef')
+        
+        return 'None'
     '''def selec(self):
         self.xManzana.selectionChanged.connect(self.fun5)
         self.xPredGeom.selectionChanged.connect(self.fun5)
@@ -1291,7 +1062,7 @@ class menu:
         else:
             index = self.dlg.comboManzana.currentIndex()
             self.idManzana = self.dlg.comboManzana.itemData(index)
-            print(str(self.idManzana))
+            #print(str(self.idManzana))
             self.ACA = ActualizacionCatastralV3.ActualizacionCatastralV3(iface, str(self.idManzana))
 
     
@@ -1369,8 +1140,80 @@ class menu:
                     self.dlg.comboManzana.addItem(manzana['label'], manzana['other'])#Cambiar other por label
             #else:
             #    self.UTI.mostrarAlerta("No existen manzanas en el sector", QMessageBox().Information, "Cargar Manzanas")
+    def obtenerIdManzana2(self):
+        
+        
+        #Obtener el identificador de la manzana
+        if self.modoDesarrollo2:
+           
+            #self.idManzana = '01 001 001 02 0004 016 031' #Esta es la chida
+            #self.idManzana = '01 001 001 02 0004 026 039' #Cortita y chiquita
+            #self.idManzana = '01 001 001 02 0004 026 040' #Cortita y chiquita
+            #self.idManzana = '01 001 001 02 0004 060 004' 
+                             #01001001020  4026040
+            #self.idManzana = '01001001020004060004'  #La larga
+            #self.idManzana = '01001001020004020001'
+            #self.idManzana = '01001001020004020001'
+            self.idManzana = '01001001020004015001'
+            
+            #01001001020004026039
+            #01001001020  4026039
 
+            #self.idManzana = '01001001020004017005' #esta es la mala krnal
+            #self.idManzana =  '010010010204050001' #Esta calamos guardado
+            #self.idManzana = '01001001020004026040'
+            #self.idManzana = '01001001020004021016'
+            
 
+        else:
+            index = self.dlg.comboManzana_3.currentIndex()
+            self.idManzana = self.dlg.comboManzana_3.itemData(index)
+            #print(str(self.idManzana))
+            self.ACA = ActualizacionCatastralV3.ActualizacionCatastralV3(iface, str(self.idManzana))
+
+    def obtenerSectoresPorMunicipio2(self):
+
+        id = '1' # hardcodeado el identificador del municipio
+        self.dlg.comboSector_3.clear()
+
+        url = self.CFG.urlSectoresMuni
+
+        try:
+            headers = {'Content-Type': 'application/json', 'Authorization' : self.UTI.obtenerToken()}
+            respuesta = requests.get(url + id + '/sector/', headers = headers)
+        except requests.exceptions.RequestException:
+            self.UTI.mostrarAlerta("Error de servidor sec1", QMessageBox().Critical, "Cargar Sectores")
+            print('ERROR: SEC000')
+
+        lenJson = len(list(respuesta.json()))
+
+        if lenJson > 0:
+            for sector in respuesta.json():
+                self.dlg.comboSector_3.addItem(sector['label'], sector['value']) #Cambiar value por label
+
+    def obtenerManzanasPorSector2(self):
+    
+        if self.dlg.comboSector_3.count() > 0:
+
+            index = self.dlg.comboSector_3.currentIndex()
+            idSector = self.dlg.comboSector_3.itemData(index)
+
+            self.dlg.comboManzana_3.clear()
+
+            try:
+                headers = {'Content-Type': 'application/json', 'Authorization' : self.UTI.obtenerToken()}
+                respuesta = requests.get(self.CFG.urlManzanas + idSector + '/manzana/', headers = headers)
+            except requests.exceptions.RequestException:
+                self.UTI.mostrarAlerta("Error de servidor man1sec", QMessageBox().Critical, "Cargar Manzanas")
+                print('ERROR: MAN000')
+
+            lenJson = len(list(respuesta.json()))
+
+            if lenJson > 0:
+                for manzana in respuesta.json():
+                    self.dlg.comboManzana_3.addItem(manzana['label'], manzana['other'])#Cambiar other por label
+            #else:
+            #    self.UTI.mostrarAlerta("No existen manzanas en el sector", QMessageBox().Information, "Cargar Manzanas")
 
    
 
@@ -1607,4 +1450,644 @@ class menu:
         self.dlg.tabWidget.setCurrentIndex(11)
         #self.dlg.setFixedSize(780,806)
         #self.dlg.tabWidget.setFixedSize(780,806)
+    def desactivar(self):
+        if self.mapTool.lastMouseButtonClicked == "RIGHT":
+            self.click = True
+            self.mododibujo = False
+            self.dlg.label_21.setText("DESACTIVADO")
+            estilo = """color: rgb(255, 0, 0);
+"""
+            self.dlg.label_21.setStyleSheet(estilo)
+    def colapsar(self):
+        #self.dlg.mGroupBox_5.isCollapsed()
+        if self.dlg.mGroupBox_5.isCollapsed() == True:
+            self.dlg.mGroupBox.setGeometry(11,30,481,169)
+            if self.dlg.mGroupBox.isCollapsed() == True:
+                if self.dlg.mGroupBox_2.isCollapsed() == False:
+                    if self.dlg.mGroupBox_3.isCollapsed() == True:
+                        if self.dlg.mGroupBox_4.isCollapsed() == True:
+                            self.dlg.mGroupBox_6.setGeometry(11,266,481,169)
+                        if self.dlg.mGroupBox_4.isCollapsed() == False:
+                            self.dlg.mGroupBox_6.setGeometry(11,500,481,169)
+                        self.dlg.mGroupBox_4.setGeometry(11,246,481,251)
+                    if self.dlg.mGroupBox_3.isCollapsed() == False:
+                        if self.dlg.mGroupBox_4.isCollapsed() == True:
+                            self.dlg.mGroupBox_6.setGeometry(11,421,481,169)
+                        if self.dlg.mGroupBox_4.isCollapsed() == False:
+                            self.dlg.mGroupBox_6.setGeometry(11,660,481,169)
+                        self.dlg.mGroupBox_4.setGeometry(11,401,481,251)
+                    self.dlg.mGroupBox_3.setGeometry(11,226,481,169)
+                self.dlg.mGroupBox_2.setGeometry(11,50,481,169)
+                if self.dlg.mGroupBox_2.isCollapsed() == True:
+                    if self.dlg.mGroupBox_3.isCollapsed() == False:
+                        if self.dlg.mGroupBox_4.isCollapsed() == False:
+                            self.dlg.mGroupBox_6.setGeometry(11,500,481,169)
+                        if self.dlg.mGroupBox_4.isCollapsed() == True:
+                            self.dlg.mGroupBox_6.setGeometry(11,266,481,169)
+                        self.dlg.mGroupBox_4.setGeometry(11,246,481,251)
+                    if self.dlg.mGroupBox_3.isCollapsed() == True:
+                        if self.dlg.mGroupBox_4.isCollapsed() == False:
+                            self.dlg.mGroupBox_6.setGeometry(11,346,481,169)
+                        if self.dlg.mGroupBox_4.isCollapsed() == True:
+                            self.dlg.mGroupBox_6.setGeometry(11,110,481,169)
+                        self.dlg.mGroupBox_4.setGeometry(11,90,481,251)
+                    self.dlg.mGroupBox_3.setGeometry(11,70,481,169)
 
+
+            else:
+                if self.dlg.mGroupBox_2.isCollapsed() == True:
+                    if self.dlg.mGroupBox_3.isCollapsed() == False:
+                        if self.dlg.mGroupBox_4.isCollapsed() == False:
+                            self.dlg.mGroupBox_6.setGeometry(11,660,481,169)
+                        if self.dlg.mGroupBox_4.isCollapsed() == True:
+                            self.dlg.mGroupBox_6.setGeometry(11,421,481,169)
+                        self.dlg.mGroupBox_4.setGeometry(11,401,481,251)
+                    if self.dlg.mGroupBox_3.isCollapsed() == True:
+                        if self.dlg.mGroupBox_4.isCollapsed() == True:
+                            self.dlg.mGroupBox_6.setGeometry(11,266,481,169)
+                        if self.dlg.mGroupBox_4.isCollapsed() == False:
+                            self.dlg.mGroupBox_6.setGeometry(11,500,481,169)
+                        self.dlg.mGroupBox_4.setGeometry(11,246,481,251)
+                    self.dlg.mGroupBox_3.setGeometry(11,226,481,169)
+                self.dlg.mGroupBox_2.setGeometry(11,206,481,169)
+                if self.dlg.mGroupBox_2.isCollapsed() == False:
+                    if self.dlg.mGroupBox_3.isCollapsed() == True:
+                        if self.dlg.mGroupBox_4.isCollapsed() == True:
+                            self.dlg.mGroupBox_6.setGeometry(11,421,481,169)
+                        if self.dlg.mGroupBox_4.isCollapsed() == False:
+                            self.dlg.mGroupBox_6.setGeometry(11,660,481,169)
+                        self.dlg.mGroupBox_4.setGeometry(11,401,481,251)
+                    if self.dlg.mGroupBox_3.isCollapsed() == False:
+                        if self.dlg.mGroupBox_4.isCollapsed() == True:
+                            self.dlg.mGroupBox_6.setGeometry(11,575,481,169)
+                        if self.dlg.mGroupBox_4.isCollapsed() == False:
+                            self.dlg.mGroupBox_6.setGeometry(11,810,481,169)
+                        self.dlg.mGroupBox_4.setGeometry(11,555,481,251)
+                    self.dlg.mGroupBox_3.setGeometry(11,381,481,169)
+            self.dlg.mGroupBox_5.setFixedSize(481,20)
+            #self.dlg.mGroupBox_4.setGeometry(11,555,481,251)
+            
+        elif self.dlg.mGroupBox_5.isCollapsed() == False:
+            if self.dlg.mGroupBox.isCollapsed() == False:
+                if self.dlg.mGroupBox_2.isCollapsed() == False:
+                    if self.dlg.mGroupBox_3.isCollapsed() == True:
+                        if self.dlg.mGroupBox_4.isCollapsed() == True:
+                            self.dlg.mGroupBox_6.setGeometry(11,575,481,169)
+                        if self.dlg.mGroupBox_4.isCollapsed() == False:
+                            self.dlg.mGroupBox_6.setGeometry(11,810,481,169)
+                        self.dlg.mGroupBox_4.setGeometry(11,555,481,251)
+                    if self.dlg.mGroupBox_3.isCollapsed() == False:
+                        if self.dlg.mGroupBox_4.isCollapsed() == True:
+                            self.dlg.mGroupBox_6.setGeometry(11,730,481,169)
+                        if self.dlg.mGroupBox_4.isCollapsed() == False:
+                            self.dlg.mGroupBox_6.setGeometry(11,967,481,169)
+                        self.dlg.mGroupBox_4.setGeometry(11,710,481,251)
+                    self.dlg.mGroupBox_3.setGeometry(11,535,481,169)
+                if self.dlg.mGroupBox_2.isCollapsed() == True:
+                    if self.dlg.mGroupBox_3.isCollapsed() == False:
+                        if self.dlg.mGroupBox_4.isCollapsed() == False:
+                            self.dlg.mGroupBox_6.setGeometry(11,810,481,169)
+                        if self.dlg.mGroupBox_4.isCollapsed() == True:
+                            self.dlg.mGroupBox_6.setGeometry(11,575,481,169)
+                        self.dlg.mGroupBox_4.setGeometry(11,555,481,251)
+                    if self.dlg.mGroupBox_3.isCollapsed() == True:
+                        if self.dlg.mGroupBox_4.isCollapsed() == True:
+                            self.dlg.mGroupBox_6.setGeometry(11,421,481,169)
+                        if self.dlg.mGroupBox_4.isCollapsed() == False:
+                            self.dlg.mGroupBox_6.setGeometry(11,660,481,169)
+                        self.dlg.mGroupBox_4.setGeometry(11,401,481,251)
+                    self.dlg.mGroupBox_3.setGeometry(11,381,481,169)
+            if self.dlg.mGroupBox.isCollapsed() == True:
+                if self.dlg.mGroupBox_2.isCollapsed() == False:
+                    if self.dlg.mGroupBox_3.isCollapsed() == False:
+                        if self.dlg.mGroupBox_4.isCollapsed() == True:
+                            self.dlg.mGroupBox_6.setGeometry(11,575,481,169)
+                        if self.dlg.mGroupBox_4.isCollapsed() == False:
+                            self.dlg.mGroupBox_6.setGeometry(11,810,481,169)
+                        self.dlg.mGroupBox_4.setGeometry(11,555,481,251)
+                    if self.dlg.mGroupBox_3.isCollapsed() == True:
+                        if self.dlg.mGroupBox_4.isCollapsed() == True:
+                            self.dlg.mGroupBox_6.setGeometry(11,421,481,169)
+                        if self.dlg.mGroupBox_4.isCollapsed() == False:
+                            self.dlg.mGroupBox_6.setGeometry(11,660,481,169)
+                        self.dlg.mGroupBox_4.setGeometry(11,401,481,251)
+
+                    self.dlg.mGroupBox_3.setGeometry(11,381,481,169)
+                self.dlg.mGroupBox_2.setGeometry(11,206,481,169)
+                if self.dlg.mGroupBox_2.isCollapsed() == True:
+                    if self.dlg.mGroupBox_3.isCollapsed() == False:
+                        if self.dlg.mGroupBox_4.isCollapsed() == False:
+                            self.dlg.mGroupBox_6.setGeometry(11,660,481,169)
+                        if self.dlg.mGroupBox_4.isCollapsed() == True:
+                            self.dlg.mGroupBox_6.setGeometry(11,421,481,169)
+                        self.dlg.mGroupBox_4.setGeometry(11,401,481,251)
+                    if self.dlg.mGroupBox_3.isCollapsed() == True:
+                        if self.dlg.mGroupBox_4.isCollapsed() == False:
+                            self.dlg.mGroupBox_6.setGeometry(11,500,481,169)
+                        if self.dlg.mGroupBox_4.isCollapsed() == True:
+                            self.dlg.mGroupBox_6.setGeometry(11,266,481,169)
+                        self.dlg.mGroupBox_4.setGeometry(11,246,481,251)
+                    self.dlg.mGroupBox_3.setGeometry(11,226,481,169)
+            else:
+                self.dlg.mGroupBox_2.setGeometry(11,361,481,169)
+            self.dlg.mGroupBox.setGeometry(11,186,481,169)
+            
+            #self.dlg.mGroupBox_4.setGeometry(11,710,481,251)
+            self.dlg.mGroupBox_5.setFixedSize(481,169)
+
+        #print(self.dlg.mGroupBox_5.isCollapsed())
+    def colapsar1(self):
+        if self.dlg.mGroupBox_5.isCollapsed() == True:
+            if self.dlg.mGroupBox.isCollapsed() == True:
+                self.dlg.mGroupBox_2.setGeometry(11,50,481,169)
+                if self.dlg.mGroupBox_2.isCollapsed() == True:
+                    if self.dlg.mGroupBox_3.isCollapsed() == False:
+                        if self.dlg.mGroupBox_4.isCollapsed() == False:
+                            self.dlg.mGroupBox_6.setGeometry(11,500,481,169)
+                        if self.dlg.mGroupBox_4.isCollapsed() == True:
+                            self.dlg.mGroupBox_6.setGeometry(11,266,481,169)
+                        self.dlg.mGroupBox_4.setGeometry(11,246,481,251)
+                    if self.dlg.mGroupBox_3.isCollapsed() == True:
+                        if self.dlg.mGroupBox_4.isCollapsed() == True:
+                            self.dlg.mGroupBox_6.setGeometry(11,421,481,169)
+                        if self.dlg.mGroupBox_4.isCollapsed() == False:
+                            self.dlg.mGroupBox_6.setGeometry(11,346,481,169)
+                        if self.dlg.mGroupBox_4.isCollapsed() == True:
+                            self.dlg.mGroupBox_6.setGeometry(11,110,481,169)
+                        self.dlg.mGroupBox_4.setGeometry(11,90,481,251)
+                    self.dlg.mGroupBox_3.setGeometry(11,70,481,169)
+                elif self.dlg.mGroupBox_2.isCollapsed() == False:
+                    if self.dlg.mGroupBox_3.isCollapsed() == True:
+                        if self.dlg.mGroupBox_4.isCollapsed() == True:
+                            self.dlg.mGroupBox_6.setGeometry(11,266,481,169)
+                        if self.dlg.mGroupBox_4.isCollapsed() == False:
+                            self.dlg.mGroupBox_6.setGeometry(11,500,481,169)
+                        self.dlg.mGroupBox_4.setGeometry(11,246,481,251)
+                    if self.dlg.mGroupBox_3.isCollapsed() == False:
+                        if self.dlg.mGroupBox_4.isCollapsed() == True:
+                            self.dlg.mGroupBox_6.setGeometry(11,421,481,169)
+                        if self.dlg.mGroupBox_4.isCollapsed() == False:
+                            self.dlg.mGroupBox_6.setGeometry(11,660,481,169)
+                        self.dlg.mGroupBox_4.setGeometry(11,401,481,251)
+                    if self.dlg.mGroupBox_2.isCollapsed() == True:
+                        self.dlg.mGroupBox_3.setGeometry(11,226,481,169)
+                    self.dlg.mGroupBox_3.setGeometry(11,226,481,169)
+            elif self.dlg.mGroupBox.isCollapsed() == False:
+                if self.dlg.mGroupBox_2.isCollapsed() == False:
+                    if self.dlg.mGroupBox_3.isCollapsed() == True:
+                        if self.dlg.mGroupBox_4.isCollapsed() == True:
+                            self.dlg.mGroupBox_6.setGeometry(11,421,481,169)
+                        if self.dlg.mGroupBox_4.isCollapsed() == False:
+                            self.dlg.mGroupBox_6.setGeometry(11,660,481,169)
+                        self.dlg.mGroupBox_4.setGeometry(11,401,481,251)
+                    if self.dlg.mGroupBox_3.isCollapsed() == False:
+                        if self.dlg.mGroupBox_4.isCollapsed() == True:
+                            self.dlg.mGroupBox_6.setGeometry(11,575,481,169)
+                        if self.dlg.mGroupBox_4.isCollapsed() == False:
+                            self.dlg.mGroupBox_6.setGeometry(11,810,481,169)
+                        self.dlg.mGroupBox_4.setGeometry(11,555,481,251)
+                    self.dlg.mGroupBox_3.setGeometry(11,381,481,169)
+                if self.dlg.mGroupBox_2.isCollapsed() == True:
+                    if self.dlg.mGroupBox_3.isCollapsed() == False:
+                        if self.dlg.mGroupBox_4.isCollapsed() == False:
+                            self.dlg.mGroupBox_6.setGeometry(11,660,481,169)
+                        if self.dlg.mGroupBox_4.isCollapsed() == True:
+                            self.dlg.mGroupBox_6.setGeometry(11,421,481,169)
+                        self.dlg.mGroupBox_4.setGeometry(11,401,481,251)
+                    if self.dlg.mGroupBox_3.isCollapsed() == True:
+                        if self.dlg.mGroupBox_4.isCollapsed() == False:
+                            self.dlg.mGroupBox_6.setGeometry(11,500,481,169)
+                        if self.dlg.mGroupBox_4.isCollapsed() == True:
+                            self.dlg.mGroupBox_6.setGeometry(11,266,481,169)
+                        self.dlg.mGroupBox_4.setGeometry(11,246,481,251)
+                    self.dlg.mGroupBox_3.setGeometry(11,226,481,169)
+            
+                self.dlg.mGroupBox_2.setGeometry(11,206,481,169)
+                
+        else:
+            if self.dlg.mGroupBox.isCollapsed() == True:
+                if self.dlg.mGroupBox_2.isCollapsed() == False:
+                    if self.dlg.mGroupBox_3.isCollapsed() == True:
+                        if self.dlg.mGroupBox_4.isCollapsed() == True:
+                            self.dlg.mGroupBox_6.setGeometry(11,421,481,169)
+                        if self.dlg.mGroupBox_4.isCollapsed() == False:
+                            self.dlg.mGroupBox_6.setGeometry(11,660,481,169)
+                        self.dlg.mGroupBox_4.setGeometry(11,401,481,251)
+                    if self.dlg.mGroupBox_3.isCollapsed() == False:
+                        if self.dlg.mGroupBox_4.isCollapsed() == False:
+                            self.dlg.mGroupBox_6.setGeometry(11,810,481,169)
+                        if self.dlg.mGroupBox_4.isCollapsed() == True:
+                            self.dlg.mGroupBox_6.setGeometry(11,575,481,169)
+                        self.dlg.mGroupBox_4.setGeometry(11,555,481,251)
+                    self.dlg.mGroupBox_3.setGeometry(11,381,481,169)
+                if self.dlg.mGroupBox_2.isCollapsed() == True:
+                    if self.dlg.mGroupBox_3.isCollapsed() == False:
+                        if self.dlg.mGroupBox_4.isCollapsed() == False:
+                            self.dlg.mGroupBox_6.setGeometry(11,660,481,169)
+                        self.dlg.mGroupBox_4.setGeometry(11,401,481,251)
+                    if self.dlg.mGroupBox_3.isCollapsed() == True:
+                        if self.dlg.mGroupBox_4.isCollapsed() == False:
+                            self.dlg.mGroupBox_6.setGeometry(11,500,481,169)
+                        if self.dlg.mGroupBox_4.isCollapsed() == True:
+                            self.dlg.mGroupBox_6.setGeometry(11,266,481,169)
+                        self.dlg.mGroupBox_4.setGeometry(11,246,481,251)
+                    self.dlg.mGroupBox_3.setGeometry(11,226,481,169)
+                self.dlg.mGroupBox_2.setGeometry(11,206,481,169)
+            elif self.dlg.mGroupBox.isCollapsed() == False:
+                if self.dlg.mGroupBox_2.isCollapsed() == False:
+                    if self.dlg.mGroupBox_3.isCollapsed() == True:
+                        if self.dlg.mGroupBox_4.isCollapsed() == True:
+                            self.dlg.mGroupBox_6.setGeometry(11,575,481,169)
+                        if self.dlg.mGroupBox_4.isCollapsed() == False:
+                            self.dlg.mGroupBox_6.setGeometry(11,810,481,169)
+                        self.dlg.mGroupBox_4.setGeometry(11,555,481,251)
+                    if self.dlg.mGroupBox_3.isCollapsed() == False:
+                        if self.dlg.mGroupBox_4.isCollapsed() == False:
+                            self.dlg.mGroupBox_6.setGeometry(11,967,481,169)
+                        if self.dlg.mGroupBox_4.isCollapsed() == True:
+                            self.dlg.mGroupBox_6.setGeometry(11,730,481,169)
+                        self.dlg.mGroupBox_4.setGeometry(11,710,481,251)
+                    self.dlg.mGroupBox_3.setGeometry(11,535,481,169)
+                if self.dlg.mGroupBox_2.isCollapsed() == True:
+                    if self.dlg.mGroupBox_3.isCollapsed() == False:
+                            self.dlg.mGroupBox_4.setGeometry(11,555,481,251)
+                            if self.dlg.mGroupBox_4.isCollapsed() == False:
+                                self.dlg.mGroupBox_6.setGeometry(11,810,481,169)
+                    if self.dlg.mGroupBox_3.isCollapsed() == True:
+                        if self.dlg.mGroupBox_4.isCollapsed() == False:
+                            self.dlg.mGroupBox_6.setGeometry(11,660,481,169)
+                        if self.dlg.mGroupBox_4.isCollapsed() == True:
+                            self.dlg.mGroupBox_6.setGeometry(11,421,481,169)
+                        self.dlg.mGroupBox_4.setGeometry(11,401,481,251)
+                    self.dlg.mGroupBox_3.setGeometry(11,381,481,169)
+                self.dlg.mGroupBox_2.setGeometry(11,361,481,169)
+
+        #print(self.dlg.mGroupBox.isCollapsed())
+    def colapsar2(self):
+        if self.dlg.mGroupBox_5.isCollapsed() == True:
+            if self.dlg.mGroupBox.isCollapsed() == True:
+                if self.dlg.mGroupBox_2.isCollapsed() == True:
+                    if self.dlg.mGroupBox_3.isCollapsed() == False:
+                        if self.dlg.mGroupBox_4.isCollapsed() == True:
+                            self.dlg.mGroupBox_6.setGeometry(11,266,481,169)
+                        if self.dlg.mGroupBox_4.isCollapsed() == False:
+                            self.dlg.mGroupBox_6.setGeometry(11,500,481,169)
+                        self.dlg.mGroupBox_4.setGeometry(11,246,481,251)
+                    if self.dlg.mGroupBox_3.isCollapsed() == True:
+                        if self.dlg.mGroupBox_4.isCollapsed() == False:
+                            self.dlg.mGroupBox_6.setGeometry(11,346,481,169)
+                        if self.dlg.mGroupBox_4.isCollapsed() == True:
+                            self.dlg.mGroupBox_6.setGeometry(11,110,481,169)
+                        self.dlg.mGroupBox_4.setGeometry(11,90,481,251)
+                    self.dlg.mGroupBox_2.setFixedSize(481,20)
+                    if self.dlg.mGroupBox_3.isCollapsed() == False:
+                        self.dlg.mGroupBox_4.setGeometry(11,246,481,251)
+                    self.dlg.mGroupBox_3.setGeometry(11,70,481,169)
+                elif self.dlg.mGroupBox_2.isCollapsed() == False:
+                    if self.dlg.mGroupBox_4.isCollapsed() == False:
+                            self.dlg.mGroupBox_6.setGeometry(11,660,481,169)
+                    if self.dlg.mGroupBox_3.isCollapsed() == True:
+                        if self.dlg.mGroupBox_4.isCollapsed() == False:
+                            self.dlg.mGroupBox_6.setGeometry(11,500,481,169)
+                        if self.dlg.mGroupBox_4.isCollapsed() == True:
+                            self.dlg.mGroupBox_6.setGeometry(11,266,481,169)
+                        self.dlg.mGroupBox_4.setGeometry(11,246,481,251)
+                    if self.dlg.mGroupBox_3.isCollapsed() == False:
+                        if self.dlg.mGroupBox_4.isCollapsed() == True:
+                            self.dlg.mGroupBox_6.setGeometry(11,421,481,169)
+                        self.dlg.mGroupBox_4.setGeometry(11,401,481,251)
+                    if self.dlg.mGroupBox_3.isCollapsed() == True:
+                        self.dlg.mGroupBox_4.setGeometry(11,246,481,251)
+                    self.dlg.mGroupBox_3.setGeometry(11,226,481,169)
+                    self.dlg.mGroupBox_2.setFixedSize(481,169)
+            else:
+                if self.dlg.mGroupBox_2.isCollapsed() == True:
+                    if self.dlg.mGroupBox_3.isCollapsed() == True:
+                        if self.dlg.mGroupBox_4.isCollapsed() == True:
+                            self.dlg.mGroupBox_6.setGeometry(11,266,481,169)
+                        if self.dlg.mGroupBox_4.isCollapsed() == False:
+                            self.dlg.mGroupBox_6.setGeometry(11,500,481,169)
+                        self.dlg.mGroupBox_4.setGeometry(11,246,481,251)
+                    if self.dlg.mGroupBox_3.isCollapsed() == False:
+                        if self.dlg.mGroupBox_4.isCollapsed() == True:
+                            self.dlg.mGroupBox_6.setGeometry(11,421,481,169)
+                        if self.dlg.mGroupBox_4.isCollapsed() == False:
+                            self.dlg.mGroupBox_6.setGeometry(11,660,481,169)
+                        self.dlg.mGroupBox_4.setGeometry(11,401,481,251)
+                    self.dlg.mGroupBox_2.setFixedSize(481,20)
+                    self.dlg.mGroupBox_3.setGeometry(11,226,481,169)
+                elif self.dlg.mGroupBox_2.isCollapsed() == False:
+                    if self.dlg.mGroupBox_3.isCollapsed() == True:
+                        if self.dlg.mGroupBox_4.isCollapsed() == True:
+                            self.dlg.mGroupBox_6.setGeometry(11,421,481,169)
+                        if self.dlg.mGroupBox_4.isCollapsed() == False:
+                            self.dlg.mGroupBox_6.setGeometry(11,660,481,169)
+                        self.dlg.mGroupBox_4.setGeometry(11,401,481,251)
+                    if self.dlg.mGroupBox_3.isCollapsed() == False:
+                        if self.dlg.mGroupBox_4.isCollapsed() == True:
+                            self.dlg.mGroupBox_6.setGeometry(11,575,481,169)
+                        if self.dlg.mGroupBox_4.isCollapsed() == False:
+                            self.dlg.mGroupBox_6.setGeometry(11,810,481,169)
+                        self.dlg.mGroupBox_4.setGeometry(11,555,481,251)
+                    self.dlg.mGroupBox_2.setFixedSize(481,169)
+                    self.dlg.mGroupBox_3.setGeometry(11,381,481,169)
+        else:
+            if self.dlg.mGroupBox.isCollapsed() == True:
+                if self.dlg.mGroupBox_2.isCollapsed() == True:
+                    if self.dlg.mGroupBox_3.isCollapsed() == False:
+                        if self.dlg.mGroupBox_4.isCollapsed() == False:
+                            self.dlg.mGroupBox_6.setGeometry(11,660,481,169)
+                        if self.dlg.mGroupBox_4.isCollapsed() == True:
+                            self.dlg.mGroupBox_6.setGeometry(11,421,481,169)
+                        self.dlg.mGroupBox_4.setGeometry(11,401,481,251)
+                    if self.dlg.mGroupBox_3.isCollapsed() == True:
+                        if self.dlg.mGroupBox_4.isCollapsed() == False:
+                            self.dlg.mGroupBox_6.setGeometry(11,500,481,169)
+                        if self.dlg.mGroupBox_4.isCollapsed() == True:
+                            self.dlg.mGroupBox_6.setGeometry(11,266,481,169)
+                        self.dlg.mGroupBox_4.setGeometry(11,246,481,251)
+                    self.dlg.mGroupBox_2.setFixedSize(481,20)
+                    self.dlg.mGroupBox_3.setGeometry(11,226,481,169)
+                elif self.dlg.mGroupBox_2.isCollapsed() == False:
+                    if self.dlg.mGroupBox_3.isCollapsed() == True:
+                        if self.dlg.mGroupBox_4.isCollapsed() == False:
+                            self.dlg.mGroupBox_6.setGeometry(11,660,481,169)
+                        if self.dlg.mGroupBox_4.isCollapsed() == True:
+                            self.dlg.mGroupBox_6.setGeometry(11,421,481,169)
+                        self.dlg.mGroupBox_4.setGeometry(11,401,481,251)
+                    if self.dlg.mGroupBox_3.isCollapsed() == False:
+                        if self.dlg.mGroupBox_4.isCollapsed() == False:
+                            self.dlg.mGroupBox_6.setGeometry(11,810,481,169)
+                        if self.dlg.mGroupBox_4.isCollapsed() == True:
+                            self.dlg.mGroupBox_6.setGeometry(11,575,481,169)
+                        self.dlg.mGroupBox_4.setGeometry(11,555,481,251)
+                    self.dlg.mGroupBox_3.setGeometry(11,381,481,169)
+                    self.dlg.mGroupBox_2.setFixedSize(481,169)
+            else:
+                
+                if self.dlg.mGroupBox_2.isCollapsed() == True:
+                    if self.dlg.mGroupBox_3.isCollapsed() == True:
+                        if self.dlg.mGroupBox_4.isCollapsed() == False:
+                            self.dlg.mGroupBox_6.setGeometry(11,660,481,169)
+                        if self.dlg.mGroupBox_4.isCollapsed() == True:
+                            self.dlg.mGroupBox_6.setGeometry(11,421,481,169)
+                        self.dlg.mGroupBox_4.setGeometry(11,401,481,251)
+                    if self.dlg.mGroupBox_3.isCollapsed() == False:
+                        if self.dlg.mGroupBox_4.isCollapsed() == True:
+                            self.dlg.mGroupBox_6.setGeometry(11,575,481,169)
+                        if self.dlg.mGroupBox_4.isCollapsed() == False:
+                            self.dlg.mGroupBox_6.setGeometry(11,810,481,169)
+                        self.dlg.mGroupBox_4.setGeometry(11,555,481,251)
+                    self.dlg.mGroupBox_2.setFixedSize(481,20)
+                    self.dlg.mGroupBox_3.setGeometry(11,381,481,169)
+                elif self.dlg.mGroupBox_2.isCollapsed() == False:
+                    if self.dlg.mGroupBox_3.isCollapsed() == True:
+                        if self.dlg.mGroupBox_4.isCollapsed() == False:
+                            self.dlg.mGroupBox_6.setGeometry(11,810,481,169)
+                        if self.dlg.mGroupBox_4.isCollapsed() == True:
+                            self.dlg.mGroupBox_6.setGeometry(11,575,481,169)
+                        self.dlg.mGroupBox_4.setGeometry(11,555,481,251)
+                    if self.dlg.mGroupBox_3.isCollapsed() == False:
+                        if self.dlg.mGroupBox_4.isCollapsed() == True:
+                            self.dlg.mGroupBox_6.setGeometry(11,730,481,169)
+                        if self.dlg.mGroupBox_4.isCollapsed() == False:
+                            self.dlg.mGroupBox_6.setGeometry(11,967,481,169)
+                        self.dlg.mGroupBox_4.setGeometry(11,710,481,251)
+                    self.dlg.mGroupBox_2.setFixedSize(481,169)
+                    self.dlg.mGroupBox_3.setGeometry(11,535,481,169)
+
+        #print(self.dlg.mGroupBox_2.isCollapsed())
+    def colapsar3(self):
+        if self.dlg.mGroupBox_5.isCollapsed() == True:
+            if self.dlg.mGroupBox.isCollapsed() == True:
+                if self.dlg.mGroupBox_2.isCollapsed() == True:
+                    if self.dlg.mGroupBox_3.isCollapsed() == True:
+                        if self.dlg.mGroupBox_4.isCollapsed() == False:
+                            self.dlg.mGroupBox_6.setGeometry(11,340,481,169)
+                        if self.dlg.mGroupBox_4.isCollapsed() == True:
+                            self.dlg.mGroupBox_6.setGeometry(11,110,481,169)
+                        self.dlg.mGroupBox_4.setGeometry(11,90,481,169)
+                    elif self.dlg.mGroupBox_3.isCollapsed() == False:
+                        if self.dlg.mGroupBox_4.isCollapsed() == False:
+                            self.dlg.mGroupBox_6.setGeometry(11,500,481,169)
+                        if self.dlg.mGroupBox_4.isCollapsed() == True:
+                            self.dlg.mGroupBox_6.setGeometry(11,266,481,169)
+                        self.dlg.mGroupBox_4.setGeometry(11,246,481,169)
+                else:
+                    if self.dlg.mGroupBox_3.isCollapsed() == True:
+                        if self.dlg.mGroupBox_4.isCollapsed() == True:
+                            self.dlg.mGroupBox_6.setGeometry(11,266,481,169)
+                        if self.dlg.mGroupBox_4.isCollapsed() == False:
+                            self.dlg.mGroupBox_6.setGeometry(11,500,481,169)
+                        self.dlg.mGroupBox_4.setGeometry(11,246,481,169)
+                    elif self.dlg.mGroupBox_3.isCollapsed() == False:
+                        if self.dlg.mGroupBox_4.isCollapsed() == True:
+                            self.dlg.mGroupBox_6.setGeometry(11,421,481,169)
+                        if self.dlg.mGroupBox_4.isCollapsed() == False:
+                            self.dlg.mGroupBox_6.setGeometry(11,660,481,169)
+                        self.dlg.mGroupBox_4.setGeometry(11,401,481,169)
+            else:
+                if self.dlg.mGroupBox_2.isCollapsed() == True:
+                    if self.dlg.mGroupBox_3.isCollapsed() == True:
+                        if self.dlg.mGroupBox_4.isCollapsed() == True:
+                            self.dlg.mGroupBox_6.setGeometry(11,266,481,169)
+                        if self.dlg.mGroupBox_4.isCollapsed() == False:
+                            self.dlg.mGroupBox_6.setGeometry(11,500,481,169)
+                        self.dlg.mGroupBox_4.setGeometry(11,246,481,169)
+                    elif self.dlg.mGroupBox_3.isCollapsed() == False:
+                        if self.dlg.mGroupBox_4.isCollapsed() == True:
+                            self.dlg.mGroupBox_6.setGeometry(11,421,481,169)
+                        if self.dlg.mGroupBox_4.isCollapsed() == False:
+                            self.dlg.mGroupBox_6.setGeometry(11,660,481,169)
+                        self.dlg.mGroupBox_4.setGeometry(11,401,481,169)
+                else:
+                    if self.dlg.mGroupBox_3.isCollapsed() == True:
+                        if self.dlg.mGroupBox_4.isCollapsed() == False:
+                            self.dlg.mGroupBox_6.setGeometry(11,660,481,169)
+                        if self.dlg.mGroupBox_4.isCollapsed() == True:
+                            self.dlg.mGroupBox_6.setGeometry(11,421,481,169)
+                        self.dlg.mGroupBox_4.setGeometry(11,401,481,169)
+                    elif self.dlg.mGroupBox_3.isCollapsed() == False:
+                        if self.dlg.mGroupBox_4.isCollapsed() == False:
+                            self.dlg.mGroupBox_6.setGeometry(11,810,481,169)
+                        if self.dlg.mGroupBox_4.isCollapsed() == True:
+                            self.dlg.mGroupBox_6.setGeometry(11,575,481,169)
+                        self.dlg.mGroupBox_4.setGeometry(11,555,481,169)
+        else:
+            if self.dlg.mGroupBox.isCollapsed() == True:
+                if self.dlg.mGroupBox_2.isCollapsed() == True:
+                    if self.dlg.mGroupBox_3.isCollapsed() == True:
+                        if self.dlg.mGroupBox_4.isCollapsed() == True:
+                            self.dlg.mGroupBox_6.setGeometry(11,266,481,169)
+                        if self.dlg.mGroupBox_4.isCollapsed() == False:
+                            self.dlg.mGroupBox_6.setGeometry(11,500,481,169)
+                        self.dlg.mGroupBox_4.setGeometry(11,246,481,169)
+                    elif self.dlg.mGroupBox_3.isCollapsed() == False:
+                        if self.dlg.mGroupBox_4.isCollapsed() == True:
+                            self.dlg.mGroupBox_6.setGeometry(11,421,481,169)
+                        if self.dlg.mGroupBox_4.isCollapsed() == False:
+                            self.dlg.mGroupBox_6.setGeometry(11,660,481,169)
+                        self.dlg.mGroupBox_4.setGeometry(11,401,481,169)
+                else:
+                    if self.dlg.mGroupBox_3.isCollapsed() == True:
+                        if self.dlg.mGroupBox_4.isCollapsed() == True:
+                            self.dlg.mGroupBox_6.setGeometry(11,421,481,169)
+                        if self.dlg.mGroupBox_4.isCollapsed() == False:
+                            self.dlg.mGroupBox_6.setGeometry(11,660,481,169)
+                        self.dlg.mGroupBox_4.setGeometry(11,401,481,169)
+                    elif self.dlg.mGroupBox_3.isCollapsed() == False:
+                        if self.dlg.mGroupBox_4.isCollapsed() == True:
+                            self.dlg.mGroupBox_6.setGeometry(11,573,481,169)
+                        if self.dlg.mGroupBox_4.isCollapsed() == False:
+                            self.dlg.mGroupBox_6.setGeometry(11,810,481,169)
+                        self.dlg.mGroupBox_4.setGeometry(11,555,481,169)
+            else:
+                if self.dlg.mGroupBox_2.isCollapsed() == True:
+                    if self.dlg.mGroupBox_3.isCollapsed() == True:
+                        if self.dlg.mGroupBox_4.isCollapsed() == False:
+                            self.dlg.mGroupBox_6.setGeometry(11,660,481,169)
+                        if self.dlg.mGroupBox_4.isCollapsed() == True:
+                            self.dlg.mGroupBox_6.setGeometry(11,421,481,169)
+                        self.dlg.mGroupBox_4.setGeometry(11,401,481,169)
+                    elif self.dlg.mGroupBox_3.isCollapsed() == False:
+                        if self.dlg.mGroupBox_4.isCollapsed() == False:
+                            self.dlg.mGroupBox_6.setGeometry(11,810,481,169)
+                        if self.dlg.mGroupBox_4.isCollapsed() == True:
+                            self.dlg.mGroupBox_6.setGeometry(11,575,481,169)
+                        self.dlg.mGroupBox_4.setGeometry(11,555,481,169)
+                else:
+                    if self.dlg.mGroupBox_3.isCollapsed() == True:
+                        if self.dlg.mGroupBox_4.isCollapsed() == False:
+                            self.dlg.mGroupBox_6.setGeometry(11,810,481,169)
+                        if self.dlg.mGroupBox_4.isCollapsed() == True:
+                            self.dlg.mGroupBox_6.setGeometry(11,575,481,169)
+                        self.dlg.mGroupBox_4.setGeometry(11,555,481,169)
+                    elif self.dlg.mGroupBox_3.isCollapsed() == False:
+                        if self.dlg.mGroupBox_4.isCollapsed() == False:
+                            self.dlg.mGroupBox_6.setGeometry(11,967,481,169)
+                        if self.dlg.mGroupBox_4.isCollapsed() == True:
+                            self.dlg.mGroupBox_6.setGeometry(11,730,481,169)
+                        self.dlg.mGroupBox_4.setGeometry(11,710,481,169)
+
+        #print(self.dlg.mGroupBox_2.isCollapsed())
+
+    def colapsar4(self):
+        if self.dlg.mGroupBox_5.isCollapsed() == True:
+            if self.dlg.mGroupBox.isCollapsed() == True:
+                if self.dlg.mGroupBox_2.isCollapsed() == True:
+                    if self.dlg.mGroupBox_3.isCollapsed() == True:
+                    
+                        if self.dlg.mGroupBox_4.isCollapsed() == True:
+                            self.dlg.mGroupBox_6.setGeometry(11,110,481,169)
+                        elif self.dlg.mGroupBox_4.isCollapsed() == False:
+                            self.dlg.mGroupBox_6.setGeometry(11,346,481,169)
+                    else:
+                        if self.dlg.mGroupBox_4.isCollapsed() == True:
+                            self.dlg.mGroupBox_6.setGeometry(11,266,481,169)
+                        elif self.dlg.mGroupBox_4.isCollapsed() == False:
+                            self.dlg.mGroupBox_6.setGeometry(11,500,481,169)
+                else:
+                    if self.dlg.mGroupBox_3.isCollapsed() == True:
+                    
+                        if self.dlg.mGroupBox_4.isCollapsed() == True:
+                            self.dlg.mGroupBox_6.setGeometry(11,266,481,169)
+                        elif self.dlg.mGroupBox_4.isCollapsed() == False:
+                            self.dlg.mGroupBox_6.setGeometry(11,500,481,169)
+                    else:
+                        if self.dlg.mGroupBox_4.isCollapsed() == True:
+                            self.dlg.mGroupBox_6.setGeometry(11,421,481,169)
+                        elif self.dlg.mGroupBox_4.isCollapsed() == False:
+                            self.dlg.mGroupBox_6.setGeometry(11,660,481,169)
+            else:
+                if self.dlg.mGroupBox_2.isCollapsed() == True:
+                    if self.dlg.mGroupBox_3.isCollapsed() == True:
+                    
+                        if self.dlg.mGroupBox_4.isCollapsed() == True:
+                            self.dlg.mGroupBox_6.setGeometry(11,266,481,169)
+                        elif self.dlg.mGroupBox_4.isCollapsed() == False:
+                            self.dlg.mGroupBox_6.setGeometry(11,500,481,169)
+                    else:
+                        if self.dlg.mGroupBox_4.isCollapsed() == True:
+                            self.dlg.mGroupBox_6.setGeometry(11,421,481,169)
+                        elif self.dlg.mGroupBox_4.isCollapsed() == False:
+                            self.dlg.mGroupBox_6.setGeometry(11,660,481,169)
+                else:
+                    if self.dlg.mGroupBox_3.isCollapsed() == True:
+                    
+                        if self.dlg.mGroupBox_4.isCollapsed() == True:
+                            self.dlg.mGroupBox_6.setGeometry(11,421,481,169)
+                        elif self.dlg.mGroupBox_4.isCollapsed() == False:
+                            self.dlg.mGroupBox_6.setGeometry(11,660,481,169)
+                    else:
+                        if self.dlg.mGroupBox_4.isCollapsed() == True:
+                            self.dlg.mGroupBox_6.setGeometry(11,575,481,169)
+                        elif self.dlg.mGroupBox_4.isCollapsed() == False:
+                            self.dlg.mGroupBox_6.setGeometry(11,810,481,169)
+        else:
+            if self.dlg.mGroupBox.isCollapsed() == True:
+                if self.dlg.mGroupBox_2.isCollapsed() == True:
+                    if self.dlg.mGroupBox_3.isCollapsed() == True:
+                    
+                        if self.dlg.mGroupBox_4.isCollapsed() == True:
+                            self.dlg.mGroupBox_6.setGeometry(11,266,481,169)
+                        elif self.dlg.mGroupBox_4.isCollapsed() == False:
+                            self.dlg.mGroupBox_6.setGeometry(11,500,481,169)
+                    else:
+                        if self.dlg.mGroupBox_4.isCollapsed() == True:
+                            self.dlg.mGroupBox_6.setGeometry(11,421,481,169)
+                        elif self.dlg.mGroupBox_4.isCollapsed() == False:
+                            self.dlg.mGroupBox_6.setGeometry(11,660,481,169)
+                else:
+                    if self.dlg.mGroupBox_3.isCollapsed() == True:
+                    
+                        if self.dlg.mGroupBox_4.isCollapsed() == True:
+                            self.dlg.mGroupBox_6.setGeometry(11,421,481,169)
+                        elif self.dlg.mGroupBox_4.isCollapsed() == False:
+                            self.dlg.mGroupBox_6.setGeometry(11,660,481,169)
+                    else:
+                        if self.dlg.mGroupBox_4.isCollapsed() == True:
+                            self.dlg.mGroupBox_6.setGeometry(11,575,481,169)
+                        elif self.dlg.mGroupBox_4.isCollapsed() == False:
+                            self.dlg.mGroupBox_6.setGeometry(11,810,481,169)
+            else:
+                if self.dlg.mGroupBox_2.isCollapsed() == True:
+                    if self.dlg.mGroupBox_3.isCollapsed() == True:
+                        if self.dlg.mGroupBox_4.isCollapsed() == True:
+                            self.dlg.mGroupBox_6.setGeometry(11,421,481,169)
+                        elif self.dlg.mGroupBox_4.isCollapsed() == False:
+                            self.dlg.mGroupBox_6.setGeometry(11,660,481,169)
+                    else:
+                        if self.dlg.mGroupBox_4.isCollapsed() == True:
+                            self.dlg.mGroupBox_6.setGeometry(11,575,481,169)
+                        elif self.dlg.mGroupBox_4.isCollapsed() == False:
+                            self.dlg.mGroupBox_6.setGeometry(11,810,481,169)
+                else:
+                    if self.dlg.mGroupBox_3.isCollapsed() == True:
+                        if self.dlg.mGroupBox_4.isCollapsed() == True:
+                            self.dlg.mGroupBox_6.setGeometry(11,575,481,169)
+                        elif self.dlg.mGroupBox_4.isCollapsed() == False:
+                            self.dlg.mGroupBox_6.setGeometry(11,810,481,169)
+                    else:
+                        if self.dlg.mGroupBox_4.isCollapsed() == True:
+                            self.dlg.mGroupBox_6.setGeometry(11,730,481,169)
+                        elif self.dlg.mGroupBox_4.isCollapsed() == False:
+                            self.dlg.mGroupBox_6.setGeometry(11,967,481,169)
+               
+
+            #print("actualizarCapaActiva : False")
+class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
+    def __init__(self, canvas, cadDockWidget, pluginM):
+        QgsMapToolAdvancedDigitizing.__init__(self, canvas, cadDockWidget)
+
+        #print('entrar')
+        self.canvas = canvas
+        self.pluginM = pluginM
+        for x in iface.advancedDigitizeToolBar().actions():
+            if x.objectName() == 'mEnableAction':
+                self.botonAD = x
+        self.lastMouseButtonClicked = None
+    def cadCanvasPressEvent(self, evt):
+        if evt.buttons() == Qt.RightButton:
+            self.lastMouseButtonClicked = "RIGHT"
+            self.pluginM.desactivar()
+            #print('derecha')         
