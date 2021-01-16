@@ -678,7 +678,7 @@ class TopologiaV3:
         
         error = self.reglas.validarPoligonosInvalidosRef(nombreCapa)
         self.llenaTablaErrores()
-        return self.error
+        return error
 
 ####################################################################################
 

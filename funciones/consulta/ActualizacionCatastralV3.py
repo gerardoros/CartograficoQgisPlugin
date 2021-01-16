@@ -21,7 +21,7 @@
  *                                                                         *
  ***************************************************************************/
 """
-from PyQt5.QtCore import QSettings, QTranslator, qVersion, QCoreApplication, QRectF
+from PyQt5.QtCore import QSettings, QTranslator, qVersion, QCoreApplication, QRectF, QVariant, QDate
 from PyQt5.QtGui import QIcon, QFont
 from PyQt5.QtWidgets import QAction, QFileDialog, QMessageBox
 
@@ -3173,6 +3173,10 @@ class ActualizacionCatastralV3:
                     
                     if str(feat.attributes()[x]) == "NULL":
                         atributo = None
+                    elif type(feat.attributes()[x]) == QVariant:
+                        atributo = feat.attributes()[x].value()
+                    elif type(feat.attributes()[x]) == QDate:
+                        atributo = feat.attributes()[x].toString('yyyy-MM-dd')
                     atributos[str(nombres[x])] = atributo
                 
                 campos['propiedades'] = atributos
