@@ -650,7 +650,7 @@ class TopologiaQG3:
         self.validarIntersecciones(self.xHoriGeom, self.xHoriGeom)
         self.validarIntersecciones(self.xHoriGeom, self.xVert)
         
-        self.validarCobertura(self.xManzana, self.xPredGeom)
+        self.validarCobertura(self.xPredGeom, self.xManzana)
         
         self.validarInclusion(self.xPredGeom, self.xManzana)
         

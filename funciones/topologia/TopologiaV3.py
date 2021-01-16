@@ -840,7 +840,7 @@ class TopologiaV3:
             self.erroresRestantes.append(errorInter)
 
 
-        self.validarCobertura(self.xManzana, self.xPredGeom)
+        self.validarCobertura(self.xPredGeom, self.xManzana)
         
         self.validarInclusion(self.xPredGeom, self.xManzana)
         
