@@ -1418,7 +1418,8 @@ class Reglas:
             listaDentro = []
             for obj in capaObjeto.getFeatures():
                 geomObj = obj.geometry()
-                if geomCont.intersects(geomObj.buffer(-0.0000001,1)) or geomCont.intersection(geomObj.buffer(0.0000001,1)).area() >0.0000000001 and self.contarIntegraciones(geomObj.buffer(-0.0000001,1), 'predios.geom') == 0:
+                #if geomCont.intersects(geomObj.buffer(-0.0000001,1)) or geomCont.intersection(geomObj.buffer(0.0000001,1)).area() >0.0000000001 and self.contarIntegraciones(geomObj.buffer(-0.0000001,1), 'predios.geom') == 0:
+                if geomCont.buffer(-0.0000001,1).intersects(geomObj) and self.contarIntegraciones(geomObj.buffer(-0.0000001,1), 'predios.geom') == 0:
                     listaDentro.append(obj)
 
             listaDatos = [feat[campo] for feat in listaDentro]

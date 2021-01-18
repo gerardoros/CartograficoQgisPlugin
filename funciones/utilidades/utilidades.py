@@ -246,7 +246,6 @@ class Utilidad:
 				QSettings().setValue('listaEliminada', [])
 				#Guardado de datos correcto
 			elif response.status_code == 202:
-
 				root.insertGroup(0, 'ERRORES DE TOPOLOGIA')
 
 				capa = QgsVectorLayer('Point?crs=epsg:' + str(QSettings().value('srid')) +'&field=mensaje:string(80)', 'ERRORES PUNTO', 'memory')
@@ -257,7 +256,7 @@ class Utilidad:
 				props['color'] = '#FF0000'
 				capa.renderer().setSymbol(QgsMarkerSymbol.createSimple(props))
 
-				self.etiquetarCapa(capa.name())
+				self.etiquetarCapa(capa.name(), capa)
 
 				QgsProject.instance().addMapLayer(capa, False)
 				grupoErrores = root.findGroup('ERRORES DE TOPOLOGIA')
@@ -269,7 +268,6 @@ class Utilidad:
 
 				for malo in puntosMalos:
 					
-					#print(malo)
 					#print(type(malo))
 					geom = QgsGeometry.fromWkt(malo["wkt"])
 					feat = QgsFeature()

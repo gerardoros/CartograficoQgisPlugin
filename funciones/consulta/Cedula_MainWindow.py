@@ -5657,7 +5657,7 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
     def event_subirImg(self):
         x = ''
         BLOCKSIZE = 65536
-        path = QFileDialog.getOpenFileName(self, 'Subir imagen', os.getenv('HOME'), 'Image tiles(*.jpg, *.png )')
+        path = QFileDialog.getOpenFileName(self, 'Subir imagen', os.getenv('HOME'), 'Image tiles(*.jpg, *.png, *.JPG )')
         if path !=('',''):
             hasher = hashlib.md5(open(path[0],'rb').read()).hexdigest().upper()
             with open(path[0], "rb") as path:

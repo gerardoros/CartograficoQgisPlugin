@@ -930,7 +930,7 @@ class TopologiaV3:
         errorLongitud = self.validarLongitudCampo(self.xVert, 'clave', 2)
         if errorLongitud != None:
             self.erroresRestantes.append(errorLongitud)
-        errorLongitud = self.validarLongitudCampo(self.xCvesVert, 'clave', 4)
+        errorLongitud = self.validarLongitudCampo(self.xCvesVert, 'clave', 6)
         if errorLongitud != None:
             self.erroresRestantes.append(errorLongitud)
 
