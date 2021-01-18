@@ -37,6 +37,8 @@ from .funciones.generar_documentos.const_identificacion import ConstIdentificaci
 from .funciones.generar_documentos.gen_doc_calvecat import gen_doc_calvecat
 from .funciones.consulta.ActualizacionCatastralV3 import ActualizacionCatastralV3
 from .funciones.dibujo import DibujoV3
+from .funciones.fusiondivision.EventoDivision import EventoDivision
+from .funciones.fusiondivision.VentanaAreas import VentanaAreas
 from .funciones.eliminacion import EliminacionV3
 from .funciones.dibujo.VentanaDibujoV3 import VentanaDibujoV3
 import os.path
@@ -141,8 +143,11 @@ class menu:
         self.actions = []
         self.menu = self.tr(u'&menu')
         self.dlg = menuDialog(parent = iface.mainWindow())
-        self.mapTool = AdvancedMapTool(iface.mapCanvas(), iface.cadDockWidget(), self)
-        iface.mapCanvas().setMapTool(self.mapTool)
+        #self.mapTool = AdvancedMapTool(iface.mapCanvas(), iface.cadDockWidget(), self)
+        #iface.mapCanvas().setMapTool(self.mapTool)
+        self.evento = EventoDivision(iface.mapCanvas(), self, iface.cadDockWidget())
+        iface.mapCanvas().setMapTool(self.evento)
+        self.VentanaAreas = VentanaAreas(self)
         #self.dlg.toolBox.currentChanged.connect(self.cambio)
         an = self.dlg.width()
         al = self.dlg.height()
@@ -252,7 +257,14 @@ class menu:
         self.dlg.btnGuardar.clicked.connect(self.funguardar)
         self.dlg.btnActMarc_2.clicked.connect(self.funmarcadores)
         self.dlg.btnLimpiar_3.clicked.connect(self.funlimpiar)
+        self.dlg.btnDibujarCortes.clicked.connect(self.dibujarcorte)
+        self.dlg.btnEditarCortes.clicked.connect(self.editarcorte)
+        self.dlg.btnLlamarCalcular.clicked.connect(self.areas)
+        self.dlg.btnEliminarCortes.clicked.connect(self.eliminarcortes)
+        self.dlg.btnCancelarSub.clicked.connect(self.cancelarSub)
+        self.dlg.btnSubdividir.clicked.connect(self.sub)
         self.dlg.botonCargarReferencia_2.clicked.connect(self.funcarga)
+        self.dlg.btnCargarPredio.clicked.connect(self.cargarsub)
         self.dlg.comboSector.currentIndexChanged.connect(self.obtenerManzanasPorSector)
         self.dlg.comboManzana.currentIndexChanged.connect(self.obtenerIdManzana)
         self.dlg.comboSector_3.currentIndexChanged.connect(self.obtenerManzanasPorSector2)
@@ -436,12 +448,12 @@ class menu:
         #el error aqui es que estabas asignando la funcion 'obtenerXCapas' a self.ACA
         #y self.ACA contiene la referencia a la clase
         #self.ACA = ActualizacionCatastralV3.ActualizacionCatastralV3.obtenerXCapas(self)
-        self.mapTool = AdvancedMapTool(iface.mapCanvas(), iface.cadDockWidget(), self)
+        #self.mapTool = AdvancedMapTool(iface.mapCanvas(), iface.cadDockWidget(), self)
         for x in iface.mapNavToolToolBar().actions():
             if x.objectName() == 'mActionPan':
                 x.trigger()
-        if not self.mapTool.botonAD.isChecked():
-            self.mapTool.botonAD.trigger()
+        #if not self.mapTool.botonAD.isChecked():
+            #self.mapTool.botonAD.trigger()
         self.mem_layer = None
         #esto es lo que debes hacer
         #con la referencia hecha (self.ACA == ActualizacionCatastralV3....) solo mandas a llamar el metodo que ocupas
@@ -507,8 +519,25 @@ class menu:
         self.xCvesVert.selectionChanged.connect(self.funedicionatributos)
         #self.ACA = ActualizacionCatastralV3.ActualizacionCatastralV3(iface, self.zona, self.manzana)
         self.llenarComboReferencias()
-        
+        #self.dlg.btnFusionar.setEnabled(True)
+        self.dlg.comboPredios.setEnabled(True)
+        self.dlg.btnCargarPredio.setEnabled(True)
+        self.dlg.btnDibujarCortes.setEnabled(False)
+        self.dlg.btnEditarCortes.setEnabled(False)
+        self.dlg.btnEliminarCortes.setEnabled(False)
+        #self.dlg.btnApagarHerramientas.setEnabled(False)
+        #self.dlg.btnConfirmarCortes.setEnabled(False)
+        #self.dlg.btnDeshacerTodo.setEnabled(False)
 
+        self.dlg.btnSubdividir.setEnabled(False)
+        self.dlg.RdManual.setEnabled(False)
+        self.dlg.RdAuto.setEnabled(False)
+        self.dlg.btnCancelarSub.setEnabled(False)
+        self.dlg.lineEdit.setEnabled(False)
+        self.dlg.lineEdit_2.setEnabled(False)
+        self.dlg.btnSend.setEnabled(False)
+        self.dlg.btnClave.setEnabled(False)
+        self.dlg.btnLlamarCalcular.setEnabled(False)
         #Asignar eventos de cambio de seleccion
     
         #self.selec()
@@ -521,7 +550,8 @@ class menu:
         
         # show the dialog
         self.dlg.show()
-        iface.mapCanvas().setMapTool(self.mapTool)
+        iface.mapCanvas().setMapTool(self.evento)
+        #iface.mapCanvas().setMapTool(self.mapTool)
         # Run the dialog event loop
         result = self.dlg.exec_()
         # See if OK was pressed
@@ -710,6 +740,162 @@ class menu:
         self.ACA.DFS = self.DFS
         self.ACA.pintarCapas()
         self.ACA.UTI = self.UTI
+        self.cargacombo()
+    def cargarsub(self):
+        self.DFS.CFG = self.CFG
+        self.DFS.UTI = self.UTI
+        self.DFS.DFS = self.DFS
+        self.DFS.DBJ = self.DBJ
+        self.DFS.ELM = self.ELM
+        self.DFS.ACA = self.ACA
+        self.DFS.TPG = self.TPG
+        self.predio = self.dlg.comboPredios.currentText()
+        if self.predio == '':
+            self.UTI.mostrarAlerta("carge una manzana", QMessageBox().Critical, "Edicion cartografica")
+            return
+        self.DFS.pasarAModoDivision(self.predio)
+        self.dlg.comboPredios.setEnabled(False)
+        self.dlg.btnDibujarCortes.setEnabled(False)
+        self.dlg.btnEditarCortes.setEnabled(True)
+        self.dlg.btnEliminarCortes.setEnabled(True)
+        #self.dlg.btnApagarHerramientas.setEnabled(True)
+        #self.dlg.btnConfirmarCortes.setEnabled(True)
+        #self.dlg.btnDeshacerTodo.setEnabled(True)
+
+        self.dlg.btnSubdividir.setEnabled(True)
+        self.dlg.btnCancelarSub.setEnabled(True)
+        self.dlg.btnLlamarCalcular.setEnabled(True)
+        self.dibujarcorte()
+    def cancelarSub(self):
+        self.DFS.CFG = self.CFG
+        self.DFS.UTI = self.UTI
+        self.DFS.DFS = self.DFS
+        self.DFS.DBJ = self.DBJ
+        self.DFS.ELM = self.ELM
+        self.DFS.ACA = self.ACA
+        self.DFS.TPG = self.TPG
+        self.DFS.cancelarSubdivision()
+        self.dlg.comboPredios.setEnabled(True)
+        self.dlg.btnDibujarCortes.setEnabled(False)
+        self.dlg.btnEditarCortes.setEnabled(False)
+        self.dlg.btnEliminarCortes.setEnabled(False)
+        #self.dlg.btnApagarHerramientas.setEnabled(False)
+        #self.dlg.btnConfirmarCortes.setEnabled(False)
+        #self.dlg.btnDeshacerTodo.setEnabled(False)
+
+        self.dlg.btnSubdividir.setEnabled(False)
+        self.dlg.btnCancelarSub.setEnabled(False)
+        self.dlg.btnLlamarCalcular.setEnabled(False)
+    def sub(self):
+        self.DFS.CFG = self.CFG
+        self.DFS.UTI = self.UTI
+        self.DFS.DFS = self.DFS
+        self.DFS.DBJ = self.DBJ
+        self.DFS.ELM = self.ELM
+        self.DFS.ACA = self.ACA
+        self.DFS.TPG = self.TPG
+        self.geomEnDivision
+        geoTemp = QgsGeometry.fromWkt(self.geomEnDivision.asWkt())
+        #self.gem = QgsGeometry.fromWkt(self.geomEnDivision.asWkt())
+        corte = len(self.evento.relaciones) - 1
+        print(corte)
+        self.DFS.confirmarCortes(corte)
+    def areas(self):
+        self.DFS.CFG = self.CFG
+        self.DFS.UTI = self.UTI
+        self.DFS.DFS = self.DFS
+        self.DFS.DBJ = self.DBJ
+        self.DFS.ELM = self.ELM
+        self.DFS.ACA = self.ACA
+        self.DFS.TPG = self.TPG
+        self.DFS.irAreas()
+        self.dlg.comboPredios.setEnabled(True)
+        self.dlg.btnDibujarCortes.setEnabled(True)
+        self.dlg.btnEditarCortes.setEnabled(True)
+        self.dlg.btnEliminarCortes.setEnabled(True)
+        #self.dlg.btnApagarHerramientas.setEnabled(True)
+        #self.dlg.btnConfirmarCortes.setEnabled(True)
+        #self.dlg.btnDeshacerTodo.setEnabled(True)
+
+        self.dlg.btnSubdividir.setEnabled(True)
+        self.dlg.btnCancelarSub.setEnabled(True)
+        self.dlg.btnLlamarCalcular.setEnabled(True)
+    def eliminarcortes(self):
+        self.evento.modoDividir = False
+        self.evento.modoEliminar = True
+        self.evento.modoEditar = False
+        self.dlg.comboPredios.setEnabled(False)
+        self.dlg.btnDibujarCortes.setEnabled(True)
+        self.dlg.btnEditarCortes.setEnabled(True)
+        self.dlg.btnEliminarCortes.setEnabled(False)
+        #self.dlg.btnApagarHerramientas.setEnabled(True)
+        #self.dlg.btnConfirmarCortes.setEnabled(True)
+        #self.dlg.btnDeshacerTodo.setEnabled(True)
+
+        self.dlg.btnSubdividir.setEnabled(True)
+        self.dlg.btnCancelarSub.setEnabled(True)
+        self.dlg.btnLlamarCalcular.setEnabled(True)
+        #iface.mapCanvas().setCursor(self.DBJ.evento.cursorCuadro)
+        iface.mapCanvas().setCursor(self.UTI.cursorCuadro)
+        if self.evento.botonAD.isChecked():
+            self.evento.botonAD.trigger()
+    def editarcorte(self):
+        #self.evento = EventoDivision(iface.mapCanvas(), self, iface.cadDockWidget())
+        #iface.mapCanvas().setMapTool(self.evento)
+        self.evento.modoDividir = False
+        self.evento.modoEliminar = False
+        self.evento.modoEditar = True
+        self.dlg.comboPredios.setEnabled(False)
+        self.dlg.btnDibujarCortes.setEnabled(True)
+        self.dlg.btnEditarCortes.setEnabled(False)
+        self.dlg.btnEliminarCortes.setEnabled(True)
+        #self.dlg.btnApagarHerramientas.setEnabled(True)
+        #self.dlg.btnConfirmarCortes.setEnabled(True)
+        #self.dlg.btnDeshacerTodo.setEnabled(True)
+
+        self.dlg.btnSubdividir.setEnabled(True)
+        self.dlg.btnCancelarSub.setEnabled(True)
+        self.dlg.btnLlamarCalcular.setEnabled(True)
+        #iface.mapCanvas().setCursor(self.DBJ.eventos.cursorRedondo)
+        iface.mapCanvas().setCursor(self.UTI.cursorRedondo)
+        if not self.evento.botonAD.isChecked():
+            self.evento.botonAD.trigger()
+    def dibujarcorte(self):
+        #self.evento = EventoDivision(iface.mapCanvas(), self, iface.cadDockWidget())
+        #iface.mapCanvas().setMapTool(self.evento)
+        self.evento.modoDividir = True
+        self.evento.modoEliminar = False
+        self.evento.modoEditar = False
+        self.dlg.comboPredios.setEnabled(False)
+        self.dlg.btnDibujarCortes.setEnabled(False)
+        self.dlg.btnEditarCortes.setEnabled(True)
+        self.dlg.btnEliminarCortes.setEnabled(True)
+        #self.dlg.btnApagarHerramientas.setEnabled(True)
+        #self.dlg.btnConfirmarCortes.setEnabled(True)
+        #self.dlg.btnDeshacerTodo.setEnabled(True)
+
+        self.dlg.btnSubdividir.setEnabled(True)
+        self.dlg.btnCancelarSub.setEnabled(True)
+        self.dlg.btnLlamarCalcular.setEnabled(True)
+        iface.mapCanvas().setCursor(self.UTI.cursorRedondo)
+        if not self.evento.botonAD.isChecked():
+            self.evento.botonAD.trigger()
+    def cargacombo(self):
+        self.dlg.comboPredios.clear()
+        lista = []
+
+        capaPredios = QgsProject.instance().mapLayer(self.ACA.obtenerIdCapa('predios.geom'))
+
+        if capaPredios is None:
+            return
+
+        # lista de features
+        for predio in capaPredios.getFeatures():
+            lista.append(str(predio['clave']))
+
+        lista.sort()
+        for elemento in lista:
+            self.dlg.comboPredios.addItem(elemento)
     def funlimpiar(self):
         self.ACA.limpiaArea()
     def funmarcadores(self):
@@ -779,10 +965,10 @@ class menu:
                     estilo = """color: rgb(1, 239, 1);
     """               
                     self.dlg.label_21.setStyleSheet(estilo)
-                    self.desactivar() 
-                    if self.click == True:
+                    #self.desactivar() 
+                    '''if self.click == True:
                         self.tool = AdvancedMapTool(iface.mapCanvas(), iface.cadDockWidget(), self)
-                        iface.mapCanvas().setMapTool(self.tool)
+                        iface.mapCanvas().setMapTool(self.tool)'''
                     #self.mapTool.canvas.setCursor(self.cursorRedondo)
                     
         
@@ -2075,7 +2261,7 @@ class menu:
                
 
             #print("actualizarCapaActiva : False")
-class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
+'''class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
     def __init__(self, canvas, cadDockWidget, pluginM):
         QgsMapToolAdvancedDigitizing.__init__(self, canvas, cadDockWidget)
 
@@ -2090,4 +2276,4 @@ class AdvancedMapTool(QgsMapToolAdvancedDigitizing):
         if evt.buttons() == Qt.RightButton:
             self.lastMouseButtonClicked = "RIGHT"
             self.pluginM.desactivar()
-            #print('derecha')         
+            #print('derecha')'''         

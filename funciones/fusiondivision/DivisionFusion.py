@@ -90,6 +90,7 @@ class DivisionFusion:
         self.toolbar.setObjectName(u'DivisionFusion')
         '''
         self.eventos = EventoDivision(iface.mapCanvas(), self, iface.cadDockWidget())
+        #iface.mapCanvas().setMapTool(self.eventos)
         self.VentanaAreas = VentanaAreas(self)
 
         self.VentanaFusion = VentanaFusionV3(iface, self)
@@ -509,8 +510,9 @@ class DivisionFusion:
 #--------------------------------------------------------------------------
 
     #Activamos el modo de division
-    def pasarAModoDivision(self):
-        clave = self.dlg.comboPredios.currentText() #Obtenemos la clave del predio a editar
+    def pasarAModoDivision(self, predio):
+        #clave = self.dlg.comboPredios.currentText() #Obtenemos la clave del predio a editar
+        clave = predio
         if clave == '':
             self.UTI.mostrarAlerta('Primero debes cargar una manzana de la seccion de consulta', QMessageBox().Critical, 'Error de cargado de predio')
             return
@@ -600,12 +602,15 @@ class DivisionFusion:
 
 #--------------------------------------------
 
-    def confirmarCortes(self): #Aqui cehcamos que los cortes esten en orden
+    def confirmarCortes(self, corte): #Aqui cehcamos que los cortes esten en orden
         
         #cuentaCortes = 0
-        rango = len(self.eventos.relaciones) - 1
+        rango = corte
+        #rango = len(self.eventos.relaciones) - 1
 
         geoTemp = QgsGeometry.fromWkt(self.geomEnDivision.asWkt())
+        #geoTemp = gem
+        print(geoTemp)
         cuentaSalida = self.subdividirPredio(geoTemp, True) - 1 #Aqui enviamos una geomtria temporal, para ven en cuantos cortes quedara
             
         if cuentaSalida >= 2:
@@ -680,7 +685,7 @@ class DivisionFusion:
         
         else:
             self.UTI.mostrarAlerta("Primero debes dibujar las lineas de corte\nAsegurate que las lineas atraviesen por completo el predio", QMessageBox().Critical, "Error en subdivision")
-
+            
 ##################################################################################
 
     def vaciarLineasCorte(self):
