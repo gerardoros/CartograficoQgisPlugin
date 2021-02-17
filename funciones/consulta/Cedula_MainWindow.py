@@ -670,6 +670,7 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
         # -- carga informacion de construcciones de PREDIO
         dataConstP = self.consumeWSConstr(self.cveCompleta)
 
+
         self.cargaConstrPred(dataConstP)
 
         self.cargada = True
@@ -972,14 +973,18 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
                 self.deshabilitaConstr()
                 return
 
+
+
             # ordena las construcciones segun el volumen
             construcciones = self.ordenaConstr(dataConstP)
+            
 
             for dcp in construcciones:
 
                 dcp['accion'] = 'update'
                 fracciones = dcp['fracciones']
                 fr = {}
+
 
                 # - crear fraccion en caso de que no las tenga
                 if len(fracciones) == 0:
@@ -1215,15 +1220,16 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
 
             # colindancias
             colin = self.cedula['colindancias']
-
+            self.twColindancias.clearContents()
+            self.twColindancias.setRowCount(len(colin))
+            print(colin)
             if len(colin) > 0:
-                for c in colin:
-                    rowPosition = self.twColindancias.rowCount()
-                    self.twColindancias.insertRow(rowPosition)
-                    self.twColindancias.setItem(rowPosition , 0, QtWidgets.QTableWidgetItem(str(c['idCatColindancia'])))
-                    self.twColindancias.setItem(rowPosition , 1, QtWidgets.QTableWidgetItem(str(c['catColindancia'])))
-                    self.twColindancias.setItem(rowPosition , 2, QtWidgets.QTableWidgetItem(str(c['superficieColindacia'])))
-                    self.twColindancias.setItem(rowPosition , 3, QtWidgets.QTableWidgetItem(str(c['desscripcion'])))
+                for row in range(len(colin)):
+                    self.twColindancias.setItem(row , 0, QtWidgets.QTableWidgetItem(str(colin[row]['orientacion'])))
+                    self.twColindancias.setItem(row , 1, QtWidgets.QTableWidgetItem(str(colin[row]['orientacion'])))
+                    self.twColindancias.setItem(row , 2, QtWidgets.QTableWidgetItem(str(colin[row]['superficieColindacia'])))
+                    self.twColindancias.setItem(row , 3, QtWidgets.QTableWidgetItem(str(colin[row]['desscripcion'])))
+                    self.twColindancias.setItem(row , 4, QtWidgets.QTableWidgetItem(str(colin[row]['claveProp'])))
 
             # localidad
             if self.cedula['localidad'] is not None:
@@ -4474,11 +4480,11 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
 
             caract['id'] = None
             caract['cveCatastral'] = None
-            caract['superficieColindacia'] = twi2.text()
-            caract['desscripcion'] = twi3.text()
-            caract['claveProp'] = None
-            caract['idCatColindancia'] = twi0.text()
-            caract['catColindancia'] = twi1.text()
+            caract['superficieColindacia'] = twi1.text()
+            caract['desscripcion'] = twi2.text()
+            caract['claveProp'] = twi3.text()
+            caract['orientacion'] = twi0.text()
+            caract['catColindancia'] = None
 
             colindancias.append(caract)
         
@@ -6226,6 +6232,9 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
         for t in temp:
             for d in dataConstP:
                 if d['nomVolumen'].upper() == 'V' + str(t):
+                    result.append(d)
+                    break
+                if d['nomVolumen'].upper() == 'U' + str(t):
                     result.append(d)
                     break
 
