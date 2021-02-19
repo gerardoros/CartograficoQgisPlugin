@@ -159,6 +159,9 @@ class VentanaDibujoV3:
         elif nombre == 'Estado': #Estado
             self.listaAtributos = ['clave', 'nombre']
             listaEtiquetas = ['Clave', 'Nombre']
+        else:
+            self.listaAtributos = [f.name() for f in self.capaActiva.fields() if f.name() != 'id']
+            listaEtiquetas = self.listaAtributos
 
         for x in range(0, len(listaEtiquetas)):
             self.dlg.tablaAtributos.insertRow(x)
@@ -272,12 +275,14 @@ class VentanaDibujoV3:
         nombreCapa = self.pluginE.pluginM.ACA.traducirIdCapa( self.capaActiva.id())
         campos = self.capaActiva.fields()   
         nombres = [campo.name() for campo in campos]
+
         if nombreCapa == 'predios.num':
             clavesActiva = [f['numExt'] for f in self.capaActiva.getFeatures()]
         elif nombreCapa == 'horizontales.num':
             clavesActiva = [f['num_ofi'] for f in self.capaActiva.getFeatures()]
         else:
-            clavesActiva = [f['clave'] for f in self.capaActiva.getFeatures()]
+            clavesActiva = [f['clave'] for f in self.capaActiva.getFeatures() if 'clave' in nombres]
+
 
         for x in self.capaActiva.getFeatures():  #Obtener ultimo feateure
             if x.id() > self.ultimo:
@@ -1040,7 +1045,13 @@ class VentanaDibujoV3:
 
             if not banderaNom:
                 self.pluginE.pluginM.UTI.mostrarAlerta('La longitud del nombre no debe exceder 64 caracteres', QMessageBox().Critical, 'Error de entrada')
-
+        # ----------------------Capas custom------------------#
+        else:
+            for i in range( self.dlg.tablaAtributos.rowCount()):
+                nomAtrib = self.dlg.tablaAtributos.item(i, 0).text()
+                valAtrib = self.dlg.tablaAtributos.item(i, 1).text() if self.dlg.tablaAtributos.item(i, 1) is not None else "None"
+                feat[nomAtrib] = valAtrib
+            banderaCompleta = True
 
         self.capaActiva.setReadOnly(True)
         if banderaCompleta:

@@ -21,7 +21,7 @@ FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'mainWindow.ui'))
 
 class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
-    def __init__(self, cveCatas = "0", cond = False, parent=None, CFG=None, UTI = None, cargandoRevision = False, cve_len = 25):
+    def __init__(self, cveCatas = "0", cond = False, parent=None, CFG=None, UTI = None, cargandoRevision = False, cve_len = 10):
         """Constructor."""
         super(CedulaMainWindow, self).__init__(parent, \
             flags=Qt.WindowMinimizeButtonHint|Qt.WindowMaximizeButtonHint|Qt.WindowCloseButtonHint)
@@ -33,6 +33,7 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
 
         # clave catastral global
         self.cve_len = cve_len
+        self.cveCompleta = cveCatas
         self.cveCatastral = cveCatas[0:cve_len]
         self.CFG = CFG
         self.UTI = UTI
@@ -477,7 +478,7 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
         if self.cargandoRevision:
             try:
                 self.headers['Authorization'] = self.UTI.obtenerToken()
-                response = requests.get(self.CFG.urlObtenerIdPredio + self.cveCatastral, headers = self.headers)
+                response = requests.get(self.CFG.urlObtenerIdPredio + self.cveCompleta, headers = self.headers)
             except requests.exceptions.RequestException as e:
                 self.createAlert("Error de servidor, 'IdPredio()' '" + str(e) + "'", QMessageBox().Critical, "Error de servidor")
                 return
@@ -514,14 +515,13 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
             if self.cargandoRevision:
                 
                 headers = {'Content-Type': 'application/json', 'Authorization' : self.UTI.obtenerToken()}
-                respuesta = requests.get(self.CFG.urlObtenerIdPredioEc + self.cveCatastral, headers = headers)
+                respuesta = requests.get(self.CFG.urlObtenerIdPredioEc + self.cveCompleta, headers = headers)
                 if respuesta.status_code == 200:
                     idPredio = respuesta.json()
 
                 dataCond = self.consumeWSGeneral(self.CFG.urlReviCondominios + str(idPredio))
             else:
-                dataCond = self.consumeWSGeneral(self.CFG.urlCedCondominios + self.cveCatastral)
-
+                dataCond = self.consumeWSGeneral(self.CFG.urlCedCondominios + self.cveCatastral[:10])
             self.defineComboCond(dataCond)
 
             # carga indivisos
@@ -668,7 +668,8 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
         self.tabwCedula.setCurrentIndex(0)
 
         # -- carga informacion de construcciones de PREDIO
-        dataConstP = self.consumeWSConstr(self.cveCatastral)
+        dataConstP = self.consumeWSConstr(self.cveCompleta)
+
 
         self.cargaConstrPred(dataConstP)
 
@@ -708,7 +709,7 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
 
         for dc in dataCond:
 
-            clave = dc['label'][self.cve_len:]
+            clave = dc['label'][10:]
             self.cmbCondo.addItem(clave, dc['other'])
 
     # - carga los indivisos de los condominios
@@ -931,7 +932,6 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
         return self.consumeWSGuardadoIndiv(listaInd, self.CFG.urlGuardaIndivisos + complemento)
     
     def obtieneClaMza(self, cveCata):
-        print(f"clave de obtieneClaMza: {cveCata}")
         return self.consumeWSGeneral(self.CFG.urlGetManzana + cveCata)
 
     def obtieneImagen(self, idImagen, tipo):
@@ -973,14 +973,18 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
                 self.deshabilitaConstr()
                 return
 
+
+
             # ordena las construcciones segun el volumen
             construcciones = self.ordenaConstr(dataConstP)
+            
 
             for dcp in construcciones:
 
                 dcp['accion'] = 'update'
                 fracciones = dcp['fracciones']
                 fr = {}
+
 
                 # - crear fraccion en caso de que no las tenga
                 if len(fracciones) == 0:
@@ -1203,6 +1207,24 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
             else:
                 self.lbNomCalle.setText('')
 
+            print(self.cedula['domicilioCatastral'])
+            print(self.cedula['domicilioFiscal'])
+            #Agregamos la direcciones catastral y fiscal
+            self.leNoExteriorAlf_2.setText(self.cedula['propietario'])
+            self.leNoExteriorAlf_3.setText(self.cedula['domicilioCatastral']['calle'])
+            self.leNoExteriorAlf_8.setText(self.cedula['domicilioCatastral']['numeroExt'])
+            self.leNoExteriorAlf_9.setText(self.cedula['domicilioCatastral']['numeroInt'])
+            self.leNoExteriorAlf_4.setText(self.cedula['domicilioCatastral']['colonia'])
+            self.leNoExteriorAlf_6.setText(self.cedula['domicilioCatastral']['cp'])
+
+
+            self.lbCallePF.setText(self.cedula['domicilioFiscal']['calle'])
+            self.lbNumExtPF.setText(self.cedula['domicilioFiscal']['numeroExt'])
+            self.lbNumInteriorPF.setText(self.cedula['domicilioFiscal']['numeroInt'])
+            self.lbColoniaPF.setText(self.cedula['domicilioFiscal']['colonia'])
+            self.lbCodPostalPF.setText(self.cedula['domicilioFiscal']['cp'])
+            ############
+
             # vialidades colindantes
             vialidades = self.cedula['vialidadesColin']
 
@@ -1216,15 +1238,16 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
 
             # colindancias
             colin = self.cedula['colindancias']
-
+            self.twColindancias.clearContents()
+            self.twColindancias.setRowCount(len(colin))
+            print(colin)
             if len(colin) > 0:
-                for c in colin:
-                    rowPosition = self.twColindancias.rowCount()
-                    self.twColindancias.insertRow(rowPosition)
-                    self.twColindancias.setItem(rowPosition , 0, QtWidgets.QTableWidgetItem(str(c['idCatColindancia'])))
-                    self.twColindancias.setItem(rowPosition , 1, QtWidgets.QTableWidgetItem(str(c['catColindancia'])))
-                    self.twColindancias.setItem(rowPosition , 2, QtWidgets.QTableWidgetItem(str(c['superficieColindacia'])))
-                    self.twColindancias.setItem(rowPosition , 3, QtWidgets.QTableWidgetItem(str(c['desscripcion'])))
+                for row in range(len(colin)):
+                    self.twColindancias.setItem(row , 0, QtWidgets.QTableWidgetItem(str(colin[row]['orientacion'])))
+                    self.twColindancias.setItem(row , 1, QtWidgets.QTableWidgetItem(str(colin[row]['orientacion'])))
+                    self.twColindancias.setItem(row , 2, QtWidgets.QTableWidgetItem(str(colin[row]['superficieColindacia'])))
+                    self.twColindancias.setItem(row , 3, QtWidgets.QTableWidgetItem(str(colin[row]['desscripcion'])))
+                    self.twColindancias.setItem(row , 4, QtWidgets.QTableWidgetItem(str(colin[row]['claveProp'])))
 
             # localidad
             if self.cedula['localidad'] is not None:
@@ -1340,10 +1363,10 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
     def cargaPadron(self, dataPadron):
 
         #try:
-
+        print(dataPadron)
         if len(dataPadron) == 0:
             self.muestraComparativoFiscal()
-            self.vaciarDomPadFis()
+            #self.vaciarDomPadFis()
             return
 
         self.padron = dataPadron[0]
@@ -1351,11 +1374,7 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
         # -- CARGA PADRON --
         # - carga ubicacion
        
-        self.lbCallePF.setText(self.padron['eUbCalle'] or '')
-        self.lbNumExtPF.setText(self.padron['eUbNumexterior'] or '')
-        self.lbNumInteriorPF.setText(self.padron['eUbNuminterior'] or '')
-        self.lbCodPostalPF.setText(self.padron['eUbCodigoPostal'] or '')
-        self.lbColoniaPF.setText(self.padron['eUbColonia'] or '')
+        
 
         # - carga comparativo
         # superficies terreno
@@ -1479,9 +1498,7 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
                 for prop in self.propPropPred:
                     # agrega un renglon a las coindancias
                     ident = prop['id']
-                    print("EEEEEEEEEEEEEEEEE")
                     nombre = ' '.join([x for x in [prop['nombre'], prop['aPaterno'], prop['aMaterno']] if x])
-                    print("OOOOOOOOOOOOOOOO")
                     tipo = prop['tipo']
                     porcentaje = prop['porcentaje']
 
@@ -1525,7 +1542,7 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
 
         self.leNombreP.setText('')
         self.leSupConstrFP.setText('')
-        self.lbSupConstrFP.setText('')
+        self.lbSupConstrP.setText('')
         self.leAnioConsP.setText('')
         self.leNvlUbicaP.setText('')
 
@@ -1910,7 +1927,7 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
     def condoTemp(self, claveCata):
 
         condos = []
-        dataTemp = []
+        dataTemp = {}
 
         # quita el condominio a guardar, para poder actualizar sus datos
         for cond in self.condominios:
@@ -2544,7 +2561,7 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
             # se busca si ya se habia consumido informacion del condominio seleccionado
             for condo in self.condominios:
 
-                if condo['cveCat'] == (self.cveCatastral + clave):
+                if 'cveCat' in condo and condo['cveCat'] == (self.cveCatastral + clave):
                     consume = False
                     dataCond.append(condo)
                     break
@@ -2556,6 +2573,7 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
                     dataCond = self.consumeWSGeneral(self.CFG.urlReviCondConsulta + self.cveCatastral + clave + '/' + tipoCond + '/' + str(self.cedula['id']))
                 else:
                     dataCond = self.consumeWSGeneral(self.CFG.urlCedCondByCveCatTipoPred + self.cveCatastral + clave + '/' + tipoCond)
+                    print(f"url:{self.CFG.urlCedCondByCveCatTipoPred + self.cveCatastral + clave + '/' + tipoCond}, \n res:{dataCond}")
               
                 if len(dataCond) == 0:
                     return
@@ -2760,8 +2778,8 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
 
             self.lbValM2P.setText('${:,.2f}'.format(0) if data['precioM2'] is None else '${:,.2f}'.format(float(data['precioM2'])))
             self.lbValConstP.setText('${:,.2f}'.format(0) if data['valorConst'] is None else '${:,.2f}'.format(float(data['valorConst'])))
-            self.lbSupConstrFP.setText(str(0) if data['supConstFraccion'] is None else str(data['supConstFraccion']))
-            self.leSupConstrFP.setText(str(0) if data['supConstFraccion'] is None else str(data['supConstFraccion']))
+            #self.lbSupConstrFP.setText(str(0) if data['supConstFraccion'] is None else str(data['supConstFraccion']))
+            self.lbSupConstrP.setText(str(0) if data['supConstFraccion'] is None else str(data['supConstFraccion']))
             self.lbNvlFraccP.setText(str(1) if data['numNivel'] is None else str(data['numNivel']))
             self.leNombreP.setText('' if data['nombre'] is None else str(data['nombre']))
             self.leNvlUbicaP.setText('' if data['nvlUbica'] is None else str(data['nvlUbica']))
@@ -3548,7 +3566,7 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
         data['valorConst'] = 0
 
         self.lbNvlFraccP.setText(str(newNum))
-        self.lbSupConstrFP.setText(str(round(newSuper, 2)))
+        self.lbSupConstrP.setText(str(round(newSuper, 2)))
         self.lbValM2P.setText('${:,.2f}'.format(0))
         self.lbValConstP.setText('${:,.2f}'.format(0))
 
@@ -4110,7 +4128,7 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
         # se busca si ya se habia consumido informacion del condominio seleccionado
         for condo in self.condominios:
 
-            if condo['cveCat'] == (self.cveCatastral + clave):
+            if 'cveCat' in condo and condo['cveCat'] == (self.cveCatastral + clave):
                 consume = False
                 dataCond.append(condo)
                 break
@@ -4476,11 +4494,11 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
 
             caract['id'] = None
             caract['cveCatastral'] = None
-            caract['superficieColindacia'] = twi2.text()
-            caract['desscripcion'] = twi3.text()
-            caract['claveProp'] = None
-            caract['idCatColindancia'] = twi0.text()
-            caract['catColindancia'] = twi1.text()
+            caract['superficieColindacia'] = twi1.text()
+            caract['desscripcion'] = twi2.text()
+            caract['claveProp'] = twi3.text()
+            caract['orientacion'] = twi0.text()
+            caract['catColindancia'] = None
 
             colindancias.append(caract)
         
@@ -5183,7 +5201,7 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
             self.lbEstadoNPPad.setText('')
             self.lbCiudadNPPad.setText('')
 
-            self.vaciarDomPadFis()
+            #self.vaciarDomPadFis()
 
     def event_itemClickedProp(self, item):
 
@@ -5659,7 +5677,7 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
     def event_subirImg(self):
         x = ''
         BLOCKSIZE = 65536
-        path = QFileDialog.getOpenFileName(self, 'Subir imagen', os.getenv('HOME'), 'Image tiles(*.jpg, *.png )')
+        path = QFileDialog.getOpenFileName(self, 'Subir imagen', os.getenv('HOME'), 'Image tiles(*.jpg, *.png, *.JPG )')
         if path !=('',''):
             hasher = hashlib.md5(open(path[0],'rb').read()).hexdigest().upper()
             with open(path[0], "rb") as path:
@@ -6230,6 +6248,9 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
                 if d['nomVolumen'].upper() == 'V' + str(t):
                     result.append(d)
                     break
+                if d['nomVolumen'].upper() == 'U' + str(t):
+                    result.append(d)
+                    break
 
         return result
 
@@ -6238,12 +6259,11 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
 
         clave = ''
 
-        if len(cveCata) == 16:
+        if len(cveCata) == 10:
             clave += cveCata[0:3] + '-'
             clave += cveCata[3:5] + '-'
             clave += cveCata[5:8] + '-'
-            clave += cveCata[8:10] + '-'
-            clave += cveCata[10:16]
+            clave += cveCata[8:]
         elif len(cveCata) == 25:
             clave += cveCata[0:2] + '-'
             clave += cveCata[2:5] + '-'
@@ -6258,7 +6278,7 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
 
     # - muestra clave global
     def muestraClaveGlobal(self, cveCata):
-        if len(cveCata) == 16:
+        if len(cveCata) == 10:
             #self.lbEdo.setText('--')
             #self.lbRegCat.setText('---')
             self.lbMpio.setText(cveCata[0:3])
