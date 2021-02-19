@@ -59,7 +59,7 @@
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>0</y>
+      <y>-398</y>
       <width>522</width>
       <height>1879</height>
      </rect>
@@ -6197,11 +6197,161 @@ height:24px
            <attribute name="horizontalHeaderDefaultSectionSize">
             <number>219</number>
            </attribute>
+           <row>
+            <property name="text">
+             <string>New Row</string>
+            </property>
+           </row>
+           <row>
+            <property name="text">
+             <string>New Row</string>
+            </property>
+           </row>
+           <row>
+            <property name="text">
+             <string>New Row</string>
+            </property>
+           </row>
+           <row>
+            <property name="text">
+             <string>New Row</string>
+            </property>
+           </row>
+           <row>
+            <property name="text">
+             <string>New Row</string>
+            </property>
+           </row>
+           <row>
+            <property name="text">
+             <string>New Row</string>
+            </property>
+           </row>
+           <row>
+            <property name="text">
+             <string>New Row</string>
+            </property>
+           </row>
+           <row>
+            <property name="text">
+             <string>New Row</string>
+            </property>
+           </row>
+           <row>
+            <property name="text">
+             <string>New Row</string>
+            </property>
+           </row>
+           <row>
+            <property name="text">
+             <string>New Row</string>
+            </property>
+           </row>
+           <row>
+            <property name="text">
+             <string>New Row</string>
+            </property>
+           </row>
+           <row>
+            <property name="text">
+             <string>New Row</string>
+            </property>
+           </row>
+           <row>
+            <property name="text">
+             <string>New Row</string>
+            </property>
+           </row>
+           <row>
+            <property name="text">
+             <string>New Row</string>
+            </property>
+           </row>
+           <row>
+            <property name="text">
+             <string>New Row</string>
+            </property>
+           </row>
+           <row>
+            <property name="text">
+             <string>New Row</string>
+            </property>
+           </row>
            <column>
             <property name="text">
              <string>Servicios catastrales</string>
             </property>
            </column>
+           <item row="0" column="0">
+            <property name="text">
+             <string>certificacion de clave catastral</string>
+            </property>
+           </item>
+           <item row="1" column="0">
+            <property name="text">
+             <string>Certificacion de clave  y valor catastral</string>
+            </property>
+           </item>
+           <item row="2" column="0">
+            <property name="text">
+             <string>Certificacion de plano manzanero</string>
+            </property>
+           </item>
+           <item row="3" column="0">
+            <property name="text">
+             <string>Verificacion de linderos</string>
+            </property>
+           </item>
+           <item row="4" column="0">
+            <property name="text">
+             <string>Asignacion de clave catastral</string>
+            </property>
+           </item>
+           <item row="5" column="0">
+            <property name="text">
+             <string>Levantamiento Topográfico</string>
+            </property>
+           </item>
+           <item row="6" column="0">
+            <property name="text">
+             <string>Corrección de nombre ó domicilio</string>
+            </property>
+           </item>
+           <item row="7" column="0">
+            <property name="text">
+             <string>Actualización de superficie de construcción</string>
+            </property>
+           </item>
+           <item row="8" column="0">
+            <property name="text">
+             <string>Actualización de superficie de terreno</string>
+            </property>
+           </item>
+           <item row="9" column="0">
+            <property name="text">
+             <string>Constancia de identificación catastral</string>
+            </property>
+           </item>
+           <item row="10" column="0">
+            <property name="text">
+             <string>Certificación de no adeudo del predio</string>
+            </property>
+           </item>
+           <item row="11" column="0">
+            <property name="text">
+             <string>Certificación de aportacion de mejoras</string>
+            </property>
+           </item>
+           <item row="12" column="0">
+            <property name="text">
+             <string>Copia certificada </string>
+            </property>
+           </item>
+           <item row="13" column="0">
+            <property name="text">
+             <string>Copia simple</string>
+            </property>
+           </item>
           </widget>
           <widget class="QTableWidget" name="twOperaciones_4">
            <property name="geometry">

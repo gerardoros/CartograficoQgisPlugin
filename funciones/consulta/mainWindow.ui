@@ -153,471 +153,429 @@ background : rgb(255, 255, 255);
                   <rect>
                    <x>0</x>
                    <y>0</y>
-                   <width>726</width>
-                   <height>741</height>
+                   <width>711</width>
+                   <height>1066</height>
                   </rect>
                  </property>
-                 <widget class="QWidget" name="widget_7" native="true">
-                  <property name="geometry">
-                   <rect>
-                    <x>9</x>
-                    <y>9</y>
-                    <width>214</width>
-                    <height>55</height>
-                   </rect>
-                  </property>
-                  <layout class="QGridLayout" name="gridLayout_6">
-                   <property name="leftMargin">
-                    <number>0</number>
-                   </property>
-                   <property name="topMargin">
-                    <number>0</number>
-                   </property>
-                   <property name="rightMargin">
-                    <number>0</number>
-                   </property>
-                   <property name="bottomMargin">
-                    <number>0</number>
-                   </property>
-                   <property name="spacing">
-                    <number>0</number>
-                   </property>
-                   <item row="2" column="3">
-                    <widget class="QLabel" name="lbMza">
-                     <property name="maximumSize">
-                      <size>
-                       <width>40</width>
-                       <height>16777215</height>
-                      </size>
+                 <layout class="QGridLayout" name="gridLayout_10">
+                  <item row="0" column="0" rowspan="2" colspan="3">
+                   <widget class="QWidget" name="widget_7" native="true">
+                    <layout class="QGridLayout" name="gridLayout_6">
+                     <property name="leftMargin">
+                      <number>0</number>
                      </property>
-                     <property name="font">
-                      <font>
-                       <family>Century Gothic</family>
-                       <pointsize>12</pointsize>
-                       <weight>75</weight>
-                       <bold>true</bold>
-                      </font>
+                     <property name="topMargin">
+                      <number>0</number>
                      </property>
-                     <property name="styleSheet">
-                      <string notr="true">color: rgb(174, 116, 0)</string>
+                     <property name="rightMargin">
+                      <number>0</number>
                      </property>
-                     <property name="text">
-                      <string>000</string>
+                     <property name="bottomMargin">
+                      <number>0</number>
                      </property>
-                     <property name="alignment">
-                      <set>Qt::AlignCenter</set>
+                     <property name="spacing">
+                      <number>0</number>
                      </property>
-                    </widget>
-                   </item>
-                   <item row="1" column="4">
-                    <widget class="QLabel" name="label_h">
-                     <property name="minimumSize">
-                      <size>
-                       <width>60</width>
-                       <height>0</height>
-                      </size>
-                     </property>
-                     <property name="maximumSize">
-                      <size>
-                       <width>60</width>
-                       <height>16777215</height>
-                      </size>
-                     </property>
-                     <property name="font">
-                      <font>
-                       <family>Century Gothic</family>
-                       <pointsize>11</pointsize>
-                       <weight>75</weight>
-                       <bold>true</bold>
-                      </font>
-                     </property>
-                     <property name="text">
-                      <string>Predio</string>
-                     </property>
-                     <property name="alignment">
-                      <set>Qt::AlignCenter</set>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="2" column="2" alignment="Qt::AlignHCenter">
-                    <widget class="QLabel" name="lbSec">
-                     <property name="maximumSize">
-                      <size>
-                       <width>40</width>
-                       <height>16777215</height>
-                      </size>
-                     </property>
-                     <property name="font">
-                      <font>
-                       <family>Century Gothic</family>
-                       <pointsize>12</pointsize>
-                       <weight>75</weight>
-                       <bold>true</bold>
-                      </font>
-                     </property>
-                     <property name="styleSheet">
-                      <string notr="true">color: rgb(174, 116, 0)</string>
-                     </property>
-                     <property name="text">
-                      <string>000</string>
-                     </property>
-                     <property name="alignment">
-                      <set>Qt::AlignCenter</set>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="2" column="4">
-                    <widget class="QLabel" name="lbPredio">
-                     <property name="maximumSize">
-                      <size>
-                       <width>60</width>
-                       <height>16777215</height>
-                      </size>
-                     </property>
-                     <property name="font">
-                      <font>
-                       <family>Century Gothic</family>
-                       <pointsize>12</pointsize>
-                       <weight>75</weight>
-                       <bold>true</bold>
-                      </font>
-                     </property>
-                     <property name="styleSheet">
-                      <string notr="true">color: rgb(174, 116, 0)</string>
-                     </property>
-                     <property name="text">
-                      <string>00000</string>
-                     </property>
-                     <property name="alignment">
-                      <set>Qt::AlignCenter</set>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="0" column="0" colspan="7">
-                    <widget class="QLabel" name="label_0">
-                     <property name="maximumSize">
-                      <size>
-                       <width>16777215</width>
-                       <height>25</height>
-                      </size>
-                     </property>
-                     <property name="font">
-                      <font>
-                       <family>Century Gothic</family>
-                       <pointsize>11</pointsize>
-                       <weight>75</weight>
-                       <bold>true</bold>
-                      </font>
-                     </property>
-                     <property name="text">
-                      <string>Clave Catastral Cartográfica</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="1" column="3">
-                    <widget class="QLabel" name="label_g">
-                     <property name="minimumSize">
-                      <size>
-                       <width>45</width>
-                       <height>0</height>
-                      </size>
-                     </property>
-                     <property name="maximumSize">
-                      <size>
-                       <width>40</width>
-                       <height>16777215</height>
-                      </size>
-                     </property>
-                     <property name="font">
-                      <font>
-                       <family>Century Gothic</family>
-                       <pointsize>11</pointsize>
-                       <weight>75</weight>
-                       <bold>true</bold>
-                      </font>
-                     </property>
-                     <property name="text">
-                      <string> Mza. </string>
-                     </property>
-                     <property name="alignment">
-                      <set>Qt::AlignCenter</set>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="1" column="1" alignment="Qt::AlignHCenter">
-                    <widget class="QLabel" name="label_c">
-                     <property name="minimumSize">
-                      <size>
-                       <width>0</width>
-                       <height>15</height>
-                      </size>
-                     </property>
-                     <property name="maximumSize">
-                      <size>
-                       <width>60</width>
-                       <height>24</height>
-                      </size>
-                     </property>
-                     <property name="font">
-                      <font>
-                       <family>Century Gothic</family>
-                       <pointsize>11</pointsize>
-                       <weight>75</weight>
-                       <bold>true</bold>
-                      </font>
-                     </property>
-                     <property name="text">
-                      <string> Mpio. </string>
-                     </property>
-                     <property name="alignment">
-                      <set>Qt::AlignCenter</set>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="1" column="2">
-                    <widget class="QLabel" name="label_f">
-                     <property name="minimumSize">
-                      <size>
-                       <width>60</width>
-                       <height>0</height>
-                      </size>
-                     </property>
-                     <property name="maximumSize">
-                      <size>
-                       <width>35</width>
-                       <height>16777215</height>
-                      </size>
-                     </property>
-                     <property name="font">
-                      <font>
-                       <family>Century Gothic</family>
-                       <pointsize>11</pointsize>
-                       <weight>75</weight>
-                       <bold>true</bold>
-                      </font>
-                     </property>
-                     <property name="text">
-                      <string> Sector </string>
-                     </property>
-                     <property name="alignment">
-                      <set>Qt::AlignCenter</set>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="1" column="5">
-                    <spacer name="horizontalSpacer_6">
-                     <property name="orientation">
-                      <enum>Qt::Horizontal</enum>
-                     </property>
-                     <property name="sizeType">
-                      <enum>QSizePolicy::Minimum</enum>
-                     </property>
-                     <property name="sizeHint" stdset="0">
-                      <size>
-                       <width>0</width>
-                       <height>0</height>
-                      </size>
-                     </property>
-                    </spacer>
-                   </item>
-                   <item row="2" column="1">
-                    <widget class="QLabel" name="lbMpio">
-                     <property name="minimumSize">
-                      <size>
-                       <width>35</width>
-                       <height>0</height>
-                      </size>
-                     </property>
-                     <property name="maximumSize">
-                      <size>
-                       <width>35</width>
-                       <height>16777215</height>
-                      </size>
-                     </property>
-                     <property name="font">
-                      <font>
-                       <family>Century Gothic</family>
-                       <pointsize>12</pointsize>
-                       <weight>75</weight>
-                       <bold>true</bold>
-                      </font>
-                     </property>
-                     <property name="text">
-                      <string>000</string>
-                     </property>
-                     <property name="alignment">
-                      <set>Qt::AlignCenter</set>
-                     </property>
-                    </widget>
-                   </item>
-                  </layout>
-                 </widget>
-                 <widget class="QLabel" name="label">
-                  <property name="geometry">
-                   <rect>
-                    <x>327</x>
-                    <y>9</y>
-                    <width>119</width>
-                    <height>30</height>
-                   </rect>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>0</width>
-                    <height>30</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>16777215</width>
-                    <height>30</height>
-                   </size>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <family>Century Gothic</family>
-                    <pointsize>12</pointsize>
-                    <weight>75</weight>
-                    <bold>true</bold>
-                   </font>
-                  </property>
-                  <property name="text">
-                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Tipo de Predio&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                  </property>
-                 </widget>
-                 <widget class="QComboBox" name="cmbTipoPredio">
-                  <property name="geometry">
-                   <rect>
-                    <x>327</x>
-                    <y>45</y>
-                    <width>150</width>
-                    <height>21</height>
-                   </rect>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>150</width>
-                    <height>21</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>150</width>
-                    <height>21</height>
-                   </size>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <pointsize>14</pointsize>
-                    <weight>75</weight>
-                    <bold>true</bold>
-                   </font>
-                  </property>
-                  <property name="styleSheet">
-                   <string notr="true">QComboBox QAbstractItemView::item { min-height: 25;}
+                     <item row="2" column="3">
+                      <widget class="QLabel" name="lbMza">
+                       <property name="maximumSize">
+                        <size>
+                         <width>40</width>
+                         <height>16777215</height>
+                        </size>
+                       </property>
+                       <property name="font">
+                        <font>
+                         <family>Century Gothic</family>
+                         <pointsize>12</pointsize>
+                         <weight>75</weight>
+                         <bold>true</bold>
+                        </font>
+                       </property>
+                       <property name="styleSheet">
+                        <string notr="true">color: rgb(174, 116, 0)</string>
+                       </property>
+                       <property name="text">
+                        <string>000</string>
+                       </property>
+                       <property name="alignment">
+                        <set>Qt::AlignCenter</set>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="1" column="4">
+                      <widget class="QLabel" name="label_h">
+                       <property name="minimumSize">
+                        <size>
+                         <width>60</width>
+                         <height>0</height>
+                        </size>
+                       </property>
+                       <property name="maximumSize">
+                        <size>
+                         <width>60</width>
+                         <height>16777215</height>
+                        </size>
+                       </property>
+                       <property name="font">
+                        <font>
+                         <family>Century Gothic</family>
+                         <pointsize>11</pointsize>
+                         <weight>75</weight>
+                         <bold>true</bold>
+                        </font>
+                       </property>
+                       <property name="text">
+                        <string>Predio</string>
+                       </property>
+                       <property name="alignment">
+                        <set>Qt::AlignCenter</set>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="2" column="2" alignment="Qt::AlignHCenter">
+                      <widget class="QLabel" name="lbSec">
+                       <property name="maximumSize">
+                        <size>
+                         <width>40</width>
+                         <height>16777215</height>
+                        </size>
+                       </property>
+                       <property name="font">
+                        <font>
+                         <family>Century Gothic</family>
+                         <pointsize>12</pointsize>
+                         <weight>75</weight>
+                         <bold>true</bold>
+                        </font>
+                       </property>
+                       <property name="styleSheet">
+                        <string notr="true">color: rgb(174, 116, 0)</string>
+                       </property>
+                       <property name="text">
+                        <string>000</string>
+                       </property>
+                       <property name="alignment">
+                        <set>Qt::AlignCenter</set>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="2" column="4">
+                      <widget class="QLabel" name="lbPredio">
+                       <property name="maximumSize">
+                        <size>
+                         <width>60</width>
+                         <height>16777215</height>
+                        </size>
+                       </property>
+                       <property name="font">
+                        <font>
+                         <family>Century Gothic</family>
+                         <pointsize>12</pointsize>
+                         <weight>75</weight>
+                         <bold>true</bold>
+                        </font>
+                       </property>
+                       <property name="styleSheet">
+                        <string notr="true">color: rgb(174, 116, 0)</string>
+                       </property>
+                       <property name="text">
+                        <string>00000</string>
+                       </property>
+                       <property name="alignment">
+                        <set>Qt::AlignCenter</set>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="0" column="0" colspan="7">
+                      <widget class="QLabel" name="label_0">
+                       <property name="maximumSize">
+                        <size>
+                         <width>16777215</width>
+                         <height>25</height>
+                        </size>
+                       </property>
+                       <property name="font">
+                        <font>
+                         <family>Century Gothic</family>
+                         <pointsize>11</pointsize>
+                         <weight>75</weight>
+                         <bold>true</bold>
+                        </font>
+                       </property>
+                       <property name="text">
+                        <string>Clave Catastral Cartográfica</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="1" column="3">
+                      <widget class="QLabel" name="label_g">
+                       <property name="minimumSize">
+                        <size>
+                         <width>45</width>
+                         <height>0</height>
+                        </size>
+                       </property>
+                       <property name="maximumSize">
+                        <size>
+                         <width>40</width>
+                         <height>16777215</height>
+                        </size>
+                       </property>
+                       <property name="font">
+                        <font>
+                         <family>Century Gothic</family>
+                         <pointsize>11</pointsize>
+                         <weight>75</weight>
+                         <bold>true</bold>
+                        </font>
+                       </property>
+                       <property name="text">
+                        <string> Mza. </string>
+                       </property>
+                       <property name="alignment">
+                        <set>Qt::AlignCenter</set>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="1" column="1" alignment="Qt::AlignHCenter">
+                      <widget class="QLabel" name="label_c">
+                       <property name="minimumSize">
+                        <size>
+                         <width>0</width>
+                         <height>15</height>
+                        </size>
+                       </property>
+                       <property name="maximumSize">
+                        <size>
+                         <width>60</width>
+                         <height>24</height>
+                        </size>
+                       </property>
+                       <property name="font">
+                        <font>
+                         <family>Century Gothic</family>
+                         <pointsize>11</pointsize>
+                         <weight>75</weight>
+                         <bold>true</bold>
+                        </font>
+                       </property>
+                       <property name="text">
+                        <string> Mpio. </string>
+                       </property>
+                       <property name="alignment">
+                        <set>Qt::AlignCenter</set>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="1" column="2">
+                      <widget class="QLabel" name="label_f">
+                       <property name="minimumSize">
+                        <size>
+                         <width>60</width>
+                         <height>0</height>
+                        </size>
+                       </property>
+                       <property name="maximumSize">
+                        <size>
+                         <width>35</width>
+                         <height>16777215</height>
+                        </size>
+                       </property>
+                       <property name="font">
+                        <font>
+                         <family>Century Gothic</family>
+                         <pointsize>11</pointsize>
+                         <weight>75</weight>
+                         <bold>true</bold>
+                        </font>
+                       </property>
+                       <property name="text">
+                        <string> Sector </string>
+                       </property>
+                       <property name="alignment">
+                        <set>Qt::AlignCenter</set>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="1" column="5">
+                      <spacer name="horizontalSpacer_6">
+                       <property name="orientation">
+                        <enum>Qt::Horizontal</enum>
+                       </property>
+                       <property name="sizeType">
+                        <enum>QSizePolicy::Minimum</enum>
+                       </property>
+                       <property name="sizeHint" stdset="0">
+                        <size>
+                         <width>0</width>
+                         <height>0</height>
+                        </size>
+                       </property>
+                      </spacer>
+                     </item>
+                     <item row="2" column="1">
+                      <widget class="QLabel" name="lbMpio">
+                       <property name="minimumSize">
+                        <size>
+                         <width>35</width>
+                         <height>0</height>
+                        </size>
+                       </property>
+                       <property name="maximumSize">
+                        <size>
+                         <width>35</width>
+                         <height>16777215</height>
+                        </size>
+                       </property>
+                       <property name="font">
+                        <font>
+                         <family>Century Gothic</family>
+                         <pointsize>12</pointsize>
+                         <weight>75</weight>
+                         <bold>true</bold>
+                        </font>
+                       </property>
+                       <property name="text">
+                        <string>000</string>
+                       </property>
+                       <property name="alignment">
+                        <set>Qt::AlignCenter</set>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item row="0" column="4" colspan="2">
+                   <widget class="QLabel" name="label">
+                    <property name="minimumSize">
+                     <size>
+                      <width>0</width>
+                      <height>30</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>16777215</width>
+                      <height>30</height>
+                     </size>
+                    </property>
+                    <property name="font">
+                     <font>
+                      <family>Century Gothic</family>
+                      <pointsize>12</pointsize>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Tipo de Predio&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="4" colspan="3">
+                   <widget class="QComboBox" name="cmbTipoPredio">
+                    <property name="minimumSize">
+                     <size>
+                      <width>150</width>
+                      <height>21</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>150</width>
+                      <height>21</height>
+                     </size>
+                    </property>
+                    <property name="font">
+                     <font>
+                      <pointsize>14</pointsize>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">QComboBox QAbstractItemView::item { min-height: 25;}
 QListView{color: black ; font-size: 16px; outline:none; font-weight:bold}QListView::item:selected { color: red; background-color: lightgray;}</string>
-                  </property>
-                  <property name="inputMethodHints">
-                   <set>Qt::ImhNone</set>
-                  </property>
-                 </widget>
-                 <widget class="QLabel" name="label_13">
-                  <property name="geometry">
-                   <rect>
-                    <x>9</x>
-                    <y>72</y>
-                    <width>176</width>
-                    <height>19</height>
-                   </rect>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>16777215</width>
-                    <height>24</height>
-                   </size>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <family>Century Gothic</family>
-                    <pointsize>12</pointsize>
-                    <weight>75</weight>
-                    <bold>true</bold>
-                   </font>
-                  </property>
-                  <property name="text">
-                   <string>Nombre del Municipio</string>
-                  </property>
-                 </widget>
-                 <widget class="QLabel" name="lbNomMpio">
-                  <property name="geometry">
-                   <rect>
-                    <x>9</x>
-                    <y>97</y>
-                    <width>94</width>
-                    <height>23</height>
-                   </rect>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <family>Century Gothic</family>
-                    <pointsize>14</pointsize>
-                    <weight>50</weight>
-                    <bold>false</bold>
-                   </font>
-                  </property>
-                  <property name="styleSheet">
-                   <string notr="true">color : rgb(52, 42, 24 )</string>
-                  </property>
-                  <property name="text">
-                   <string>lbNomMpio</string>
-                  </property>
-                 </widget>
-                 <widget class="QLabel" name="label_2">
-                  <property name="geometry">
-                   <rect>
-                    <x>9</x>
-                    <y>126</y>
-                    <width>210</width>
-                    <height>19</height>
-                   </rect>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <family>Century Gothic</family>
-                    <pointsize>12</pointsize>
-                    <weight>75</weight>
-                    <bold>true</bold>
-                   </font>
-                  </property>
-                  <property name="text">
-                   <string>Nombre de Vialidad/Calle</string>
-                  </property>
-                 </widget>
-                 <widget class="QPushButton" name="btnSelCalle">
-                  <property name="geometry">
-                   <rect>
-                    <x>327</x>
-                    <y>126</y>
-                    <width>147</width>
-                    <height>27</height>
-                   </rect>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>16777215</width>
-                    <height>16777215</height>
-                   </size>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <family>Century Gothic</family>
-                    <pointsize>12</pointsize>
-                    <weight>75</weight>
-                    <bold>true</bold>
-                   </font>
-                  </property>
-                  <property name="styleSheet">
-                   <string notr="true">QPushButton{
+                    </property>
+                    <property name="inputMethodHints">
+                     <set>Qt::ImhNone</set>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="0" colspan="2">
+                   <widget class="QLabel" name="label_13">
+                    <property name="maximumSize">
+                     <size>
+                      <width>16777215</width>
+                      <height>24</height>
+                     </size>
+                    </property>
+                    <property name="font">
+                     <font>
+                      <family>Century Gothic</family>
+                      <pointsize>12</pointsize>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>Nombre del Municipio</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="3" column="0">
+                   <widget class="QLabel" name="lbNomMpio">
+                    <property name="font">
+                     <font>
+                      <family>Century Gothic</family>
+                      <pointsize>14</pointsize>
+                      <weight>50</weight>
+                      <bold>false</bold>
+                     </font>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">color : rgb(52, 42, 24 )</string>
+                    </property>
+                    <property name="text">
+                     <string>lbNomMpio</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="4" column="0" colspan="3">
+                   <widget class="QLabel" name="label_2">
+                    <property name="font">
+                     <font>
+                      <family>Century Gothic</family>
+                      <pointsize>12</pointsize>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>Nombre de Vialidad/Calle</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="4" column="4" colspan="3">
+                   <widget class="QPushButton" name="btnSelCalle">
+                    <property name="maximumSize">
+                     <size>
+                      <width>16777215</width>
+                      <height>16777215</height>
+                     </size>
+                    </property>
+                    <property name="font">
+                     <font>
+                      <family>Century Gothic</family>
+                      <pointsize>12</pointsize>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">QPushButton{
 background : rgb(174, 116, 0);
 color : rgb(255, 255, 255)
 }
@@ -626,36 +584,30 @@ background : rgb(187, 129, 13);
 color : rgb(245,245,245);
 border: 1px solid #adb2b5;
 }</string>
-                  </property>
-                  <property name="text">
-                   <string>Seleccionar Calle</string>
-                  </property>
-                 </widget>
-                 <widget class="QPushButton" name="btnCancelSelCalle">
-                  <property name="geometry">
-                   <rect>
-                    <x>494</x>
-                    <y>126</y>
-                    <width>206</width>
-                    <height>27</height>
-                   </rect>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>16777215</width>
-                    <height>16777215</height>
-                   </size>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <family>Century Gothic</family>
-                    <pointsize>12</pointsize>
-                    <weight>75</weight>
-                    <bold>true</bold>
-                   </font>
-                  </property>
-                  <property name="styleSheet">
-                   <string notr="true">QPushButton{
+                    </property>
+                    <property name="text">
+                     <string>Seleccionar Calle</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="4" column="7" colspan="2">
+                   <widget class="QPushButton" name="btnCancelSelCalle">
+                    <property name="maximumSize">
+                     <size>
+                      <width>16777215</width>
+                      <height>16777215</height>
+                     </size>
+                    </property>
+                    <property name="font">
+                     <font>
+                      <family>Century Gothic</family>
+                      <pointsize>12</pointsize>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">QPushButton{
 background : rgb(174, 116, 0);
 color : rgb(255, 255, 255)
 }
@@ -664,1440 +616,1248 @@ background : rgb(187, 129, 13);
 color : rgb(245,245,245);
 border: 1px solid #adb2b5;
 }</string>
-                  </property>
-                  <property name="text">
-                   <string>Cancelar Selección Calle</string>
-                  </property>
-                 </widget>
-                 <widget class="QLabel" name="lbNomCalle">
-                  <property name="geometry">
-                   <rect>
-                    <x>9</x>
-                    <y>159</y>
-                    <width>93</width>
-                    <height>23</height>
-                   </rect>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <family>Century Gothic</family>
-                    <pointsize>14</pointsize>
-                    <weight>50</weight>
-                    <bold>false</bold>
-                   </font>
-                  </property>
-                  <property name="styleSheet">
-                   <string notr="true">color : rgb(52, 42, 24 )</string>
-                  </property>
-                  <property name="text">
-                   <string>lbNomCalle</string>
-                  </property>
-                 </widget>
-                 <widget class="QLabel" name="label_3">
-                  <property name="geometry">
-                   <rect>
-                    <x>9</x>
-                    <y>188</y>
-                    <width>98</width>
-                    <height>19</height>
-                   </rect>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <family>Century Gothic</family>
-                    <pointsize>12</pointsize>
-                    <weight>75</weight>
-                    <bold>true</bold>
-                   </font>
-                  </property>
-                  <property name="text">
-                   <string>No. Exterior</string>
-                  </property>
-                 </widget>
-                 <widget class="QLabel" name="label_137">
-                  <property name="geometry">
-                   <rect>
-                    <x>127</x>
-                    <y>188</y>
-                    <width>95</width>
-                    <height>19</height>
-                   </rect>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <family>Century Gothic</family>
-                    <pointsize>12</pointsize>
-                    <weight>75</weight>
-                    <bold>true</bold>
-                   </font>
-                  </property>
-                  <property name="text">
-                   <string>No. Interior</string>
-                  </property>
-                 </widget>
-                 <widget class="QLabel" name="label_4">
-                  <property name="geometry">
-                   <rect>
-                    <x>254</x>
-                    <y>188</y>
-                    <width>126</width>
-                    <height>19</height>
-                   </rect>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <family>Century Gothic</family>
-                    <pointsize>12</pointsize>
-                    <weight>75</weight>
-                    <bold>true</bold>
-                   </font>
-                  </property>
-                  <property name="text">
-                   <string>No. Exterior Alf</string>
-                  </property>
-                 </widget>
-                 <widget class="QLabel" name="label_5">
-                  <property name="geometry">
-                   <rect>
-                    <x>401</x>
-                    <y>188</y>
-                    <width>132</width>
-                    <height>19</height>
-                   </rect>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <family>Century Gothic</family>
-                    <pointsize>12</pointsize>
-                    <weight>75</weight>
-                    <bold>true</bold>
-                   </font>
-                  </property>
-                  <property name="text">
-                   <string>No. Exterior Ant</string>
-                  </property>
-                 </widget>
-                 <widget class="QLabel" name="label_6">
-                  <property name="geometry">
-                   <rect>
-                    <x>575</x>
-                    <y>188</y>
-                    <width>100</width>
-                    <height>19</height>
-                   </rect>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <family>Century Gothic</family>
-                    <pointsize>12</pointsize>
-                    <weight>75</weight>
-                    <bold>true</bold>
-                   </font>
-                  </property>
-                  <property name="text">
-                   <string>Num. Predio</string>
-                  </property>
-                 </widget>
-                 <widget class="QLabel" name="lbNoExt">
-                  <property name="geometry">
-                   <rect>
-                    <x>9</x>
-                    <y>213</y>
-                    <width>64</width>
-                    <height>23</height>
-                   </rect>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <family>Century Gothic</family>
-                    <pointsize>14</pointsize>
-                    <weight>50</weight>
-                    <bold>false</bold>
-                   </font>
-                  </property>
-                  <property name="styleSheet">
-                   <string notr="true">color : rgb(52, 42, 24 )</string>
-                  </property>
-                  <property name="text">
-                   <string>lbNoExt</string>
-                  </property>
-                 </widget>
-                 <widget class="QLineEdit" name="leNoInterior">
-                  <property name="geometry">
-                   <rect>
-                    <x>127</x>
-                    <y>213</y>
-                    <width>121</width>
-                    <height>21</height>
-                   </rect>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>121</width>
-                    <height>21</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>121</width>
-                    <height>21</height>
-                   </size>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <family>Century Gothic</family>
-                    <pointsize>12</pointsize>
-                    <weight>50</weight>
-                    <bold>false</bold>
-                   </font>
-                  </property>
-                  <property name="maxLength">
-                   <number>32</number>
-                  </property>
-                 </widget>
-                 <widget class="QLineEdit" name="leNoExteriorAlf">
-                  <property name="geometry">
-                   <rect>
-                    <x>254</x>
-                    <y>213</y>
-                    <width>141</width>
-                    <height>21</height>
-                   </rect>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>141</width>
-                    <height>21</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>141</width>
-                    <height>21</height>
-                   </size>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <family>Century Gothic</family>
-                    <pointsize>12</pointsize>
-                    <weight>50</weight>
-                    <bold>false</bold>
-                   </font>
-                  </property>
-                  <property name="maxLength">
-                   <number>32</number>
-                  </property>
-                 </widget>
-                 <widget class="QLineEdit" name="leNoExteAnt">
-                  <property name="geometry">
-                   <rect>
-                    <x>401</x>
-                    <y>213</y>
-                    <width>160</width>
-                    <height>21</height>
-                   </rect>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>160</width>
-                    <height>21</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>160</width>
-                    <height>21</height>
-                   </size>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <family>Century Gothic</family>
-                    <pointsize>12</pointsize>
-                    <weight>50</weight>
-                    <bold>false</bold>
-                   </font>
-                  </property>
-                  <property name="maxLength">
-                   <number>18</number>
-                  </property>
-                 </widget>
-                 <widget class="QLineEdit" name="leNumPredio">
-                  <property name="geometry">
-                   <rect>
-                    <x>575</x>
-                    <y>213</y>
-                    <width>125</width>
-                    <height>21</height>
-                   </rect>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>125</width>
-                    <height>21</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>125</width>
-                    <height>21</height>
-                   </size>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <family>Century Gothic</family>
-                    <pointsize>12</pointsize>
-                    <weight>50</weight>
-                    <bold>false</bold>
-                   </font>
-                  </property>
-                  <property name="maxLength">
-                   <number>14</number>
-                  </property>
-                 </widget>
-                 <widget class="QLabel" name="label_7">
-                  <property name="geometry">
-                   <rect>
-                    <x>9</x>
-                    <y>244</y>
-                    <width>112</width>
-                    <height>19</height>
-                   </rect>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <family>Century Gothic</family>
-                    <pointsize>12</pointsize>
-                    <weight>75</weight>
-                    <bold>true</bold>
-                   </font>
-                  </property>
-                  <property name="text">
-                   <string>Código Postal</string>
-                  </property>
-                 </widget>
-                 <widget class="QLabel" name="label_8">
-                  <property name="geometry">
-                   <rect>
-                    <x>193</x>
-                    <y>244</y>
-                    <width>227</width>
-                    <height>19</height>
-                   </rect>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <family>Century Gothic</family>
-                    <pointsize>12</pointsize>
-                    <weight>75</weight>
-                    <bold>true</bold>
-                   </font>
-                  </property>
-                  <property name="text">
-                   <string>Tipo Asentamiento Humano</string>
-                  </property>
-                 </widget>
-                 <widget class="QLabel" name="label_10">
-                  <property name="geometry">
-                   <rect>
-                    <x>494</x>
-                    <y>244</y>
-                    <width>61</width>
-                    <height>19</height>
-                   </rect>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <family>Century Gothic</family>
-                    <pointsize>12</pointsize>
-                    <weight>75</weight>
-                    <bold>true</bold>
-                   </font>
-                  </property>
-                  <property name="text">
-                   <string>Colonia</string>
-                  </property>
-                 </widget>
-                 <widget class="QLabel" name="label_11">
-                  <property name="geometry">
-                   <rect>
-                    <x>575</x>
-                    <y>244</y>
-                    <width>77</width>
-                    <height>19</height>
-                   </rect>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <family>Century Gothic</family>
-                    <pointsize>12</pointsize>
-                    <weight>75</weight>
-                    <bold>true</bold>
-                   </font>
-                  </property>
-                  <property name="text">
-                   <string>Localidad</string>
-                  </property>
-                 </widget>
-                 <widget class="QLabel" name="lbCodigoPostal">
-                  <property name="geometry">
-                   <rect>
-                    <x>9</x>
-                    <y>269</y>
-                    <width>120</width>
-                    <height>23</height>
-                   </rect>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <family>Century Gothic</family>
-                    <pointsize>14</pointsize>
-                    <weight>50</weight>
-                    <bold>false</bold>
-                   </font>
-                  </property>
-                  <property name="styleSheet">
-                   <string notr="true">color : rgb(52, 42, 24 )</string>
-                  </property>
-                  <property name="text">
-                   <string>lbCodigoPostal</string>
-                  </property>
-                 </widget>
-                 <widget class="QLabel" name="lbTipAsenHum">
-                  <property name="geometry">
-                   <rect>
-                    <x>193</x>
-                    <y>269</y>
-                    <width>121</width>
-                    <height>23</height>
-                   </rect>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <family>Century Gothic</family>
-                    <pointsize>14</pointsize>
-                   </font>
-                  </property>
-                  <property name="styleSheet">
-                   <string notr="true">color : rgb(52, 42, 24 )</string>
-                  </property>
-                  <property name="text">
-                   <string>lbTipAsenHum</string>
-                  </property>
-                 </widget>
-                 <widget class="QLabel" name="lbColonia">
-                  <property name="geometry">
-                   <rect>
-                    <x>494</x>
-                    <y>269</y>
-                    <width>75</width>
-                    <height>23</height>
-                   </rect>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <family>Century Gothic</family>
-                    <pointsize>14</pointsize>
-                    <weight>50</weight>
-                    <bold>false</bold>
-                   </font>
-                  </property>
-                  <property name="styleSheet">
-                   <string notr="true">color : rgb(52, 42, 24 )</string>
-                  </property>
-                  <property name="text">
-                   <string>lbColonia</string>
-                  </property>
-                 </widget>
-                 <widget class="QLabel" name="lbLocalidad">
-                  <property name="geometry">
-                   <rect>
-                    <x>575</x>
-                    <y>269</y>
-                    <width>93</width>
-                    <height>23</height>
-                   </rect>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <family>Century Gothic</family>
-                    <pointsize>14</pointsize>
-                    <weight>50</weight>
-                    <bold>false</bold>
-                   </font>
-                  </property>
-                  <property name="styleSheet">
-                   <string notr="true">color : rgb(52, 42, 24 )</string>
-                  </property>
-                  <property name="text">
-                   <string>lbLocalidad</string>
-                  </property>
-                 </widget>
-                 <widget class="QLabel" name="label_12">
-                  <property name="geometry">
-                   <rect>
-                    <x>9</x>
-                    <y>298</y>
-                    <width>198</width>
-                    <height>19</height>
-                   </rect>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <family>Century Gothic</family>
-                    <pointsize>12</pointsize>
-                    <weight>75</weight>
-                    <bold>true</bold>
-                   </font>
-                  </property>
-                  <property name="text">
-                   <string>Clave Catastral Anterior</string>
-                  </property>
-                 </widget>
-                 <widget class="QLabel" name="label_141">
-                  <property name="geometry">
-                   <rect>
-                    <x>254</x>
-                    <y>298</y>
-                    <width>141</width>
-                    <height>19</height>
-                   </rect>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <family>Century Gothic</family>
-                    <pointsize>12</pointsize>
-                    <weight>75</weight>
-                    <bold>true</bold>
-                   </font>
-                  </property>
-                  <property name="text">
-                   <string>Área Homogénea</string>
-                  </property>
-                 </widget>
-                 <widget class="QLabel" name="label_142">
-                  <property name="geometry">
-                   <rect>
-                    <x>463</x>
-                    <y>298</y>
-                    <width>94</width>
-                    <height>19</height>
-                   </rect>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <family>Century Gothic</family>
-                    <pointsize>12</pointsize>
-                    <weight>75</weight>
-                    <bold>true</bold>
-                   </font>
-                  </property>
-                  <property name="text">
-                   <string>B. de Valor.</string>
-                  </property>
-                 </widget>
-                 <widget class="QLabel" name="lbCveCatAnt">
-                  <property name="geometry">
-                   <rect>
-                    <x>9</x>
-                    <y>323</y>
-                    <width>100</width>
-                    <height>23</height>
-                   </rect>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <family>Century Gothic</family>
-                    <pointsize>14</pointsize>
-                    <weight>50</weight>
-                    <bold>false</bold>
-                   </font>
-                  </property>
-                  <property name="styleSheet">
-                   <string notr="true">color : rgb(52, 42, 24 )</string>
-                  </property>
-                  <property name="text">
-                   <string>lbCveCatAnt</string>
-                  </property>
-                 </widget>
-                 <widget class="QLineEdit" name="leNoInterior_2">
-                  <property name="geometry">
-                   <rect>
-                    <x>254</x>
-                    <y>323</y>
-                    <width>141</width>
-                    <height>21</height>
-                   </rect>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>141</width>
-                    <height>21</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>141</width>
-                    <height>21</height>
-                   </size>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <family>Century Gothic</family>
-                    <pointsize>12</pointsize>
-                    <weight>50</weight>
-                    <bold>false</bold>
-                   </font>
-                  </property>
-                  <property name="maxLength">
-                   <number>32</number>
-                  </property>
-                 </widget>
-                 <widget class="QLineEdit" name="leNoInterior_3">
-                  <property name="geometry">
-                   <rect>
-                    <x>463</x>
-                    <y>323</y>
-                    <width>106</width>
-                    <height>21</height>
-                   </rect>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>106</width>
-                    <height>21</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>106</width>
-                    <height>21</height>
-                   </size>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <family>Century Gothic</family>
-                    <pointsize>12</pointsize>
-                    <weight>50</weight>
-                    <bold>false</bold>
-                   </font>
-                  </property>
-                  <property name="maxLength">
-                   <number>32</number>
-                  </property>
-                 </widget>
-                 <widget class="QLabel" name="label_105">
-                  <property name="geometry">
-                   <rect>
-                    <x>9</x>
-                    <y>354</y>
-                    <width>178</width>
-                    <height>19</height>
-                   </rect>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <family>Century Gothic</family>
-                    <pointsize>12</pointsize>
-                    <weight>75</weight>
-                    <bold>true</bold>
-                   </font>
-                  </property>
-                  <property name="text">
-                   <string>Núm. Máx.. de niveles</string>
-                  </property>
-                 </widget>
-                 <widget class="QLabel" name="label_30">
-                  <property name="geometry">
-                   <rect>
-                    <x>254</x>
-                    <y>354</y>
-                    <width>185</width>
-                    <height>19</height>
-                   </rect>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <family>Century Gothic</family>
-                    <pointsize>12</pointsize>
-                    <weight>75</weight>
-                    <bold>true</bold>
-                   </font>
-                  </property>
-                  <property name="text">
-                   <string>Régimen de Propiedad</string>
-                  </property>
-                 </widget>
-                 <widget class="QLabel" name="lbNumNivel">
-                  <property name="geometry">
-                   <rect>
-                    <x>9</x>
-                    <y>379</y>
-                    <width>95</width>
-                    <height>23</height>
-                   </rect>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <family>Century Gothic</family>
-                    <pointsize>14</pointsize>
-                    <weight>50</weight>
-                    <bold>false</bold>
-                   </font>
-                  </property>
-                  <property name="styleSheet">
-                   <string notr="true">color : rgb(52, 42, 24 )</string>
-                  </property>
-                  <property name="text">
-                   <string>lbNumNivel</string>
-                  </property>
-                 </widget>
-                 <widget class="QComboBox" name="cmbRegimenProp">
-                  <property name="geometry">
-                   <rect>
-                    <x>254</x>
-                    <y>380</y>
-                    <width>181</width>
-                    <height>21</height>
-                   </rect>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>181</width>
-                    <height>21</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>181</width>
-                    <height>21</height>
-                   </size>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <family>Century Gothic</family>
-                    <pointsize>14</pointsize>
-                    <weight>75</weight>
-                    <bold>true</bold>
-                   </font>
-                  </property>
-                  <property name="styleSheet">
-                   <string notr="true">QComboBox QAbstractItemView::item { min-height: 25;}
+                    </property>
+                    <property name="text">
+                     <string>Cancelar Selección Calle</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="5" column="0">
+                   <widget class="QLabel" name="lbNomCalle">
+                    <property name="font">
+                     <font>
+                      <family>Century Gothic</family>
+                      <pointsize>14</pointsize>
+                      <weight>50</weight>
+                      <bold>false</bold>
+                     </font>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">color : rgb(52, 42, 24 )</string>
+                    </property>
+                    <property name="text">
+                     <string>lbNomCalle</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="6" column="0">
+                   <widget class="QLabel" name="label_3">
+                    <property name="font">
+                     <font>
+                      <family>Century Gothic</family>
+                      <pointsize>12</pointsize>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>No. Exterior</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="6" column="1" colspan="2">
+                   <widget class="QLabel" name="label_137">
+                    <property name="font">
+                     <font>
+                      <family>Century Gothic</family>
+                      <pointsize>12</pointsize>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>No. Interior</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="6" column="3" colspan="2">
+                   <widget class="QLabel" name="label_4">
+                    <property name="font">
+                     <font>
+                      <family>Century Gothic</family>
+                      <pointsize>12</pointsize>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>No. Exterior Alf</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="6" column="5" colspan="3">
+                   <widget class="QLabel" name="label_5">
+                    <property name="font">
+                     <font>
+                      <family>Century Gothic</family>
+                      <pointsize>12</pointsize>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>No. Exterior Ant</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="6" column="8">
+                   <widget class="QLabel" name="label_6">
+                    <property name="font">
+                     <font>
+                      <family>Century Gothic</family>
+                      <pointsize>12</pointsize>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>Num. Predio</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="7" column="0">
+                   <widget class="QLabel" name="lbNoExt">
+                    <property name="font">
+                     <font>
+                      <family>Century Gothic</family>
+                      <pointsize>14</pointsize>
+                      <weight>50</weight>
+                      <bold>false</bold>
+                     </font>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">color : rgb(52, 42, 24 )</string>
+                    </property>
+                    <property name="text">
+                     <string>lbNoExt</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="7" column="1" colspan="2">
+                   <widget class="QLineEdit" name="leNoInterior">
+                    <property name="minimumSize">
+                     <size>
+                      <width>121</width>
+                      <height>21</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>121</width>
+                      <height>21</height>
+                     </size>
+                    </property>
+                    <property name="font">
+                     <font>
+                      <family>Century Gothic</family>
+                      <pointsize>12</pointsize>
+                      <weight>50</weight>
+                      <bold>false</bold>
+                     </font>
+                    </property>
+                    <property name="maxLength">
+                     <number>32</number>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="7" column="3" colspan="2">
+                   <widget class="QLineEdit" name="leNoExteriorAlf">
+                    <property name="minimumSize">
+                     <size>
+                      <width>141</width>
+                      <height>21</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>141</width>
+                      <height>21</height>
+                     </size>
+                    </property>
+                    <property name="font">
+                     <font>
+                      <family>Century Gothic</family>
+                      <pointsize>12</pointsize>
+                      <weight>50</weight>
+                      <bold>false</bold>
+                     </font>
+                    </property>
+                    <property name="maxLength">
+                     <number>32</number>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="7" column="5" colspan="3">
+                   <widget class="QLineEdit" name="leNoExteAnt">
+                    <property name="minimumSize">
+                     <size>
+                      <width>160</width>
+                      <height>21</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>160</width>
+                      <height>21</height>
+                     </size>
+                    </property>
+                    <property name="font">
+                     <font>
+                      <family>Century Gothic</family>
+                      <pointsize>12</pointsize>
+                      <weight>50</weight>
+                      <bold>false</bold>
+                     </font>
+                    </property>
+                    <property name="maxLength">
+                     <number>18</number>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="7" column="8">
+                   <widget class="QLineEdit" name="leNumPredio">
+                    <property name="minimumSize">
+                     <size>
+                      <width>125</width>
+                      <height>21</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>125</width>
+                      <height>21</height>
+                     </size>
+                    </property>
+                    <property name="font">
+                     <font>
+                      <family>Century Gothic</family>
+                      <pointsize>12</pointsize>
+                      <weight>50</weight>
+                      <bold>false</bold>
+                     </font>
+                    </property>
+                    <property name="maxLength">
+                     <number>14</number>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="8" column="0">
+                   <widget class="QLabel" name="label_7">
+                    <property name="font">
+                     <font>
+                      <family>Century Gothic</family>
+                      <pointsize>12</pointsize>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>Código Postal</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="8" column="2" colspan="4">
+                   <widget class="QLabel" name="label_8">
+                    <property name="font">
+                     <font>
+                      <family>Century Gothic</family>
+                      <pointsize>12</pointsize>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>Tipo Asentamiento Humano</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="8" column="7">
+                   <widget class="QLabel" name="label_10">
+                    <property name="font">
+                     <font>
+                      <family>Century Gothic</family>
+                      <pointsize>12</pointsize>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>Colonia</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="8" column="8">
+                   <widget class="QLabel" name="label_11">
+                    <property name="font">
+                     <font>
+                      <family>Century Gothic</family>
+                      <pointsize>12</pointsize>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>Localidad</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="9" column="0" colspan="2">
+                   <widget class="QLabel" name="lbCodigoPostal">
+                    <property name="font">
+                     <font>
+                      <family>Century Gothic</family>
+                      <pointsize>14</pointsize>
+                      <weight>50</weight>
+                      <bold>false</bold>
+                     </font>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">color : rgb(52, 42, 24 )</string>
+                    </property>
+                    <property name="text">
+                     <string>lbCodigoPostal</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="9" column="2" colspan="2">
+                   <widget class="QLabel" name="lbTipAsenHum">
+                    <property name="font">
+                     <font>
+                      <family>Century Gothic</family>
+                      <pointsize>14</pointsize>
+                     </font>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">color : rgb(52, 42, 24 )</string>
+                    </property>
+                    <property name="text">
+                     <string>lbTipAsenHum</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="9" column="7">
+                   <widget class="QLabel" name="lbColonia">
+                    <property name="font">
+                     <font>
+                      <family>Century Gothic</family>
+                      <pointsize>14</pointsize>
+                      <weight>50</weight>
+                      <bold>false</bold>
+                     </font>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">color : rgb(52, 42, 24 )</string>
+                    </property>
+                    <property name="text">
+                     <string>lbColonia</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="9" column="8">
+                   <widget class="QLabel" name="lbLocalidad">
+                    <property name="font">
+                     <font>
+                      <family>Century Gothic</family>
+                      <pointsize>14</pointsize>
+                      <weight>50</weight>
+                      <bold>false</bold>
+                     </font>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">color : rgb(52, 42, 24 )</string>
+                    </property>
+                    <property name="text">
+                     <string>lbLocalidad</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="10" column="0" colspan="3">
+                   <widget class="QLabel" name="label_12">
+                    <property name="font">
+                     <font>
+                      <family>Century Gothic</family>
+                      <pointsize>12</pointsize>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>Clave Catastral Anterior</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="10" column="3" colspan="2">
+                   <widget class="QLabel" name="label_141">
+                    <property name="font">
+                     <font>
+                      <family>Century Gothic</family>
+                      <pointsize>12</pointsize>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>Área Homogénea</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="10" column="6" colspan="2">
+                   <widget class="QLabel" name="label_142">
+                    <property name="font">
+                     <font>
+                      <family>Century Gothic</family>
+                      <pointsize>12</pointsize>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>B. de Valor.</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="11" column="0">
+                   <widget class="QLabel" name="lbCveCatAnt">
+                    <property name="font">
+                     <font>
+                      <family>Century Gothic</family>
+                      <pointsize>14</pointsize>
+                      <weight>50</weight>
+                      <bold>false</bold>
+                     </font>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">color : rgb(52, 42, 24 )</string>
+                    </property>
+                    <property name="text">
+                     <string>lbCveCatAnt</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="11" column="3" colspan="2">
+                   <widget class="QLineEdit" name="leNoInterior_2">
+                    <property name="minimumSize">
+                     <size>
+                      <width>141</width>
+                      <height>21</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>141</width>
+                      <height>21</height>
+                     </size>
+                    </property>
+                    <property name="font">
+                     <font>
+                      <family>Century Gothic</family>
+                      <pointsize>12</pointsize>
+                      <weight>50</weight>
+                      <bold>false</bold>
+                     </font>
+                    </property>
+                    <property name="maxLength">
+                     <number>32</number>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="11" column="6" colspan="2">
+                   <widget class="QLineEdit" name="leNoInterior_3">
+                    <property name="minimumSize">
+                     <size>
+                      <width>106</width>
+                      <height>21</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>106</width>
+                      <height>21</height>
+                     </size>
+                    </property>
+                    <property name="font">
+                     <font>
+                      <family>Century Gothic</family>
+                      <pointsize>12</pointsize>
+                      <weight>50</weight>
+                      <bold>false</bold>
+                     </font>
+                    </property>
+                    <property name="maxLength">
+                     <number>32</number>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="12" column="0" colspan="2">
+                   <widget class="QLabel" name="label_105">
+                    <property name="font">
+                     <font>
+                      <family>Century Gothic</family>
+                      <pointsize>12</pointsize>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>Núm. Máx.. de niveles</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="12" column="3" colspan="3">
+                   <widget class="QLabel" name="label_30">
+                    <property name="font">
+                     <font>
+                      <family>Century Gothic</family>
+                      <pointsize>12</pointsize>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>Régimen de Propiedad</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="13" column="0">
+                   <widget class="QLabel" name="lbNumNivel">
+                    <property name="font">
+                     <font>
+                      <family>Century Gothic</family>
+                      <pointsize>14</pointsize>
+                      <weight>50</weight>
+                      <bold>false</bold>
+                     </font>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">color : rgb(52, 42, 24 )</string>
+                    </property>
+                    <property name="text">
+                     <string>lbNumNivel</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="13" column="3" colspan="3">
+                   <widget class="QComboBox" name="cmbRegimenProp">
+                    <property name="minimumSize">
+                     <size>
+                      <width>181</width>
+                      <height>21</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>181</width>
+                      <height>21</height>
+                     </size>
+                    </property>
+                    <property name="font">
+                     <font>
+                      <family>Century Gothic</family>
+                      <pointsize>14</pointsize>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">QComboBox QAbstractItemView::item { min-height: 25;}
 QListView{color: black ; font-size: 16px; outline:none; font-weight:bold}QListView::item:selected { color: red; background-color: lightgray;}</string>
-                  </property>
-                 </widget>
-                 <widget class="QgsCollapsibleGroupBox" name="mGroupBox_8">
-                  <property name="geometry">
-                   <rect>
-                    <x>9</x>
-                    <y>408</y>
-                    <width>663</width>
-                    <height>169</height>
-                   </rect>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>663</width>
-                    <height>169</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>663</width>
-                    <height>169</height>
-                   </size>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <family>Century Gothic</family>
-                    <pointsize>12</pointsize>
-                    <weight>75</weight>
-                    <bold>true</bold>
-                   </font>
-                  </property>
-                  <property name="title">
-                   <string>Datos Ubicación Padrón Catastral</string>
-                  </property>
-                  <widget class="QLabel" name="label_116">
-                   <property name="geometry">
-                    <rect>
-                     <x>10</x>
-                     <y>30</y>
-                     <width>151</width>
-                     <height>16</height>
-                    </rect>
-                   </property>
-                   <property name="font">
-                    <font>
-                     <family>Arial</family>
-                     <pointsize>12</pointsize>
-                     <weight>75</weight>
-                     <bold>true</bold>
-                    </font>
-                   </property>
-                   <property name="text">
-                    <string>Nombre propietario</string>
-                   </property>
-                  </widget>
-                  <widget class="QLineEdit" name="leNoExteriorAlf_2">
-                   <property name="geometry">
-                    <rect>
-                     <x>170</x>
-                     <y>30</y>
-                     <width>481</width>
-                     <height>21</height>
-                    </rect>
-                   </property>
-                   <property name="font">
-                    <font>
-                     <family>Century Gothic</family>
-                     <pointsize>12</pointsize>
-                     <weight>50</weight>
-                     <bold>false</bold>
-                    </font>
-                   </property>
-                   <property name="maxLength">
-                    <number>32</number>
-                   </property>
-                  </widget>
-                  <widget class="QLabel" name="label_121">
-                   <property name="geometry">
-                    <rect>
-                     <x>10</x>
-                     <y>70</y>
-                     <width>111</width>
-                     <height>16</height>
-                    </rect>
-                   </property>
-                   <property name="font">
-                    <font>
-                     <family>Arial</family>
-                     <pointsize>12</pointsize>
-                     <weight>75</weight>
-                     <bold>true</bold>
-                    </font>
-                   </property>
-                   <property name="text">
-                    <string>Calle.:</string>
-                   </property>
-                  </widget>
-                  <widget class="QLabel" name="label_125">
-                   <property name="geometry">
-                    <rect>
-                     <x>10</x>
-                     <y>100</y>
-                     <width>111</width>
-                     <height>16</height>
-                    </rect>
-                   </property>
-                   <property name="font">
-                    <font>
-                     <family>Arial</family>
-                     <pointsize>12</pointsize>
-                     <weight>75</weight>
-                     <bold>true</bold>
-                    </font>
-                   </property>
-                   <property name="text">
-                    <string>Col.:</string>
-                   </property>
-                  </widget>
-                  <widget class="QLabel" name="label_127">
-                   <property name="geometry">
-                    <rect>
-                     <x>10</x>
-                     <y>130</y>
-                     <width>111</width>
-                     <height>16</height>
-                    </rect>
-                   </property>
-                   <property name="font">
-                    <font>
-                     <family>Arial</family>
-                     <pointsize>12</pointsize>
-                     <weight>75</weight>
-                     <bold>true</bold>
-                    </font>
-                   </property>
-                   <property name="text">
-                    <string>Entre Calle.:</string>
-                   </property>
-                  </widget>
-                  <widget class="QLabel" name="label_129">
-                   <property name="geometry">
-                    <rect>
-                     <x>270</x>
-                     <y>70</y>
-                     <width>111</width>
-                     <height>16</height>
-                    </rect>
-                   </property>
-                   <property name="font">
-                    <font>
-                     <family>Arial</family>
-                     <pointsize>12</pointsize>
-                     <weight>75</weight>
-                     <bold>true</bold>
-                    </font>
-                   </property>
-                   <property name="text">
-                    <string>Núm. Ext.:</string>
-                   </property>
-                  </widget>
-                  <widget class="QLabel" name="label_131">
-                   <property name="geometry">
-                    <rect>
-                     <x>310</x>
-                     <y>100</y>
-                     <width>111</width>
-                     <height>16</height>
-                    </rect>
-                   </property>
-                   <property name="font">
-                    <font>
-                     <family>Arial</family>
-                     <pointsize>12</pointsize>
-                     <weight>75</weight>
-                     <bold>true</bold>
-                    </font>
-                   </property>
-                   <property name="text">
-                    <string>C.P.:</string>
-                   </property>
-                  </widget>
-                  <widget class="QLabel" name="label_134">
-                   <property name="geometry">
-                    <rect>
-                     <x>280</x>
-                     <y>130</y>
-                     <width>111</width>
-                     <height>16</height>
-                    </rect>
-                   </property>
-                   <property name="font">
-                    <font>
-                     <family>Arial</family>
-                     <pointsize>12</pointsize>
-                     <weight>75</weight>
-                     <bold>true</bold>
-                    </font>
-                   </property>
-                   <property name="text">
-                    <string>y Calle.:</string>
-                   </property>
-                  </widget>
-                  <widget class="QLabel" name="label_135">
-                   <property name="geometry">
-                    <rect>
-                     <x>500</x>
-                     <y>70</y>
-                     <width>111</width>
-                     <height>16</height>
-                    </rect>
-                   </property>
-                   <property name="font">
-                    <font>
-                     <family>Arial</family>
-                     <pointsize>12</pointsize>
-                     <weight>75</weight>
-                     <bold>true</bold>
-                    </font>
-                   </property>
-                   <property name="text">
-                    <string>Núm. Int.:</string>
-                   </property>
-                  </widget>
-                  <widget class="QLineEdit" name="leNoExteriorAlf_3">
-                   <property name="geometry">
-                    <rect>
-                     <x>60</x>
-                     <y>70</y>
-                     <width>201</width>
-                     <height>21</height>
-                    </rect>
-                   </property>
-                   <property name="font">
-                    <font>
-                     <family>Century Gothic</family>
-                     <pointsize>12</pointsize>
-                     <weight>50</weight>
-                     <bold>false</bold>
-                    </font>
-                   </property>
-                   <property name="maxLength">
-                    <number>32</number>
-                   </property>
-                  </widget>
-                  <widget class="QLineEdit" name="leNoExteriorAlf_4">
-                   <property name="geometry">
-                    <rect>
-                     <x>60</x>
-                     <y>100</y>
-                     <width>201</width>
-                     <height>21</height>
-                    </rect>
-                   </property>
-                   <property name="font">
-                    <font>
-                     <family>Century Gothic</family>
-                     <pointsize>12</pointsize>
-                     <weight>50</weight>
-                     <bold>false</bold>
-                    </font>
-                   </property>
-                   <property name="maxLength">
-                    <number>32</number>
-                   </property>
-                  </widget>
-                  <widget class="QLineEdit" name="leNoExteriorAlf_5">
-                   <property name="geometry">
-                    <rect>
-                     <x>110</x>
-                     <y>130</y>
-                     <width>151</width>
-                     <height>21</height>
-                    </rect>
-                   </property>
-                   <property name="font">
-                    <font>
-                     <family>Century Gothic</family>
-                     <pointsize>12</pointsize>
-                     <weight>50</weight>
-                     <bold>false</bold>
-                    </font>
-                   </property>
-                   <property name="maxLength">
-                    <number>32</number>
-                   </property>
-                  </widget>
-                  <widget class="QLineEdit" name="leNoExteriorAlf_6">
-                   <property name="geometry">
-                    <rect>
-                     <x>350</x>
-                     <y>100</y>
-                     <width>141</width>
-                     <height>21</height>
-                    </rect>
-                   </property>
-                   <property name="font">
-                    <font>
-                     <family>Century Gothic</family>
-                     <pointsize>12</pointsize>
-                     <weight>50</weight>
-                     <bold>false</bold>
-                    </font>
-                   </property>
-                   <property name="maxLength">
-                    <number>32</number>
-                   </property>
-                  </widget>
-                  <widget class="QLineEdit" name="leNoExteriorAlf_7">
-                   <property name="geometry">
-                    <rect>
-                     <x>350</x>
-                     <y>130</y>
-                     <width>141</width>
-                     <height>21</height>
-                    </rect>
-                   </property>
-                   <property name="font">
-                    <font>
-                     <family>Century Gothic</family>
-                     <pointsize>12</pointsize>
-                     <weight>50</weight>
-                     <bold>false</bold>
-                    </font>
-                   </property>
-                   <property name="maxLength">
-                    <number>32</number>
-                   </property>
-                  </widget>
-                  <widget class="QLineEdit" name="leNoExteriorAlf_8">
-                   <property name="geometry">
-                    <rect>
-                     <x>350</x>
-                     <y>70</y>
-                     <width>141</width>
-                     <height>21</height>
-                    </rect>
-                   </property>
-                   <property name="font">
-                    <font>
-                     <family>Century Gothic</family>
-                     <pointsize>12</pointsize>
-                     <weight>50</weight>
-                     <bold>false</bold>
-                    </font>
-                   </property>
-                   <property name="maxLength">
-                    <number>32</number>
-                   </property>
-                  </widget>
-                  <widget class="QLineEdit" name="leNoExteriorAlf_9">
-                   <property name="geometry">
-                    <rect>
-                     <x>580</x>
-                     <y>70</y>
-                     <width>71</width>
-                     <height>21</height>
-                    </rect>
-                   </property>
-                   <property name="font">
-                    <font>
-                     <family>Century Gothic</family>
-                     <pointsize>12</pointsize>
-                     <weight>50</weight>
-                     <bold>false</bold>
-                    </font>
-                   </property>
-                   <property name="maxLength">
-                    <number>32</number>
-                   </property>
-                  </widget>
-                 </widget>
-                 <widget class="QgsCollapsibleGroupBox" name="mGroupBox_3">
-                  <property name="geometry">
-                   <rect>
-                    <x>9</x>
-                    <y>583</y>
-                    <width>663</width>
-                    <height>169</height>
-                   </rect>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>663</width>
-                    <height>169</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>663</width>
-                    <height>169</height>
-                   </size>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <family>Century Gothic</family>
-                    <pointsize>12</pointsize>
-                    <weight>75</weight>
-                    <bold>true</bold>
-                   </font>
-                  </property>
-                  <property name="title">
-                   <string>Domicilio Padrón Fiscal</string>
-                  </property>
-                  <layout class="QGridLayout" name="gridLayout_32">
-                   <item row="4" column="2">
-                    <widget class="QLabel" name="lbCodPostalPF">
-                     <property name="minimumSize">
-                      <size>
-                       <width>0</width>
-                       <height>24</height>
-                      </size>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="14" column="0" colspan="9">
+                   <widget class="QgsCollapsibleGroupBox" name="mGroupBox_8">
+                    <property name="minimumSize">
+                     <size>
+                      <width>663</width>
+                      <height>169</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>663</width>
+                      <height>169</height>
+                     </size>
+                    </property>
+                    <property name="font">
+                     <font>
+                      <family>Century Gothic</family>
+                      <pointsize>12</pointsize>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="title">
+                     <string>Datos Ubicación Padrón Catastral</string>
+                    </property>
+                    <widget class="QLabel" name="label_116">
+                     <property name="geometry">
+                      <rect>
+                       <x>10</x>
+                       <y>30</y>
+                       <width>151</width>
+                       <height>16</height>
+                      </rect>
+                     </property>
+                     <property name="font">
+                      <font>
+                       <family>Arial</family>
+                       <pointsize>12</pointsize>
+                       <weight>75</weight>
+                       <bold>true</bold>
+                      </font>
+                     </property>
+                     <property name="text">
+                      <string>Nombre propietario</string>
+                     </property>
+                    </widget>
+                    <widget class="QLineEdit" name="leNoExteriorAlf_2">
+                     <property name="geometry">
+                      <rect>
+                       <x>170</x>
+                       <y>30</y>
+                       <width>481</width>
+                       <height>21</height>
+                      </rect>
                      </property>
                      <property name="font">
                       <font>
                        <family>Century Gothic</family>
-                       <pointsize>14</pointsize>
+                       <pointsize>12</pointsize>
                        <weight>50</weight>
                        <bold>false</bold>
                       </font>
                      </property>
-                     <property name="styleSheet">
-                      <string notr="true">color : rgb(52, 42, 24 )</string>
-                     </property>
-                     <property name="text">
-                      <string>lbCodPostalPF</string>
+                     <property name="maxLength">
+                      <number>32</number>
                      </property>
                     </widget>
-                   </item>
-                   <item row="6" column="0">
-                    <widget class="QLabel" name="label_111">
-                     <property name="minimumSize">
-                      <size>
-                       <width>0</width>
-                       <height>24</height>
-                      </size>
+                    <widget class="QLabel" name="label_121">
+                     <property name="geometry">
+                      <rect>
+                       <x>10</x>
+                       <y>70</y>
+                       <width>111</width>
+                       <height>16</height>
+                      </rect>
                      </property>
                      <property name="font">
                       <font>
-                       <family>Century Gothic</family>
+                       <family>Arial</family>
                        <pointsize>12</pointsize>
                        <weight>75</weight>
                        <bold>true</bold>
                       </font>
                      </property>
                      <property name="text">
-                      <string>Colonia</string>
+                      <string>Calle.:</string>
                      </property>
                     </widget>
-                   </item>
-                   <item row="4" column="0">
-                    <widget class="QLabel" name="lbNumExtPF">
-                     <property name="minimumSize">
-                      <size>
-                       <width>0</width>
-                       <height>24</height>
-                      </size>
+                    <widget class="QLabel" name="label_125">
+                     <property name="geometry">
+                      <rect>
+                       <x>10</x>
+                       <y>100</y>
+                       <width>111</width>
+                       <height>16</height>
+                      </rect>
+                     </property>
+                     <property name="font">
+                      <font>
+                       <family>Arial</family>
+                       <pointsize>12</pointsize>
+                       <weight>75</weight>
+                       <bold>true</bold>
+                      </font>
+                     </property>
+                     <property name="text">
+                      <string>Col.:</string>
+                     </property>
+                    </widget>
+                    <widget class="QLabel" name="label_127">
+                     <property name="geometry">
+                      <rect>
+                       <x>10</x>
+                       <y>130</y>
+                       <width>111</width>
+                       <height>16</height>
+                      </rect>
+                     </property>
+                     <property name="font">
+                      <font>
+                       <family>Arial</family>
+                       <pointsize>12</pointsize>
+                       <weight>75</weight>
+                       <bold>true</bold>
+                      </font>
+                     </property>
+                     <property name="text">
+                      <string>Entre Calle.:</string>
+                     </property>
+                    </widget>
+                    <widget class="QLabel" name="label_129">
+                     <property name="geometry">
+                      <rect>
+                       <x>270</x>
+                       <y>70</y>
+                       <width>111</width>
+                       <height>16</height>
+                      </rect>
+                     </property>
+                     <property name="font">
+                      <font>
+                       <family>Arial</family>
+                       <pointsize>12</pointsize>
+                       <weight>75</weight>
+                       <bold>true</bold>
+                      </font>
+                     </property>
+                     <property name="text">
+                      <string>Núm. Ext.:</string>
+                     </property>
+                    </widget>
+                    <widget class="QLabel" name="label_131">
+                     <property name="geometry">
+                      <rect>
+                       <x>310</x>
+                       <y>100</y>
+                       <width>111</width>
+                       <height>16</height>
+                      </rect>
+                     </property>
+                     <property name="font">
+                      <font>
+                       <family>Arial</family>
+                       <pointsize>12</pointsize>
+                       <weight>75</weight>
+                       <bold>true</bold>
+                      </font>
+                     </property>
+                     <property name="text">
+                      <string>C.P.:</string>
+                     </property>
+                    </widget>
+                    <widget class="QLabel" name="label_134">
+                     <property name="geometry">
+                      <rect>
+                       <x>280</x>
+                       <y>130</y>
+                       <width>111</width>
+                       <height>16</height>
+                      </rect>
+                     </property>
+                     <property name="font">
+                      <font>
+                       <family>Arial</family>
+                       <pointsize>12</pointsize>
+                       <weight>75</weight>
+                       <bold>true</bold>
+                      </font>
+                     </property>
+                     <property name="text">
+                      <string>y Calle.:</string>
+                     </property>
+                    </widget>
+                    <widget class="QLabel" name="label_135">
+                     <property name="geometry">
+                      <rect>
+                       <x>500</x>
+                       <y>70</y>
+                       <width>111</width>
+                       <height>16</height>
+                      </rect>
+                     </property>
+                     <property name="font">
+                      <font>
+                       <family>Arial</family>
+                       <pointsize>12</pointsize>
+                       <weight>75</weight>
+                       <bold>true</bold>
+                      </font>
+                     </property>
+                     <property name="text">
+                      <string>Núm. Int.:</string>
+                     </property>
+                    </widget>
+                    <widget class="QLineEdit" name="leNoExteriorAlf_3">
+                     <property name="geometry">
+                      <rect>
+                       <x>60</x>
+                       <y>70</y>
+                       <width>201</width>
+                       <height>21</height>
+                      </rect>
                      </property>
                      <property name="font">
                       <font>
                        <family>Century Gothic</family>
-                       <pointsize>14</pointsize>
+                       <pointsize>12</pointsize>
                        <weight>50</weight>
                        <bold>false</bold>
                       </font>
                      </property>
-                     <property name="styleSheet">
-                      <string notr="true">color : rgb(52, 42, 24 )</string>
-                     </property>
-                     <property name="text">
-                      <string>lbNumExtPF</string>
+                     <property name="maxLength">
+                      <number>32</number>
                      </property>
                     </widget>
-                   </item>
-                   <item row="5" column="0">
-                    <spacer name="verticalSpacer_2">
-                     <property name="orientation">
-                      <enum>Qt::Vertical</enum>
-                     </property>
-                     <property name="sizeHint" stdset="0">
-                      <size>
-                       <width>20</width>
-                       <height>40</height>
-                      </size>
-                     </property>
-                    </spacer>
-                   </item>
-                   <item row="8" column="0" colspan="3">
-                    <widget class="QLabel" name="lbColoniaPF">
-                     <property name="minimumSize">
-                      <size>
-                       <width>0</width>
-                       <height>24</height>
-                      </size>
+                    <widget class="QLineEdit" name="leNoExteriorAlf_4">
+                     <property name="geometry">
+                      <rect>
+                       <x>60</x>
+                       <y>100</y>
+                       <width>201</width>
+                       <height>21</height>
+                      </rect>
                      </property>
                      <property name="font">
                       <font>
                        <family>Century Gothic</family>
-                       <pointsize>14</pointsize>
+                       <pointsize>12</pointsize>
                        <weight>50</weight>
                        <bold>false</bold>
                       </font>
                      </property>
-                     <property name="styleSheet">
-                      <string notr="true">color : rgb(52, 42, 24 )</string>
-                     </property>
-                     <property name="text">
-                      <string>lbColoniaPF</string>
+                     <property name="maxLength">
+                      <number>32</number>
                      </property>
                     </widget>
-                   </item>
-                   <item row="4" column="1">
-                    <widget class="QLabel" name="lbNumInteriorPF">
-                     <property name="minimumSize">
-                      <size>
-                       <width>0</width>
-                       <height>24</height>
-                      </size>
+                    <widget class="QLineEdit" name="leNoExteriorAlf_5">
+                     <property name="geometry">
+                      <rect>
+                       <x>110</x>
+                       <y>130</y>
+                       <width>151</width>
+                       <height>21</height>
+                      </rect>
                      </property>
                      <property name="font">
                       <font>
                        <family>Century Gothic</family>
-                       <pointsize>14</pointsize>
+                       <pointsize>12</pointsize>
                        <weight>50</weight>
                        <bold>false</bold>
                       </font>
                      </property>
-                     <property name="styleSheet">
-                      <string notr="true">color : rgb(52, 42, 24 )</string>
-                     </property>
-                     <property name="text">
-                      <string>lbNumInteriorPF</string>
+                     <property name="maxLength">
+                      <number>32</number>
                      </property>
                     </widget>
-                   </item>
-                   <item row="1" column="0" colspan="3">
-                    <widget class="QLabel" name="lbCallePF">
-                     <property name="minimumSize">
-                      <size>
-                       <width>0</width>
-                       <height>24</height>
-                      </size>
+                    <widget class="QLineEdit" name="leNoExteriorAlf_6">
+                     <property name="geometry">
+                      <rect>
+                       <x>350</x>
+                       <y>100</y>
+                       <width>141</width>
+                       <height>21</height>
+                      </rect>
                      </property>
                      <property name="font">
                       <font>
                        <family>Century Gothic</family>
-                       <pointsize>14</pointsize>
+                       <pointsize>12</pointsize>
                        <weight>50</weight>
                        <bold>false</bold>
                       </font>
                      </property>
-                     <property name="styleSheet">
-                      <string notr="true">color : rgb(52, 42, 24 )</string>
-                     </property>
-                     <property name="text">
-                      <string>lbCallePF</string>
+                     <property name="maxLength">
+                      <number>32</number>
                      </property>
                     </widget>
-                   </item>
-                   <item row="2" column="0">
-                    <spacer name="verticalSpacer">
-                     <property name="orientation">
-                      <enum>Qt::Vertical</enum>
-                     </property>
-                     <property name="sizeHint" stdset="0">
-                      <size>
-                       <width>20</width>
-                       <height>40</height>
-                      </size>
-                     </property>
-                    </spacer>
-                   </item>
-                   <item row="3" column="0">
-                    <widget class="QLabel" name="label_69">
-                     <property name="minimumSize">
-                      <size>
-                       <width>0</width>
-                       <height>24</height>
-                      </size>
+                    <widget class="QLineEdit" name="leNoExteriorAlf_7">
+                     <property name="geometry">
+                      <rect>
+                       <x>350</x>
+                       <y>130</y>
+                       <width>141</width>
+                       <height>21</height>
+                      </rect>
                      </property>
                      <property name="font">
                       <font>
                        <family>Century Gothic</family>
                        <pointsize>12</pointsize>
-                       <weight>75</weight>
-                       <bold>true</bold>
+                       <weight>50</weight>
+                       <bold>false</bold>
                       </font>
                      </property>
-                     <property name="text">
-                      <string>Núm. Exterior</string>
+                     <property name="maxLength">
+                      <number>32</number>
                      </property>
                     </widget>
-                   </item>
-                   <item row="3" column="1">
-                    <widget class="QLabel" name="label_117">
-                     <property name="minimumSize">
-                      <size>
-                       <width>0</width>
-                       <height>24</height>
-                      </size>
+                    <widget class="QLineEdit" name="leNoExteriorAlf_8">
+                     <property name="geometry">
+                      <rect>
+                       <x>350</x>
+                       <y>70</y>
+                       <width>141</width>
+                       <height>21</height>
+                      </rect>
                      </property>
                      <property name="font">
                       <font>
                        <family>Century Gothic</family>
                        <pointsize>12</pointsize>
-                       <weight>75</weight>
-                       <bold>true</bold>
+                       <weight>50</weight>
+                       <bold>false</bold>
                       </font>
                      </property>
-                     <property name="text">
-                      <string>Núm. Interior</string>
+                     <property name="maxLength">
+                      <number>32</number>
                      </property>
                     </widget>
-                   </item>
-                   <item row="0" column="0">
-                    <widget class="QLabel" name="label_66">
-                     <property name="minimumSize">
-                      <size>
-                       <width>0</width>
-                       <height>24</height>
-                      </size>
+                    <widget class="QLineEdit" name="leNoExteriorAlf_9">
+                     <property name="geometry">
+                      <rect>
+                       <x>580</x>
+                       <y>70</y>
+                       <width>71</width>
+                       <height>21</height>
+                      </rect>
                      </property>
                      <property name="font">
                       <font>
                        <family>Century Gothic</family>
                        <pointsize>12</pointsize>
-                       <weight>75</weight>
-                       <bold>true</bold>
+                       <weight>50</weight>
+                       <bold>false</bold>
                       </font>
                      </property>
-                     <property name="text">
-                      <string>Calle</string>
+                     <property name="maxLength">
+                      <number>32</number>
                      </property>
                     </widget>
-                   </item>
-                   <item row="3" column="2">
-                    <widget class="QLabel" name="label_123">
-                     <property name="minimumSize">
-                      <size>
-                       <width>0</width>
-                       <height>24</height>
-                      </size>
-                     </property>
-                     <property name="font">
-                      <font>
-                       <family>Century Gothic</family>
-                       <pointsize>12</pointsize>
-                       <weight>75</weight>
-                       <bold>true</bold>
-                      </font>
-                     </property>
-                     <property name="text">
-                      <string>Código Postal</string>
-                     </property>
-                    </widget>
-                   </item>
-                  </layout>
-                 </widget>
-                 <widget class="QgsCollapsibleGroupBox" name="mGroupBox">
-                  <property name="geometry">
-                   <rect>
-                    <x>9</x>
-                    <y>758</y>
-                    <width>663</width>
-                    <height>132</height>
-                   </rect>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>663</width>
-                    <height>132</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>663</width>
-                    <height>132</height>
-                   </size>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <family>Century Gothic</family>
-                    <pointsize>12</pointsize>
-                    <weight>75</weight>
-                    <bold>true</bold>
-                   </font>
-                  </property>
-                  <property name="title">
-                   <string>Vialidades</string>
-                  </property>
-                  <layout class="QGridLayout" name="gridLayout_9">
-                   <item row="1" column="1">
-                    <widget class="QLabel" name="label_14">
-                     <property name="font">
-                      <font>
-                       <family>Century Gothic</family>
-                       <pointsize>12</pointsize>
-                       <weight>75</weight>
-                       <bold>true</bold>
-                      </font>
-                     </property>
-                     <property name="text">
-                      <string>Vialidades Colindantes</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="2" column="1">
-                    <widget class="QTableWidget" name="twVialidades">
-                     <property name="font">
-                      <font>
-                       <family>Century Gothic</family>
-                       <pointsize>10</pointsize>
-                      </font>
-                     </property>
-                     <property name="styleSheet">
-                      <string notr="true">QHeaderView::section
+                   </widget>
+                  </item>
+                  <item row="15" column="0" colspan="9">
+                   <widget class="QgsCollapsibleGroupBox" name="mGroupBox_3">
+                    <property name="minimumSize">
+                     <size>
+                      <width>663</width>
+                      <height>169</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>663</width>
+                      <height>169</height>
+                     </size>
+                    </property>
+                    <property name="font">
+                     <font>
+                      <family>Century Gothic</family>
+                      <pointsize>12</pointsize>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="title">
+                     <string>Domicilio Padrón Fiscal</string>
+                    </property>
+                    <layout class="QGridLayout" name="gridLayout_32">
+                     <item row="4" column="2">
+                      <widget class="QLabel" name="lbCodPostalPF">
+                       <property name="minimumSize">
+                        <size>
+                         <width>0</width>
+                         <height>24</height>
+                        </size>
+                       </property>
+                       <property name="font">
+                        <font>
+                         <family>Century Gothic</family>
+                         <pointsize>14</pointsize>
+                         <weight>50</weight>
+                         <bold>false</bold>
+                        </font>
+                       </property>
+                       <property name="styleSheet">
+                        <string notr="true">color : rgb(52, 42, 24 )</string>
+                       </property>
+                       <property name="text">
+                        <string>lbCodPostalPF</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="6" column="0">
+                      <widget class="QLabel" name="label_111">
+                       <property name="minimumSize">
+                        <size>
+                         <width>0</width>
+                         <height>24</height>
+                        </size>
+                       </property>
+                       <property name="font">
+                        <font>
+                         <family>Century Gothic</family>
+                         <pointsize>12</pointsize>
+                         <weight>75</weight>
+                         <bold>true</bold>
+                        </font>
+                       </property>
+                       <property name="text">
+                        <string>Colonia</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="4" column="0">
+                      <widget class="QLabel" name="lbNumExtPF">
+                       <property name="minimumSize">
+                        <size>
+                         <width>0</width>
+                         <height>24</height>
+                        </size>
+                       </property>
+                       <property name="font">
+                        <font>
+                         <family>Century Gothic</family>
+                         <pointsize>14</pointsize>
+                         <weight>50</weight>
+                         <bold>false</bold>
+                        </font>
+                       </property>
+                       <property name="styleSheet">
+                        <string notr="true">color : rgb(52, 42, 24 )</string>
+                       </property>
+                       <property name="text">
+                        <string>lbNumExtPF</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="5" column="0">
+                      <spacer name="verticalSpacer_2">
+                       <property name="orientation">
+                        <enum>Qt::Vertical</enum>
+                       </property>
+                       <property name="sizeHint" stdset="0">
+                        <size>
+                         <width>20</width>
+                         <height>40</height>
+                        </size>
+                       </property>
+                      </spacer>
+                     </item>
+                     <item row="8" column="0" colspan="3">
+                      <widget class="QLabel" name="lbColoniaPF">
+                       <property name="minimumSize">
+                        <size>
+                         <width>0</width>
+                         <height>24</height>
+                        </size>
+                       </property>
+                       <property name="font">
+                        <font>
+                         <family>Century Gothic</family>
+                         <pointsize>14</pointsize>
+                         <weight>50</weight>
+                         <bold>false</bold>
+                        </font>
+                       </property>
+                       <property name="styleSheet">
+                        <string notr="true">color : rgb(52, 42, 24 )</string>
+                       </property>
+                       <property name="text">
+                        <string>lbColoniaPF</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="4" column="1">
+                      <widget class="QLabel" name="lbNumInteriorPF">
+                       <property name="minimumSize">
+                        <size>
+                         <width>0</width>
+                         <height>24</height>
+                        </size>
+                       </property>
+                       <property name="font">
+                        <font>
+                         <family>Century Gothic</family>
+                         <pointsize>14</pointsize>
+                         <weight>50</weight>
+                         <bold>false</bold>
+                        </font>
+                       </property>
+                       <property name="styleSheet">
+                        <string notr="true">color : rgb(52, 42, 24 )</string>
+                       </property>
+                       <property name="text">
+                        <string>lbNumInteriorPF</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="1" column="0" colspan="3">
+                      <widget class="QLabel" name="lbCallePF">
+                       <property name="minimumSize">
+                        <size>
+                         <width>0</width>
+                         <height>24</height>
+                        </size>
+                       </property>
+                       <property name="font">
+                        <font>
+                         <family>Century Gothic</family>
+                         <pointsize>14</pointsize>
+                         <weight>50</weight>
+                         <bold>false</bold>
+                        </font>
+                       </property>
+                       <property name="styleSheet">
+                        <string notr="true">color : rgb(52, 42, 24 )</string>
+                       </property>
+                       <property name="text">
+                        <string>lbCallePF</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="2" column="0">
+                      <spacer name="verticalSpacer">
+                       <property name="orientation">
+                        <enum>Qt::Vertical</enum>
+                       </property>
+                       <property name="sizeHint" stdset="0">
+                        <size>
+                         <width>20</width>
+                         <height>40</height>
+                        </size>
+                       </property>
+                      </spacer>
+                     </item>
+                     <item row="3" column="0">
+                      <widget class="QLabel" name="label_69">
+                       <property name="minimumSize">
+                        <size>
+                         <width>0</width>
+                         <height>24</height>
+                        </size>
+                       </property>
+                       <property name="font">
+                        <font>
+                         <family>Century Gothic</family>
+                         <pointsize>12</pointsize>
+                         <weight>75</weight>
+                         <bold>true</bold>
+                        </font>
+                       </property>
+                       <property name="text">
+                        <string>Núm. Exterior</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="3" column="1">
+                      <widget class="QLabel" name="label_117">
+                       <property name="minimumSize">
+                        <size>
+                         <width>0</width>
+                         <height>24</height>
+                        </size>
+                       </property>
+                       <property name="font">
+                        <font>
+                         <family>Century Gothic</family>
+                         <pointsize>12</pointsize>
+                         <weight>75</weight>
+                         <bold>true</bold>
+                        </font>
+                       </property>
+                       <property name="text">
+                        <string>Núm. Interior</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="0" column="0">
+                      <widget class="QLabel" name="label_66">
+                       <property name="minimumSize">
+                        <size>
+                         <width>0</width>
+                         <height>24</height>
+                        </size>
+                       </property>
+                       <property name="font">
+                        <font>
+                         <family>Century Gothic</family>
+                         <pointsize>12</pointsize>
+                         <weight>75</weight>
+                         <bold>true</bold>
+                        </font>
+                       </property>
+                       <property name="text">
+                        <string>Calle</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="3" column="2">
+                      <widget class="QLabel" name="label_123">
+                       <property name="minimumSize">
+                        <size>
+                         <width>0</width>
+                         <height>24</height>
+                        </size>
+                       </property>
+                       <property name="font">
+                        <font>
+                         <family>Century Gothic</family>
+                         <pointsize>12</pointsize>
+                         <weight>75</weight>
+                         <bold>true</bold>
+                        </font>
+                       </property>
+                       <property name="text">
+                        <string>Código Postal</string>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item row="16" column="0" colspan="9">
+                   <widget class="QgsCollapsibleGroupBox" name="mGroupBox">
+                    <property name="minimumSize">
+                     <size>
+                      <width>663</width>
+                      <height>132</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>663</width>
+                      <height>132</height>
+                     </size>
+                    </property>
+                    <property name="font">
+                     <font>
+                      <family>Century Gothic</family>
+                      <pointsize>12</pointsize>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="title">
+                     <string>Vialidades</string>
+                    </property>
+                    <layout class="QGridLayout" name="gridLayout_9">
+                     <item row="1" column="1">
+                      <widget class="QLabel" name="label_14">
+                       <property name="font">
+                        <font>
+                         <family>Century Gothic</family>
+                         <pointsize>12</pointsize>
+                         <weight>75</weight>
+                         <bold>true</bold>
+                        </font>
+                       </property>
+                       <property name="text">
+                        <string>Vialidades Colindantes</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="2" column="1">
+                      <widget class="QTableWidget" name="twVialidades">
+                       <property name="font">
+                        <font>
+                         <family>Century Gothic</family>
+                         <pointsize>10</pointsize>
+                        </font>
+                       </property>
+                       <property name="styleSheet">
+                        <string notr="true">QHeaderView::section
 {
 background-color: rgb(238,225,200);
 color : rgb(52, 42, 24 );
@@ -2105,179 +1865,173 @@ text-align: right;
 font-size:12px;
 height:24px
 }</string>
-                     </property>
-                     <attribute name="horizontalHeaderMinimumSectionSize">
-                      <number>200</number>
-                     </attribute>
-                     <column>
-                      <property name="text">
-                       <string>VIALIDAD</string>
-                      </property>
-                     </column>
-                     <column>
-                      <property name="text">
-                       <string>NOMBRE</string>
-                      </property>
-                     </column>
-                    </widget>
-                   </item>
-                  </layout>
-                 </widget>
-                 <widget class="QgsCollapsibleGroupBox" name="mGroupBox_2">
-                  <property name="geometry">
-                   <rect>
-                    <x>9</x>
-                    <y>896</y>
-                    <width>663</width>
-                    <height>165</height>
-                   </rect>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>663</width>
-                    <height>165</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>663</width>
-                    <height>165</height>
-                   </size>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <family>Century Gothic</family>
-                    <pointsize>12</pointsize>
-                    <weight>75</weight>
-                    <bold>true</bold>
-                   </font>
-                  </property>
-                  <property name="title">
-                   <string>Colindancias</string>
-                  </property>
-                  <layout class="QGridLayout" name="gridLayout_8">
-                   <item row="0" column="0">
-                    <widget class="QLabel" name="label_15">
-                     <property name="font">
-                      <font>
-                       <family>Century Gothic</family>
-                       <pointsize>12</pointsize>
-                       <weight>75</weight>
-                       <bold>true</bold>
-                      </font>
-                     </property>
-                     <property name="text">
-                      <string>Orientación</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="1" column="0">
-                    <widget class="QComboBox" name="cmbOrientacion">
-                     <property name="minimumSize">
-                      <size>
-                       <width>170</width>
-                       <height>21</height>
-                      </size>
-                     </property>
-                     <property name="maximumSize">
-                      <size>
-                       <width>170</width>
-                       <height>21</height>
-                      </size>
-                     </property>
-                     <property name="font">
-                      <font>
-                       <family>Century Gothic</family>
-                       <pointsize>14</pointsize>
-                       <weight>75</weight>
-                       <bold>true</bold>
-                      </font>
-                     </property>
-                     <property name="styleSheet">
-                      <string notr="true">QComboBox QAbstractItemView::item { min-height: 25;}
+                       </property>
+                       <attribute name="horizontalHeaderMinimumSectionSize">
+                        <number>200</number>
+                       </attribute>
+                       <column>
+                        <property name="text">
+                         <string>VIALIDAD</string>
+                        </property>
+                       </column>
+                       <column>
+                        <property name="text">
+                         <string>NOMBRE</string>
+                        </property>
+                       </column>
+                      </widget>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item row="17" column="0" colspan="9">
+                   <widget class="QgsCollapsibleGroupBox" name="mGroupBox_2">
+                    <property name="minimumSize">
+                     <size>
+                      <width>663</width>
+                      <height>165</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>663</width>
+                      <height>165</height>
+                     </size>
+                    </property>
+                    <property name="font">
+                     <font>
+                      <family>Century Gothic</family>
+                      <pointsize>12</pointsize>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="title">
+                     <string>Colindancias</string>
+                    </property>
+                    <layout class="QGridLayout" name="gridLayout_8">
+                     <item row="0" column="0">
+                      <widget class="QLabel" name="label_15">
+                       <property name="font">
+                        <font>
+                         <family>Century Gothic</family>
+                         <pointsize>12</pointsize>
+                         <weight>75</weight>
+                         <bold>true</bold>
+                        </font>
+                       </property>
+                       <property name="text">
+                        <string>Orientación</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="1" column="0">
+                      <widget class="QComboBox" name="cmbOrientacion">
+                       <property name="minimumSize">
+                        <size>
+                         <width>170</width>
+                         <height>21</height>
+                        </size>
+                       </property>
+                       <property name="maximumSize">
+                        <size>
+                         <width>170</width>
+                         <height>21</height>
+                        </size>
+                       </property>
+                       <property name="font">
+                        <font>
+                         <family>Century Gothic</family>
+                         <pointsize>14</pointsize>
+                         <weight>75</weight>
+                         <bold>true</bold>
+                        </font>
+                       </property>
+                       <property name="styleSheet">
+                        <string notr="true">QComboBox QAbstractItemView::item { min-height: 25;}
 QListView{color: black ; font-size: 16px; outline:none; font-weight:bold}QListView::item:selected { color: red; background-color: lightgray;}</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="1" column="1">
-                    <widget class="QLineEdit" name="leDispPerim">
-                     <property name="minimumSize">
-                      <size>
-                       <width>176</width>
-                       <height>21</height>
-                      </size>
-                     </property>
-                     <property name="maximumSize">
-                      <size>
-                       <width>176</width>
-                       <height>21</height>
-                      </size>
-                     </property>
-                     <property name="font">
-                      <font>
-                       <family>Century Gothic</family>
-                       <pointsize>12</pointsize>
-                       <weight>75</weight>
-                       <bold>true</bold>
-                      </font>
-                     </property>
-                     <property name="styleSheet">
-                      <string notr="true">placeholder : &quot;Introzuca Dist. Perimetral&quot;</string>
-                     </property>
-                     <property name="maxLength">
-                      <number>10</number>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="1" column="2">
-                    <widget class="QLineEdit" name="leDescripcion">
-                     <property name="minimumSize">
-                      <size>
-                       <width>177</width>
-                       <height>21</height>
-                      </size>
-                     </property>
-                     <property name="maximumSize">
-                      <size>
-                       <width>177</width>
-                       <height>21</height>
-                      </size>
-                     </property>
-                     <property name="font">
-                      <font>
-                       <family>Century Gothic</family>
-                       <pointsize>12</pointsize>
-                       <weight>75</weight>
-                       <bold>true</bold>
-                      </font>
-                     </property>
-                     <property name="maxLength">
-                      <number>60</number>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="1" column="3">
-                    <widget class="QPushButton" name="btnColinAdd">
-                     <property name="minimumSize">
-                      <size>
-                       <width>30</width>
-                       <height>24</height>
-                      </size>
-                     </property>
-                     <property name="maximumSize">
-                      <size>
-                       <width>30</width>
-                       <height>24</height>
-                      </size>
-                     </property>
-                     <property name="font">
-                      <font>
-                       <family>Century Gothic</family>
-                       <pointsize>12</pointsize>
-                      </font>
-                     </property>
-                     <property name="styleSheet">
-                      <string notr="true">QPushButton{
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="1" column="1">
+                      <widget class="QLineEdit" name="leDispPerim">
+                       <property name="minimumSize">
+                        <size>
+                         <width>176</width>
+                         <height>21</height>
+                        </size>
+                       </property>
+                       <property name="maximumSize">
+                        <size>
+                         <width>176</width>
+                         <height>21</height>
+                        </size>
+                       </property>
+                       <property name="font">
+                        <font>
+                         <family>Century Gothic</family>
+                         <pointsize>12</pointsize>
+                         <weight>75</weight>
+                         <bold>true</bold>
+                        </font>
+                       </property>
+                       <property name="styleSheet">
+                        <string notr="true">placeholder : &quot;Introzuca Dist. Perimetral&quot;</string>
+                       </property>
+                       <property name="maxLength">
+                        <number>10</number>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="1" column="2">
+                      <widget class="QLineEdit" name="leDescripcion">
+                       <property name="minimumSize">
+                        <size>
+                         <width>177</width>
+                         <height>21</height>
+                        </size>
+                       </property>
+                       <property name="maximumSize">
+                        <size>
+                         <width>177</width>
+                         <height>21</height>
+                        </size>
+                       </property>
+                       <property name="font">
+                        <font>
+                         <family>Century Gothic</family>
+                         <pointsize>12</pointsize>
+                         <weight>75</weight>
+                         <bold>true</bold>
+                        </font>
+                       </property>
+                       <property name="maxLength">
+                        <number>60</number>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="1" column="3">
+                      <widget class="QPushButton" name="btnColinAdd">
+                       <property name="minimumSize">
+                        <size>
+                         <width>30</width>
+                         <height>24</height>
+                        </size>
+                       </property>
+                       <property name="maximumSize">
+                        <size>
+                         <width>30</width>
+                         <height>24</height>
+                        </size>
+                       </property>
+                       <property name="font">
+                        <font>
+                         <family>Century Gothic</family>
+                         <pointsize>12</pointsize>
+                        </font>
+                       </property>
+                       <property name="styleSheet">
+                        <string notr="true">QPushButton{
 background : rgb(174, 116, 0);
 color : rgb(255, 255, 255)
 }
@@ -2286,38 +2040,38 @@ background : rgb(187, 129, 13);
 color : rgb(245,245,245);
 border: 1px solid #adb2b5;
 }</string>
-                     </property>
-                     <property name="text">
-                      <string/>
-                     </property>
-                     <property name="icon">
-                      <iconset>
-                       <normaloff>:/cedula/icons/add.png</normaloff>:/cedula/icons/add.png</iconset>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="1" column="4">
-                    <widget class="QPushButton" name="btnColinRemoveOne">
-                     <property name="minimumSize">
-                      <size>
-                       <width>30</width>
-                       <height>24</height>
-                      </size>
-                     </property>
-                     <property name="maximumSize">
-                      <size>
-                       <width>30</width>
-                       <height>24</height>
-                      </size>
-                     </property>
-                     <property name="font">
-                      <font>
-                       <family>Century Gothic</family>
-                       <pointsize>12</pointsize>
-                      </font>
-                     </property>
-                     <property name="styleSheet">
-                      <string notr="true">QPushButton{
+                       </property>
+                       <property name="text">
+                        <string/>
+                       </property>
+                       <property name="icon">
+                        <iconset>
+                         <normaloff>:/cedula/icons/add.png</normaloff>:/cedula/icons/add.png</iconset>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="1" column="4">
+                      <widget class="QPushButton" name="btnColinRemoveOne">
+                       <property name="minimumSize">
+                        <size>
+                         <width>30</width>
+                         <height>24</height>
+                        </size>
+                       </property>
+                       <property name="maximumSize">
+                        <size>
+                         <width>30</width>
+                         <height>24</height>
+                        </size>
+                       </property>
+                       <property name="font">
+                        <font>
+                         <family>Century Gothic</family>
+                         <pointsize>12</pointsize>
+                        </font>
+                       </property>
+                       <property name="styleSheet">
+                        <string notr="true">QPushButton{
 background : rgb(174, 116, 0);
 color : rgb(255, 255, 255)
 }
@@ -2326,38 +2080,38 @@ background : rgb(187, 129, 13);
 color : rgb(245,245,245);
 border: 1px solid #adb2b5;
 }</string>
-                     </property>
-                     <property name="text">
-                      <string/>
-                     </property>
-                     <property name="icon">
-                      <iconset>
-                       <normaloff>:/cedula/icons/remove_one.png</normaloff>:/cedula/icons/remove_one.png</iconset>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="1" column="5">
-                    <widget class="QPushButton" name="btnColinRemoveAll">
-                     <property name="minimumSize">
-                      <size>
-                       <width>30</width>
-                       <height>24</height>
-                      </size>
-                     </property>
-                     <property name="maximumSize">
-                      <size>
-                       <width>30</width>
-                       <height>24</height>
-                      </size>
-                     </property>
-                     <property name="font">
-                      <font>
-                       <family>Century Gothic</family>
-                       <pointsize>12</pointsize>
-                      </font>
-                     </property>
-                     <property name="styleSheet">
-                      <string notr="true">QPushButton{
+                       </property>
+                       <property name="text">
+                        <string/>
+                       </property>
+                       <property name="icon">
+                        <iconset>
+                         <normaloff>:/cedula/icons/remove_one.png</normaloff>:/cedula/icons/remove_one.png</iconset>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="1" column="5">
+                      <widget class="QPushButton" name="btnColinRemoveAll">
+                       <property name="minimumSize">
+                        <size>
+                         <width>30</width>
+                         <height>24</height>
+                        </size>
+                       </property>
+                       <property name="maximumSize">
+                        <size>
+                         <width>30</width>
+                         <height>24</height>
+                        </size>
+                       </property>
+                       <property name="font">
+                        <font>
+                         <family>Century Gothic</family>
+                         <pointsize>12</pointsize>
+                        </font>
+                       </property>
+                       <property name="styleSheet">
+                        <string notr="true">QPushButton{
 background : rgb(174, 116, 0);
 color : rgb(255, 255, 255)
 }
@@ -2366,26 +2120,26 @@ background : rgb(187, 129, 13);
 color : rgb(245,245,245);
 border: 1px solid #adb2b5;
 }</string>
-                     </property>
-                     <property name="text">
-                      <string/>
-                     </property>
-                     <property name="icon">
-                      <iconset>
-                       <normaloff>:/cedula/icons/remove_all.png</normaloff>:/cedula/icons/remove_all.png</iconset>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="2" column="0" colspan="6">
-                    <widget class="QTableWidget" name="twColindancias">
-                     <property name="font">
-                      <font>
-                       <family>Century Gothic</family>
-                       <pointsize>10</pointsize>
-                      </font>
-                     </property>
-                     <property name="styleSheet">
-                      <string notr="true">QHeaderView::section
+                       </property>
+                       <property name="text">
+                        <string/>
+                       </property>
+                       <property name="icon">
+                        <iconset>
+                         <normaloff>:/cedula/icons/remove_all.png</normaloff>:/cedula/icons/remove_all.png</iconset>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="2" column="0" colspan="6">
+                      <widget class="QTableWidget" name="twColindancias">
+                       <property name="font">
+                        <font>
+                         <family>Century Gothic</family>
+                         <pointsize>10</pointsize>
+                        </font>
+                       </property>
+                       <property name="styleSheet">
+                        <string notr="true">QHeaderView::section
 {
 background-color: rgb(238,225,200);
 color : rgb(52, 42, 24 );
@@ -2393,40 +2147,42 @@ text-align: right;
 font-size:12px;
 height:24px
 }</string>
-                     </property>
-                     <property name="columnCount">
-                      <number>4</number>
-                     </property>
-                     <attribute name="horizontalHeaderDefaultSectionSize">
-                      <number>160</number>
-                     </attribute>
-                     <attribute name="horizontalHeaderMinimumSectionSize">
-                      <number>200</number>
-                     </attribute>
-                     <column>
-                      <property name="text">
-                       <string>idOrientación</string>
-                      </property>
-                     </column>
-                     <column>
-                      <property name="text">
-                       <string>Orientación</string>
-                      </property>
-                     </column>
-                     <column>
-                      <property name="text">
-                       <string>Distancia</string>
-                      </property>
-                     </column>
-                     <column>
-                      <property name="text">
-                       <string>Descripcion</string>
-                      </property>
-                     </column>
-                    </widget>
-                   </item>
-                  </layout>
-                 </widget>
+                       </property>
+                       <property name="columnCount">
+                        <number>4</number>
+                       </property>
+                       <attribute name="horizontalHeaderDefaultSectionSize">
+                        <number>160</number>
+                       </attribute>
+                       <attribute name="horizontalHeaderMinimumSectionSize">
+                        <number>200</number>
+                       </attribute>
+                       <column>
+                        <property name="text">
+                         <string>idOrientación</string>
+                        </property>
+                       </column>
+                       <column>
+                        <property name="text">
+                         <string>Orientación</string>
+                        </property>
+                       </column>
+                       <column>
+                        <property name="text">
+                         <string>Distancia</string>
+                        </property>
+                       </column>
+                       <column>
+                        <property name="text">
+                         <string>Descripcion</string>
+                        </property>
+                       </column>
+                      </widget>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                 </layout>
                  <zorder>mGroupBox</zorder>
                  <zorder>widget_7</zorder>
                  <zorder>mGroupBox_2</zorder>
@@ -9750,7 +9506,7 @@ height:24px
                  <property name="geometry">
                   <rect>
                    <x>0</x>
-                   <y>-14</y>
+                   <y>0</y>
                    <width>691</width>
                    <height>1142</height>
                   </rect>
