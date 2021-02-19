@@ -318,7 +318,7 @@ class operaciones(QtWidgets.QDialog, FORM_CLASS):
             envio['permisos'] = self._seleccionados
             envio['rol'] = rol.text()
             resp = self.guardarOperacion(nuevo = self.nuevo, url = (self.CFG.url_AU_actualizarOperaciones), envio = envio)
-
+                
             if resp == 'OK':
                 self.createAlert('Operaciones Asignadas Correctamente', QMessageBox().Information)
             else:

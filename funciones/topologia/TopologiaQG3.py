@@ -158,7 +158,6 @@ class TopologiaQG3:
         self.validarPoligonosInvalidos(self.xConst)
         self.validarPoligonosInvalidos(self.xHoriGeom)
         self.validarPoligonosInvalidos(self.xVert)
-        
         if self.todoEnOrden:
             self.reglasManuales()
 
@@ -185,7 +184,8 @@ class TopologiaQG3:
 
             else: #Cuando hay errrpres
                 self.UTI.mostrarAlerta("Se han detectado errores de topologia", QMessageBox().Critical, "Comprobador de topologia")
-        else:
+                #print('*******')
+        else:   
             self.UTI.mostrarAlerta("El comprobador de topologia no puede proceder hasta que se corrijan las geometrias invalidas", QMessageBox().Critical, "Comprobador de topologia")
 
 
@@ -391,7 +391,7 @@ class TopologiaQG3:
                     root.removeChildNode(group)
             else: #Cuando hay errrpres
                 self.UTI.mostrarAlerta("Se han detectado errores de topologia", QMessageBox().Critical, "Comprobador de topologia")
-
+                print('*******')
 
     def validarClavesNoRepetida(self):
         self.reglas.validarClaveNoRepetida('manzana')
@@ -512,7 +512,7 @@ class TopologiaQG3:
             self.dockwidget.tablaErrores.insertRow(self.dockwidget.tablaErrores.rowCount())
             item = QTableWidgetItem(self.reglas.stringError)
             self.dockwidget.tablaErrores.setItem(self.dockwidget.tablaErrores.rowCount()-1, 0 , item)
-        
+            print(item)
 ###############################################################################################################################
 
     def validarInclusionRef(self, nombreObjetos, nombreContenedor):
@@ -644,7 +644,6 @@ class TopologiaQG3:
         
         self.obtenerXCapas()
         self.validarClavesNoRepetida()
-        
         self.validarIntersecciones(self.xPredGeom, self.xPredGeom)
         self.validarIntersecciones(self.xManzana, self.xManzana)
         self.validarIntersecciones(self.xHoriGeom, self.xHoriGeom)

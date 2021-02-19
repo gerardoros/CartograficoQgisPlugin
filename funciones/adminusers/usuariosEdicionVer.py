@@ -31,7 +31,7 @@ class usuariosEdicionVer(QtWidgets.QDialog, FORM_CLASS):
         self.listaServicios = []
         self.CFG = CFG
         self.UTI = UTI
-        #self.nuevalista = []
+        #self.nuevalista = []l
 
         # -- informacion cargada
         self.cargada = False
@@ -194,14 +194,14 @@ class usuariosEdicionVer(QtWidgets.QDialog, FORM_CLASS):
         self.llenaRoles(rolesNuevos)
 
 
-    def event_aceptar(self):
+    def event_aceptar(self, nuevo):
 
-        if self.nuevo:
-
+        #if self.nuevo:
+        if nuevo:
             # valida constraseña
             # valida campos llenos
-            cont1 = self.mleContrUno.text()
-            cont2 = self.mleContrDos.text()
+            cont1 = self.dlg.mleContrUno.text()
+            cont2 = self.dlg.mleContrDos.text()
 
             if len(cont1) < 5:
                 self.createAlert('La constraseña debe de tener al menos 5 caracteres', QMessageBox().Warning)
@@ -211,12 +211,12 @@ class usuariosEdicionVer(QtWidgets.QDialog, FORM_CLASS):
                 self.createAlert('Vuelva a escribir la constraseña', QMessageBox().Warning)
                 return
 
-        nombre = self.leNombres.text()
-        apellido = self.leApellidos.text()
-        usuario = self.leUsuario.text()
-        correo = self.leCorreo.text()
+        nombre = self.dlg.leNombres.text()
+        apellido = self.dlg.leApellidos.text()
+        usuario = self.dlg.leUsuario.text()
+        correo = self.dlg.leCorreo.text()
 
-        activado = self.cbActivado.isChecked()
+        activado = self.dlg.cbActivado.isChecked()
 
         if len(nombre) == 0:
             self.createAlert('Defina el (los) nombre (s)', QMessageBox().Warning)

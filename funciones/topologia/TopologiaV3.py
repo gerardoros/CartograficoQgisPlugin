@@ -605,7 +605,7 @@ class TopologiaV3:
             self.dockwidget.tablaErrores.insertRow(self.dockwidget.tablaErrores.rowCount())
             item = QTableWidgetItem(self.reglas.stringError)
             self.dockwidget.tablaErrores.setItem(self.dockwidget.tablaErrores.rowCount()-1, 0 , item)
-        
+            #print(self.reglas.stringError)
 ###############################################################################################################################
 
     def validarInclusionRef(self, nombreObjetos, nombreContenedor):

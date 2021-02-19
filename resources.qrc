@@ -13,5 +13,7 @@
     <file>icons/AsigRevision.png</file>
     <file>icons/local.ico</file>
     <file>icons/browse.png</file>
+    <file>icons/menu1.png</file>
+    <file>icons/menu2.png</file>
   </qresource>
 </RCC>

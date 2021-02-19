@@ -90,7 +90,7 @@ class DivisionFusion:
         self.toolbar.setObjectName(u'DivisionFusion')
         '''
         self.eventos = EventoDivision(iface.mapCanvas(), self, iface.cadDockWidget())
-        #iface.mapCanvas().setMapTool(self.eventos)
+        iface.mapCanvas().setMapTool(self.eventos)
         self.VentanaAreas = VentanaAreas(self)
 
         self.VentanaFusion = VentanaFusionV3(iface, self)
@@ -310,19 +310,20 @@ class DivisionFusion:
         #self.consumirPredios()
         if iface.activeLayer() != None:
             seleccion = self.iface.activeLayer().selectedFeatures()
-            self.VentanaFusion.dlg.close()
+            #self.VentanaFusion.dlg.close()
             if self.validarCuentaSeleccion(): #Si la seleccion es valida
                 for i in seleccion:
                     self.id = self.consumeWSGeneral(url_cons = self.CFG.url_AU_getAllfactures + str(i['id']) )
                     if not self.id:
                         return
                     listaPredio.append(self.id)
+                #print(listaPredio)
                 self.enFusion = True
-                self.VentanaFusion.dlg.show()
-                self.VentanaFusion.llenarTablaComp(listaPredio[0], listaPredio[1])
+                #self.VentanaFusion.dlg.show()
+                #self.VentanaFusion.llenarTablaComp(listaPredio[0], listaPredio[1])
                 self.dlg.btnCargarPredio.setEnabled(False)
-        else:
-            self.UTI.mostrarAlerta('La fusion requiere la seleccion de exactamente 2 predios contiguos', QMessageBox().Critical, 'Error de fusion')
+        #else:
+            #self.UTI.mostrarAlerta('La fusion requiere la seleccion de exactamente 2 predios contiguos', QMessageBox().Critical, 'Error de fusion')
 
 #------------------------------------------------------------------
 
@@ -364,7 +365,9 @@ class DivisionFusion:
 
         #Puntos y eleccion de victima
         seleccion = self.iface.activeLayer().selectedFeatures()
-
+        if seleccion == None:
+            self.pluginFD.UTI.mostrarAlerta('Debes seleccionar un predio destino', QMessageBox().Critical, 'Error de seleccion')
+            return
         listaPuntos = [None, None]
 
         #Definimos el predio 'victima
@@ -602,17 +605,19 @@ class DivisionFusion:
 
 #--------------------------------------------
 
-    def confirmarCortes(self, corte): #Aqui cehcamos que los cortes esten en orden
-        
+    def confirmarCortes(self): #Aqui cehcamos que los cortes esten en orden
+        print(self.eventos.relaciones)
         #cuentaCortes = 0
-        rango = corte
-        #rango = len(self.eventos.relaciones) - 1
+        #rango = corte
+        rango = len(self.eventos.relaciones) - 1
 
+        #geoTemp = geo
         geoTemp = QgsGeometry.fromWkt(self.geomEnDivision.asWkt())
-        #geoTemp = gem
+        print('------------------------------')
         print(geoTemp)
+        print('------------------------------')
         cuentaSalida = self.subdividirPredio(geoTemp, True) - 1 #Aqui enviamos una geomtria temporal, para ven en cuantos cortes quedara
-            
+        print(cuentaSalida)
         if cuentaSalida >= 2:
 
             listaNoTocar = []
@@ -685,7 +690,7 @@ class DivisionFusion:
         
         else:
             self.UTI.mostrarAlerta("Primero debes dibujar las lineas de corte\nAsegurate que las lineas atraviesen por completo el predio", QMessageBox().Critical, "Error en subdivision")
-            
+            #print(cuentaSalida)
 ##################################################################################
 
     def vaciarLineasCorte(self):
@@ -706,14 +711,23 @@ class DivisionFusion:
         self.listaNuevosPredios = []
         self.geomsAreas = []
         listaParam = [] #La lista que llega al fileteo
-        rango = len(self.eventos.relaciones) - 1 
+        #rango = corte 
+        rango = len(self.eventos.relaciones) - 1
+        #print('**********************************************')
+        #print(self.eventos.relaciones)
+        #print(rango)
+        #print('**********************************************')
         for i in range(0, rango):
 
             geom = self.eventos.relaciones[i].geom
-
+            print('-----------------*****------------------------')
+            print(self.eventos.relaciones[i])
+            print(geom)
+            print('-----------------*****------------------------')
             if geom != None:
                 listaParam.append(geom.asPolyline()) #Generamos los polyline van a partir
 
+        #print('aaaaaaaaaaa', listaParam)
         salida= self.filetear(geometria, listaParam) #Mandamos filetear el poligono con las lineas
 
         if modoPre: #Si es modoPre, es solo para visaulizar cuantos poligonos quedarian...

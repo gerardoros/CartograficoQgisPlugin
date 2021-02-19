@@ -24,11 +24,12 @@ from qgis.PyQt.QtCore import QSettings, QTranslator, qVersion, QCoreApplication,
 from qgis.PyQt.QtGui import QIcon,  QCursor, QPixmap, QStandardItemModel, QIntValidator
 from qgis.PyQt.QtWidgets import QAction, QApplication, QFileDialog, QToolBox,  QMessageBox
 from PyQt5 import QtGui
-
+import jwt
 # Initialize Qt resources from file resources.py
 from .resources import *
 # Import the code for the dialog
 from .menu_dialog import menuDialog
+from .funciones.adminusers.usuariosEdicionVer import usuariosEdicionVer
 from .funciones.generar_documentos.cert_cve_catastral_dialog import CertCveCatastralDialog
 from .funciones.generar_documentos.cert_cve_catastral import CertCveCatastral
 from .funciones.generar_documentos.cert_cve_valor import CertCveValor
@@ -39,6 +40,8 @@ from .funciones.consulta.ActualizacionCatastralV3 import ActualizacionCatastralV
 from .funciones.dibujo import DibujoV3
 from .funciones.fusiondivision.EventoDivision import EventoDivision
 from .funciones.fusiondivision.VentanaAreas import VentanaAreas
+from .funciones.fusiondivision.VentanaFusionV3 import VentanaFusionV3
+from .funciones.fusiondivision.VentanaClavesV3 import VentanaClavesV3
 from .funciones.eliminacion import EliminacionV3
 from .funciones.dibujo.VentanaDibujoV3 import VentanaDibujoV3
 import os.path
@@ -77,12 +80,16 @@ from .funciones.configuracion import Configuracion
 from .funciones.utilidades import utilidades
 from .funciones.fusiondivision import DivisionFusion
 from .funciones.consulta import ActualizacionCatastralV3
+from .funciones.topologia import TopologiaV3
 from .funciones.consulta.Cedula_MainWindow import CedulaMainWindow
+from .funciones.cargamasiva import Integracion
+from .funciones.adminusers import AdminUsers
 import os.path
 import json
 import requests
 import re
 from qgis.core import *
+from .funciones.topologia.reglasQG3 import Reglas
 #from ..busquedas.periodo.periodo import predio
 
 #from ..busquedas.busqueda_catastral import busqueda_Catastral
@@ -117,14 +124,14 @@ class menu:
 
         self.ACA = ActualizacionCatastralV3.ActualizacionCatastralV3(iface)
         self.ACA.UTI = self.UTI
-
         self.UTI.CFG = self.CFG
         self.UTI.ACA = self.ACA
         self.DFS = DivisionFusion.DivisionFusion(iface, self.ACA)
         self.DBJ = DibujoV3.DibujoV3(iface)
         self.ELM = EliminacionV3.EliminacionV3(iface)
-        
-        self.TPG = None
+        self.CMS = Integracion.Integracion(iface)
+        self.TPG = TopologiaV3.TopologiaV3(iface, self.ACA, self.CFG, self.UTI)
+        self.reglas = Reglas(self.ACA, CFG = self.CFG, UTI = self.UTI)
         # initialize plugin directory
         self.plugin_dir = os.path.dirname(__file__)
         # initialize locale
@@ -145,14 +152,18 @@ class menu:
         self.dlg = menuDialog(parent = iface.mainWindow())
         #self.mapTool = AdvancedMapTool(iface.mapCanvas(), iface.cadDockWidget(), self)
         #iface.mapCanvas().setMapTool(self.mapTool)
-        self.evento = EventoDivision(iface.mapCanvas(), self, iface.cadDockWidget())
-        iface.mapCanvas().setMapTool(self.evento)
+        self.eventos= EventoDivision(iface.mapCanvas(), self, iface.cadDockWidget())
+        iface.mapCanvas().setMapTool(self.eventos)
         self.VentanaAreas = VentanaAreas(self)
+        self.VentanaFusion = VentanaFusionV3(iface, self)
+        self.VentanaClaves = VentanaClavesV3(iface, self)
         #self.dlg.toolBox.currentChanged.connect(self.cambio)
-        an = self.dlg.width()
-        al = self.dlg.height()
+        #an = self.dlg.width()
+        #al = self.dlg.height()
         self.i = 0
+        self.dlg.setFixedSize(140,788)
         self.canvas = iface.mapCanvas()
+        self.dlg.despliega.setIcon(QtGui.QIcon(':/plugins/Master/icons/menu1.png'))
         self.abrePredio2 = False
         self.abrePredio = False
         self.directorioAGuardar = None
@@ -256,7 +267,7 @@ class menu:
         self.dlg.botonEliminar.clicked.connect(self.funeliminar)
         self.dlg.btnGuardar.clicked.connect(self.funguardar)
         self.dlg.btnActMarc_2.clicked.connect(self.funmarcadores)
-        self.dlg.btnLimpiar_3.clicked.connect(self.funlimpiar)
+        self.dlg.btnLimpiar_3.clicked.connect(self.funlimpiars)
         self.dlg.btnDibujarCortes.clicked.connect(self.dibujarcorte)
         self.dlg.btnEditarCortes.clicked.connect(self.editarcorte)
         self.dlg.btnLlamarCalcular.clicked.connect(self.areas)
@@ -265,14 +276,22 @@ class menu:
         self.dlg.btnSubdividir.clicked.connect(self.sub)
         self.dlg.botonCargarReferencia_2.clicked.connect(self.funcarga)
         self.dlg.btnCargarPredio.clicked.connect(self.cargarsub)
+        self.dlg.btnClave.clicked.connect(self.AsignarClave)
+        self.dlg.btnSend.clicked.connect(self.seleccionar)
+        self.dlg.btnFusionar.clicked.connect(self.fusion)
         self.dlg.comboSector.currentIndexChanged.connect(self.obtenerManzanasPorSector)
         self.dlg.comboManzana.currentIndexChanged.connect(self.obtenerIdManzana)
         self.dlg.comboSector_3.currentIndexChanged.connect(self.obtenerManzanasPorSector2)
         self.dlg.comboManzana_3.currentIndexChanged.connect(self.obtenerIdManzana2)
+        self.dlg.btnOk.clicked.connect(self.usuarioguardar)
+        self.dlg.botonValidar.clicked.connect(self.validar)
         self.dlg.btnAbrirCedula.clicked.connect(self.fun4)
         self.dlg.btnAbrirCedula_3.clicked.connect(self.fun4)
-
-        
+        self.dlg.comboBox.currentIndexChanged.connect(self.indexcombo)
+        self.dlg.btnConfirmar.clicked.connect(self.confusion)
+        self.dlg.btnCancelar.clicked.connect(self.cancelarFusion)
+        self.dlg.btnAgregaRoles.clicked.connect(self.agregarroles)
+        self.dlg.leBusqueda.textChanged.connect(self.event_textChangedLbBusqueda)
         self.cve_cat_len = 16
         self.dlg.lista = {}
         self.cursorRedondo = QCursor(QPixmap(["16 16 3 1",
@@ -312,12 +331,82 @@ class menu:
         self.dlg.mGroupBox_4.collapsedStateChanged.connect(self.colapsar4)
         self.dlg.mGroupBox_8.collapsedStateChanged.connect(self.colapsar5)
         self.dlg.mGroupBox_9.collapsedStateChanged.connect(self.colapsar6)
+        self.dlg.mGroupBox_10.collapsedStateChanged.connect(self.colapsar7)
+        self.dlg.mGroupBox_11.collapsedStateChanged.connect(self.colapsar8)
+        self.dlg.mGroupBox_12.collapsedStateChanged.connect(self.colapsar9)
         #self.cambio()
         #self.dlg.mdiArea.addSubWindow(self.dlg.subwindow_2)
         #self.dlg.mdiArea.closeAllSubWindows()
         # Check if plugin was started the first time in current QGIS session
         # Must be set in initGui() to survive plugin reloads
+     #---------METODO QUE DESABILITA TODAS LAS ACCIONES DE LOS BOTONES
+        #------------ DESACTIVAMOS LAS OPERACIONES Y MANDAMOS A VERIFICAR SUS ROLES
+        self.headers = {'Content-Type': 'application/json'}
+        usuario = self.UTI.decodeRot13(QSettings().value('usuario'))
+        #print(usuario)
+        var = QSettings()
+        token = var.value('token')
 
+        # se decodifica el token (JWT)
+        decode = jwt.decode(token, verify=False)
+        #print(decode)
+        resultado = self.consumeWSGeneral(url_cons = self.CFG.url_MA_getInfoUser + str(decode['user_name']))
+        #print(resultado)
+        if not resultado:
+            return
+        
+        var.setValue("datoUsuario", resultado)
+        self.comproveRoles()
+        self.asignActionsByRoles(iface)
+    def comproveRoles(self):
+
+        # ------------ PRUEBA PARA DESHABILITAR LOS BOTONES -------
+        self.dlg.btnConsulta.setEnabled(False)
+        self.dlg.btnDibujo.setEnabled(False)
+        self.dlg.btnEliminar.setEnabled(False)
+        self.dlg.btnTopologia.setEnabled(False)
+        self.dlg.btnFusDiv.setEnabled(False)
+        self.dlg.btnCargaMasiva.setEnabled(False)
+        self.dlg.btnAsigCampo.setEnabled(False)
+        self.dlg.btnAsigRev.setEnabled(False)
+        self.dlg.btnAsigPad.setEnabled(False)
+        self.dlg.btnInterPad.setEnabled(False)
+        self.dlg.btnInterRev.setEnabled(False)
+        self.dlg.btnAdminUsers.setEnabled(False)
+
+    #--------MEOTOD QUE COMPRUEBA LAS VERIIFCACIONES DE LOS BOTONES
+    def asignActionsByRoles(self, iface):
+        var = QSettings()
+        if var.value('logeado') == 'True':
+            response = self.consumeWSGeneral(self.CFG.url_permisos)
+            
+            for rol in response["roles"]:
+                if rol == 'CONSULTA':
+                    self.dlg.btnConsulta.setEnabled(True)
+                if rol == 'DIBUJO':
+                    self.dlg.btnDibujo.setEnabled(True)
+                if rol == 'ELIMINAR':
+                    self.dlg.btnEliminar.setEnabled(True)
+                if rol == 'TOPOLOGIA':
+                    self.dlg.btnTopologia.setEnabled(True)
+                if rol == 'FUSION_SUBDIVISION':
+                    self.dlg.btnFusDiv.setEnabled(True)
+                if rol == 'CARGA_MASIVA':
+                    self.dlg.btnCargaMasiva.setEnabled(True)
+                if rol == 'ASIGNACION_CAMPO':
+                    self.dlg.btnAsigCampo.setEnabled(True)
+                if rol == 'ASIGNACION_REVISION':
+                    self.dlg.btnAsigRev.setEnabled(True)
+                if rol == 'ASIGNACION_PADRON':
+                    self.dlg.btnAsigPad.setEnabled(True)
+                if rol == 'INTERMEDIO_REVISION':
+                    self.dlg.btnInterRev.setEnabled(True)
+                if rol == 'INTERMEDIO_PADRON':
+                    self.dlg.btnInterPad.setEnabled(True)
+                if rol == 'ADMIN_USERS':
+                    self.dlg.btnAdminUsers.setEnabled(True)
+        else:
+            self.comproveRoles()
        
     # noinspection PyMethodMayBeStatic
     def tr(self, message):
@@ -469,9 +558,13 @@ class menu:
         self.dlg.comboSector.clear()
         #self.dlg.comboLocalidad.clear()
         self.dlg.comboManzana.clear()
-
+        self.rubberMarca = QgsRubberBand(iface.mapCanvas(), QgsWkbTypes.PolygonGeometry)
+        self.rubberMarca.setFillColor(QColor(255,255,0,12))
+        self.rubberMarca.setStrokeColor(QColor(255,150,0,255))
+        self.rubberMarca.setWidth(2)
         #Inicializacionde IdManzana
         self.idManzana = ' '
+        self.cla = ''
 
         #Modo desarrollor
         self.modoDesarrollo = False
@@ -539,18 +632,38 @@ class menu:
         self.dlg.btnClave.setEnabled(False)
         self.dlg.btnLlamarCalcular.setEnabled(False)
         #Asignar eventos de cambio de seleccion
-    
-        #self.selec()
+        if self.dlg.tabWidget.currentIndex() == 0:
+            self.dlg.btnConsulta.setEnabled(False) 
+            self.dlg.btnDibujo.setEnabled(True)
+            self.dlg.btnEliminar.setEnabled(True)
+            self.dlg.btnTopologia.setEnabled(True)
+            self.dlg.btnFusDiv.setEnabled(True)
+            self.dlg.btnCargaMasiva.setEnabled(True)
+            self.dlg.btnAsigCampo.setEnabled(True)
+            self.dlg.btnAsigRev.setEnabled(True)
+            self.dlg.btnAsigPad.setEnabled(True)
+            self.dlg.btnInterRev.setEnabled(True)
+            self.dlg.btnInterPad.setEnabled(True)
+            self.dlg.btnAdminUsers.setEnabled(True)       #self.selec()
         
 
         
 
 
+        self.ADU = AdminUsers.AdminUsers(iface)
 
+        self.ADU.CFG = self.CFG
+        self.ADU.UTI = self.UTI
+        self.dlg.twUsuarios.setColumnHidden(0, True)
+        self.dlg.twUsuarios.setEditTriggers(QtWidgets.QTableWidget.NoEditTriggers)
+
+        self.dlg.twUsuarios.setSortingEnabled(True)
         
+        header = self.dlg.twUsuarios.horizontalHeader()
+        self.tablausuario(index = 0)
         # show the dialog
         self.dlg.show()
-        iface.mapCanvas().setMapTool(self.evento)
+        iface.mapCanvas().setMapTool(self.eventos)
         #iface.mapCanvas().setMapTool(self.mapTool)
         # Run the dialog event loop
         result = self.dlg.exec_()
@@ -559,13 +672,111 @@ class menu:
             # Do something useful here - delete the line containing pass and
             # substitute with your code.
             pass
+    def usuarioguardar(self):
+        self.nuevo = True
+        self.UE = usuariosEdicionVer.event_aceptar(self, self.nuevo)
+    def tablausuario(self, index):
+        if index == 0:
+
+            # remover todos
+            self.dlg.twUsuarios.clearContents()
+            self.dlg.twUsuarios.setRowCount(0)
+                
+            for row in range(0, self.dlg.twUsuarios.rowCount()):        
+                self.dlg.twUsuarios.removeRow(row) 
+
+            # consumir ws para descargar usuarios
+            self.usuarios = self.consumeWSGeneral(url_cons = self.CFG.url_AU_getAllUsers)
+
+            if not self.usuarios or len(self.usuarios) == 0:
+                return
+
+            # mostrar usuarios en tabla
+            self.dlg.twUsuarios.setRowCount(len(self.usuarios))
+            for i in range(0, len(self.usuarios)):
+
+                # auth = ", ".join(self.usuarios[i]['authorities'])
+                auth = ''
+                if len(self.usuarios[i]['authorities']) > 0:
+                    auth = ", ".join(d['rol'] for d in self.usuarios[i]['authorities'])
+
+                btnVer = QtWidgets.QPushButton('Ver')
+                btnEdi = QtWidgets.QPushButton('Editar')
+                btnElim = QtWidgets.QPushButton('Eliminar')
+
+
+                btnVer.setStyleSheet('''QPushButton{
+                                    background : rgb(174, 116, 0);
+                                    color : rgb(255, 255, 255);
+                                    font-weight: bold;
+                                    }
+                                    QPushButton::disabled {
+                                    background : rgb(187, 129, 13);
+                                    color : rgb(245,245,245);
+                                    border: 1px solid #adb2b5;
+                                    }''')
+
+                
+                btnEdi.setStyleSheet('''QPushButton{
+                                    background : rgb(174, 116, 0);
+                                    color : rgb(255, 255, 255);
+                                    font-weight: bold;
+                                    }
+                                    QPushButton::disabled {
+                                    background : rgb(187, 129, 13);
+                                    color : rgb(245,245,245);
+                                    border: 1px solid #adb2b5;
+                                    }''')
+
+                self.dlg.twUsuarios.setItem(i, 0, QtWidgets.QTableWidgetItem(str(self.usuarios[i]['id'])))
+                self.dlg.twUsuarios.setItem(i, 1, QtWidgets.QTableWidgetItem((self.usuarios[i]['firstName'] if self.usuarios[i]['firstName'] else '') + ' ' + (self.usuarios[i]['lastName'] if self.usuarios[i]['lastName'] else '')))
+                self.dlg.twUsuarios.setItem(i, 2, QtWidgets.QTableWidgetItem(self.usuarios[i]['login']))
+                self.dlg.twUsuarios.setItem(i, 3, QtWidgets.QTableWidgetItem(auth))
+                self.dlg.twUsuarios.setCellWidget(i, 4, btnVer)
+                self.dlg.twUsuarios.setCellWidget(i, 5, btnEdi)
+    def agregarroles(self):
+        self.UE = usuariosEdicionVer.event_agregaRoles(self)
+    def createAlert(self, mensaje, icono = QMessageBox().Critical, titulo = 'Usuarios'):
+        #Create QMessageBox
+        self.msg = QMessageBox()
+        #Add message
+        self.msg.setText(mensaje)
+        #Add icon of critical error
+        self.msg.setIcon(icono)
+        #Add tittle
+        self.msg.setWindowTitle(titulo)
+        #Show of message dialog
+        self.msg.show()
+         # Run the dialog event loop
+        result = self.msg.exec_()
+    def event_textChangedLbBusqueda(self, texto):
+        
+        for row in range(0,self.dlg.twUsuarios.rowCount()):
+            self.dlg.twUsuarios.showRow(row)
+
+        if texto == '':
+            return
+        items = self.dlg.twUsuarios.findItems(texto, Qt.MatchContains)
+
+        ocultar = True
+        rowCount = self.dlg.twUsuarios.rowCount()
+        for row in range(0, rowCount):
+            ocultar = True
+            for item in items:
+
+                if row == item.row():
+                    ocultar = False
+                    break
+
+            if ocultar:
+                self.dlg.twUsuarios.hideRow(row)    
 
     #funcionalidad de los grupbox desplegables
            
         #print(self.dlg.mGroupBox_2.isCollapsed())
 
     #funciones de diferentes clases
-    def colapsar5(self):
+    '''def colapsar5(self):
         #self.dlg.mGroupBox_5.isCollapsed()
         if self.dlg.mGroupBox_8.isCollapsed() == True:
             self.dlg.mGroupBox_9.setGeometry(11,170,481,81)
@@ -595,9 +806,628 @@ class menu:
             if self.dlg.mGroupBox_9.isCollapsed() == True:
                 self.dlg.mGroupBox_10.setGeometry(11,320,481,141)
             elif self.dlg.mGroupBox_9.isCollapsed() == False:
-                self.dlg.mGroupBox_10.setGeometry(11,390,481,141)
+                self.dlg.mGroupBox_10.setGeometry(11,390,481,141)'''
+    def colapsar5(self):
+        #self.dlg.mGroupBox_5.isCollapsed()
+        if self.dlg.mGroupBox_8.isCollapsed() == True:
+            self.dlg.mGroupBox_9.setGeometry(11,170,481,81)
+            if self.dlg.mGroupBox_9.isCollapsed() == True:
+                if self.dlg.mGroupBox_10.isCollapsed() == False:
+                    if self.dlg.mGroupBox_11.isCollapsed() == True:
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(11,370,481,431)
+                        if self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(11,780,481,169)
+                        self.dlg.mGroupBox_12.setGeometry(10,350,481,391)
+                    if self.dlg.mGroupBox_11.isCollapsed() == False:
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(11,820,481,169)
+                        if self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(11,1190,481,169)
+                        self.dlg.mGroupBox_12.setGeometry(10,800,481,391)
+                    self.dlg.mGroupBox_11.setGeometry(11,330,481,169)
+                self.dlg.mGroupBox_10.setGeometry(11,190,481,141)
+                if self.dlg.mGroupBox_10.isCollapsed() == True:
+                    if self.dlg.mGroupBox_11.isCollapsed() == False:
+                        if self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(11,1070,481,169)
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(11,700,481,431)
+                        self.dlg.mGroupBox_12.setGeometry(10,680,481,391)
+                    if self.dlg.mGroupBox_11.isCollapsed() == True:
+                        if self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(11,620,481,169)
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(11,250,481,169)
+                        self.dlg.mGroupBox_12.setGeometry(10,230,481,391)
+                    self.dlg.mGroupBox_11.setGeometry(11,210,481,169)
+
+
+            else:
+                if self.dlg.mGroupBox_10.isCollapsed() == True:
+                    if self.dlg.mGroupBox_11.isCollapsed() == False:
+                        if self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(11,1140,481,169)
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(11,770,481,169)
+                        self.dlg.mGroupBox_12.setGeometry(10,750,481,391)
+                    if self.dlg.mGroupBox_11.isCollapsed() == True:
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(11,320,481,431)
+                        if self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(11,680,481,169)
+                        self.dlg.mGroupBox_12.setGeometry(10,300,481,391)
+                    self.dlg.mGroupBox_11.setGeometry(11,280,481,169)
+                self.dlg.mGroupBox_10.setGeometry(11,260,481,141)
+                if self.dlg.mGroupBox_10.isCollapsed() == False:
+                    if self.dlg.mGroupBox_11.isCollapsed() == True:
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(11,440,481,169)
+                        if self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(11,820,481,169)
+                        self.dlg.mGroupBox_12.setGeometry(10,420,481,391)
+                    if self.dlg.mGroupBox_11.isCollapsed() == False:
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(11,890,481,169)
+                        if self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(11,1260,481,169)
+                        self.dlg.mGroupBox_12.setGeometry(10,870,481,391)
+                    self.dlg.mGroupBox_11.setGeometry(11,400,481,169)
+            #self.dlg.mGroupBox_8.setFixedSize(481,20)
+            #self.dlg.mGroupBox_12.setGeometry(10,555,481,391)
             
-            #self.dlg.mGroupBox_4.setGeometry(11,710,481,251)
+        elif self.dlg.mGroupBox_8.isCollapsed() == False:
+            if self.dlg.mGroupBox_9.isCollapsed() == False:
+                if self.dlg.mGroupBox_10.isCollapsed() == False:
+                    if self.dlg.mGroupBox_11.isCollapsed() == True:
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(11,570,481,169)
+                        if self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(11,940,481,169)
+                        self.dlg.mGroupBox_12.setGeometry(10,550,481,391)
+                    if self.dlg.mGroupBox_11.isCollapsed() == False:
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(11,1040,481,169)
+                        if self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(10,1420,511,431)
+                        self.dlg.mGroupBox_12.setGeometry(10,1000,481,391)
+                    self.dlg.mGroupBox_11.setGeometry(11,520,481,169)
+                if self.dlg.mGroupBox_10.isCollapsed() == True:
+                    if self.dlg.mGroupBox_11.isCollapsed() == False:
+                        if self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(10,1270,511,431)
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(10,900,511,431)
+                        self.dlg.mGroupBox_12.setGeometry(10,880,481,391)
+                    if self.dlg.mGroupBox_11.isCollapsed() == True:
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(10,450,511,431)
+                        if self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(10,820,511,431)
+                        self.dlg.mGroupBox_12.setGeometry(10,430,481,391)
+                    self.dlg.mGroupBox_11.setGeometry(11,400,481,169)
+            if self.dlg.mGroupBox_9.isCollapsed() == True:
+                if self.dlg.mGroupBox_10.isCollapsed() == False:
+                    if self.dlg.mGroupBox_11.isCollapsed() == False:
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(10,950,511,431)
+                        if self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(10,1320,511,431)
+                        self.dlg.mGroupBox_12.setGeometry(10,930,481,391)
+                    if self.dlg.mGroupBox_11.isCollapsed() == True:
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(10,500,511,431)
+                        if self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(10,660,511,431)
+                        self.dlg.mGroupBox_12.setGeometry(10,480,481,391)
+
+                    self.dlg.mGroupBox_11.setGeometry(11,460,481,169)
+                self.dlg.mGroupBox_10.setGeometry(11,320,481,141)
+                if self.dlg.mGroupBox_10.isCollapsed() == True:
+                    if self.dlg.mGroupBox_11.isCollapsed() == False:
+                        if self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(10,1200,511,431)
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(10,830,511,431)
+                        self.dlg.mGroupBox_12.setGeometry(10,810,481,391)
+                    if self.dlg.mGroupBox_11.isCollapsed() == True:
+                        if self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(10,750,511,431)
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(10,380,511,431)
+                        self.dlg.mGroupBox_12.setGeometry(10,360,481,391)
+                    self.dlg.mGroupBox_11.setGeometry(11,340,481,169)
+            else:
+                self.dlg.mGroupBox_10.setGeometry(11,380,481,141)
+            self.dlg.mGroupBox_9.setGeometry(11,300,481,81)
+            
+            #self.dlg.mGroupBox_12.setGeometry(10,710,481,391)
+            #self.dlg.mGroupBox_8.setFixedSize(481,169)
+
+        #print(self.dlg.mGroupBox_8.isCollapsed())
+    def colapsar6(self):
+        if self.dlg.mGroupBox_8.isCollapsed() == True:
+            if self.dlg.mGroupBox_9.isCollapsed() == True:
+                self.dlg.mGroupBox_10.setGeometry(11,190,481,141)
+                if self.dlg.mGroupBox_10.isCollapsed() == True:
+                    if self.dlg.mGroupBox_11.isCollapsed() == False:
+                        if self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(10,1070,511,431)
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(10,700,511,431)
+                        self.dlg.mGroupBox_12.setGeometry(10,680,481,391)
+                    if self.dlg.mGroupBox_11.isCollapsed() == True:
+                        #if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            #self.dlg.mGroupBox_13.setGeometry(10,421,511,431)
+                        if self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(10,620,511,431)
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(10,250,511,431)
+                        self.dlg.mGroupBox_12.setGeometry(10,230,481,391)
+                    self.dlg.mGroupBox_11.setGeometry(11,210,481,169)
+                elif self.dlg.mGroupBox_10.isCollapsed() == False:
+                    if self.dlg.mGroupBox_11.isCollapsed() == True:
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(10,370,511,431)
+                        if self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(10,740,511,431)
+                        self.dlg.mGroupBox_12.setGeometry(10,350,481,391)
+                    if self.dlg.mGroupBox_11.isCollapsed() == False:
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(10,830,511,431)
+                        if self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(10,1200,511,431)
+                        self.dlg.mGroupBox_12.setGeometry(10,810,481,391)
+                    if self.dlg.mGroupBox_10.isCollapsed() == True:
+                        self.dlg.mGroupBox_11.setGeometry(11,226,481,169)
+                    self.dlg.mGroupBox_11.setGeometry(11,330,481,169)
+            elif self.dlg.mGroupBox_9.isCollapsed() == False:
+                if self.dlg.mGroupBox_10.isCollapsed() == False:
+                    if self.dlg.mGroupBox_11.isCollapsed() == True:
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(10,441,511,431)
+                        if self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(10,810,511,431)
+                        self.dlg.mGroupBox_12.setGeometry(10,420,481,391)
+                    if self.dlg.mGroupBox_11.isCollapsed() == False:
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(10,890,511,431)
+                        if self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(10,1250,511,431)
+                        self.dlg.mGroupBox_12.setGeometry(10,870,481,391)
+                    self.dlg.mGroupBox_11.setGeometry(11,400,481,169)
+                if self.dlg.mGroupBox_10.isCollapsed() == True:
+                    if self.dlg.mGroupBox_11.isCollapsed() == False:
+                        if self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(10,1140,511,431)
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(10,770,511,431)
+                        self.dlg.mGroupBox_12.setGeometry(10,750,481,391)
+                    if self.dlg.mGroupBox_11.isCollapsed() == True:
+                        if self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(10,690,511,431)
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(10,320,511,431)
+                        self.dlg.mGroupBox_12.setGeometry(10,300,481,391)
+                    self.dlg.mGroupBox_11.setGeometry(11,280,481,169)
+            
+                self.dlg.mGroupBox_10.setGeometry(11,260,481,141)
+                
+        else:
+            if self.dlg.mGroupBox_9.isCollapsed() == True:
+                if self.dlg.mGroupBox_10.isCollapsed() == False:
+                    if self.dlg.mGroupBox_11.isCollapsed() == True:
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(10,500,511,431)
+                        if self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(10,870,511,431)
+                        self.dlg.mGroupBox_12.setGeometry(10,480,481,391)
+                    if self.dlg.mGroupBox_11.isCollapsed() == False:
+                        if self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(10,1320,511,431)
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(10,950,511,431)
+                        self.dlg.mGroupBox_12.setGeometry(10,930,481,391)
+                    self.dlg.mGroupBox_11.setGeometry(11,460,481,169)
+                if self.dlg.mGroupBox_10.isCollapsed() == True:
+                    if self.dlg.mGroupBox_11.isCollapsed() == False:
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(10,830,511,431)
+                        if self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(10,1200,511,431)
+                        self.dlg.mGroupBox_12.setGeometry(10,810,481,391)
+                    if self.dlg.mGroupBox_11.isCollapsed() == True:
+                        if self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(10,750,511,431)
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(10,380,511,431)
+                        self.dlg.mGroupBox_12.setGeometry(10,360,481,391)
+                    self.dlg.mGroupBox_11.setGeometry(11,340,481,169)
+                self.dlg.mGroupBox_10.setGeometry(11,320,481,141)
+            elif self.dlg.mGroupBox_9.isCollapsed() == False:
+                if self.dlg.mGroupBox_10.isCollapsed() == False:
+                    if self.dlg.mGroupBox_11.isCollapsed() == True:
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(10,565,511,431)
+                        if self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(10,930,511,431)
+                        self.dlg.mGroupBox_12.setGeometry(10,540,481,391)
+                    if self.dlg.mGroupBox_11.isCollapsed() == False:
+                        if self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(10,1420,511,431)
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(10,1040,511,431)
+                        self.dlg.mGroupBox_12.setGeometry(10,1000,481,391)
+                    self.dlg.mGroupBox_11.setGeometry(11,520,481,169)
+                if self.dlg.mGroupBox_10.isCollapsed() == True:
+                    if self.dlg.mGroupBox_11.isCollapsed() == False:
+                        self.dlg.mGroupBox_12.setGeometry(10,870,481,391)
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(10,890,511,431)
+                        if self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(10,1260,511,431)
+                    if self.dlg.mGroupBox_11.isCollapsed() == True:
+                        if self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(10,810,511,431)
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(10,441,511,431)
+                        self.dlg.mGroupBox_12.setGeometry(10,421,481,391)
+                    self.dlg.mGroupBox_11.setGeometry(11,400,481,169)
+                self.dlg.mGroupBox_10.setGeometry(11,381,481,141)
+
+        #print(self.dlg.mGroupBox.isCollapsed())
+    def colapsar7(self):
+        if self.dlg.mGroupBox_8.isCollapsed() == True:
+            if self.dlg.mGroupBox_9.isCollapsed() == True:
+                if self.dlg.mGroupBox_10.isCollapsed() == True:
+                    if self.dlg.mGroupBox_11.isCollapsed() == False:
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(10,700,511,431)
+                        if self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(10,1070,511,431)
+                        self.dlg.mGroupBox_12.setGeometry(10,680,481,391)
+                    if self.dlg.mGroupBox_11.isCollapsed() == True:
+                        if self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(10,620,511,431)
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(10,250,511,431)
+                        self.dlg.mGroupBox_12.setGeometry(10,230,481,391)
+                    #self.dlg.mGroupBox_10.setFixedSize(481,20)
+                    if self.dlg.mGroupBox_11.isCollapsed() == False:
+                        self.dlg.mGroupBox_12.setGeometry(10,680,481,391)
+                    self.dlg.mGroupBox_11.setGeometry(11,210,481,169)
+                elif self.dlg.mGroupBox_10.isCollapsed() == False:
+                    if self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(10,660,511,431)
+                    if self.dlg.mGroupBox_11.isCollapsed() == True:
+                        if self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(10,740,511,431)
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(10,370,511,431)
+                        self.dlg.mGroupBox_12.setGeometry(10,350,481,391)
+                    if self.dlg.mGroupBox_11.isCollapsed() == False:
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(10,820,511,431)
+                        if self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(10,1190,511,431)
+                        self.dlg.mGroupBox_12.setGeometry(10,800,481,391)
+                    if self.dlg.mGroupBox_11.isCollapsed() == True:
+                        self.dlg.mGroupBox_12.setGeometry(10,350,481,391)
+                    self.dlg.mGroupBox_11.setGeometry(11,330,481,169)
+                    #self.dlg.mGroupBox_10.setFixedSize(481,169)
+            else:
+                if self.dlg.mGroupBox_10.isCollapsed() == True:
+                    if self.dlg.mGroupBox_11.isCollapsed() == True:
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(10,320,511,431)
+                        if self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(10,690,511,431)
+                        self.dlg.mGroupBox_12.setGeometry(10,300,481,391)
+                    if self.dlg.mGroupBox_11.isCollapsed() == False:
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(10,780,511,431)
+                        if self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(10,1160,511,431)
+                        self.dlg.mGroupBox_12.setGeometry(10,760,481,391)
+                    #self.dlg.mGroupBox_10.setFixedSize(481,20)
+                    self.dlg.mGroupBox_11.setGeometry(11,280,481,169)
+                elif self.dlg.mGroupBox_10.isCollapsed() == False:
+                    if self.dlg.mGroupBox_11.isCollapsed() == True:
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(10,440,511,431)
+                        if self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(10,810,511,431)
+                        self.dlg.mGroupBox_12.setGeometry(10,420,481,391)
+                    if self.dlg.mGroupBox_11.isCollapsed() == False:
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(10,890,511,431)
+                        if self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(10,1260,511,431)
+                        self.dlg.mGroupBox_12.setGeometry(10,870,481,391)
+                    #self.dlg.mGroupBox_10.setFixedSize(481,169)
+                    self.dlg.mGroupBox_11.setGeometry(11,400,481,169)
+        else:
+            if self.dlg.mGroupBox_9.isCollapsed() == True:
+                if self.dlg.mGroupBox_10.isCollapsed() == True:
+                    if self.dlg.mGroupBox_11.isCollapsed() == False:
+                        if self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(10,1200,511,431)
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(10,830,511,431)
+                        self.dlg.mGroupBox_12.setGeometry(10,810,481,391)
+                    if self.dlg.mGroupBox_11.isCollapsed() == True:
+                        if self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(10,750,511,431)
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(10,380,511,431)
+                        self.dlg.mGroupBox_12.setGeometry(10,360,481,391)
+                    #self.dlg.mGroupBox_10.setFixedSize(481,20)
+                    self.dlg.mGroupBox_11.setGeometry(11,340,481,169)
+                elif self.dlg.mGroupBox_10.isCollapsed() == False:
+                    if self.dlg.mGroupBox_11.isCollapsed() == True:
+                        if self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(10,870,511,431)
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(10,500,511,431)
+                        self.dlg.mGroupBox_12.setGeometry(10,480,481,391)
+                    if self.dlg.mGroupBox_11.isCollapsed() == False:
+                        if self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(10,1320,511,431)
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(10,950,511,431)
+                        self.dlg.mGroupBox_12.setGeometry(10,930,481,391)
+                    self.dlg.mGroupBox_11.setGeometry(11,460,481,169)
+                    #self.dlg.mGroupBox_10.setFixedSize(481,169)
+            else:
+                
+                if self.dlg.mGroupBox_10.isCollapsed() == True:
+                    if self.dlg.mGroupBox_11.isCollapsed() == True:
+                        if self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(10,810,511,431)
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(10,441,511,431)
+                        self.dlg.mGroupBox_12.setGeometry(10,421,481,391)
+                    if self.dlg.mGroupBox_11.isCollapsed() == False:
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(10,890,511,431)
+                        if self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(10,1260,511,431)
+                        self.dlg.mGroupBox_12.setGeometry(10,870,481,391)
+                    #self.dlg.mGroupBox_10.setFixedSize(481,20)
+                    self.dlg.mGroupBox_11.setGeometry(11,400,481,169)
+                elif self.dlg.mGroupBox_10.isCollapsed() == False:
+                    if self.dlg.mGroupBox_11.isCollapsed() == True:
+                        if self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(10,930,511,431)
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(10,560,511,431)
+                        self.dlg.mGroupBox_12.setGeometry(10,540,481,391)
+                    if self.dlg.mGroupBox_11.isCollapsed() == False:
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(10,1040,511,431)
+                        if self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(10,1420,511,431)
+                        self.dlg.mGroupBox_12.setGeometry(10,1000,481,391)
+                    #self.dlg.mGroupBox_10.setFixedSize(481,169)
+                    self.dlg.mGroupBox_11.setGeometry(11,520,481,169)
+
+        #print(self.dlg.mGroupBox_10.isCollapsed())
+    def colapsar8(self):
+        if self.dlg.mGroupBox_8.isCollapsed() == True:
+            if self.dlg.mGroupBox_9.isCollapsed() == True:
+                if self.dlg.mGroupBox_10.isCollapsed() == True:
+                    if self.dlg.mGroupBox_11.isCollapsed() == True:
+                        if self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(10,600,511,431)
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(10,250,511,431)
+                        self.dlg.mGroupBox_12.setGeometry(10,230,481,391)
+                    elif self.dlg.mGroupBox_11.isCollapsed() == False:
+                        if self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(10,1070,511,431)
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(10,700,511,431)
+                        self.dlg.mGroupBox_12.setGeometry(10,680,481,391)
+                else:
+                    if self.dlg.mGroupBox_11.isCollapsed() == True:
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(10,370,511,431)
+                        if self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(10,740,511,431)
+                        self.dlg.mGroupBox_12.setGeometry(10,350,481,391)
+                    elif self.dlg.mGroupBox_11.isCollapsed() == False:
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(10,820,511,431)
+                        if self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(10,1190,511,431)
+                        self.dlg.mGroupBox_12.setGeometry(10,800,481,391)
+            else:
+                if self.dlg.mGroupBox_10.isCollapsed() == True:
+                    if self.dlg.mGroupBox_11.isCollapsed() == True:
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(10,320,511,431)
+                        if self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(10,690,511,431)
+                        self.dlg.mGroupBox_12.setGeometry(10,300,481,391)
+                    elif self.dlg.mGroupBox_11.isCollapsed() == False:
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(10,770,511,431)
+                        if self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(10,1140,511,431)
+                        self.dlg.mGroupBox_12.setGeometry(10,750,481,391)
+                else:
+                    if self.dlg.mGroupBox_11.isCollapsed() == True:
+                        if self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(10,810,511,431)
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(10,441,511,431)
+                        self.dlg.mGroupBox_12.setGeometry(10,420,481,391)
+                    elif self.dlg.mGroupBox_11.isCollapsed() == False:
+                        if self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(10,1260,511,431)
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(10,890,511,431)
+                        self.dlg.mGroupBox_12.setGeometry(10,870,481,391)
+        else:
+            if self.dlg.mGroupBox_9.isCollapsed() == True:
+                if self.dlg.mGroupBox_10.isCollapsed() == True:
+                    if self.dlg.mGroupBox_11.isCollapsed() == True:
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(10,380,511,431)
+                        if self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(10,750,511,431)
+                        self.dlg.mGroupBox_12.setGeometry(10,360,481,391)
+                    elif self.dlg.mGroupBox_11.isCollapsed() == False:
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(10,830,511,431)
+                        if self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(10,1200,511,431)
+                        self.dlg.mGroupBox_12.setGeometry(10,810,481,391)
+                else:
+                    if self.dlg.mGroupBox_11.isCollapsed() == True:
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(10,500,511,431)
+                        if self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(10,870,511,431)
+                        self.dlg.mGroupBox_12.setGeometry(10,480,481,391)
+                    elif self.dlg.mGroupBox_11.isCollapsed() == False:
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(10,950,511,431)
+                        if self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(10,1320,511,431)
+                        self.dlg.mGroupBox_12.setGeometry(10,930,481,391)
+            else:
+                if self.dlg.mGroupBox_10.isCollapsed() == True:
+                    if self.dlg.mGroupBox_11.isCollapsed() == True:
+                        if self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(10,810,511,431)
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(10,441,511,431)
+                        self.dlg.mGroupBox_12.setGeometry(10,420,481,391)
+                    elif self.dlg.mGroupBox_11.isCollapsed() == False:
+                        if self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(10,1260,511,431)
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(10,890,511,431)
+                        self.dlg.mGroupBox_12.setGeometry(10,870,481,391)
+                else:
+                    if self.dlg.mGroupBox_11.isCollapsed() == True:
+                        if self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(10,940,511,431)
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(10,560,511,431)
+                        self.dlg.mGroupBox_12.setGeometry(10,540,481,391)
+                    elif self.dlg.mGroupBox_11.isCollapsed() == False:
+                        if self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(10,1400,511,431)
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(10,1020,511,431)
+                        self.dlg.mGroupBox_12.setGeometry(10,1000,481,391)
+
+        #print(self.dlg.mGroupBox_10.isCollapsed())
+
+    def colapsar9(self):
+        if self.dlg.mGroupBox_8.isCollapsed() == True:
+            if self.dlg.mGroupBox_9.isCollapsed() == True:
+                if self.dlg.mGroupBox_10.isCollapsed() == True:
+                    if self.dlg.mGroupBox_11.isCollapsed() == True:
+                    
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(10,250,511,431)
+                        elif self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(10,620,511,431)
+                    else:
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(10,700,511,431)
+                        elif self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(10,1070,511,431)
+                else:
+                    if self.dlg.mGroupBox_11.isCollapsed() == True:
+                    
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(10,370,511,431)
+                        elif self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(10,740,511,431)
+                    else:
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(10,830,511,431)
+                        elif self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(10,1200,511,431)
+            else:
+                if self.dlg.mGroupBox_10.isCollapsed() == True:
+                    if self.dlg.mGroupBox_11.isCollapsed() == True:
+                    
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(10,320,511,431)
+                        elif self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(10,700,511,431)
+                    else:
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(10,780,511,431)
+                        elif self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(10,1160,511,431)
+                else:
+                    if self.dlg.mGroupBox_11.isCollapsed() == True:
+                    
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(10,441,511,431)
+                        elif self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(10,820,511,431)
+                    else:
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(10,890,511,431)
+                        elif self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(10,1260,511,431)
+        else:
+            if self.dlg.mGroupBox_9.isCollapsed() == True:
+                if self.dlg.mGroupBox_10.isCollapsed() == True:
+                    if self.dlg.mGroupBox_11.isCollapsed() == True:
+                    
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(10,380,511,431)
+                        elif self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(10,750,511,431)
+                    else:
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(10,830,511,431)
+                        elif self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(10,1200,511,431)
+                else:
+                    if self.dlg.mGroupBox_11.isCollapsed() == True:
+                    
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(10,501,511,431)
+                        elif self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(10,870,511,431)
+                    else:
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(10,950,511,431)
+                        elif self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(10,1320,511,431)
+            else:
+                if self.dlg.mGroupBox_10.isCollapsed() == True:
+                    if self.dlg.mGroupBox_11.isCollapsed() == True:
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(10,441,511,431)
+                        elif self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(10,810,511,431)
+                    else:
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(10,890,511,431)
+                        elif self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(10,1260,511,431)
+                else:
+                    if self.dlg.mGroupBox_11.isCollapsed() == True:
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(10,555,511,431)
+                        elif self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(10,930,511,431)
+                    else:
+                        if self.dlg.mGroupBox_12.isCollapsed() == True:
+                            self.dlg.mGroupBox_13.setGeometry(10,1020,511,431)
+                        elif self.dlg.mGroupBox_12.isCollapsed() == False:
+                            self.dlg.mGroupBox_13.setGeometry(10,1420,511,431)
+            #self.dlg.mGroupBox_12.setGeometry(10,710,481,391)
     def fun7(self):
         self.CCV = CertCveValor.selectDirectory2(self) 
     def fun8(self):
@@ -741,6 +1571,428 @@ class menu:
         self.ACA.pintarCapas()
         self.ACA.UTI = self.UTI
         self.cargacombo()
+    def cancelarFusion(self):
+        self.dlg.comboBox.clear()
+        self.dlg.label_38.setText('-----')
+        self.dlg.label_40.setText('-----')
+        self.dlg.label_42.setText('-----')
+        self.dlg.label_44.setText('-----')
+        self.dlg.comboBox.setEnabled(False)
+        self.dlg.label_38.setEnabled(False)
+        self.dlg.label_40.setEnabled(False)
+        self.dlg.label_42.setEnabled(False)
+        #self.dlg.btnApagarHerramientas.setEnabled(False)
+        #self.dlg.btnConfirmarCortes.setEnabled(False)
+        #self.dlg.btnDeshacerTodo.setEnabled(False)
+
+        self.dlg.label_44.setEnabled(False)
+        self.dlg.btnConfirmar.setEnabled(False)
+        self.dlg.btnCancelar.setEnabled(False)
+    def validar(self):
+        self.dlg.listWidget.clear()
+        self.dlg.listWidget_2.clear()
+        self.dlg.listWidget_3.clear()
+        self.dlg.listWidget_4.clear()
+        self.dlg.listWidget_5.clear()
+        self.dlg.listWidget_6.clear()
+        self.dlg.listWidget_7.clear()
+        self.dlg.listWidget_8.clear()
+        self.dlg.mGroupBox_14.setTitle('Manzana    ')
+        self.dlg.mGroupBox_15.setTitle('Predio    ')
+        self.dlg.mGroupBox_16.setTitle('Predio Num    ')
+        self.dlg.mGroupBox_17.setTitle('Construcciones   ')
+        self.dlg.mGroupBox_18.setTitle('Horizontales Geom    ')
+        self.dlg.mGroupBox_19.setTitle('Horizontales Num    ')
+        self.dlg.mGroupBox_20.setTitle('Verticales    ')
+        self.dlg.mGroupBox_21.setTitle('Cves Verticales   ')
+        self.TPG.DFS = self.DFS
+        self.TPG.DBJ = self.DBJ
+        self.TPG.ELM = self.ELM
+        self.TPG.DFS = self.DFS
+        self.TPG.CMS = self.CMS
+        self.todoEnOrden = True
+        if self.todoEnOrden:
+            self.TPG.validarTopologiaManual()
+            self.manual()
+            print(self.todoEnOrden)
+
+    def llenaTablaErrores(self):
+        if self.TPG.reglas.cuentaError > 0:
+            manzanasTotales = self.xManzana.featureCount()
+            prediosTotales = self.xPredGeom.featureCount()
+            prediosnumTotales = self.xPredNum.featureCount()
+            constTotales = self.xConst.featureCount()
+            horizontalesTotales = self.xHoriGeom.featureCount()
+            horizontalesnumTotales = self.xHoriNum.featureCount()
+            verticalesTotales = self.xVert.featureCount()
+            verticalescveTotales = self.xCvesVert.featureCount()
+            self.todoEnOrden = False
+            self.todoEnOrdenRef = False
+            if self.TPG.reglas.stringError.count('manzana') >= 1:
+                item = self.TPG.reglas.stringError
+                self.dlg.listWidget.addItem(item)
+                if manzanasTotales >=1:
+                    self.dlg.mGroupBox_14.setTitle('Manzana    ' + 'Analizados: ' + str(manzanasTotales) + '  Errores  ' + str(self.dlg.listWidget.count()))
+
+                    
+            elif self.TPG.reglas.stringError.count('predios.geom') >= 1:
+                item = self.TPG.reglas.stringError
+                self.dlg.listWidget_2.addItem(item)
+                if prediosTotales >=1:
+                    self.dlg.mGroupBox_15.setTitle('Predio    ' + 'Analizados: ' + str(prediosTotales) + '  Errores  ' + str(self.dlg.listWidget_2.count()))
+
+            elif self.TPG.reglas.stringError.count('predios.num') >= 1:
+                item = self.TPG.reglas.stringError
+                self.dlg.listWidget_3.addItem(item)
+                if prediosnumTotales >=1:
+                    self.dlg.mGroupBox_16.setTitle('Predio num   ' + 'Analizados: ' + str(prediosnumTotales) + '  Errores  ' + str(self.dlg.listWidget_3.count()))
+
+            elif self.TPG.reglas.stringError.count('construcciones') >= 1:
+                item = self.TPG.reglas.stringError
+                self.dlg.listWidget_4.addItem(item)
+                if constTotales >=1:
+                    self.dlg.mGroupBox_17.setTitle('Construcciones    ' + 'Analizados: ' + str(constTotales) + '  Errores  ' + str(self.dlg.listWidget_4.count()))
+
+            elif self.TPG.reglas.stringError.count('horizontales.geom') >= 1:
+                item = self.TPG.reglas.stringError
+                self.dlg.listWidget_5.addItem(item)
+                if horizontalesTotales >=1:
+                    self.dlg.mGroupBox_18.setTitle('Horizontales Geom    ' + 'Analizados: ' + str(horizontalesTotales) + '  Errores  ' + str(self.dlg.listWidget_5.count()))
+
+            elif self.TPG.reglas.stringError.count('horizontales.num') >= 1:
+                item = self.TPG.reglas.stringError
+                self.dlg.listWidget_6.addItem(item)
+                if horizontalesnumTotales >=1:
+                    self.dlg.mGroupBox_19.setTitle('Horizontales Num    ' + 'Analizados: ' + str(horizontalesnumTotales) + '  Errores  ' + str(self.dlg.listWidget_6.count()))
+
+            elif self.TPG.reglas.stringError.count('verticales') >= 1:
+                item = self.TPG.reglas.stringError
+                self.dlg.listWidget_7.addItem(item)
+                if verticalesTotales >=1:
+                    self.dlg.mGroupBox_20.setTitle('Verticales    ' + 'Analizados: ' + str(verticalesTotales) + '  Errores  ' + str(self.dlg.listWidget_7.count()))
+
+            elif self.TPG.reglas.stringError.count('cves_verticales') >= 1:
+                item = self.TPG.reglas.stringError
+                self.dlg.listWidget_8.addItem(item)
+                if verticalescveTotales >=1:
+                    self.dlg.mGroupBox_21.setTitle('Cves Verticales    ' + 'Analizados: ' + str(verticalescveTotales) + '  Errores  ' + str(self.dlg.listWidget_8.count()))
+
+    def validarClavesNoRepetida(self, nomCapa):
+        self.TPG.reglas.validarClaveNoRepetida(nomCapa)
+        self.llenaTablaErrores()
+#############################################################################################################
+
+    def validarIntersecciones(self, nombreCapa1, nombreCapa2):
+        
+        self.TPG.reglas.validarIntersecciones(nombreCapa1, nombreCapa2)
+        self.llenaTablaErrores()
+
+###############################################################################################################
+
+    def validarCobertura(self, nombreBase, nombreCobertura):
+        
+        self.TPG.reglas.validarCobertura(nombreBase, nombreCobertura)
+        self.llenaTablaErrores()
+
+###############################################################################################################
+
+    def validarInclusion(self, nombreObjetos, nombreContenedor):
+        
+        self.TPG.reglas.validarInclusion(nombreObjetos, nombreContenedor)
+        self.llenaTablaErrores()
+
+###################################################################################################################
+
+    def validarPoligonosInvalidos(self, nombreCapa):
+        
+        self.TPG.reglas.validarPoligonosInvalidos(nombreCapa)
+        self.llenaTablaErrores()
+
+#####################################################################################################################
+
+    def validarAnillos(self, nombreCapa):
+        
+        self.TPG.reglas.validarAnillos(nombreCapa)
+        self.llenaTablaErrores()
+
+######################################################################################################################
+
+    def validarMultipartes(self, nombreCapa):
+        
+        self.TPG.reglas.validarMultipartes(nombreCapa)
+        self.llenaTablaErrores()
+
+#########################################################################################################################
+
+    def validarDuplicados(self, nombreCapa):
+        
+        self.TPG.reglas.validarDuplicados(nombreCapa)
+        self.llenaTablaErrores()
+
+###########################################################################################################################
+
+    def validarOverlapLineas(self, nombreCapa):
+        
+        self.TPG.reglas.validarOverlapLineas(nombreCapa)
+        self.llenaTablaErrores()
+
+############################################################################################################################
+
+    def validarCompartido(self, nombreObj, nombreBase):
+        
+        self.TPG.reglas.validarCompartido(nombreObj, nombreBase)
+        self.llenaTablaErrores()
+##############################################################################################################################
+
+    def validarTocar(self, nombreObj, nombreBase):
+        
+        self.TPG.reglas.validarTocar(nombreObj, nombreBase)
+        self.llenaTablaErrores()
+###############################################################################################################################
+
+    def validarPuntoEnPoligono(self, nombrePunto, nombrePoligono):
+        self.TPG.reglas.validarPuntoEnPoligono(nombrePunto, nombrePoligono)
+        self.llenaTablaErrores()
+
+###############################################################################################################################
+
+    def validarToqueCompartido(self, nombreObj, nombreBase):
+            self.TPG.reglas.validarToqueCompartido(nombreObj, nombreBase)
+            self.llenaTablaErrores()
+###############################################################################################################################
+
+    def validarPoligonosDuplicados(self, nombreCapa):
+        
+        self.TPG.reglas.validarPoligonosDuplicados(nombreCapa)
+        self.llenaTablaErrores()
+
+#############################################################################################################################
+
+    def validarSoloUnPunto(self, nombrePunto, nombrePoligono):
+        self.TPG.reglas.validarSoloUnPunto(nombrePunto, nombrePoligono)
+        self.llenaTablaErrores()
+
+    def validarCampoNoNulo(self, capa, campo):
+        
+        self.TPG.reglas.validarCampoNoNulo(capa, campo)
+        self.llenaTablaErrores()
+
+###################################################################################
+
+    def validarCampoNoNuloDoble(self, capa, campo1, campo2):
+        
+        self.TPG.reglas.validarCampoNoNuloDoble(capa, campo1, campo2)
+        self.llenaTablaErrores()
+
+##########################################################################################
+
+    def validarCamposDuplicados(self, capaContenedor, capaObjeto, campo):
+        
+        self.TPG.reglas.validarCamposDuplicados(capaContenedor, capaObjeto, campo)
+        self.llenaTablaErrores()
+################################################################################################################################
+
+    def validarAlMenosUnPunto(self, nombrePunto, nombrePoligono):
+        self.TPG.reglas.validarAlMenosUnPunto(nombrePunto, nombrePoligono)
+        self.llenaTablaErrores()
+    def validarLongitudCampo(self, capa, campo, longitud):
+        self.TPG.reglas.validarLongitudCampo(capa, campo, longitud)
+        self.llenaTablaErrores()
+    def validarInscritasEnPrediosIrregulares(self):
+        
+        self.TPG.reglas.validarInscritasEnPrediosIrregulares()
+        self.llenaTablaErrores()
+
+##############################################################################################
+
+
+    def validarAreasInscritasCuadraditas(self):
+        
+        self.TPG.reglas.validarAreasInscritasCuadraditas()
+        self.llenaTablaErrores()
+
+##############################################################################################
+
+    def validarCantidadAreasInscritas(self):
+        
+        self.TPG.reglas.validarCantidadAreasInscritas()
+        self.llenaTablaErrores()
+    def manual(self):
+        self.ACA.obtenerXCapas()
+        self.validarClavesNoRepetida('manzana')
+        self.validarClavesNoRepetida('predios.geom')
+        self.validarClavesNoRepetida('horizontales.geom')
+        self.validarClavesNoRepetida('verticales')
+
+        self.TPG.validaClavesInvalidasManzanasPredios()
+        
+        self.validarIntersecciones(self.xPredGeom, self.xPredGeom)
+        self.validarIntersecciones(self.xManzana, self.xManzana)
+        self.validarIntersecciones(self.xHoriGeom, self.xHoriGeom)
+        self.validarIntersecciones(self.xHoriGeom, self.xVert)
+        
+        self.validarCobertura(self.xManzana, self.xPredGeom)
+        
+        self.validarInclusion(self.xPredGeom, self.xManzana)
+        
+        self.validarAnillos(self.xPredGeom)
+        self.validarAnillos(self.xManzana)
+        self.validarAnillos(self.xVert)
+        self.validarAnillos(self.xHoriGeom)
+    
+        self.validarMultipartes(self.xManzana)
+        self.validarMultipartes(self.xPredGeom)
+        self.validarMultipartes(self.xConst)
+        self.validarMultipartes(self.xHoriGeom)
+        self.validarMultipartes(self.xVert)
+        
+        self.validarDuplicados(self.xCvesVert)
+        self.validarDuplicados(self.xPredNum)
+        self.validarDuplicados(self.xVert)
+        
+        self.validarToqueCompartido(self.xConst, self.xPredGeom)
+        
+        self.validarPuntoEnPoligono(self.xCvesVert, self.xVert)
+        self.validarPuntoEnPoligono(self.xPredNum, self.xPredGeom)
+        self.validarPuntoEnPoligono(self.xHoriNum, self.xHoriGeom)
+
+        self.validarSoloUnPunto(self.xPredNum, self.xPredGeom)
+        self.validarSoloUnPunto(self.xHoriNum, self.xHoriGeom)
+
+        self.validarAlMenosUnPunto(self.xCvesVert, self.xVert)
+
+        self.validarPoligonosDuplicados(self.xConst)
+
+        self.validarInscritasEnPrediosIrregulares()
+        self.validarAreasInscritasCuadraditas()
+        self.validarCantidadAreasInscritas()
+        
+        self.validarLongitudCampo(self.xManzana, 'clave', 3)
+        self.validarLongitudCampo(self.xPredGeom, 'clave', 2)
+        self.validarLongitudCampo(self.xHoriGeom, 'clave', 6)
+        self.validarLongitudCampo(self.xVert, 'clave', 2)
+        self.validarLongitudCampo(self.xCvesVert, 'clave', 4)
+
+        self.validarCampoNoNulo(self.xManzana, 'clave')
+        self.validarCampoNoNulo(self.xPredGeom, 'clave')
+        self.validarCampoNoNulo(self.xPredNum, 'numExt')
+        self.validarCampoNoNulo(self.xConst, 'nom_volumen')
+        self.validarCampoNoNuloDoble(self.xConst, 'num_niveles', 'cve_const_esp')
+        self.validarCampoNoNulo(self.xHoriGeom, 'clave')
+        self.validarCampoNoNulo(self.xHoriNum, 'num_ofi')
+        self.validarCampoNoNulo(self.xVert, 'clave')
+        self.validarCampoNoNulo(self.xCvesVert, 'clave')
+        
+        
+        #self.validarCamposDuplicados(self.xManzana, self.xPredGeom, 'clave')
+        self.TPG.validarCamposDuplicados(self.xPredGeom, self.xConst, 'nom_volumen')
+    def fusion(self):
+        self.dlg.comboBox.clear()
+        self.DFS.CFG = self.CFG
+        self.DFS.UTI = self.UTI
+        self.DFS.DFS = self.DFS
+        self.DFS.DBJ = self.DBJ
+        self.DFS.ELM = self.ELM
+        self.DFS.ACA = self.ACA
+        self.DFS.TPG = self.TPG
+        self.DFS.preguntarFusion()
+        if iface.activeLayer() != None:
+            seleccion = self.iface.activeLayer().selectedFeatures()
+            if len(seleccion) == 2:
+                for i in seleccion:
+                    self.dlg.comboBox.addItem(str(i['clave']))
+        else:
+            self.UTI.mostrarAlerta('La fusion requiere la seleccion de exactamente 2 predios contiguos', QMessageBox().Critical, 'Error de fusion')
+        self.dlg.comboBox.setEnabled(True)
+        self.dlg.label_38.setEnabled(True)
+        self.dlg.label_40.setEnabled(True)
+        self.dlg.label_42.setEnabled(True)
+        #self.dlg.btnApagarHerramientas.setEnabled(True)
+        #self.dlg.btnConfirmarCortes.setEnabled(True)
+        #self.dlg.btnDeshacerTodo.setEnabled(True)
+
+        self.dlg.label_44.setEnabled(True)
+        self.dlg.btnConfirmar.setEnabled(True)
+        self.dlg.btnCancelar.setEnabled(True)
+    def confusion(self):
+        self.current = self.dlg.comboBox.currentIndex()
+        self.DFS.CFG = self.CFG
+        self.DFS.UTI = self.UTI
+        self.DFS.DFS = self.DFS
+        self.DFS.DBJ = self.DBJ
+        self.DFS.ELM = self.ELM
+        self.DFS.ACA = self.ACA
+        self.DFS.TPG = self.TPG
+        self.DFS.fusionarPredios(self.current)
+    def indexcombo(self):
+        listaPredio =[]
+        #self.consumirPredios()
+        self.cla = self.dlg.comboBox.currentText()
+        if iface.activeLayer() != None:
+            listaPredio.clear()
+            seleccion = self.iface.activeLayer().selectedFeatures()
+            self.VentanaFusion.dlg.close()
+            if self.DFS.validarCuentaSeleccion(): #Si la seleccion es valida
+                for i in seleccion:
+                    self.id = self.DFS.consumeWSGeneral(url_cons = self.CFG.url_AU_getAllfactures + str(i['id']) )
+                    if not self.id:
+                        return
+                    listaPredio.append(self.id)
+                #print(listaPredio)
+                if self.dlg.comboBox.currentIndex() == 0:      
+                    self.dlg.label_38.setText(str(listaPredio[0]['numExt']))
+                    self.dlg.label_40.setText(str(listaPredio[0]['fondo']))
+                    self.dlg.label_42.setText(str(listaPredio[0]['frente']))
+                    self.dlg.label_44.setText(str(listaPredio[0]['supTerr']))
+                if self.dlg.comboBox.currentIndex() == 1:
+                    self.dlg.label_38.setText(str(listaPredio[1]['numExt']))
+                    self.dlg.label_40.setText(str(listaPredio[1]['fondo']))
+                    self.dlg.label_42.setText(str(listaPredio[1]['frente']))
+                    self.dlg.label_44.setText(str(listaPredio[1]['supTerr'])) 
+        
+            
+    def seleccionar(self):
+        self.capaPredio = None
+        self.capaPredio = QgsProject.instance().mapLayer(self.DFS.ACA.obtenerIdCapa('predios.geom'))
+
+        if self.capaPredio:
+            self.capaPredio.selectionChanged.connect(self.VentanaClaves.cargarAsignacionManual)
+        self.seleccion = self.capaPredio.selectedFeatures()
+        self.VentanaClaves.seleccion = self.seleccion
+        if self.capaPredio == None:
+            return
+        else:
+            if len(self.seleccion) == 1:
+                if self.dlg.RdAuto.isChecked() == True:
+                    textoItem = str(self.seleccion[0]['clave'])
+                    self.dlg.lineEdit.setText(textoItem)
+                if self.dlg.RdManual.isChecked() == True:
+                    textoItem = str(self.seleccion[0]['clave'])
+                    self.dlg.lineEdit_2.setText(textoItem)
+    def AsignarClave(self):
+        if self.dlg.RdAuto.isChecked() == True:
+            self.dlg.RdManual.setChecked(False)
+            self.VentanaClaves.predioOriginal = self.predioEnDivision
+            self.VentanaClaves.obtieneCapaPredios()
+            self.VentanaClaves.asignacionAutomatica()
+        if self.dlg.RdManual.isChecked() == True:
+            self.capaPredio = None
+            self.capaPredio = QgsProject.instance().mapLayer(self.DFS.ACA.obtenerIdCapa('predios.geom'))
+
+            if self.capaPredio:
+                self.capaPredio.selectionChanged.connect(self.VentanaClaves.cargarAsignacionManual)
+            self.seleccion = self.capaPredio.selectedFeatures()
+            self.VentanaClaves.seleccion = self.seleccion
+            if self.capaPredio == None:
+                return
+            else:
+                if len(self.seleccion) == 1:
+                    self.VentanaClaves.predioOriginal = self.predioEnDivision
+                    self.VentanaClaves.obtieneCapaPredios()
+                    tex = self.dlg.lineEdit_2.text()
+                    self.VentanaClaves.asignacionDesManual(tex)  
+                    self.dlg.RdAuto.setChecked(False)
+
     def cargarsub(self):
         self.DFS.CFG = self.CFG
         self.DFS.UTI = self.UTI
@@ -775,6 +2027,9 @@ class menu:
         self.DFS.ACA = self.ACA
         self.DFS.TPG = self.TPG
         self.DFS.cancelarSubdivision()
+        self.eventos.modoDividir = False
+        self.eventos.modoEliminar = False
+        self.eventos.modoEditar = False
         self.dlg.comboPredios.setEnabled(True)
         self.dlg.btnDibujarCortes.setEnabled(False)
         self.dlg.btnEditarCortes.setEnabled(False)
@@ -794,12 +2049,22 @@ class menu:
         self.DFS.ELM = self.ELM
         self.DFS.ACA = self.ACA
         self.DFS.TPG = self.TPG
-        self.geomEnDivision
-        geoTemp = QgsGeometry.fromWkt(self.geomEnDivision.asWkt())
+        self.predio = self.dlg.comboPredios.currentText()
+        #self.geomEnDivision = QgsGeometry()
+        #self.predioEnDivision = None
+        capaPredios = QgsProject.instance().mapLayer(self.ACA.obtenerIdCapa('predios.geom'))
+        for predio in capaPredios.getFeatures(): #Obtenemos el feature a dividr con base en la clave elegida
+            if predio.attributes()[0] == self.predio:
+                self.predioEnDivision = predio
+                break
+        self.geomEnDivision = self.predioEnDivision.geometry()
+        geo = QgsGeometry.fromWkt(self.geomEnDivision.asWkt())
         #self.gem = QgsGeometry.fromWkt(self.geomEnDivision.asWkt())
-        corte = len(self.evento.relaciones) - 1
-        print(corte)
-        self.DFS.confirmarCortes(corte)
+        corte = len(self.eventos.relaciones) - 1
+        
+        self.confirmarCortes(corte, geo)
+        
+
     def areas(self):
         self.DFS.CFG = self.CFG
         self.DFS.UTI = self.UTI
@@ -821,9 +2086,9 @@ class menu:
         self.dlg.btnCancelarSub.setEnabled(True)
         self.dlg.btnLlamarCalcular.setEnabled(True)
     def eliminarcortes(self):
-        self.evento.modoDividir = False
-        self.evento.modoEliminar = True
-        self.evento.modoEditar = False
+        self.eventos.modoDividir = False
+        self.eventos.modoEliminar = True
+        self.eventos.modoEditar = False
         self.dlg.comboPredios.setEnabled(False)
         self.dlg.btnDibujarCortes.setEnabled(True)
         self.dlg.btnEditarCortes.setEnabled(True)
@@ -837,14 +2102,14 @@ class menu:
         self.dlg.btnLlamarCalcular.setEnabled(True)
         #iface.mapCanvas().setCursor(self.DBJ.evento.cursorCuadro)
         iface.mapCanvas().setCursor(self.UTI.cursorCuadro)
-        if self.evento.botonAD.isChecked():
-            self.evento.botonAD.trigger()
+        if self.eventos.botonAD.isChecked():
+            self.eventos.botonAD.trigger()
     def editarcorte(self):
         #self.evento = EventoDivision(iface.mapCanvas(), self, iface.cadDockWidget())
         #iface.mapCanvas().setMapTool(self.evento)
-        self.evento.modoDividir = False
-        self.evento.modoEliminar = False
-        self.evento.modoEditar = True
+        self.eventos.modoDividir = False
+        self.eventos.modoEliminar = False
+        self.eventos.modoEditar = True
         self.dlg.comboPredios.setEnabled(False)
         self.dlg.btnDibujarCortes.setEnabled(True)
         self.dlg.btnEditarCortes.setEnabled(False)
@@ -856,16 +2121,17 @@ class menu:
         self.dlg.btnSubdividir.setEnabled(True)
         self.dlg.btnCancelarSub.setEnabled(True)
         self.dlg.btnLlamarCalcular.setEnabled(True)
-        #iface.mapCanvas().setCursor(self.DBJ.eventos.cursorRedondo)
+        #iface.mapCanvas().setCursor(self.DBJ.eventoss.cursorRedondo)
         iface.mapCanvas().setCursor(self.UTI.cursorRedondo)
-        if not self.evento.botonAD.isChecked():
-            self.evento.botonAD.trigger()
+        if not self.eventos.botonAD.isChecked():
+            self.eventos.botonAD.trigger()
     def dibujarcorte(self):
+        self.DFS.encenderModoDividir()
         #self.evento = EventoDivision(iface.mapCanvas(), self, iface.cadDockWidget())
         #iface.mapCanvas().setMapTool(self.evento)
-        self.evento.modoDividir = True
-        self.evento.modoEliminar = False
-        self.evento.modoEditar = False
+        self.eventos.modoDividir = True
+        self.eventos.modoEliminar = False
+        self.eventos.modoEditar = False
         self.dlg.comboPredios.setEnabled(False)
         self.dlg.btnDibujarCortes.setEnabled(False)
         self.dlg.btnEditarCortes.setEnabled(True)
@@ -878,8 +2144,8 @@ class menu:
         self.dlg.btnCancelarSub.setEnabled(True)
         self.dlg.btnLlamarCalcular.setEnabled(True)
         iface.mapCanvas().setCursor(self.UTI.cursorRedondo)
-        if not self.evento.botonAD.isChecked():
-            self.evento.botonAD.trigger()
+        if not self.eventos.botonAD.isChecked():
+            self.eventos.botonAD.trigger()
     def cargacombo(self):
         self.dlg.comboPredios.clear()
         lista = []
@@ -914,7 +2180,7 @@ class menu:
         self.combo = self.dlg.comboCapaReferencia_2.currentText()
         self.check = self.dlg.checkTodasGeom_2.isChecked()
         self.ACA.intermediarioReferencia(self.combo, self.check)
-    def funlimpiar(self):
+    def funlimpiars(self):
         self.ACA.limpiarReferencias()
         #print(self.combo)
     def llenarComboReferencias(self):
@@ -1431,7 +2697,7 @@ class menu:
         self.dlg.btnInterRev.clicked.connect(self.ira10)
         self.dlg.btnInterPad.clicked.connect(self.ira11)
         self.dlg.btnAdminUsers.clicked.connect(self.ira12)
-        #self.dlg.despliega.clicked.connect(self.despliega)
+        self.dlg.despliega.clicked.connect(self.despliega)
     #def cambio(self):
         #self.dlg.tabWidget.setCurrentIndex(self.dlg.toolBox.currentIndex())
         #print(self.dlg.toolBox.currentIndex())
@@ -1578,64 +2844,444 @@ class menu:
     
 
     
-    '''def despliega(self):
+    def despliega(self):
         if self.i == 0:
             self.i = self.i +1
-            self.dlg.dlg.setFixedSize(141,751)
-            self.dlg.despliega.setFixedSize(121,51)
-
+            self.dlg.setFixedSize(682,788)
+            #self.dlg.despliega.setFixedSize(121,51)
+            self.dlg.despliega.setIcon(QtGui.QIcon(':/plugins/Master/icons/menu2.png'))
         elif self.i == 1:
-            self.dlg.dlg.setFixedSize(100,751)
-            self.dlg.despliega.setFixedSize(110,51)
-            self.i = 0'''
+            self.dlg.setFixedSize(140,788)
+            #self.dlg.despliega.setFixedSize(110,51)
+            self.dlg.despliega.setIcon(QtGui.QIcon(':/plugins/Master/icons/menu1.png'))
+            self.i = 0
     def ira1(self):
         self.dlg.tabWidget.setCurrentIndex(0)
         #self.dlg.setFixedSize(600,806)
+        self.dlg.setWindowTitle('menu                                                                                             ' + 'Documentos')
         #self.dlg.tabWidget.setFixedSize(600,806)
+        self.dlg.btnConsulta.setEnabled(False)
+        self.dlg.btnDibujo.setEnabled(True)
+        self.dlg.btnEliminar.setEnabled(True)
+        self.dlg.btnTopologia.setEnabled(True)
+        self.dlg.btnFusDiv.setEnabled(True)
+        self.dlg.btnCargaMasiva.setEnabled(True)
+        self.dlg.btnAsigCampo.setEnabled(True)
+        self.dlg.btnAsigRev.setEnabled(True)
+        self.dlg.btnAsigPad.setEnabled(True)
+        self.dlg.btnInterRev.setEnabled(True)
+        self.dlg.btnInterPad.setEnabled(True)
+        self.dlg.btnAdminUsers.setEnabled(True)
+
     def ira2(self):
         self.dlg.tabWidget.setCurrentIndex(1)
+        self.dlg.setWindowTitle('menu                                                                                ' + 'Edicion Cartográfica')
         #self.dlg.setFixedSize(700,806)
         #self.dlg.tabWidget.setFixedSize(700,806)
+        self.dlg.btnConsulta.setEnabled(True)
+        self.dlg.btnDibujo.setEnabled(False)
+        self.dlg.btnEliminar.setEnabled(True)
+        self.dlg.btnTopologia.setEnabled(True)
+        self.dlg.btnFusDiv.setEnabled(True)
+        self.dlg.btnCargaMasiva.setEnabled(True)
+        self.dlg.btnAsigCampo.setEnabled(True)
+        self.dlg.btnAsigRev.setEnabled(True)
+        self.dlg.btnAsigPad.setEnabled(True)
+        self.dlg.btnInterRev.setEnabled(True)
+        self.dlg.btnInterPad.setEnabled(True)
+        self.dlg.btnAdminUsers.setEnabled(True)
     def ira3(self):
         self.dlg.tabWidget.setCurrentIndex(2)
         #self.dlg.setFixedSize(750,806)
         #self.dlg.tabWidget.setFixedSize(750,806)
+        self.dlg.setWindowTitle('menu                                                                                ' + 'Admin Users')
+        self.dlg.btnConsulta.setEnabled(True)
+        self.dlg.btnDibujo.setEnabled(True)
+        self.dlg.btnEliminar.setEnabled(False)
+        self.dlg.btnTopologia.setEnabled(True)
+        self.dlg.btnFusDiv.setEnabled(True)
+        self.dlg.btnCargaMasiva.setEnabled(True)
+        self.dlg.btnAsigCampo.setEnabled(True)
+        self.dlg.btnAsigRev.setEnabled(True)
+        self.dlg.btnAsigPad.setEnabled(True)
+        self.dlg.btnInterRev.setEnabled(True)
+        self.dlg.btnInterPad.setEnabled(True)
+        self.dlg.btnAdminUsers.setEnabled(True)
     def ira4(self):
         self.dlg.tabWidget.setCurrentIndex(3)
         #self.dlg.setFixedSize(650,806)
         #self.dlg.tabWidget.setFixedSize(650,806)
+        self.dlg.btnConsulta.setEnabled(True)
+        self.dlg.btnDibujo.setEnabled(True)
+        self.dlg.btnEliminar.setEnabled(True)
+        self.dlg.btnTopologia.setEnabled(False)
+        self.dlg.btnFusDiv.setEnabled(True)
+        self.dlg.btnCargaMasiva.setEnabled(True)
+        self.dlg.btnAsigCampo.setEnabled(True)
+        self.dlg.btnAsigRev.setEnabled(True)
+        self.dlg.btnAsigPad.setEnabled(True)
+        self.dlg.btnInterRev.setEnabled(True)
+        self.dlg.btnInterPad.setEnabled(True)
+        self.dlg.btnAdminUsers.setEnabled(True)
     def ira5(self):
         self.dlg.tabWidget.setCurrentIndex(4)
         #self.dlg.setFixedSize(720,806)
         #self.dlg.tabWidget.setFixedSize(720,806)
+        self.dlg.btnConsulta.setEnabled(True)
+        self.dlg.btnDibujo.setEnabled(True)
+        self.dlg.btnEliminar.setEnabled(True)
+        self.dlg.btnTopologia.setEnabled(True)
+        self.dlg.btnFusDiv.setEnabled(False)
+        self.dlg.btnCargaMasiva.setEnabled(True)
+        self.dlg.btnAsigCampo.setEnabled(True)
+        self.dlg.btnAsigRev.setEnabled(True)
+        self.dlg.btnAsigPad.setEnabled(True)
+        self.dlg.btnInterRev.setEnabled(True)
+        self.dlg.btnInterPad.setEnabled(True)
+        self.dlg.btnAdminUsers.setEnabled(True)
     def ira6(self):
         self.dlg.tabWidget.setCurrentIndex(5)
         #self.dlg.setFixedSize(680,806)
         #self.dlg.tabWidget.setFixedSize(680,806)
+        self.dlg.btnConsulta.setEnabled(True)
+        self.dlg.btnDibujo.setEnabled(True)
+        self.dlg.btnEliminar.setEnabled(True)
+        self.dlg.btnTopologia.setEnabled(True)
+        self.dlg.btnFusDiv.setEnabled(True)
+        self.dlg.btnCargaMasiva.setEnabled(False)
+        self.dlg.btnAsigCampo.setEnabled(True)
+        self.dlg.btnAsigRev.setEnabled(True)
+        self.dlg.btnAsigPad.setEnabled(True)
+        self.dlg.btnInterRev.setEnabled(True)
+        self.dlg.btnInterPad.setEnabled(True)
+        self.dlg.btnAdminUsers.setEnabled(True)
     def ira7(self):
         self.dlg.tabWidget.setCurrentIndex(6)
         #self.dlg.setFixedSize(700,806)
         #self.dlg.tabWidget.setFixedSize(700,806)
+        self.dlg.btnConsulta.setEnabled(True)
+        self.dlg.btnDibujo.setEnabled(True)
+        self.dlg.btnEliminar.setEnabled(True)
+        self.dlg.btnTopologia.setEnabled(True)
+        self.dlg.btnFusDiv.setEnabled(True)
+        self.dlg.btnCargaMasiva.setEnabled(True)
+        self.dlg.btnAsigCampo.setEnabled(False)
+        self.dlg.btnAsigRev.setEnabled(True)
+        self.dlg.btnAsigPad.setEnabled(True)
+        self.dlg.btnInterRev.setEnabled(True)
+        self.dlg.btnInterPad.setEnabled(True)
+        self.dlg.btnAdminUsers.setEnabled(True)
     def ira8(self):
         self.dlg.tabWidget.setCurrentIndex(7)
         #self.dlg.setFixedSize(710,806)
         #self.dlg.tabWidget.setFixedSize(710,806)
+        self.dlg.btnConsulta.setEnabled(True)
+        self.dlg.btnDibujo.setEnabled(True)
+        self.dlg.btnEliminar.setEnabled(True)
+        self.dlg.btnTopologia.setEnabled(True)
+        self.dlg.btnFusDiv.setEnabled(True)
+        self.dlg.btnCargaMasiva.setEnabled(True)
+        self.dlg.btnAsigCampo.setEnabled(True)
+        self.dlg.btnAsigRev.setEnabled(False)
+        self.dlg.btnAsigPad.setEnabled(True)
+        self.dlg.btnInterRev.setEnabled(True)
+        self.dlg.btnInterPad.setEnabled(True)
+        self.dlg.btnAdminUsers.setEnabled(True)
     def ira9(self):
         self.dlg.tabWidget.setCurrentIndex(8)
         #self.dlg.setFixedSize(670,806)
         #self.dlg.tabWidget.setFixedSize(670,806)
+        self.dlg.btnConsulta.setEnabled(True)
+        self.dlg.btnDibujo.setEnabled(True)
+        self.dlg.btnEliminar.setEnabled(True)
+        self.dlg.btnTopologia.setEnabled(True)
+        self.dlg.btnFusDiv.setEnabled(True)
+        self.dlg.btnCargaMasiva.setEnabled(True)
+        self.dlg.btnAsigCampo.setEnabled(True)
+        self.dlg.btnAsigRev.setEnabled(True)
+        self.dlg.btnAsigPad.setEnabled(False)
+        self.dlg.btnInterRev.setEnabled(True)
+        self.dlg.btnInterPad.setEnabled(True)
+        self.dlg.btnAdminUsers.setEnabled(True)
     def ira10(self):
         self.dlg.tabWidget.setCurrentIndex(9)
         #self.dlg.setFixedSize(650,806)
         #self.dlg.tabWidget.setFixedSize(650,806)
+        self.dlg.btnConsulta.setEnabled(True)
+        self.dlg.btnDibujo.setEnabled(True)
+        self.dlg.btnEliminar.setEnabled(True)
+        self.dlg.btnTopologia.setEnabled(True)
+        self.dlg.btnFusDiv.setEnabled(True)
+        self.dlg.btnCargaMasiva.setEnabled(True)
+        self.dlg.btnAsigCampo.setEnabled(True)
+        self.dlg.btnAsigRev.setEnabled(True)
+        self.dlg.btnAsigPad.setEnabled(True)
+        self.dlg.btnInterRev.setEnabled(False)
+        self.dlg.btnInterPad.setEnabled(True)
+        self.dlg.btnAdminUsers.setEnabled(True)
     def ira11(self):
         self.dlg.tabWidget.setCurrentIndex(10)
         #self.dlg.setFixedSize(800,806)
         #self.dlg.tabWidget.setFixedSize(800,806)
+        self.dlg.btnConsulta.setEnabled(True)
+        self.dlg.btnDibujo.setEnabled(True)
+        self.dlg.btnEliminar.setEnabled(True)
+        self.dlg.btnTopologia.setEnabled(True)
+        self.dlg.btnFusDiv.setEnabled(True)
+        self.dlg.btnCargaMasiva.setEnabled(True)
+        self.dlg.btnAsigCampo.setEnabled(True)
+        self.dlg.btnAsigRev.setEnabled(True)
+        self.dlg.btnAsigPad.setEnabled(True)
+        self.dlg.btnInterRev.setEnabled(True)
+        self.dlg.btnInterPad.setEnabled(False)
+        self.dlg.btnAdminUsers.setEnabled(True)
     def ira12(self):
         self.dlg.tabWidget.setCurrentIndex(11)
         #self.dlg.setFixedSize(780,806)
         #self.dlg.tabWidget.setFixedSize(780,806)
+        self.dlg.btnConsulta.setEnabled(True)
+        self.dlg.btnDibujo.setEnabled(True)
+        self.dlg.btnEliminar.setEnabled(True)
+        self.dlg.btnTopologia.setEnabled(True)
+        self.dlg.btnFusDiv.setEnabled(True)
+        self.dlg.btnCargaMasiva.setEnabled(True)
+        self.dlg.btnAsigCampo.setEnabled(True)
+        self.dlg.btnAsigRev.setEnabled(True)
+        self.dlg.btnAsigPad.setEnabled(True)
+        self.dlg.btnInterRev.setEnabled(True)
+        self.dlg.btnInterPad.setEnabled(True)
+        self.dlg.btnAdminUsers.setEnabled(False)
+    def confirmarCortes(self, corte, geo): #Aqui cehcamos que los cortes esten en orden
+        
+        
+        #cuentaCortes = 0
+        rango = corte
+        #rango = len(self.eventos.relaciones) - 1
+
+        geoTemp = geo
+        #geoTemp = QgsGeometry.fromWkt(self.geomEnDivision.asWkt())
+        print('------------------------------')
+        print(geoTemp)
+        print('------------------------------')
+        cuentaSalida = self.subdividirPredio(geoTemp, True) - 1 #Aqui enviamos una geomtria temporal, para ven en cuantos cortes quedara
+        print(cuentaSalida)
+        if cuentaSalida >= 2:
+
+            listaNoTocar = []
+            capaPredios = QgsProject.instance().mapLayer(self.ACA.obtenerIdCapa('predios.geom'))
+            capaCondH = QgsProject.instance().mapLayersByName('horizontales.geom')[0]
+            capaCondV = QgsProject.instance().mapLayersByName('verticales')[0]
+            capaConstru = QgsProject.instance().mapLayer(self.ACA.obtenerIdCapa('construcciones'))
+            
+            #Obtenemos los features que no deben tocarse
+            for feat in capaConstru.getFeatures():
+                geom = feat.geometry().buffer(-0.0000002, 1)
+                if geom.intersects(self.geomEnDivision):
+                    listaNoTocar.append(geom)
+
+            for feat in capaCondH.getFeatures():
+                geom = feat.geometry().buffer(-0.0000002, 1)
+                if geom.intersects(self.geomEnDivision):
+                    listaNoTocar.append(geom)
+
+            for feat in capaCondV.getFeatures():
+                geom = feat.geometry().buffer(-0.0000002, 1)
+                if geom.intersects(self.geomEnDivision):
+                    listaNoTocar.append(geom)
+            
+            bandera = True
+            
+            #Aqui checamos que cada linea no toque lo no tocable
+            for i in range(0, rango):
+                for comp in listaNoTocar:
+                    geom = self.eventos.relaciones[i].geom
+                    if geom != None:
+                        if geom.buffer(0.0000001,1).intersects(comp):
+                            bandera = False
+                            self.eventos.relaciones[i].rubber.setStrokeColor(QColor(255,0,0,255))
+                        else:
+                            self.eventos.relaciones[i].rubber.setStrokeColor(QColor(0,61,240,255))
+            
+            iface.mapCanvas().refresh()
+            if bandera: #Si todo esta en orden
+                self.eventos.rubberPunto.reset(QgsWkbTypes.PointGeometry)
+                self.apagarHerramientas()
+                #mostramos mensaje de confirmacion
+                mensaje = "La cantidad de predios que quedaran como resultado, es de: " + str(cuentaSalida) + "\nDeseas continua?"
+                respuesta = QMessageBox.question(iface.mainWindow(), "Nota de subdivision de predio", mensaje, QMessageBox.Yes, QMessageBox.No)
+
+                #Si el usuario acepta....
+                if respuesta == QMessageBox.Yes:
+                    self.subdividirPredio(self.geomEnDivision, False)
+                    self.rubberMarca.reset(QgsWkbTypes.PolygonGeometry) #Quitamos lo amarillito
+
+                    for i in range(0, rango):
+                        self.eventos.relaciones[i].rubber.reset(QgsWkbTypes.LineGeometry)
+                        self.eventos.relaciones[i].vaciarMarcadores()
+                    self.eventos.recargarRelaciones()
+
+                    capaPredios.startEditing()
+                    capaPredios.dataProvider().deleteFeatures([self.predioEnDivision.id()])
+                    capaPredios.triggerRepaint()
+                    capaPredios.commitChanges()
+
+                    #self.VentanaAreas.close()
+                    self.DFS.limpiarAreas()
+                    self.DFS.vaciarRubbers()
+
+                    self.UTI.mostrarAlerta("La division ha sido realizada con exito\nLos cambios se guardaran hasta que asignes las claves.", QMessageBox().Information, "Subdivision completa, Parte 1 de 2")
+                    #self.DFS.irAClaves() #Mostramos la ventana que llena las claves
+                    iface.actionSelect().trigger()
+                    self.dlg.RdManual.setEnabled(True)
+                    self.dlg.RdAuto.setEnabled(True)
+                    #self.dlg.btnCancelarSub.setEnabled(True)
+                    self.dlg.lineEdit.setEnabled(True)
+                    self.dlg.lineEdit_2.setEnabled(True)
+                    self.dlg.btnSend.setEnabled(True)
+                    self.dlg.btnClave.setEnabled(True)
+            else:
+                self.UTI.mostrarAlerta("Las lineas de division no deben atravesar construcciones ni condominios\nLas lineas rojas presentan un corte invalido", QMessageBox().Critical, "Error en subdivision")
+        
+        else:
+            self.UTI.mostrarAlerta("Primero debes dibujar las lineas de corte\nAsegurate que las lineas atraviesen por completo el predio", QMessageBox().Critical, "Error en subdivision")
+            #print(cuentaSalida)
+##################################################################################
+
+
+#-------------------------------------------------------------------------------------
+
+    def subdividirPredio(self, geometria, modoPre): #Subdividir
+        capaHori = QgsProject.instance().mapLayersByName('horizontales.geom')[0]
+        capaPredio = QgsProject.instance().mapLayer(self.ACA.obtenerIdCapa('predios.geom'))
+        capaVert = QgsProject.instance().mapLayersByName('verticales')[0]
+
+        self.listaNuevosPredios = []
+        self.geomsAreas = []
+        listaParam = [] #La lista que llega al fileteo
+        #rango = corte 
+        rango = len(self.eventos.relaciones) - 1
+        #print('**********************************************')
+        #print(self.eventos.relaciones)
+        #print(rango)
+        #print('**********************************************')
+        for i in range(0, rango):
+
+            geom = self.eventos.relaciones[i].geom
+            #print('-----------------*****------------------------')
+            #print(self.eventos.relaciones[i])
+            #print(geom)
+            #print('-----------------*****------------------------')
+            if geom != None:
+                listaParam.append(geom.asPolyline()) #Generamos los polyline van a partir
+
+        #print('aaaaaaaaaaa', listaParam)
+        salida= self.filetear(geometria, listaParam) #Mandamos filetear el poligono con las lineas
+
+        if modoPre: #Si es modoPre, es solo para visaulizar cuantos poligonos quedarian...
+            
+            for cadaUno in salida:
+                self.geomsAreas.append(cadaUno)
+            return len(salida)
+        else: #Si no, efectuamos realmente el corte
+            for cadaUno in salida:
+
+                if cadaUno.isEmpty():
+                    continue
+
+                nuevoFeat = QgsFeature()
+                nuevoFeat.setGeometry(cadaUno)
+                #Agregamos cada predio a la capa y le ponemos sus atributos
+                
+                self.DFS.asignarAtributos(nuevoFeat)
+
+                capaPredio.startEditing()
+                capaPredio.dataProvider().addFeatures([nuevoFeat])
+                capaPredio.triggerRepaint()
+                capaPredio.commitChanges()
+
+                self.listaNuevosPredios.append(nuevoFeat.geometry().asWkt())
+        
+        self.apagarHerramientas()
+        self.dlg.btnCargarPredio.setEnabled(True)
+
+##################################################################################
+
+    #Metodo para filetear los predios con lineas
+    def filetear(self, poligono, lineas):
+        listaActuales = [] #Lista de las geometrias en espera de ser cortadas
+        listaActuales.append(poligono) #Agregamos el poligono a cortar en la lista de espera
+        listaSiguiente = [poligono]  #Agregamos le poligono a cortar en la lista de la siguiente interacion
+
+        for linea in lineas: #Iteramos cada linea de corte
+
+            listaActuales = listaSiguiente #Igualamos la lista de corte a la iteracion anterior
+            listaSiguiente =  [] #Vaciamos la lista que dara lugar a la siguiente iteracion de corte
+            
+            for actual in listaActuales: #Checamos cada geometria en espera
+                
+                partida = actual.splitGeometry(linea, True) #Aplicamos el split geometry de qgis, vamos partiendo el poligono
+                if len(partida[1]) == 0: #Esto ocurre cuando el corte no hizo nada
+                    listaSiguiente.append(actual) #Asi que nos quedamos con la geometria tal cual esta
+                else: #Cuando si hubo corte
+                    parte1 = partida[1][0] #obtenemos la geometria resultante del corte, VER DOCUMENTACION DE SPLITGEOMETRY PARA ENTENDER
+                    parte2 = actual.difference(parte1) #Al poligono que se corto, le quitamos la parte previa al corte anterior
+                    #De esta forma nos quedamos con la geometria partida en 2
+
+                    if parte1.area() > 0.0: #Checamos que el area de esta parte sea mayor que 0, por motivos de los decimales
+                        listaSiguiente.append(parte1) #Si es asi, significa un fragmento que puede ser cortado por otra linea
+                    
+                    if parte2.area() > 0.0: #Lo mismo
+                        listaSiguiente.append(parte2)
+
+        temporal = poligono #Obtenemos una geometria igualita al poligono entrannte
+
+        for geomSal in listaSiguiente: #Obtenemos las diferencia respeto a los poligonos obtenidos y el entrante, lo que resulte, tambien es parte del corte
+            temporal = temporal.difference(geomSal.buffer(0.0000001,1))
+
+        listaSiguiente.append(temporal) #Aqui ponemos todas las geometrias
+        return listaSiguiente #Retornamos la lista
+    def apagarHerramientas(self): #Apagamos las herramientas
+        self.eventos.modoDividir = False
+        self.eventos.modoEliminar = False
+        self.eventos.modoEditar = False
+
+        self.dlg.comboPredios.setEnabled(False)
+        self.dlg.btnDibujarCortes.setEnabled(False)
+        self.dlg.btnEditarCortes.setEnabled(False)
+        self.dlg.btnEliminarCortes.setEnabled(False)
+        #self.dlg.btnApagarHerramientas.setEnabled(False)
+        #self.dlg.btnConfirmarCortes.setEnabled(False)
+        #self.dlg.btnDeshacerTodo.setEnabled(False)
+
+        self.dlg.btnSubdividir.setEnabled(False)
+        self.dlg.btnCancelarSub.setEnabled(False)
+        self.dlg.btnLlamarCalcular.setEnabled(False)
+        #iface.mapCanvas().setCursor(self.DBJ.eventos.cursorCruz)
+        iface.mapCanvas().setCursor(self.UTI.cursorCruz)
+        if self.eventos.botonAD.isChecked():
+            self.eventos.botonAD.trigger()
+
+
+#-------------------------------------------------------------------------
+
+#----------------------------------------------------------------------------
+
+    def encenderModoEditar(self): #Activamos el modo de dividir
+        
+        self.eventos.modoDividir = False
+        self.eventos.modoEliminar = False
+        self.eventos.modoEditar = True
+        self.dlg.btnDibujarCortes.setEnabled(True)
+        self.dlg.btnEditarCortes.setEnabled(False)
+        self.dlg.btnEliminarCortes.setEnabled(True)
+        self.dlg.btnApagarHerramientas.setEnabled(True)
+        self.dlg.btnConfirmarCortes.setEnabled(True)
+        self.dlg.btnDeshacerTodo.setEnabled(True)
+        self.dlg.btnCargarPredio.setEnabled(False)
+        #iface.mapCanvas().setCursor(self.DBJ.eventos.cursorRedondo)
+        iface.mapCanvas().setCursor(self.UTI.cursorRedondo)
+        if not self.eventos.botonAD.isChecked():
+            self.eventos.botonAD.trigger()
     def desactivar(self):
         if self.mapTool.lastMouseButtonClicked == "RIGHT":
             self.click = True
@@ -1645,7 +3291,7 @@ class menu:
 """
             self.dlg.label_21.setStyleSheet(estilo)
     def colapsar(self):
-        #self.dlg.mGroupBox_5.isCollapsed()
+        #self.dlg.mGroupBox_8.isCollapsed()
         if self.dlg.mGroupBox_5.isCollapsed() == True:
             self.dlg.mGroupBox.setGeometry(11,30,481,169)
             if self.dlg.mGroupBox.isCollapsed() == True:
@@ -2259,6 +3905,38 @@ class menu:
                         elif self.dlg.mGroupBox_4.isCollapsed() == False:
                             self.dlg.mGroupBox_6.setGeometry(11,967,481,169)
                
+    def consumeWSGeneral(self, url_cons = ""):
+
+        url = url_cons
+        data = ""
+
+        try:
+            self.headers['Authorization'] = self.UTI.obtenerToken()
+            #jwt.decode(self.UTI.obtenerToken(), "JWT", algorithms=['RS256'])
+            #print(self.UTI.obtenerToken().encode().decode("RS256"))
+            #var = QSettings()
+            #token = var.value('token')
+
+        # se decodifica el token (JWT)
+            #decode = jwt.decode(token, verify=False)
+            #print(decode)
+            response = requests.get(url, headers = self.headers)
+        except requests.exceptions.RequestException as e:
+            self.UTI.mostrarAlerta("Error de servidor, 'consumeWSGeneral(Master)' '" + str(e) + "'", QMessageBox().Critical, "Error de servidor")
+            return
+
+        if response.status_code == 200:
+            data = response.content
+            
+        elif response.status_code == 403:
+            self.UTI.mostrarAlerta('Sin Permisos para ejecutar la accion', QMessageBox().Critical, "Sistema Cartográfico")
+            return None
+           
+        else:
+            self.UTI.mostrarAlerta('Error en peticion "consumeWSGeneral(Master)":\n' + response.text, QMessageBox().Critical, "Error de servidor")
+            return
+        #print(json.loads(data.decode("utf-8")))
+        return json.loads(data.decode("utf-8"))
 
             #print("actualizarCapaActiva : False")
 '''class AdvancedMapTool(QgsMapToolAdvancedDigitizing):

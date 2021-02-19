@@ -102,7 +102,7 @@ class VentanaFusionV3:
         numQueda = numQueda[0]
         self.pluginFD.fusionarPredios(numQueda)
         self.dlg.close()
-#--------------------------------------------------------------------------
+#----------------------------------------------------11111111111111111111111222222222222222222----------------------
 
     def llenarTablaComp(self, predio1, predio2):
         

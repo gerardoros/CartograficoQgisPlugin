@@ -33,7 +33,6 @@ class EventoDivision(QgsMapToolAdvancedDigitizing):
 
         self.relaciones = {}
         self.punteroRelaciones = 0
-
         self.relaciones[self.punteroRelaciones] = RelacionRubberGeom(self.crearNuevoRubberLinea(), None)
         
         self.rubberPunto = QgsRubberBand(self.canvas, QgsWkbTypes.PointGeometry)
@@ -102,7 +101,7 @@ class EventoDivision(QgsMapToolAdvancedDigitizing):
             if event.buttons() == Qt.RightButton: #Click derecho
                 self.primerClick = False
 
-
+                print(self.relaciones)
                 if self.cuentaClickLinea >= 2: #Cuando son mas de dos puntos
                     
                     self.isEmittingPoint = False

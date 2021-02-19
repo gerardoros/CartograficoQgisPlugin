@@ -257,7 +257,7 @@ class Utilidad:
 				props['color'] = '#FF0000'
 				capa.renderer().setSymbol(QgsMarkerSymbol.createSimple(props))
 
-				self.etiquetarCapa(capa.name())
+				self.etiquetarCapa(capa.name(), capa)
 
 				QgsProject.instance().addMapLayer(capa, False)
 				grupoErrores = root.findGroup('ERRORES DE TOPOLOGIA')

@@ -272,7 +272,9 @@ class VentanaDibujoV3:
         nombreCapa = self.pluginE.pluginM.ACA.traducirIdCapa( self.capaActiva.id())
         campos = self.capaActiva.fields()   
         nombres = [campo.name() for campo in campos]
-        if nombreCapa == 'horizontales.num':
+        if nombreCapa == 'predios.num':
+            clavesActiva = [f['numExt'] for f in self.capaActiva.getFeatures()]
+        elif nombreCapa == 'horizontales.num':
             clavesActiva = [f['num_ofi'] for f in self.capaActiva.getFeatures()]
         else:
             clavesActiva = [f['clave'] for f in self.capaActiva.getFeatures()]

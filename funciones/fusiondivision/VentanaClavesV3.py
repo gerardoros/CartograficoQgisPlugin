@@ -156,7 +156,7 @@ class VentanaClavesV3:
 
 #--------------------------------------------------------------
 
-    def asignacionDesManual(self):
+    def asignacionDesManual(self, tex):
         
         # inicializa la capa de predios
         self.obtieneCapaPredios()
@@ -165,15 +165,19 @@ class VentanaClavesV3:
         if self.seleccion is None:
             self.DFS.UTI.mostrarAlerta('Seleccione un predio', QMessageBox().Information, 'Aviso')
             return
-
+       
         clave = self.seleccion[0]['clave']
+        print(clave)
+       
 
         # valida clave a asignar
-        if self.dlg.txtClave.text() == '':
+        #if self.dlg.txtClave.text() == '':
+        if tex == '':
             self.DFS.UTI.mostrarAlerta('Defina la clave a asignar', QMessageBox().Information, 'Clave asignada')
             return
 
-        texto = self.dlg.txtClave.text()
+        texto = tex
+        #texto = self.dlg.txtClave.text()
 
         # valida que sean solo numeros
         if not self.DFS.UTI.esEntero(texto):
