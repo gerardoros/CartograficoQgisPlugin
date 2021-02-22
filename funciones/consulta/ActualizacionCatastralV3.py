@@ -642,8 +642,8 @@ class ActualizacionCatastralV3:
         #if self.dockwidget.checkTodasGeom.isChecked() and nameCapa != 'Predios':
         if check and nameCapa != 'Predios':
             bound = None
-        else:
-            bound = bound_tmp.asWkt()
+        #else:
+            #bound = bound_tmp.asWkt()
 
         # si se trata de predios tambien se cargan las contrucciones
         if nameCapa.lower() == 'predios':
