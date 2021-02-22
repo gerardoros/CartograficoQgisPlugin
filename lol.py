@@ -21,37 +21,83 @@
  *                                                                         *
  ***************************************************************************/
 """
-from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication, Qt, QSize
-from qgis.PyQt.QtGui import QIcon
-from qgis.PyQt.QtWidgets import QAction, QDesktopWidget
-from .funciones.configuracion import Configuracion
-from .funciones.utilidades import utilidades
-from qgis.utils import iface
-from PyQt5.QtCore import QSettings, QTranslator, qVersion, QCoreApplication, QVariant
-from qgis.core import *
+from qgis.PyQt.QtCore import QSettings, QTranslator, qVersion, QCoreApplication, QRectF
+from qgis.PyQt.QtGui import QIcon,  QCursor, QPixmap, QStandardItemModel, QIntValidator
+from qgis.PyQt.QtWidgets import QAction, QApplication, QFileDialog, QToolBox,  QMessageBox
+from PyQt5 import QtGui
 import jwt
 # Initialize Qt resources from file resources.py
 from .resources import *
-# Import the code for the DockWidget
-from .lol_dockwidget import lolDockWidget
-import os.path, requests, json
-from .funciones.consulta import ActualizacionCatastralV3
-from .funciones.configuracion import Configuracion
-from .funciones.consulta import ActualizacionCatastralV3
+# Import the code for the dialog
+from .menu_dialog import menuDialog
+from .funciones.adminusers.usuariosEdicionVer import usuariosEdicionVer
+from .funciones.generar_documentos.cert_cve_catastral_dialog import CertCveCatastralDialog
+from .funciones.generar_documentos.cert_cve_catastral import CertCveCatastral
+from .funciones.generar_documentos.cert_cve_valor import CertCveValor
+from .funciones.generar_documentos.cert_aportes import CertAportes
+from .funciones.generar_documentos.const_identificacion import ConstIdentificacion
+from .funciones.generar_documentos.gen_doc_calvecat import gen_doc_calvecat
+from .funciones.consulta.ActualizacionCatastralV3 import ActualizacionCatastralV3
 from .funciones.dibujo import DibujoV3
+from .funciones.fusiondivision.EventoDivision import EventoDivision
+from .funciones.fusiondivision.VentanaAreas import VentanaAreas
+from .funciones.fusiondivision.VentanaFusionV3 import VentanaFusionV3
+from .funciones.fusiondivision.VentanaClavesV3 import VentanaClavesV3
 from .funciones.eliminacion import EliminacionV3
-from .funciones.topologia import TopologiaV3
+from .funciones.dibujo.VentanaDibujoV3 import VentanaDibujoV3
+import os.path
+from qgis.utils import iface, loadPlugin, startPlugin, reloadPlugin
+from inspect import getframeinfo, stack
+from PyQt5.QtWidgets import QApplication, QWidget, QGridLayout, QVBoxLayout, QLabel, QToolBox, QPushButton, QTextEdit, QLineEdit
+from PyQt5.QtGui import QColor
+from PyQt5.QtCore import QSettings, QTranslator, qVersion, QCoreApplication, QRectF
+from PyQt5.QtGui import QIcon, QFont
+from PyQt5.QtWidgets import QAction, QFileDialog, QMessageBox
+from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication, QRegExp
+from qgis.PyQt.QtGui import QIcon, QRegExpValidator
+from qgis.PyQt.QtWidgets import QAction, QFileDialog, QMessageBox
+from qgis.gui import QgsLayerTreeView, QgsMapToolEmitPoint, QgsMapTool, QgsRubberBand, QgsVertexMarker, QgsMapToolAdvancedDigitizing
+# Initialize Qt resources from file resources.py
+from .resources import *
+# Import the code for the dialog
+import os.path, requests, json
+from PyQt5.QtGui import *
+from PyQt5.QtCore import *
+from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication
+from qgis.PyQt.QtGui import QIcon
+from qgis.PyQt.QtWidgets import QAction, QTableWidgetItem
+from PyQt5.QtWidgets import QAction, QMessageBox
+from PyQt5 import QtWidgets
+#from ..estatusClave import EstatusClaves_dialog
+import os.path
+
+from PyQt5.QtCore import  Qt, QSize, QDir, QDate
+from PyQt5.QtGui import QColor, QCursor, QPixmap, QStandardItemModel
+from PyQt5.QtWidgets import  QTableWidgetItem, QListView, QCompleter
+from PyQt5 import QtWidgets
+# Initialize Qt resources from file resources.py
+from qgis.core import *
+from qgis.utils import iface
+from qgis.gui import QgsLayerTreeView, QgsVertexMarker
+from PyQt5 import QtGui
+# Import the code for the DockWidget
+import os, json, requests, datetime, qgis.core
+from datetime import datetime as dt, date
+from osgeo import ogr, osr
+from .funciones.configuracion import Configuracion
 from .funciones.utilidades import utilidades
 from .funciones.fusiondivision import DivisionFusion
+from .funciones.consulta import ActualizacionCatastralV3
+from .funciones.topologia import TopologiaV3
+from .funciones.consulta.Cedula_MainWindow import CedulaMainWindow
 from .funciones.cargamasiva import Integracion
-
-from .funciones.revisioncampo import AsignacionCampo
-from .funciones.revisioncampo import AsignacionRevision
-from .funciones.revisioncampo import CedulaPadron
-from .funciones.revisioncampo import AsignacionPadron
-from .funciones.revisioncampo import IntermedioCedulaRevision
-from .funciones.subir_shape import subir_shape
 from .funciones.adminusers import AdminUsers
+import os.path
+import json
+import requests
+import re
+from qgis.core import *
+from .funciones.topologia.reglasQG3 import Reglas
 
 class lol:
     """QGIS Plugin Implementation."""
@@ -242,7 +288,7 @@ class lol:
             #    removed on close (see self.onClosePlugin method)
         
             # Create the dockwidget (after translation) and keep reference
-        self.dockwidget = lolDockWidget()
+        #self.dockwidget = lolDockWidget()
 
         # connect to provide cleanup on closing of dockwidget
         self.dockwidget.closingPlugin.connect(self.onClosePlugin)
@@ -328,96 +374,25 @@ class lol:
         self.dockwidget.btnAdminUsers.clicked.connect(self.irAAdminUsuarios)
         self.dockwidget.setFixedSize(121,1000)
         self.i = 0
-        self.dockwidget.despliega.clicked.connect(self.cdesplega)
+        self.dockwidget.setFixedSize(140,788)
+        self.dockwidget.despliega.clicked.connect(self.desplega)
         # show the dockwidget
         # TODO: fix to allow choice of dock location
         self.iface.addDockWidget(Qt.RightDockWidgetArea, self.dockwidget)
         self.dockwidget.show()
 
 
-    def cdesplega(self):
+    def despliega(self):
         if self.i == 0:
-            self.i = self.i + 1
-            self.dockwidget.btnConsulta.setFixedSize(250, 51)
-            self.dockwidget.btnConsulta.setStyleSheet("QPushButton{\nbackground : rgb(174, 116, 0);\ncolor : rgb(255, 255, 255);\nborder-radius : 4px;\n}\nQPushButton::hover{\nbackground : rgb(104, 69, 13);\ncolor : rgb(255, 255, 255);\nborder-radius : 4px;\n}\nQPushButton:disabled {\nbackground: rgb(217, 217, 217)\n}font-size:18px;font-family:Times New Roman;")
-            self.dockwidget.btnConsulta.setText("consulta")
-            self.dockwidget.btnDibujo.setFixedSize(250, 51)
-            self.dockwidget.btnDibujo.setStyleSheet("QPushButton{\nbackground : rgb(174, 116, 0);\ncolor : rgb(255, 255, 255);\nborder-radius : 4px;\n}\nQPushButton::hover{\nbackground : rgb(104, 69, 13);\ncolor : rgb(255, 255, 255);\nborder-radius : 4px;\n}\nQPushButton:disabled {\nbackground: rgb(217, 217, 217)\n}font-size:18px;font-family:Times New Roman;")
-            self.dockwidget.btnDibujo.setText("dibujo")
-            self.dockwidget.btnEliminar.setFixedSize(250, 51)
-            self.dockwidget.btnEliminar.setStyleSheet("QPushButton{\nbackground : rgb(174, 116, 0);\ncolor : rgb(255, 255, 255);\nborder-radius : 4px;\n}\nQPushButton::hover{\nbackground : rgb(104, 69, 13);\ncolor : rgb(255, 255, 255);\nborder-radius : 4px;\n}\nQPushButton:disabled {\nbackground: rgb(217, 217, 217)\n}font-size:18px;font-family:Times New Roman;")
-            self.dockwidget.btnEliminar.setText("eliminar")
-            self.dockwidget.btnTopologia.setFixedSize(250, 51)
-            self.dockwidget.btnTopologia.setStyleSheet("QPushButton{\nbackground : rgb(174, 116, 0);\ncolor : rgb(255, 255, 255);\nborder-radius : 4px;\n}\nQPushButton::hover{\nbackground : rgb(104, 69, 13);\ncolor : rgb(255, 255, 255);\nborder-radius : 4px;\n}\nQPushButton:disabled {\nbackground: rgb(217, 217, 217)\n}font-size:18px;font-family:Times New Roman;")
-            self.dockwidget.btnTopologia.setText("topologia")
-            self.dockwidget.btnFusDiv.setFixedSize(250, 51)
-            self.dockwidget.btnFusDiv.setStyleSheet("QPushButton{\nbackground : rgb(174, 116, 0);\ncolor : rgb(255, 255, 255);\nborder-radius : 4px;\n}\nQPushButton::hover{\nbackground : rgb(104, 69, 13);\ncolor : rgb(255, 255, 255);\nborder-radius : 4px;\n}\nQPushButton:disabled {\nbackground: rgb(217, 217, 217)\n}font-size:18px;font-family:Times New Roman;")
-            self.dockwidget.btnFusDiv.setText("funciones")
-            self.dockwidget.btnCargaMasiva.setFixedSize(250, 51)
-            self.dockwidget.btnCargaMasiva.setStyleSheet("QPushButton{\nbackground : rgb(174, 116, 0);\ncolor : rgb(255, 255, 255);\nborder-radius : 4px;\n}\nQPushButton::hover{\nbackground : rgb(104, 69, 13);\ncolor : rgb(255, 255, 255);\nborder-radius : 4px;\n}\nQPushButton:disabled {\nbackground: rgb(217, 217, 217)\n}font-size:18px;font-family:Times New Roman;")
-            self.dockwidget.btnCargaMasiva.setText("carga masiva")
-            self.dockwidget.btnAsigCampo.setFixedSize(250, 51)
-            self.dockwidget.btnAsigCampo.setStyleSheet("QPushButton{\nbackground : rgb(174, 116, 0);\ncolor : rgb(255, 255, 255);\nborder-radius : 4px;\n}\nQPushButton::hover{\nbackground : rgb(104, 69, 13);\ncolor : rgb(255, 255, 255);\nborder-radius : 4px;\n}\nQPushButton:disabled {\nbackground: rgb(217, 217, 217)\n}font-size:18px;font-family:Times New Roman;")
-            self.dockwidget.btnAsigCampo.setText("asignacion de campo")
-            self.dockwidget.btnAsigRev.setFixedSize(250, 51)
-            self.dockwidget.btnAsigRev.setStyleSheet("QPushButton{\nbackground : rgb(174, 116, 0);\ncolor : rgb(255, 255, 255);\nborder-radius : 4px;\n}\nQPushButton::hover{\nbackground : rgb(104, 69, 13);\ncolor : rgb(255, 255, 255);\nborder-radius : 4px;\n}\nQPushButton:disabled {\nbackground: rgb(217, 217, 217)\n}font-size:18px;font-family:Times New Roman;")
-            self.dockwidget.btnAsigRev.setText("Asignacion de Revision ")
-            self.dockwidget.btnAsigPad.setFixedSize(250, 51)
-            self.dockwidget.btnAsigPad.setStyleSheet("QPushButton{\nbackground : rgb(174, 116, 0);\ncolor : rgb(255, 255, 255);\nborder-radius : 4px;\n}\nQPushButton::hover{\nbackground : rgb(104, 69, 13);\ncolor : rgb(255, 255, 255);\nborder-radius : 4px;\n}\nQPushButton:disabled {\nbackground: rgb(217, 217, 217)\n}font-size:18px;font-family:Times New Roman;")
-            self.dockwidget.btnAsigPad.setText("Asignacion de Padron")
-            self.dockwidget.btnInterRev.setFixedSize(250, 51)
-            self.dockwidget.btnInterRev.setStyleSheet("QPushButton{\nbackground : rgb(174, 116, 0);\ncolor : rgb(255, 255, 255);\nborder-radius : 4px;\n}\nQPushButton::hover{\nbackground : rgb(104, 69, 13);\ncolor : rgb(255, 255, 255);\nborder-radius : 4px;\n}\nQPushButton:disabled {\nbackground: rgb(217, 217, 217)\n}font-size:18px;font-family:Times New Roman;")
-            self.dockwidget.btnInterRev.setText("Intermedio Revision")
-            self.dockwidget.btnInterPad.setFixedSize(250, 51)
-            self.dockwidget.btnInterPad.setStyleSheet("QPushButton{\nbackground : rgb(174, 116, 0);\ncolor : rgb(255, 255, 255);\nborder-radius : 4px;\n}\nQPushButton::hover{\nbackground : rgb(104, 69, 13);\ncolor : rgb(255, 255, 255);\nborder-radius : 4px;\n}\nQPushButton:disabled {\nbackground: rgb(217, 217, 217)\n}font-size:18px;font-family:Times New Roman;")
-            self.dockwidget.btnInterPad.setText("intermedario Padron")
-            self.dockwidget.btnAdminUsers.setFixedSize(250, 51)
-            self.dockwidget.btnAdminUsers.setStyleSheet("QPushButton{\nbackground : rgb(174, 116, 0);\ncolor : rgb(255, 255, 255);\nborder-radius : 4px;\n}\nQPushButton::hover{\nbackground : rgb(104, 69, 13);\ncolor : rgb(255, 255, 255);\nborder-radius : 4px;\n}\nQPushButton:disabled {\nbackground: rgb(217, 217, 217)\n}font-size:18px;font-family:Times New Roman;")
-            self.dockwidget.btnAdminUsers.setText("Usuarios")
-            
-            self.dockwidget.setFixedSize(250,1000)
-            print(self.i)
+            self.i = self.i +1
+            self.dockwidget.setFixedSize(682,788)
+            #self.dockwidget.despliega.setFixedSize(121,51)
+            self.dockwidget.despliega.setIcon(QtGui.QIcon(':/plugins/Master/icons/menu2.png'))
         elif self.i == 1:
+            self.dockwidget.setFixedSize(140,788)
+            #self.dockwidget.despliega.setFixedSize(110,51)
+            self.dockwidget.despliega.setIcon(QtGui.QIcon(':/plugins/Master/icons/menu1.png'))
             self.i = 0
-            self.dockwidget.btnConsulta.setFixedSize(121, 51)
-            self.dockwidget.btnConsulta.setText("")
-            self.dockwidget.btnConsulta.setStyleSheet("QPushButton{\nbackground : rgb(174, 116, 0);\ncolor : rgb(255, 255, 255);\nborder-radius : 4px;\n}\nQPushButton::hover{\nbackground : rgb(104, 69, 13);\ncolor : rgb(255, 255, 255);\nborder-radius : 4px;\n}\nQPushButton:disabled {\nbackground: rgb(217, 217, 217)\n}font-size:18px;font-family:Times New Roman;")
-            self.dockwidget.btnDibujo.setFixedSize(121, 51)
-            self.dockwidget.btnDibujo.setText("")
-            self.dockwidget.btnDibujo.setStyleSheet("QPushButton{\nbackground : rgb(174, 116, 0);\ncolor : rgb(255, 255, 255);\nborder-radius : 4px;\n}\nQPushButton::hover{\nbackground : rgb(104, 69, 13);\ncolor : rgb(255, 255, 255);\nborder-radius : 4px;\n}\nQPushButton:disabled {\nbackground: rgb(217, 217, 217)\n}font-size:18px;font-family:Times New Roman;")
-            self.dockwidget.btnEliminar.setFixedSize(121, 51)
-            self.dockwidget.btnEliminar.setText("")
-            self.dockwidget.btnEliminar.setStyleSheet("QPushButton{\nbackground : rgb(174, 116, 0);\ncolor : rgb(255, 255, 255);\nborder-radius : 4px;\n}\nQPushButton::hover{\nbackground : rgb(104, 69, 13);\ncolor : rgb(255, 255, 255);\nborder-radius : 4px;\n}\nQPushButton:disabled {\nbackground: rgb(217, 217, 217)\n}font-size:18px;font-family:Times New Roman;")
-            self.dockwidget.btnTopologia.setFixedSize(121, 51)
-            self.dockwidget.btnTopologia.setStyleSheet("QPushButton{\nbackground : rgb(174, 116, 0);\ncolor : rgb(255, 255, 255);\nborder-radius : 4px;\n}\nQPushButton::hover{\nbackground : rgb(104, 69, 13);\ncolor : rgb(255, 255, 255);\nborder-radius : 4px;\n}\nQPushButton:disabled {\nbackground: rgb(217, 217, 217)\n}font-size:18px;font-family:Times New Roman;")
-            self.dockwidget.btnTopologia.setText("")
-            self.dockwidget.btnFusDiv.setFixedSize(121, 51)
-            self.dockwidget.btnFusDiv.setStyleSheet("QPushButton{\nbackground : rgb(174, 116, 0);\ncolor : rgb(255, 255, 255);\nborder-radius : 4px;\n}\nQPushButton::hover{\nbackground : rgb(104, 69, 13);\ncolor : rgb(255, 255, 255);\nborder-radius : 4px;\n}\nQPushButton:disabled {\nbackground: rgb(217, 217, 217)\n}font-size:18px;font-family:Times New Roman;")
-            self.dockwidget.btnFusDiv.setText("")
-            self.dockwidget.btnCargaMasiva.setFixedSize(121, 51)
-            self.dockwidget.btnCargaMasiva.setStyleSheet("QPushButton{\nbackground : rgb(174, 116, 0);\ncolor : rgb(255, 255, 255);\nborder-radius : 4px;\n}\nQPushButton::hover{\nbackground : rgb(104, 69, 13);\ncolor : rgb(255, 255, 255);\nborder-radius : 4px;\n}\nQPushButton:disabled {\nbackground: rgb(217, 217, 217)\n}font-size:18px;font-family:Times New Roman;")
-            self.dockwidget.btnCargaMasiva.setText("")
-            self.dockwidget.btnAsigCampo.setFixedSize(121, 51)
-            self.dockwidget.btnAsigCampo.setStyleSheet("QPushButton{\nbackground : rgb(174, 116, 0);\ncolor : rgb(255, 255, 255);\nborder-radius : 4px;\n}\nQPushButton::hover{\nbackground : rgb(104, 69, 13);\ncolor : rgb(255, 255, 255);\nborder-radius : 4px;\n}\nQPushButton:disabled {\nbackground: rgb(217, 217, 217)\n}font-size:18px;font-family:Times New Roman;")
-            self.dockwidget.btnAsigCampo.setText("")
-            self.dockwidget.btnAsigRev.setFixedSize(121, 51)
-            self.dockwidget.btnAsigRev.setStyleSheet("QPushButton{\nbackground : rgb(174, 116, 0);\ncolor : rgb(255, 255, 255);\nborder-radius : 4px;\n}\nQPushButton::hover{\nbackground : rgb(104, 69, 13);\ncolor : rgb(255, 255, 255);\nborder-radius : 4px;\n}\nQPushButton:disabled {\nbackground: rgb(217, 217, 217)\n}font-size:18px;font-family:Times New Roman;")
-            self.dockwidget.btnAsigRev.setText("")
-            self.dockwidget.btnAsigPad.setFixedSize(121, 51)
-            self.dockwidget.btnAsigPad.setStyleSheet("QPushButton{\nbackground : rgb(174, 116, 0);\ncolor : rgb(255, 255, 255);\nborder-radius : 4px;\n}\nQPushButton::hover{\nbackground : rgb(104, 69, 13);\ncolor : rgb(255, 255, 255);\nborder-radius : 4px;\n}\nQPushButton:disabled {\nbackground: rgb(217, 217, 217)\n}font-size:18px;font-family:Times New Roman;")
-            self.dockwidget.btnAsigPad.setText("")
-            self.dockwidget.btnInterRev.setFixedSize(121, 51)
-            self.dockwidget.btnInterRev.setStyleSheet("QPushButton{\nbackground : rgb(174, 116, 0);\ncolor : rgb(255, 255, 255);\nborder-radius : 4px;\n}\nQPushButton::hover{\nbackground : rgb(104, 69, 13);\ncolor : rgb(255, 255, 255);\nborder-radius : 4px;\n}\nQPushButton:disabled {\nbackground: rgb(217, 217, 217)\n}font-size:18px;font-family:Times New Roman;")
-            self.dockwidget.btnInterRev.setText("")
-            self.dockwidget.btnInterPad.setFixedSize(121, 51)
-            self.dockwidget.btnInterPad.setStyleSheet("QPushButton{\nbackground : rgb(174, 116, 0);\ncolor : rgb(255, 255, 255);\nborder-radius : 4px;\n}\nQPushButton::hover{\nbackground : rgb(104, 69, 13);\ncolor : rgb(255, 255, 255);\nborder-radius : 4px;\n}\nQPushButton:disabled {\nbackground: rgb(217, 217, 217)\n}font-size:18px;font-family:Times New Roman;")
-            self.dockwidget.btnInterPad.setText("")
-            self.dockwidget.btnAdminUsers.setFixedSize(121, 51)
-            self.dockwidget.btnAdminUsers.setStyleSheet("QPushButton{\nbackground : rgb(174, 116, 0);\ncolor : rgb(255, 255, 255);\nborder-radius : 4px;\n}\nQPushButton::hover{\nbackground : rgb(104, 69, 13);\ncolor : rgb(255, 255, 255);\nborder-radius : 4px;\n}\nQPushButton:disabled {\nbackground: rgb(217, 217, 217)\n}font-size:18px;font-family:Times New Roman;")
-            self.dockwidget.btnAdminUsers.setText("")
-            self.dockwidget.setFixedSize(121,1000)
-            print(self.i)
-
 
     def comproveRoles(self):
 

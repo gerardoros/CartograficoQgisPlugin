@@ -59,7 +59,14 @@ from qgis.gui import QgsLayerTreeView, QgsMapToolEmitPoint, QgsMapTool, QgsRubbe
 # Initialize Qt resources from file resources.py
 from .resources import *
 # Import the code for the dialog
-
+import os.path, requests, json
+from PyQt5.QtGui import *
+from PyQt5.QtCore import *
+from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication
+from qgis.PyQt.QtGui import QIcon
+from qgis.PyQt.QtWidgets import QAction, QTableWidgetItem
+from PyQt5.QtWidgets import QAction, QMessageBox
+from PyQt5 import QtWidgets
 #from ..estatusClave import EstatusClaves_dialog
 import os.path
 
@@ -648,7 +655,7 @@ class menu:
         
 
         
-
+        
 
         self.ADU = AdminUsers.AdminUsers(iface)
 
@@ -672,6 +679,7 @@ class menu:
             # Do something useful here - delete the line containing pass and
             # substitute with your code.
             pass
+    
     def usuarioguardar(self):
         self.nuevo = True
         self.UE = usuariosEdicionVer.event_aceptar(self, self.nuevo)
