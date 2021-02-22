@@ -42,7 +42,6 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
 
         # es condominio
         self.cond = cond
-        print('holasssssssssssssssss')
         # -- canvas --
         self.canvas = iface.mapCanvas()
 

@@ -117,7 +117,7 @@ class Master:
         if not resultado:
             return
         self.dlg.btnAsigTareas.hide()
-        self.dlg.btnUpload.hide()
+        #self.dlg.btnUpload.hide()
         var.setValue("datoUsuario", resultado)
         # obtiene todos los permisos del usuario
         # ----- P E N D I E N T E ----

@@ -1213,10 +1213,10 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
                 for c in colin:
                     rowPosition = self.twColindancias.rowCount()
                     self.twColindancias.insertRow(rowPosition)
-                    self.twColindancias.setItem(rowPosition , 0, QtWidgets.QTableWidgetItem(str(c['idCatColindancia'])))
-                    self.twColindancias.setItem(rowPosition , 1, QtWidgets.QTableWidgetItem(str(c['catColindancia'])))
-                    self.twColindancias.setItem(rowPosition , 2, QtWidgets.QTableWidgetItem(str(c['superficieColindacia'])))
-                    self.twColindancias.setItem(rowPosition , 3, QtWidgets.QTableWidgetItem(str(c['desscripcion'])))
+                    self.twColindancias.setItem(rowPosition , 0, QtWidgets.QTableWidgetItem(str(c['orientacion'])))
+                    self.twColindancias.setItem(rowPosition , 1, QtWidgets.QTableWidgetItem(str(c['superficieColindacia'])))
+                    self.twColindancias.setItem(rowPosition , 2, QtWidgets.QTableWidgetItem(str(c['desscripcion'])))
+                    self.twColindancias.setItem(rowPosition , 3, QtWidgets.QTableWidgetItem(str(c['claveProp'])))
 
             # localidad
             if self.cedula['localidad'] is not None:
@@ -4344,11 +4344,11 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
 
             caract['id'] = None
             caract['cveCatastral'] = None
-            caract['superficieColindacia'] = twi2.text()
-            caract['desscripcion'] = twi3.text()
-            caract['claveProp'] = None
-            caract['idCatColindancia'] = twi0.text()
-            caract['catColindancia'] = twi1.text()
+            caract['superficieColindacia'] = twi1.text()
+            caract['desscripcion'] = twi2.text()
+            caract['claveProp'] = twi3.text()
+            caract['orientacion'] = twi0.text()
+            caract['catColindancia'] = None
 
             colindancias.append(caract)
         

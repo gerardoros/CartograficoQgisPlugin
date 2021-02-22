@@ -1,6 +1,6 @@
 
 from PyQt5.QtWidgets import *
-from PyQt5 import QtWidgets
+from PyQt5.QtWidgets import QAction, QFileDialog, QTableWidgetItem, QListView, QHeaderView
 import os, json, requests, jwt, datetime
 from datetime import datetime as dt
 from osgeo import ogr, osr
@@ -246,7 +246,6 @@ class Utilidad:
 				QSettings().setValue('listaEliminada', [])
 				#Guardado de datos correcto
 			elif response.status_code == 202:
-
 				root.insertGroup(0, 'ERRORES DE TOPOLOGIA')
 
 				capa = QgsVectorLayer('Point?crs=epsg:' + str(QSettings().value('srid')) +'&field=mensaje:string(80)', 'ERRORES PUNTO', 'memory')
@@ -269,7 +268,6 @@ class Utilidad:
 
 				for malo in puntosMalos:
 					
-					#print(malo)
 					#print(type(malo))
 					geom = QgsGeometry.fromWkt(malo["wkt"])
 					feat = QgsFeature()
@@ -437,7 +435,7 @@ class Utilidad:
 		header = tabla.horizontalHeader()
 		
 		for x in range(0, tabla.columnCount()):
-			header.setSectionResizeMode(x, QtWidgets.QHeaderView.Stretch)
+			header.setSectionResizeMode(x, QHeaderView.Stretch)
 			header.setStretchLastSection(True)
 
 	def formatoCapa(self, capaParam, nuevaCapa):
@@ -650,6 +648,7 @@ class Utilidad:
 		settings.isExpression = esExpresion
 		
 		settings.centroidWhole = True
+		settings.centroidInside = True
 
 		textFormat = QgsTextFormat()
 		textFormat.setColor(colorCapa)

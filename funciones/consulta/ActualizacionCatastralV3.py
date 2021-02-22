@@ -21,7 +21,7 @@
  *                                                                         *
  ***************************************************************************/
 """
-from PyQt5.QtCore import QSettings, QTranslator, qVersion, QCoreApplication, QRectF
+from PyQt5.QtCore import QSettings, QTranslator, qVersion, QCoreApplication, QRectF, QVariant, QDate
 from PyQt5.QtGui import QIcon, QFont
 from PyQt5.QtWidgets import QAction, QFileDialog, QMessageBox
 
@@ -127,6 +127,7 @@ class ActualizacionCatastralV3:
         self.cuerpo = {"incluirGeom": "true", "pagina": None, "bbox": "false", "pin": "false", "geomWKT": None, "epsg": None, "properties": None, "epsgGeomWKT": None, "itemsPagina": None, "nombre": "x"}
         self.headers = {'Content-Type': 'application/json'}
         self.payload = json.dumps(self.cuerpo)
+
         # inicializa variables globales para estatus de claves
         QSettings().setValue('clavesEstatus', [])
         QSettings().setValue('clavesEstatusRef', [])
@@ -486,8 +487,6 @@ class ActualizacionCatastralV3:
 
     def obtenerMunicipios(self):
 
-        self.cve_cat_len = 16
-
         self.dockwidget.comboLocalidad.clear()
 
         try:
@@ -510,8 +509,6 @@ class ActualizacionCatastralV3:
 
     #Llenar primer combo
     def obtenerLocalidades(self):
-
-        self.cve_cat_len = 25
 
         self.dockwidget.comboLocalidad.clear()
 
@@ -645,6 +642,8 @@ class ActualizacionCatastralV3:
         #if self.dockwidget.checkTodasGeom.isChecked() and nameCapa != 'Predios':
         if check and nameCapa != 'Predios':
             bound = None
+        else:
+            bound = bound_tmp.asWkt()
 
         # si se trata de predios tambien se cargan las contrucciones
         if nameCapa.lower() == 'predios':
@@ -784,10 +783,9 @@ class ActualizacionCatastralV3:
         xManzana = QgsProject.instance().mapLayer(self.obtenerIdCapa('manzana'))
 
         if xManzana is None:
-            return
+            return None
 
         listaManzanas = list(self.manzanaPrincipal.getFeatures())
-        geometria = QgsGeometry()
 
         rango = len(listaManzanas)
         if rango == 0:
@@ -1067,7 +1065,8 @@ class ActualizacionCatastralV3:
         settings.fieldName = etiquetaField
         settings.enabled = True
         settings.isExpression = False
-        
+
+        settings.centroidInside = True
         settings.centroidWhole = True
 
         textFormat = QgsTextFormat()
@@ -2848,7 +2847,8 @@ class ActualizacionCatastralV3:
             settings.fieldName = etiquetaField
             settings.enabled = True
             settings.isExpression = esExpresion
-            
+
+            settings.centroidInside = True
             settings.centroidWhole = True
 
             textFormat = QgsTextFormat()
@@ -3214,6 +3214,10 @@ class ActualizacionCatastralV3:
                     
                     if str(feat.attributes()[x]) == "NULL":
                         atributo = None
+                    elif type(feat.attributes()[x]) == QVariant:
+                        atributo = feat.attributes()[x].value()
+                    elif type(feat.attributes()[x]) == QDate:
+                        atributo = feat.attributes()[x].toString('yyyy-MM-dd')
                     atributos[str(nombres[x])] = atributo
                 
                 campos['propiedades'] = atributos

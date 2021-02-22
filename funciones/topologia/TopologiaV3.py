@@ -43,6 +43,7 @@ from .reglasQG3 import Reglas
 from qgis.utils import iface
 from PyQt5.QtWidgets import QAction, QMessageBox, QTableWidgetItem
 from .VentanaReglasTopo import VentanaReglasTopo
+from .errores_topologicos import errores_topologicos
 
 class TopologiaV3:
     """QGIS Plugin Implementation."""
@@ -58,6 +59,7 @@ class TopologiaV3:
         self.ELM = None
         self.DFS = None
         self.ACA = ACA
+
 
         #print "** INITIALIZING TopologiaQG3"
 
@@ -208,6 +210,10 @@ class TopologiaV3:
         self.dockwidget.show()
         self.UTI.strechtTabla(self.dockwidget.tablaComp)
         self.UTI.strechtTabla(self.dockwidget.tablaErrores)
+        self.erroresPredio = []
+        self.erroresManzana = []
+        self.erroresRestantes = []
+        self.erroresConstrucciones = []
         if not self.pluginIsActive:
             self.pluginIsActive = True
 
@@ -269,11 +275,21 @@ class TopologiaV3:
 
         self.obtenerXCapas()
 
-        self.validarPoligonosInvalidos(self.xManzana)
-        self.validarPoligonosInvalidos(self.xHoriGeom)
-        self.validarPoligonosInvalidos(self.xConst)
-        self.validarPoligonosInvalidos(self.xHoriGeom)
-        self.validarPoligonosInvalidos(self.xVert)
+        error = self.validarPoligonosInvalidos(self.xManzana)
+        if error != None:
+            self.erroresManzana.append(error)
+        error = self.validarPoligonosInvalidos(self.xHoriGeom)
+        if error != None:
+            self.erroresRestantes.append(error)
+        error = self.validarPoligonosInvalidos(self.xConst)
+        if error != None:
+            self.erroresConstrucciones.append(error)
+        error = self.validarPoligonosInvalidos(self.xHoriGeom)
+        if error != None:
+            self.erroresRestantes.append(error)
+        error = self.validarPoligonosInvalidos(self.xVert)
+        if error != None:
+            self.erroresRestantes.append(error)
         
         if self.todoEnOrden:
             self.reglasManuales()
@@ -360,23 +376,38 @@ class TopologiaV3:
             root.insertGroup(0, 'ERRORES DE TOPOLOGIA')
 
             if self.siendoEditada('Municipios'):
-                self.validarPoligonosInvalidosRef('Municipios')
+                errorGeomInvalid = self.validarPoligonosInvalidosRef('Municipios')
+                if errorGeomInvalid != None:
+                    self.erroresRestantes.append(errorGeomInvalid)
 
             elif self.siendoEditada('Sectores'):
-                self.validarPoligonosInvalidosRef('Sectores')
-                self.validarPoligonosInvalidosRef('Municipios')
+                errorGeomInvalid = self.validarPoligonosInvalidosRef('Sectores')
+                if errorGeomInvalid != None:
+                    self.erroresRestantes.append(errorGeomInvalid)
+
+                errorGeomInvalid = self.validarPoligonosInvalidosRef('Municipios')
+                if errorGeomInvalid != None:
+                    self.erroresRestantes.append(errorGeomInvalid)
 
             elif self.siendoEditada('Calles'):
-                self.validarPoligonosInvalidosRef('Calles')
+                errorGeomInvalid = self.validarPoligonosInvalidosRef('Calles')
+                if errorGeomInvalid != None:
+                    self.erroresRestantes.append(errorGeomInvalid)
 
             elif self.siendoEditada('Colonias'):
-                self.validarPoligonosInvalidosRef('Colonias')
+                errorGeomInvalid = self.validarPoligonosInvalidosRef('Colonias')
+                if errorGeomInvalid != None:
+                    self.erroresRestantes.append(errorGeomInvalid)
 
             elif self.siendoEditada('Codigo Postal'):
-                self.validarPoligonosInvalidosRef('Codigo Postal')
+                errorGeomInvalid = self.validarPoligonosInvalidosRef('Codigo Postal')
+                if errorGeomInvalid != None:
+                    self.erroresRestantes.append(errorGeomInvalid)
 
             elif self.siendoEditada('Area de Valor'):
-                self.validarPoligonosInvalidosRef('Area de Valor')
+                errorGeomInvalid = self.validarPoligonosInvalidosRef('Area de Valor')
+                if errorGeomInvalid != None:
+                    self.erroresRestantes.append(errorGeomInvalid)
 
 
             if self.todoEnOrdenRef:
@@ -400,6 +431,9 @@ class TopologiaV3:
 
                 else: #Cuando hay errrpres
                     self.UTI.mostrarAlerta("Se han detectado errores de topologia", QMessageBox().Critical, "Comprobador de topología")
+                    self.VET = errores_topologicos.errores_topologicos(iface, self.erroresPredio, self.erroresManzana, self.erroresConstrucciones, self.erroresRestantes)
+                    self.VET.run()
+                    return
             else:
                 self.UTI.mostrarAlerta("El comprobador de topología no puede proceder hasta que se corrijan las geometrias inválidas", QMessageBox().Critical, "Comprobador de topología")
 
@@ -490,58 +524,78 @@ class TopologiaV3:
     #############################################################################################################
 
     def validarClavesNoRepetida(self, nomCapa):
-        self.reglas.validarClaveNoRepetida(nomCapa)
+        self.error = self.reglas.validarClaveNoRepetida(nomCapa)
+        if nomCapa == "predios.geom":
+            if self.error != None:
+                self.erroresPredio.append(self.error)
+        elif nomCapa == "manzana":
+            if self.error != None:
+                self.erroresManzana.append(self.error)
+        elif nomCapa == "horizontales.geom":
+            if self.error != None:
+                self.erroresManzana.append(self.error)
+        elif nomCapa == "verticales":
+            if self.error != None:
+                self.erroresRestantes.append(self.error)
+        elif nomCapa == "Sectores":
+            if self.error != None:
+                self.erroresRestantes.append(self.error)
+
         self.llenaTablaErrores()
 
 
 #############################################################################################################
 
     def validarIntersecciones(self, nombreCapa1, nombreCapa2):
-        
-        self.reglas.validarIntersecciones(nombreCapa1, nombreCapa2)
+        self.errorInterseccion = self.reglas.validarIntersecciones(nombreCapa1, nombreCapa2)
         self.llenaTablaErrores()
+        return self.errorInterseccion
 
 ###############################################################################################################
 
     def validarCobertura(self, nombreBase, nombreCobertura):
-        
-        self.reglas.validarCobertura(nombreBase, nombreCobertura)
+        errorCover = self.reglas.validarCobertura(nombreBase, nombreCobertura)
+        if errorCover != None:
+            self.erroresManzana.append(errorCover)
         self.llenaTablaErrores()
 
 ###############################################################################################################
 
     def validarInclusion(self, nombreObjetos, nombreContenedor):
-        
-        self.reglas.validarInclusion(nombreObjetos, nombreContenedor)
+        errorInclu = self.reglas.validarInclusion(nombreObjetos, nombreContenedor)
+        if errorInclu != None:
+            self.erroresPredio.append(errorInclu)
         self.llenaTablaErrores()
 
 ###################################################################################################################
 
     def validarPoligonosInvalidos(self, nombreCapa):
-        
-        self.reglas.validarPoligonosInvalidos(nombreCapa)
+        error = self.reglas.validarPoligonosInvalidos(nombreCapa)
         self.llenaTablaErrores()
+        return error
 
 #####################################################################################################################
 
     def validarAnillos(self, nombreCapa):
-        
-        self.reglas.validarAnillos(nombreCapa)
+        errorAnillos = self.reglas.validarAnillos(nombreCapa)
         self.llenaTablaErrores()
+        return errorAnillos
 
 ######################################################################################################################
 
     def validarMultipartes(self, nombreCapa):
-        
-        self.reglas.validarMultipartes(nombreCapa)
+        errorMultipartes = self.reglas.validarMultipartes(nombreCapa)
         self.llenaTablaErrores()
+        return errorMultipartes
 
 #########################################################################################################################
 
     def validarDuplicados(self, nombreCapa):
         
-        self.reglas.validarDuplicados(nombreCapa)
+        erroDuplicado = self.reglas.validarDuplicados(nombreCapa)
         self.llenaTablaErrores()
+        return erroDuplicado
+
 
 ###########################################################################################################################
 
@@ -566,33 +620,38 @@ class TopologiaV3:
 ###############################################################################################################################
 
     def validarPuntoEnPoligono(self, nombrePunto, nombrePoligono):
-        self.reglas.validarPuntoEnPoligono(nombrePunto, nombrePoligono)
+        errorPuntoPoligon = self.reglas.validarPuntoEnPoligono(nombrePunto, nombrePoligono)
         self.llenaTablaErrores()
+        return errorPuntoPoligon
 
 ###############################################################################################################################
 
     def validarToqueCompartido(self, nombreObj, nombreBase):
-            self.reglas.validarToqueCompartido(nombreObj, nombreBase)
-            self.llenaTablaErrores()
+        errorToque = self.reglas.validarToqueCompartido(nombreObj, nombreBase)
+        self.llenaTablaErrores()
+        return errorToque
 
 ###############################################################################################################################
 
     def validarPoligonosDuplicados(self, nombreCapa):
         
-        self.reglas.validarPoligonosDuplicados(nombreCapa)
+        errorDuplicados = self.reglas.validarPoligonosDuplicados(nombreCapa)
         self.llenaTablaErrores()
+        return errorDuplicados
 
 #############################################################################################################################
 
     def validarSoloUnPunto(self, nombrePunto, nombrePoligono):
-        self.reglas.validarSoloUnPunto(nombrePunto, nombrePoligono)
+        errorSoloPunto = self.reglas.validarSoloUnPunto(nombrePunto, nombrePoligono)
         self.llenaTablaErrores()
+        return errorSoloPunto
 
 ################################################################################################################################
 
     def validarAlMenosUnPunto(self, nombrePunto, nombrePoligono):
-        self.reglas.validarAlMenosUnPunto(nombrePunto, nombrePoligono)
+        errorPuntoAlMenos = self.reglas.validarAlMenosUnPunto(nombrePunto, nombrePoligono)
         self.llenaTablaErrores()
+        return errorPuntoAlMenos
 
 ####################################################################################################################################
 
@@ -609,73 +668,82 @@ class TopologiaV3:
 ###############################################################################################################################
 
     def validarInclusionRef(self, nombreObjetos, nombreContenedor):
-    
-        self.reglas.validarInclusionRef(nombreObjetos, nombreContenedor)
+        errorInclusion = self.reglas.validarInclusionRef(nombreObjetos, nombreContenedor)
         self.llenaTablaErrores()
+        return errorInclusion
 
 ##########################################################################
 
     def validarPoligonosInvalidosRef(self, nombreCapa):
         
-        self.reglas.validarPoligonosInvalidosRef(nombreCapa)
+        error = self.reglas.validarPoligonosInvalidosRef(nombreCapa)
         self.llenaTablaErrores()
+        return error
 
 ####################################################################################
 
     def validarCamposRef(self, nombreCapa):
-        
-        self.reglas.validarCamposRef(nombreCapa)
+        error = self.reglas.validarCamposRef(nombreCapa)
         self.llenaTablaErrores()
+        return error
 
 ####################################################################################
 
     def validarInterseccionesRef(self, nombreCapa1, nombreCapa2):
-        
-        self.reglas.validarInterseccionesRef(nombreCapa1, nombreCapa2)
+        error = self.reglas.validarInterseccionesRef(nombreCapa1, nombreCapa2)
         self.llenaTablaErrores()
+        return error
 
 ################################################################################################
 
     def validarInscritasEnPrediosIrregulares(self):
         
-        self.reglas.validarInscritasEnPrediosIrregulares()
+        errorAreaIn = self.reglas.validarInscritasEnPrediosIrregulares()
         self.llenaTablaErrores()
+        if errorAreaIn != None:
+            self.erroresPredio.append(errorAreaIn)
 
 ##############################################################################################
 
 
     def validarAreasInscritasCuadraditas(self):
         
-        self.reglas.validarAreasInscritasCuadraditas()
+        errorAreaIns = self.reglas.validarAreasInscritasCuadraditas()
         self.llenaTablaErrores()
+        if errorAreaIns != None:
+            self.erroresPredio.append(errorAreaIns)
 
 ##############################################################################################
 
     def validarCantidadAreasInscritas(self):
         
-        self.reglas.validarCantidadAreasInscritas()
+        errorAreaIns = self.reglas.validarCantidadAreasInscritas()
         self.llenaTablaErrores()
+        if errorAreaIns != None:
+            self.erroresPredio.append(errorAreaIns)
 
 ###############################################################################################
 
     def validarLongitudCampo(self, capa, campo, longitud):
         
-        self.reglas.validarLongitudCampo(capa, campo, longitud)
+        errorLongitud = self.reglas.validarLongitudCampo(capa, campo, longitud)
         self.llenaTablaErrores()
+        return errorLongitud
 
 ######################################################################################################################################
 
     def validarClavesInvalidas(self, capa = None, capa2 = None, capa3 = None, claveFiltro = '', tipo = ''):
 
-        self.reglas.validarClavesInvalidas(capa = capa, capa2 = capa2, capa3 = capa3, claveFiltro = claveFiltro, tipo = tipo)
+        error = self.reglas.validarClavesInvalidas(capa = capa, capa2 = capa2, capa3 = capa3, claveFiltro = claveFiltro, tipo = tipo)
         self.llenaTablaErrores()
+        return error
 
 ####################################################################################
 
     def validarCampoNoNulo(self, capa, campo):
-        
-        self.reglas.validarCampoNoNulo(capa, campo)
+        errorCampoNulo= self.reglas.validarCampoNoNulo(capa, campo)
         self.llenaTablaErrores()
+        return errorCampoNulo
 
 ###################################################################################
 
@@ -688,8 +756,9 @@ class TopologiaV3:
 
     def validarCamposDuplicados(self, capaContenedor, capaObjeto, campo):
         
-        self.reglas.validarCamposDuplicados(capaContenedor, capaObjeto, campo)
+        error = self.reglas.validarCamposDuplicados(capaContenedor, capaObjeto, campo)
         self.llenaTablaErrores()
+        return error
 
 
 ##############################################################################################
@@ -741,7 +810,10 @@ class TopologiaV3:
 ######################################################################################################################
 
     def reglasManuales(self):
-        
+        self.erroresPredio = []
+        self.erroresManzana = []
+        self.erroresRestantes = []
+        self.erroresConstrucciones = []
         self.obtenerXCapas()
 
         self.validarClavesNoRepetida('manzana')
@@ -751,67 +823,158 @@ class TopologiaV3:
 
         self.validaClavesInvalidasManzanasPredios()
         
-        self.validarIntersecciones(self.xPredGeom, self.xPredGeom)
-        self.validarIntersecciones(self.xManzana, self.xManzana)
-        self.validarIntersecciones(self.xHoriGeom, self.xHoriGeom)
-        self.validarIntersecciones(self.xHoriGeom, self.xVert)
-        
-        self.validarCobertura(self.xManzana, self.xPredGeom)
+        errorInter = self.validarIntersecciones(self.xPredGeom, self.xPredGeom)
+        if errorInter != None:
+            self.erroresPredio.append(errorInter)
+
+        errorInter = self.validarIntersecciones(self.xManzana, self.xManzana)
+        if errorInter != None:
+            self.erroresManzana.append(errorInter)
+
+        errorInter = self.validarIntersecciones(self.xHoriGeom, self.xHoriGeom)
+        if errorInter != None:
+            self.erroresRestantes.append(errorInter)
+
+        errorInter = self.validarIntersecciones(self.xHoriGeom, self.xVert)
+        if errorInter != None:
+            self.erroresRestantes.append(errorInter)
+
+
+        self.validarCobertura(self.xPredGeom, self.xManzana)
         
         self.validarInclusion(self.xPredGeom, self.xManzana)
         
-        self.validarAnillos(self.xPredGeom)
-        self.validarAnillos(self.xManzana)
-        self.validarAnillos(self.xVert)
-        self.validarAnillos(self.xHoriGeom)
+        errorAnillos = self.validarAnillos(self.xPredGeom)
+        if errorAnillos != None:
+            self.erroresPredio.append(errorAnillos)
+        errorAnillos = self.validarAnillos(self.xManzana)
+        if errorAnillos != None:
+            self.erroresManzana.append(errorAnillos)
+        errorAnillos = self.validarAnillos(self.xVert)
+        if errorAnillos != None:
+            self.erroresRestantes.append(errorAnillos)
+        errorAnillos = self.validarAnillos(self.xHoriGeom)
+        if errorAnillos != None:
+            self.erroresRestantes.append(errorAnillos)
     
-        self.validarMultipartes(self.xManzana)
-        self.validarMultipartes(self.xPredGeom)
-        self.validarMultipartes(self.xConst)
-        self.validarMultipartes(self.xHoriGeom)
-        self.validarMultipartes(self.xVert)
-        
-        self.validarDuplicados(self.xCvesVert)
-        self.validarDuplicados(self.xPredNum)
-        self.validarDuplicados(self.xVert)
-        
-        self.validarToqueCompartido(self.xConst, self.xPredGeom)
-        
-        self.validarPuntoEnPoligono(self.xCvesVert, self.xVert)
-        self.validarPuntoEnPoligono(self.xPredNum, self.xPredGeom)
-        self.validarPuntoEnPoligono(self.xHoriNum, self.xHoriGeom)
+        errorMulti = self.validarMultipartes(self.xManzana)
+        if errorMulti != None:
+            self.erroresManzana.append(errorMulti)
+        errorMulti = self.validarMultipartes(self.xPredGeom)
+        if errorMulti != None:
+            self.erroresPredio.append(errorMulti)
+        errorMulti = self.validarMultipartes(self.xConst)
+        if errorMulti != None:
+            self.erroresConstrucciones.append(errorMulti)
+        errorMulti = self.validarMultipartes(self.xHoriGeom)
+        if errorMulti != None:
+            self.erroresRestantes.append(errorMulti)
+        errorMulti = self.validarMultipartes(self.xVert)
+        if errorMulti != None:
+            self.erroresRestantes.append(errorMulti)
 
-        self.validarSoloUnPunto(self.xPredNum, self.xPredGeom)
-        self.validarSoloUnPunto(self.xHoriNum, self.xHoriGeom)
 
-        self.validarAlMenosUnPunto(self.xCvesVert, self.xVert)
+        errorDuplicado = self.validarDuplicados(self.xCvesVert)
+        if errorDuplicado != None:
+            self.erroresRestantes.append(errorDuplicado)
+        errorDuplicado = self.validarDuplicados(self.xPredNum)
+        if errorDuplicado != None:
+            self.erroresPredio.append(errorDuplicado)
+        errorDuplicado = self.validarDuplicados(self.xVert)
+        if errorDuplicado != None:
+            self.erroresRestantes.append(errorDuplicado)
+        
+        errorToque = self.validarToqueCompartido(self.xConst, self.xPredGeom)
+        if errorToque != None:
+            self.erroresConstrucciones.append(errorToque)
+        
+        errorPuntoPoligon = self.validarPuntoEnPoligono(self.xCvesVert, self.xVert)
+        if errorPuntoPoligon != None:
+            self.erroresRestantes.append(errorPuntoPoligon)
+        errorPuntoPoligon = self.validarPuntoEnPoligono(self.xPredNum, self.xPredGeom)
+        if errorPuntoPoligon != None:
+            self.erroresPredio.append(errorPuntoPoligon)
+        errorPuntoPoligon = self.validarPuntoEnPoligono(self.xHoriNum, self.xHoriGeom)
+        if errorPuntoPoligon != None:
+            self.erroresRestantes.append(errorPuntoPoligon)
 
-        self.validarPoligonosDuplicados(self.xConst)
+        erorSoloPunto = self.validarSoloUnPunto(self.xPredNum, self.xPredGeom)
+        if erorSoloPunto != None:
+            self.erroresPredio.append(erorSoloPunto)
+        erorSoloPunto = self.validarSoloUnPunto(self.xHoriNum, self.xHoriGeom)
+        if erorSoloPunto != None:
+            self.erroresRestantes.append(erorSoloPunto)
+
+        erorSoloPunto = self.validarAlMenosUnPunto(self.xCvesVert, self.xVert)
+        if erorSoloPunto != None:
+            self.erroresRestantes.append(erorSoloPunto)
+
+
+        errorDuplicado = self.validarPoligonosDuplicados(self.xConst)
+        if errorDuplicado != None:
+            self.erroresConstrucciones.append(errorDuplicado)
         
         self.validarInscritasEnPrediosIrregulares()
         self.validarAreasInscritasCuadraditas()
         self.validarCantidadAreasInscritas()
         
-        self.validarLongitudCampo(self.xManzana, 'clave', 3)
-        self.validarLongitudCampo(self.xPredGeom, 'clave', 2)
-        self.validarLongitudCampo(self.xHoriGeom, 'clave', 6)
-        self.validarLongitudCampo(self.xVert, 'clave', 2)
-        self.validarLongitudCampo(self.xCvesVert, 'clave', 4)
+        errorLongitud = self.validarLongitudCampo(self.xManzana, 'clave', 3)
+        if errorLongitud != None:
+            self.erroresManzana.append(errorLongitud)
+        errorLongitud = self.validarLongitudCampo(self.xPredGeom, 'clave', 2)
+        if errorLongitud != None:
+            self.erroresPredio.append(errorLongitud)
+        errorLongitud = self.validarLongitudCampo(self.xHoriGeom, 'clave', 6)
+        if errorLongitud != None:
+            self.erroresRestantes.append(errorLongitud)
+        errorLongitud = self.validarLongitudCampo(self.xVert, 'clave', 2)
+        if errorLongitud != None:
+            self.erroresRestantes.append(errorLongitud)
+        errorLongitud = self.validarLongitudCampo(self.xCvesVert, 'clave', 6)
+        if errorLongitud != None:
+            self.erroresRestantes.append(errorLongitud)
 
-        self.validarCampoNoNulo(self.xManzana, 'clave')
-        self.validarCampoNoNulo(self.xPredGeom, 'clave')
-        self.validarCampoNoNulo(self.xPredNum, 'numExt')
-        self.validarCampoNoNulo(self.xConst, 'nom_volumen')
-        self.validarCampoNoNuloDoble(self.xConst, 'num_niveles', 'cve_const_esp')
-        self.validarCampoNoNulo(self.xHoriGeom, 'clave')
-        self.validarCampoNoNulo(self.xHoriNum, 'num_ofi')
-        self.validarCampoNoNulo(self.xVert, 'clave')
-        self.validarCampoNoNulo(self.xCvesVert, 'clave')
+
+        errorCampoNulo = self.validarCampoNoNulo(self.xManzana, 'clave')
+        if errorCampoNulo != None:
+            self.erroresManzana.append(errorCampoNulo)
+        errorCampoNulo = self.validarCampoNoNulo(self.xPredGeom, 'clave')
+        if errorCampoNulo != None:
+            self.erroresPredio.append(errorCampoNulo)
+        errorCampoNulo = self.validarCampoNoNulo(self.xPredNum, 'numExt')
+        if errorCampoNulo != None:
+            self.erroresPredio.append(errorCampoNulo)
+        errorCampoNulo = self.validarCampoNoNulo(self.xConst, 'nom_volumen')
+        if errorCampoNulo != None:
+            self.erroresConstrucciones.append(errorCampoNulo)
+        errorCampoNulo = self.validarCampoNoNuloDoble(self.xConst, 'num_niveles', 'cve_const_esp')
+        if errorCampoNulo != None:
+            self.erroresConstrucciones.append(errorCampoNulo)
+        errorCampoNulo = self.validarCampoNoNulo(self.xHoriGeom, 'clave')
+        if errorCampoNulo != None:
+            self.erroresRestantes.append(errorCampoNulo)
+        errorCampoNulo = self.validarCampoNoNulo(self.xHoriNum, 'num_ofi')
+        if errorCampoNulo != None:
+            self.erroresRestantes.append(errorCampoNulo)
+        errorCampoNulo = self.validarCampoNoNulo(self.xVert, 'clave')
+        if errorCampoNulo != None:
+            self.erroresRestantes.append(errorCampoNulo)
+        errorCampoNulo = self.validarCampoNoNulo(self.xCvesVert, 'clave')
+        if errorCampoNulo != None:
+            self.erroresRestantes.append(errorCampoNulo)
 
         #self.validarCamposDuplicados(self.xManzana, self.xPredGeom, 'clave')
-        self.validarCamposDuplicados(self.xPredGeom, self.xConst, 'nom_volumen')
+        errorDuplica = self.validarCamposDuplicados(self.xPredGeom, self.xConst, 'nom_volumen')
+        if errorDuplica != None:
+            self.erroresConstrucciones.append(errorDuplica)
 
         self.printearErrores()
+        # Ventana errores
+        self.VET = errores_topologicos.errores_topologicos(iface, self.erroresPredio, self.erroresManzana, self.erroresConstrucciones, self.erroresRestantes)
+        self.VET.run()
+
+        return
+
 
 #############################################################################################################
 
@@ -819,29 +982,41 @@ class TopologiaV3:
 
         if self.siendoEditada('Municipios'):
             capa = QgsProject.instance().mapLayer(self.ACA.obtenerIdCapa('Municipios'))
-            self.validarLongitudCampo(capa, 'Clave', 3)
+            errorLongiud = self.validarLongitudCampo(capa, 'Clave', 3)
+            if errorLongiud != None:
+                self.erroresRestantes.append(errorLongiud)
         
         if self.siendoEditada('Sectores'):
 
             self.validarClavesNoRepetida('Sectores')
 
             # que todos los sectores esten dentro de los municipios
-            self.validarInclusionRef('Sectores', 'Municipios')
+            errorInlucsion = self.validarInclusionRef('Sectores', 'Municipios')
+            if errorInlucsion != None:
+                self.erroresRestantes.append(errorInlucsion)
 
             # longitud en los campos
             capa = QgsProject.instance().mapLayer(self.ACA.obtenerIdCapa('Sectores'))
-            self.validarLongitudCampo(capa, 'clave', 2)
+            errorLongiud = self.validarLongitudCampo(capa, 'clave', 2)
+            if errorLongiud != None:
+                self.erroresRestantes.append(errorLongiud)
 
             # las claves no sean invalidas
             claveFiltro = QSettings().value("cveMpio")
             tipo = 'SECTOR'
 
-            self.validarClavesInvalidas(capa = capa, claveFiltro = claveFiltro, tipo = tipo)
+            errorClaves = self.validarClavesInvalidas(capa = capa, claveFiltro = claveFiltro, tipo = tipo)
+            if errorClaves != None:
+                self.erroresRestantes.append(errorClaves)
         
         capaTraducida = self.ACA.traducirIdCapa(self.ACA.capaEnEdicion)
 
-        self.validarCamposRef(capaTraducida)
-        self.validarInterseccionesRef(capaTraducida, capaTraducida)
+        errorCampos = self.validarCamposRef(capaTraducida)
+        if errorCampos != None:
+            self.erroresRestantes.append(errorCampos)
+        errorInlucsion = self.validarInterseccionesRef(capaTraducida, capaTraducida)
+        if errorInlucsion != None:
+            self.erroresRestantes.append(errorInlucsion)
 
 ################################################################################################
 
