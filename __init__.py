@@ -32,7 +32,7 @@ def classFactory(iface):  # pylint: disable=invalid-name
     :type iface: QgsInterface
     """
     #
-    from .Solicitud import Solicitud
-    return Solicitud(iface)
+    from .menu import menu
+    return menu(iface)
     #from .Prueba_main import Prueba
     #return Prueba(iface = iface)

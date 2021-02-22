@@ -656,7 +656,8 @@ class menu:
 
         
         
-
+        self.dlg.twOperaciones_6.setEditTriggers(QtWidgets.QTableWidget.NoEditTriggers)
+        self.dlg.twOperaciones_6.clicked.connect(self.tablitas)
         self.ADU = AdminUsers.AdminUsers(iface)
 
         self.ADU.CFG = self.CFG
@@ -679,7 +680,26 @@ class menu:
             # Do something useful here - delete the line containing pass and
             # substitute with your code.
             pass
-    
+    def tablitas(self):
+        self.roles = ['1.- solicitud de servicios catastrales', '2.- acreditar la propiedad', '3.- Formato de traslado de dominio','4.- Resivo de pago de traslado de dominio','5.- Resivo de pago de impuesto predial','6.- Acreditar el interes juridico','7.- Copia de orden de pago de derechos por el servicio']
+        #print(self.roles)
+        if not self.roles:
+             return
+
+                # mostrar usuarios en tabla
+        self.dlg.twOperaciones_7.setRowCount(len(self.roles))
+        for x in range(0, len(self.roles)):
+
+           
+            check = QTableWidgetItem(self.roles[x])
+            check.setFlags(QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled)
+            if len(self.roles[x]) > 1:
+                check.setCheckState(QtCore.Qt.Unchecked)
+            else:
+                check.setCheckState(QtCore.Qt.Checked)
+            #self.dlg.twOperaciones_2.setItem(x,0,check)
+            
+            self.dlg.twOperaciones_7.setItem(x, 0, check)
     def usuarioguardar(self):
         self.nuevo = True
         self.UE = usuariosEdicionVer.event_aceptar(self, self.nuevo)
