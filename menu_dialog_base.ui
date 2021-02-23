@@ -1436,6 +1436,9 @@ QComboBox:item:selected {
 color: black ;
 }</string>
           </property>
+          <property name="editable">
+           <bool>true</bool>
+          </property>
          </widget>
          <widget class="QPushButton" name="btnAbrirCedula">
           <property name="geometry">
