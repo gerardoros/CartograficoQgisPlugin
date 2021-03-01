@@ -121,8 +121,9 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
         self.countID = 0
 
         self.setupUi(self)
-
-
+        self.wFraccionP.setVisible(False)
+        self.label_47.setVisible(False)
+        self.lbNvlFraccP.setVisible(False)
         #NUEVO DISENO
         self.leDispPerim.setPlaceholderText('Introduzca Dist. Perimetral')
         self.leDescripcion.setPlaceholderText('Descripcion')

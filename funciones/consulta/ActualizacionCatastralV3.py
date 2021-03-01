@@ -3108,15 +3108,15 @@ class ActualizacionCatastralV3:
 
 ######################################################################################################################
     
-    def activarEdicion(self):
+    def activarEdicion(self, nombreCapa):
 
         # si NO esta en edicion
         if self.capaEnEdicion == '':
 
             QSettings().setValue('clavesEstatusRef', [])
 
-            nombreCapa = self.dockwidget.comboCapasEdicion.currentText()
-            
+            #nombreCapa = self.dockwidget.comboCapasEdicion.currentText()
+            nombreCapa = nombreCapa
             root = QgsProject.instance().layerTreeRoot()
             grupoEdicion = root.findGroup('edicion')
             

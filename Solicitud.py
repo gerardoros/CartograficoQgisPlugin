@@ -30,7 +30,6 @@ from .resources import *
 # Import the code for the dialog
 from .Solicitud_dialog import SolicitudDialog
 import os.path
-from .menu import menu
 import os.path, requests, json
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
@@ -70,11 +69,19 @@ class Solicitud:
         self.actions = []
         self.menu = self.tr(u'&Solicitud')
         self.dlg = SolicitudDialog(parent = iface.mainWindow())
-        self.dlg.enviar.clicked.connect(self.menus)
+       
         self.dlg.twOperaciones_6.setEditTriggers(QtWidgets.QTableWidget.NoEditTriggers)
         self.dlg.twOperaciones_6.clicked.connect(self.tablitas)
+        self.dlg.btnAlta.clicked.connect(self.altas)
+        self.dlg.dateEdit_4.setDateTime(QtCore.QDateTime.currentDateTime())
         # Check if plugin was started the first time in current QGIS session
         # Must be set in initGui() to survive plugin reloads
+        self.dlg.btnAlta.setEnabled(True)
+        self.dlg.btnModi.setEnabled(False)
+        self.dlg.btnConsulta.setEnabled(True)
+        self.dlg.btnGrabar.setEnabled(False)
+        self.dlg.btnCancelar.setEnabled(False)
+        self.dlg.btnSalir.setEnabled(True)
         self.first_start = None
 
     # noinspection PyMethodMayBeStatic
@@ -206,6 +213,13 @@ class Solicitud:
             # Do something useful here - delete the line containing pass and
             # substitute with your code.
             #pass
+    def altas(self):
+        self.dlg.btnAlta.setEnabled(False)
+        self.dlg.btnModi.setEnabled(False)
+        self.dlg.btnConsulta.setEnabled(False)
+        self.dlg.btnGrabar.setEnabled(True)
+        self.dlg.btnCancelar.setEnabled(True)
+        self.dlg.btnSalir.setEnabled(False)
     def tablitas(self):
         self.roles = ['1.- solicitud de servicios catastrales', '2.- acreditar la propiedad', '3.- Formato de traslado de dominio','4.- Resivo de pago de traslado de dominio','5.- Resivo de pago de impuesto predial','6.- Acreditar el interes juridico','7.- Copia de orden de pago de derechos por el servicio']
         #print(self.roles)
@@ -226,10 +240,6 @@ class Solicitud:
             #self.dlg.twOperaciones_2.setItem(x,0,check)
             
             self.dlg.twOperaciones_7.setItem(x, 0, check)
-    def menus(self):
-        self.dlg.obj = menu(self.iface)
-        self.dlg.obj.run()
-        self.dlg.close()
 
 
 
