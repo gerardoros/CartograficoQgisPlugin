@@ -4683,15 +4683,21 @@ border: 1px solid #adb2b5;
                      <property name="geometry">
                       <rect>
                        <x>469</x>
-                       <y>131</y>
+                       <y>9</y>
                        <width>220</width>
                        <height>19</height>
                       </rect>
                      </property>
+                     <property name="minimumSize">
+                      <size>
+                       <width>220</width>
+                       <height>19</height>
+                      </size>
+                     </property>
                      <property name="maximumSize">
                       <size>
                        <width>220</width>
-                       <height>16777215</height>
+                       <height>19</height>
                       </size>
                      </property>
                      <property name="font">
@@ -4709,8 +4715,8 @@ border: 1px solid #adb2b5;
                     <widget class="QComboBox" name="cmbDestinoP">
                      <property name="geometry">
                       <rect>
-                       <x>351</x>
-                       <y>34</y>
+                       <x>520</x>
+                       <y>156</y>
                        <width>160</width>
                        <height>27</height>
                       </rect>
@@ -4803,7 +4809,7 @@ QListView{color: black ; font-size: 16px; outline:none; font-weight:bold}QListVi
                      <property name="geometry">
                       <rect>
                        <x>520</x>
-                       <y>160</y>
+                       <y>34</y>
                        <width>160</width>
                        <height>27</height>
                       </rect>
@@ -4835,11 +4841,23 @@ QListView{color: black ; font-size: 16px; outline:none; font-weight:bold}QListVi
                     <widget class="QLabel" name="label_59">
                      <property name="geometry">
                       <rect>
-                       <x>521</x>
+                       <x>350</x>
                        <y>9</y>
-                       <width>80</width>
+                       <width>91</width>
                        <height>19</height>
                       </rect>
+                     </property>
+                     <property name="minimumSize">
+                      <size>
+                       <width>91</width>
+                       <height>19</height>
+                      </size>
+                     </property>
+                     <property name="maximumSize">
+                      <size>
+                       <width>91</width>
+                       <height>19</height>
+                      </size>
                      </property>
                      <property name="font">
                       <font>
@@ -4856,7 +4874,7 @@ QListView{color: black ; font-size: 16px; outline:none; font-weight:bold}QListVi
                     <widget class="QComboBox" name="cmbCategoriaP">
                      <property name="geometry">
                       <rect>
-                       <x>521</x>
+                       <x>350</x>
                        <y>34</y>
                        <width>160</width>
                        <height>27</height>
@@ -5045,8 +5063,8 @@ QListView{color: black ; font-size: 16px; outline:none; font-weight:bold}QListVi
                     <widget class="QLabel" name="label_45">
                      <property name="geometry">
                       <rect>
-                       <x>351</x>
-                       <y>9</y>
+                       <x>520</x>
+                       <y>131</y>
                        <width>62</width>
                        <height>19</height>
                       </rect>

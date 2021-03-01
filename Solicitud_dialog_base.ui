@@ -7,19 +7,43 @@
     <x>0</x>
     <y>0</y>
     <width>531</width>
-    <height>787</height>
+    <height>768</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Solicitud</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">QPushButton{
+background-color: rgb(104, 185, 181);
+color : rgb(255,255,255);
+border-radius : 4px;
+}
+QPushButton::hover{
+background: rgb(188, 228, 226);
+color : rgb(255,255,255);
+border-radius : 4px;
+}
+QPushButton:disabled {
+background : rgb(42, 124, 120);
+}
+QHeaderView::section
+{
+background-color: rgb(104, 185, 181);
+color : rgb(255,255,255 );
+text-align: right;
+font-size:12px;
+height:24px
+}
+</string>
+  </property>
   <widget class="QScrollArea" name="scrollArea">
    <property name="geometry">
     <rect>
      <x>0</x>
-     <y>0</y>
+     <y>-7</y>
      <width>531</width>
-     <height>781</height>
+     <height>671</height>
     </rect>
    </property>
    <property name="widgetResizable">
@@ -29,13 +53,71 @@
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>-747</y>
+      <y>-677</y>
       <width>512</width>
       <height>1526</height>
      </rect>
     </property>
     <layout class="QGridLayout" name="gridLayout">
-     <item row="0" column="0">
+     <item row="1" column="0" colspan="2">
+      <widget class="QLabel" name="label_67">
+       <property name="minimumSize">
+        <size>
+         <width>245</width>
+         <height>19</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>245</width>
+         <height>19</height>
+        </size>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>12</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>A usted comparezco y expongo.</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0" colspan="3">
+      <widget class="QLabel" name="label_68">
+       <property name="minimumSize">
+        <size>
+         <width>489</width>
+         <height>95</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>489</width>
+         <height>95</height>
+        </size>
+       </property>
+       <property name="font">
+        <font>
+         <family>Century Gothic</family>
+         <pointsize>12</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Por medio del presente escrito y con fundamentos en los 
+artículos 113, 114, 115, 147 Fracc l , ll, lll, 148 Fracc l,ll, 166, 
+171, 172, 173, 175, 175 BIS y 177 del Código Financiero del 
+Estado de México y Municipios en vigor, solicito la 
+expedición del siguiente servicio.</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0" colspan="3">
       <widget class="QGroupBox" name="mGroupBox_24">
        <property name="minimumSize">
         <size>
@@ -121,6 +203,12 @@
         <property name="styleSheet">
          <string notr="true">
 font: 75 14pt &quot;Arial&quot;;</string>
+        </property>
+        <property name="calendarPopup">
+         <bool>true</bool>
+        </property>
+        <property name="timeSpec">
+         <enum>Qt::TimeZone</enum>
         </property>
        </widget>
        <widget class="QLabel" name="label_55">
@@ -487,65 +575,7 @@ inmueble marcado con el número</string>
        </widget>
       </widget>
      </item>
-     <item row="1" column="0">
-      <widget class="QLabel" name="label_67">
-       <property name="minimumSize">
-        <size>
-         <width>245</width>
-         <height>19</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>245</width>
-         <height>19</height>
-        </size>
-       </property>
-       <property name="font">
-        <font>
-         <family>Arial</family>
-         <pointsize>12</pointsize>
-         <weight>75</weight>
-         <bold>true</bold>
-        </font>
-       </property>
-       <property name="text">
-        <string>A usted comparezco y expongo.</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="0">
-      <widget class="QLabel" name="label_68">
-       <property name="minimumSize">
-        <size>
-         <width>489</width>
-         <height>95</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>489</width>
-         <height>95</height>
-        </size>
-       </property>
-       <property name="font">
-        <font>
-         <family>Century Gothic</family>
-         <pointsize>12</pointsize>
-         <weight>75</weight>
-         <bold>true</bold>
-        </font>
-       </property>
-       <property name="text">
-        <string>Por medio del presente escrito y con fundamentos en los 
-artículos 113, 114, 115, 147 Fracc l , ll, lll, 148 Fracc l,ll, 166, 
-171, 172, 173, 175, 175 BIS y 177 del Código Financiero del 
-Estado de México y Municipios en vigor, solicito la 
-expedición del siguiente servicio.</string>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="0">
+     <item row="3" column="0" colspan="3">
       <widget class="QGroupBox" name="mGroupBox_25">
        <property name="minimumSize">
         <size>
@@ -634,14 +664,7 @@ QWidget:item:selected
           </font>
          </property>
          <property name="styleSheet">
-          <string notr="true">QHeaderView::section
-{
-background-color: rgb(238,225,200);
-color : rgb(52, 42, 24 );
-text-align: right;
-font-size:12px;
-height:24px
-}</string>
+          <string notr="true"/>
          </property>
          <attribute name="horizontalHeaderDefaultSectionSize">
           <number>219</number>
@@ -817,14 +840,7 @@ height:24px
           </font>
          </property>
          <property name="styleSheet">
-          <string notr="true">QHeaderView::section
-{
-background-color: rgb(238,225,200);
-color : rgb(52, 42, 24 );
-text-align: right;
-font-size:12px;
-height:24px
-}</string>
+          <string notr="true"/>
          </property>
          <attribute name="horizontalHeaderDefaultSectionSize">
           <number>219</number>
@@ -841,207 +857,9 @@ height:24px
          </column>
         </widget>
        </widget>
-       <widget class="QPushButton" name="btGuardar_3">
-        <property name="geometry">
-         <rect>
-          <x>320</x>
-          <y>380</y>
-          <width>150</width>
-          <height>30</height>
-         </rect>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>150</width>
-          <height>30</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>150</width>
-          <height>30</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <family>MS Shell Dlg 2</family>
-          <pointsize>8</pointsize>
-          <weight>75</weight>
-          <bold>true</bold>
-         </font>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">QPushButton{
-background : rgb(174, 116, 0);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton::hover{
-background : rgb(104, 69, 13);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton:disabled {
-background: rgb(217, 217, 217)
-}</string>
-        </property>
-        <property name="text">
-         <string>Enviar</string>
-        </property>
-       </widget>
       </widget>
      </item>
-     <item row="4" column="0">
-      <widget class="QGroupBox" name="mGroupBox_27">
-       <property name="minimumSize">
-        <size>
-         <width>481</width>
-         <height>251</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>481</width>
-         <height>251</height>
-        </size>
-       </property>
-       <property name="font">
-        <font>
-         <family>Century Gothic</family>
-         <pointsize>12</pointsize>
-         <weight>75</weight>
-         <bold>true</bold>
-        </font>
-       </property>
-       <property name="title">
-        <string>Búsqueda</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-       </property>
-       <property name="flat">
-        <bool>false</bool>
-       </property>
-       <property name="checkable">
-        <bool>false</bool>
-       </property>
-       <widget class="QLabel" name="label_99">
-        <property name="geometry">
-         <rect>
-          <x>102</x>
-          <y>10</y>
-          <width>152</width>
-          <height>30</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <family>Century Gothic</family>
-          <pointsize>12</pointsize>
-          <weight>75</weight>
-          <bold>true</bold>
-         </font>
-        </property>
-        <property name="text">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;right&quot;&gt;Búsqueda:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-        </property>
-       </widget>
-       <widget class="QLineEdit" name="leBusqueda_3">
-        <property name="geometry">
-         <rect>
-          <x>20</x>
-          <y>40</y>
-          <width>371</width>
-          <height>20</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <family>Century Gothic</family>
-          <pointsize>12</pointsize>
-          <weight>75</weight>
-          <bold>true</bold>
-         </font>
-        </property>
-       </widget>
-       <widget class="QTableWidget" name="twOperaciones_8">
-        <property name="geometry">
-         <rect>
-          <x>20</x>
-          <y>70</y>
-          <width>441</width>
-          <height>171</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <family>Century Gothic</family>
-         </font>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">QHeaderView::section
-{
-background-color: rgb(238,225,200);
-color : rgb(52, 42, 24 );
-text-align: right;
-font-size:12px;
-height:24px
-}</string>
-        </property>
-        <attribute name="horizontalHeaderDefaultSectionSize">
-         <number>149</number>
-        </attribute>
-        <column>
-         <property name="text">
-          <string>Datos</string>
-         </property>
-        </column>
-       </widget>
-       <widget class="QPushButton" name="btnBrowse_7">
-        <property name="geometry">
-         <rect>
-          <x>400</x>
-          <y>30</y>
-          <width>71</width>
-          <height>31</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <family>Century Gothic</family>
-          <pointsize>10</pointsize>
-          <weight>75</weight>
-          <bold>true</bold>
-         </font>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">QPushButton{
-background : rgb(174, 116, 0);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton::hover{
-background : rgb(104, 69, 13);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton:disabled {
-background: rgb(217, 217, 217)
-}</string>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-        <property name="iconSize">
-         <size>
-          <width>30</width>
-          <height>30</height>
-         </size>
-        </property>
-       </widget>
-      </widget>
-     </item>
-     <item row="5" column="0">
+     <item row="5" column="0" colspan="3">
       <widget class="QGroupBox" name="mGroupBox_26">
        <property name="minimumSize">
         <size>
@@ -1360,58 +1178,424 @@ background: rgb(217, 217, 217)
          <set>Qt::AlignCenter</set>
         </property>
        </widget>
-       <widget class="QPushButton" name="enviar">
+      </widget>
+     </item>
+     <item row="4" column="0" colspan="3">
+      <widget class="QGroupBox" name="mGroupBox_27">
+       <property name="minimumSize">
+        <size>
+         <width>481</width>
+         <height>251</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>481</width>
+         <height>251</height>
+        </size>
+       </property>
+       <property name="font">
+        <font>
+         <family>Century Gothic</family>
+         <pointsize>12</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="title">
+        <string>Búsqueda</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+       </property>
+       <property name="flat">
+        <bool>false</bool>
+       </property>
+       <property name="checkable">
+        <bool>false</bool>
+       </property>
+       <widget class="QLabel" name="label_99">
         <property name="geometry">
          <rect>
-          <x>310</x>
-          <y>260</y>
-          <width>150</width>
+          <x>102</x>
+          <y>10</y>
+          <width>152</width>
           <height>30</height>
          </rect>
         </property>
-        <property name="minimumSize">
-         <size>
-          <width>150</width>
-          <height>30</height>
-         </size>
+        <property name="font">
+         <font>
+          <family>Century Gothic</family>
+          <pointsize>12</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
         </property>
-        <property name="maximumSize">
-         <size>
-          <width>150</width>
-          <height>30</height>
-         </size>
+        <property name="text">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;right&quot;&gt;Búsqueda:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+       </widget>
+       <widget class="QLineEdit" name="leBusqueda_3">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>40</y>
+          <width>371</width>
+          <height>20</height>
+         </rect>
         </property>
         <property name="font">
          <font>
-          <family>MS Shell Dlg 2</family>
-          <pointsize>8</pointsize>
+          <family>Century Gothic</family>
+          <pointsize>12</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+       </widget>
+       <widget class="QTableWidget" name="twOperaciones_8">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>70</y>
+          <width>441</width>
+          <height>171</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Century Gothic</family>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QHeaderView::section
+{
+background-color: rgb(238,225,200);
+color : rgb(52, 42, 24 );
+text-align: right;
+font-size:12px;
+height:24px
+}</string>
+        </property>
+        <attribute name="horizontalHeaderDefaultSectionSize">
+         <number>149</number>
+        </attribute>
+        <column>
+         <property name="text">
+          <string>Datos</string>
+         </property>
+        </column>
+       </widget>
+       <widget class="QPushButton" name="btnBrowse_7">
+        <property name="geometry">
+         <rect>
+          <x>400</x>
+          <y>30</y>
+          <width>71</width>
+          <height>31</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Century Gothic</family>
+          <pointsize>10</pointsize>
           <weight>75</weight>
           <bold>true</bold>
          </font>
         </property>
         <property name="styleSheet">
-         <string notr="true">QPushButton{
-background : rgb(174, 116, 0);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton::hover{
-background : rgb(104, 69, 13);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton:disabled {
-background: rgb(217, 217, 217)
-}</string>
+         <string notr="true"/>
         </property>
         <property name="text">
-         <string>Enviar</string>
+         <string/>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>30</width>
+          <height>30</height>
+         </size>
         </property>
        </widget>
       </widget>
      </item>
     </layout>
    </widget>
+  </widget>
+  <widget class="QPushButton" name="btnSalir">
+   <property name="geometry">
+    <rect>
+     <x>154</x>
+     <y>717</y>
+     <width>111</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>111</width>
+     <height>41</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>111</width>
+     <height>41</height>
+    </size>
+   </property>
+   <property name="font">
+    <font>
+     <family>Arial</family>
+     <pointsize>12</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true"/>
+   </property>
+   <property name="text">
+    <string>Salir</string>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>../../../../../../../../../../../Documents/boton cedula.ico</normaloff>../../../../../../../../../../../Documents/boton cedula.ico</iconset>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>300</width>
+     <height>150</height>
+    </size>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnAlta">
+   <property name="geometry">
+    <rect>
+     <x>26</x>
+     <y>670</y>
+     <width>111</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>111</width>
+     <height>41</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>111</width>
+     <height>41</height>
+    </size>
+   </property>
+   <property name="font">
+    <font>
+     <family>Arial</family>
+     <pointsize>12</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true"/>
+   </property>
+   <property name="text">
+    <string>Alta</string>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>../../../../../../../../../../../Documents/boton cedula.ico</normaloff>../../../../../../../../../../../Documents/boton cedula.ico</iconset>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>300</width>
+     <height>150</height>
+    </size>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnModi">
+   <property name="geometry">
+    <rect>
+     <x>154</x>
+     <y>670</y>
+     <width>111</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>111</width>
+     <height>41</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>111</width>
+     <height>41</height>
+    </size>
+   </property>
+   <property name="font">
+    <font>
+     <family>Arial</family>
+     <pointsize>12</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true"/>
+   </property>
+   <property name="text">
+    <string>Modificación</string>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>../../../../../../../../../../../Documents/boton cedula.ico</normaloff>../../../../../../../../../../../Documents/boton cedula.ico</iconset>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>300</width>
+     <height>150</height>
+    </size>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnCancelar">
+   <property name="geometry">
+    <rect>
+     <x>26</x>
+     <y>717</y>
+     <width>111</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>111</width>
+     <height>41</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>111</width>
+     <height>41</height>
+    </size>
+   </property>
+   <property name="font">
+    <font>
+     <family>Arial</family>
+     <pointsize>12</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true"/>
+   </property>
+   <property name="text">
+    <string>Cancelar</string>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>../../../../../../../../../../../Documents/boton cedula.ico</normaloff>../../../../../../../../../../../Documents/boton cedula.ico</iconset>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>300</width>
+     <height>150</height>
+    </size>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnConsulta">
+   <property name="geometry">
+    <rect>
+     <x>279</x>
+     <y>670</y>
+     <width>111</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>111</width>
+     <height>41</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>111</width>
+     <height>41</height>
+    </size>
+   </property>
+   <property name="font">
+    <font>
+     <family>Arial</family>
+     <pointsize>12</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true"/>
+   </property>
+   <property name="text">
+    <string>Consulta</string>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>../../../../../../../../../../../Documents/boton cedula.ico</normaloff>../../../../../../../../../../../Documents/boton cedula.ico</iconset>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>300</width>
+     <height>150</height>
+    </size>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnGrabar">
+   <property name="geometry">
+    <rect>
+     <x>400</x>
+     <y>670</y>
+     <width>111</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>111</width>
+     <height>41</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>111</width>
+     <height>41</height>
+    </size>
+   </property>
+   <property name="font">
+    <font>
+     <family>Arial</family>
+     <pointsize>12</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true"/>
+   </property>
+   <property name="text">
+    <string>Grabar</string>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>../../../../../../../../../../../Documents/boton cedula.ico</normaloff>../../../../../../../../../../../Documents/boton cedula.ico</iconset>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>300</width>
+     <height>150</height>
+    </size>
+   </property>
   </widget>
  </widget>
  <resources/>

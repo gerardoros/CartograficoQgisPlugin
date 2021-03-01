@@ -123,8 +123,9 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
         self.countID = 0
 
         self.setupUi(self)
-
-
+        self.wFraccionP.setVisible(False)
+        self.label_47.setVisible(False)
+        self.lbNvlFraccP.setVisible(False)
         #NUEVO DISENO
         self.leDispPerim.setPlaceholderText('Introduzca Dist. Perimetral')
         self.leDescripcion.setPlaceholderText('Descripcion')
@@ -6278,7 +6279,10 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
 
     # - muestra clave global
     def muestraClaveGlobal(self, cveCata):
-        if len(cveCata) == 10:
+        print('Estes es el tamano de la clave')
+        print(cveCata)
+        print(len(cveCata))
+        if len(cveCata) == 16:
             #self.lbEdo.setText('--')
             #self.lbRegCat.setText('---')
             self.lbMpio.setText(cveCata[0:3])
