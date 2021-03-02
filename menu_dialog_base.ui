@@ -4874,6 +4874,43 @@ topologia</string>
              </property>
             </widget>
            </widget>
+           <widget class="QPushButton" name="botonValidarRef">
+            <property name="geometry">
+             <rect>
+              <x>230</x>
+              <y>30</y>
+              <width>201</width>
+              <height>31</height>
+             </rect>
+            </property>
+            <property name="font">
+             <font>
+              <family>Century Gothic</family>
+              <pointsize>8</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QPushButton{
+background : rgb(174, 116, 0);
+color : rgb(255, 255, 255);
+border-radius : 4px;
+}
+QPushButton::hover{
+background : rgb(104, 69, 13);
+color : rgb(255, 255, 255);
+border-radius : 4px;
+}
+QPushButton:disabled {
+background: rgb(217, 217, 217)
+}</string>
+            </property>
+            <property name="text">
+             <string>Validar topología
+(Referencia)</string>
+            </property>
+           </widget>
           </widget>
          </widget>
         </widget>

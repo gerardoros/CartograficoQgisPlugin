@@ -74,7 +74,26 @@ class TopologiaV3:
         self.dockwidget.botonValidarRef.clicked.connect(self.validarTopologiaManualRef)
         self.dockwidget.tablaErrores.setEditTriggers(QtWidgets.QTableWidget.NoEditTriggers)
         self.dockwidget.tablaComp.setEditTriggers(QtWidgets.QTableWidget.NoEditTriggers)
-        
+        self.capaEnEdicion = ''
+        QSettings().setValue('capaRefEdicion', 'None')
+        self.manzanaPrincipal = None
+        self.tablasReferencias = {
+        'Estado' : 'e_estado',
+        'Region Catastral' : 'e_region_carto',
+        'Municipios' : 'e_municipio',
+        'Secciones' : 'e_seccion',      
+        'Localidades' : 'e_localidad',
+        'Sectores' : 'e_sector',
+        'Manzanas' : 'e_manzana',
+        'Predios' : 'vw_predio',
+        'Calles' : 'vw_calle',
+        'Colonias' : 'e_colonia',
+        'Codigo Postal' : 'e_cp',
+        'Zona Uno' : 'e_zona_uno',
+        'Zona Dos' : 'e_zona_dos',
+        'Area de Valor' : 'e_area_valor',
+        'Corredor de Valor' : 'e_corredor_valor'
+        }
 
         self.dockwidget.btnVerReglas.clicked.connect(self.verReglas)
         # Declare instance attributes
@@ -350,7 +369,7 @@ class TopologiaV3:
 #################################################################################################################
     def validarTopologiaManualRef(self):
     
-        if self.ACA.capaEnEdicion != '':
+        if self.capaEnEdicion != '':
 
             self.todoEnOrdenRef = True
             QSettings().setValue("posibleGuardarRef", "False")

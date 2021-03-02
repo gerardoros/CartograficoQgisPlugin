@@ -3115,8 +3115,8 @@ class ActualizacionCatastralV3:
 
             QSettings().setValue('clavesEstatusRef', [])
 
-            #nombreCapa = self.dockwidget.comboCapasEdicion.currentText()
-            nombreCapa = nombreCapa
+            nombreCapa = self.dockwidget.comboCapasEdicion.currentText()
+            #nombreCapa = nombreCapa
             root = QgsProject.instance().layerTreeRoot()
             grupoEdicion = root.findGroup('edicion')
             

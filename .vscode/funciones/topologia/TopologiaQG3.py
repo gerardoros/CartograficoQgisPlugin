@@ -128,7 +128,7 @@ class TopologiaQG3:
 
 
     def validarTopologiaManual(self):
- 
+        print('lol')
         self.todoEnOrden = True
         QSettings().setValue("posibleGuardar", "False")
 

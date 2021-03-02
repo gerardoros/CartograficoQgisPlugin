@@ -306,6 +306,7 @@ class menu:
         self.dlg.btnSolicitud.clicked.connect(self.menus)
         self.dlg.botonCancelarReferencia.clicked.connect(self.rollbackCapa)
         self.dlg.botonActualizarRef.clicked.connect(self.actualizarFeatureRef)
+        self.dlg.botonValidarRef.clicked.connect(self.validarRef)
         self.cve_cat_len = 16
         self.dlg.lista = {}
         self.cursorRedondo = QCursor(QPixmap(["16 16 3 1",
@@ -1404,7 +1405,32 @@ class menu:
             self.TPG.validarTopologiaManual()
             self.manual()
             print(self.todoEnOrden)
-
+    def validarRef(self):
+        self.dlg.listWidget.clear()
+        self.dlg.listWidget_2.clear()
+        self.dlg.listWidget_3.clear()
+        self.dlg.listWidget_4.clear()
+        self.dlg.listWidget_5.clear()
+        self.dlg.listWidget_6.clear()
+        self.dlg.listWidget_7.clear()
+        self.dlg.listWidget_8.clear()
+        self.dlg.mGroupBox_14.setTitle('Manzana    ')
+        self.dlg.mGroupBox_15.setTitle('Predio    ')
+        self.dlg.mGroupBox_16.setTitle('Predio Num    ')
+        self.dlg.mGroupBox_17.setTitle('Construcciones   ')
+        self.dlg.mGroupBox_18.setTitle('Horizontales Geom    ')
+        self.dlg.mGroupBox_19.setTitle('Horizontales Num    ')
+        self.dlg.mGroupBox_20.setTitle('Verticales    ')
+        self.dlg.mGroupBox_21.setTitle('Cves Verticales   ')
+        self.TPG.DFS = self.DFS
+        self.TPG.DBJ = self.DBJ
+        self.TPG.ELM = self.ELM
+        self.TPG.DFS = self.DFS
+        self.TPG.CMS = self.CMS
+        self.todoEnOrden = True
+        if self.todoEnOrden:
+            self.TPG.validarTopologiaManualRef()
+            self.manual()
     def llenaTablaErrores(self):
         if self.TPG.reglas.cuentaError > 0:
             manzanasTotales = self.xManzana.featureCount()
