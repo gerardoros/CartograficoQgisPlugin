@@ -10435,7 +10435,7 @@ background : rgb(250,238,224);
             </widget>
             <widget class="QWidget" name="tab_2">
              <attribute name="title">
-              <string>Información Catastral</string>
+              <string>Valuación Catastral</string>
              </attribute>
              <widget class="QTabWidget" name="tabWidget">
               <property name="geometry">
