@@ -5,8 +5,7 @@ class Configuracion():
     def __init__(self):
         
         #Direccion IP del servidor
-        #self.servidorIP = 'http://localhost:8080/'
-        self.servidorIP = 'http://192.168.0.69:8784/'
+        self.servidorIP = 'http://192.168.0.25:8080/'
         #self.servidorIP = 'http://192.168.0.96:8080/'
         #self.servidorIP = 'https://thesmartflat.cianet.mx/cartografico/api/'
 
