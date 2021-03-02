@@ -371,8 +371,8 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
         self.cmbOrientPredMza.setView(self.generaQListView())
         self.cmbUsoConstrP.setView(self.generaQListView())
         self.cmbCondo.setView(self.generaQListView())
-        self.cmbUsoEspP.setView(self.generaQListView())
-        self.cmbDestinoP.setView(self.generaQListView())
+        #self.cmbUsoEspP.setView(self.generaQListView())
+        #self.cmbDestinoP.setView(self.generaQListView())
         self.cmbEdoConstrP.setView(self.generaQListView())
         self.cmbCategoriaP.setView(self.generaQListView())
 
@@ -412,7 +412,7 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
         self.btnSelCalle.clicked.connect(self.event_consultarCalle)
         self.btnCancelSelCalle.clicked.connect(self.event_cancelarCalle)
 
-        self.btnCalcValCatP.clicked.connect(self.event_calcularValorConstrPred)
+        #self.btnCalcValCatP.clicked.connect(self.event_calcularValorConstrPred)
         self.btnCalcValCatC.clicked.connect(self.event_calcularValorConstrCond)
         self.btnSubdividirP.clicked.connect(self.event_subdividirFraccPred)
         self.btnSubdividirC.clicked.connect(self.event_subdividirFraccCond)
@@ -1103,7 +1103,7 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
                     self.usoConstrC.append(d)
         
         # -- destino
-        if len(destino) > 0:
+        '''if len(destino) > 0:
             self.cmbDestinoP.addItem('', -1)
             for d in destino:
                 self.cmbDestinoP.addItem(d['descripcion'], d['id'])
@@ -1111,7 +1111,7 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
             if condo:
                 self.cmbDestinoC.addItem('', -1)
                 for d in destino:
-                    self.cmbDestinoC.addItem(d['descripcion'], d['id'])
+                    self.cmbDestinoC.addItem(d['descripcion'], d['id'])'''
 
         # -- estado de construccion
         if len(edoConstr) > 0:
@@ -1538,10 +1538,10 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
         self.cmbConP.clear()
 
         self.cmbUsoConstrP.setCurrentIndex(0)
-        self.cmbDestinoP.setCurrentIndex(0)
+        #self.cmbDestinoP.setCurrentIndex(0)
         self.cmbEdoConstrP.setCurrentIndex(0)
 
-        self.leNombreP.setText('')
+        
         self.leSupConstrFP.setText('')
         self.lbSupConstrP.setText('')
         self.leAnioConsP.setText('')
@@ -1604,16 +1604,14 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
         self.cmbNvaFraccP.setEnabled(True)
         self.btnSubdividirP.setEnabled(True)
         self.cmbUsoConstrP.setEnabled(True)
-        self.leNombreP.setEnabled(True)
         self.leSupConstrFP.setEnabled(True)
-        self.cmbUsoEspP.setEnabled(True)
-        self.cmbDestinoP.setEnabled(True)
+        #self.cmbDestinoP.setEnabled(True)
         self.leNvlUbicaP.setEnabled(True)
         self.leAnioConsP.setEnabled(True)
         self.cmbEdoConstrP.setEnabled(True)
         self.cmbCategoriaP.setEnabled(True)
         self.cmbFactorConstrP.setEnabled(True)
-        self.btnCalcValCatP.setEnabled(True)
+        #self.btnCalcValCatP.setEnabled(True)
         self.leNumOfCond.setEnabled(True)
         self.leSupConstPrivCond.setEnabled(True)
         self.leSupConstComunCond.setEnabled(True)
@@ -1682,7 +1680,7 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
         self.btnDelConstrP.setEnabled(True)
         self.btnSubdividirP.setEnabled(True)
         self.btnFusionarP.setEnabled(True)
-        self.btnCalcValCatP.setEnabled(True)
+        #self.btnCalcValCatP.setEnabled(True)
 
         self.lbSupConstrP.setText('')
         self.lbNumNivP.setText('')
@@ -1741,7 +1739,7 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
         self.cmbNvaFraccP.setEnabled(True)
         self.leNivPropP.setEnabled(True)
         self.cmbConP.setEnabled(True)
-        self.btnCalcValCatP.setEnabled(True)
+        #self.btnCalcValCatP.setEnabled(True)
         self.btnSubdividirP.setEnabled(True)
         self.btnFusionarP.setEnabled(True)
 
@@ -1842,7 +1840,6 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
         dataTemp['valorConst'] = self.lbValConstP.text().replace('$', '').replace(',', '')
         dataTemp['supConstFraccion'] = self.leSupConstrFP.text()
         dataTemp['numNivel'] = self.lbNvlFraccP.text()
-        dataTemp['nombre'] = self.leNombreP.text()
         dataTemp['nvlUbica'] = self.leNvlUbicaP.text()
         dataTemp['anioConstruccion'] = self.leAnioConsP.text()
 
@@ -1855,20 +1852,20 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
             dataTemp['idCatUsoConstruccion'] = -1
 
         # uso especifico
-        if self.cmbUsoEspP.count() > 0:
+        '''if self.cmbUsoEspP.count() > 0:
             index = self.cmbUsoEspP.currentIndex()
             valor = self.cmbUsoEspP.itemData(index)
             dataTemp['idCatUsoEspecifico'] = valor
         else:
-            dataTemp['idCatUsoEspecifico'] = -1
+            dataTemp['idCatUsoEspecifico'] = -1'''
 
         # destino
-        if self.cmbDestinoP.count() > 0:
+        '''if self.cmbDestinoP.count() > 0:
             index = self.cmbDestinoP.currentIndex()
             valor = self.cmbDestinoP.itemData(index)
             dataTemp['idCatDestino'] = valor
         else:
-            dataTemp['idCatDestino'] = -1
+            dataTemp['idCatDestino'] = -1'''
 
         # estado de construccion
         if self.cmbEdoConstrP.count() > 0:
@@ -2718,7 +2715,7 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
             idUsoConst = self.cmbUsoConstrP.itemData(index)
 
             self.cmbCategoriaP.clear()
-            self.cmbUsoEspP.clear()
+            #self.cmbUsoEspP.clear()
 
             # -- obtiene categorias
             data = self.consumeWSGeneral(self.CFG.urlCedCategoriasByIdUsoConst + str(idUsoConst))
@@ -2737,9 +2734,9 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
                     d = {cate['id']: cate}
                     self.cateConstP.append(d)
 
-            if lenJson1 > 0:
+            '''if lenJson1 > 0:
                 for esp in data1:
-                    self.cmbUsoEspP.addItem(str(esp['descripcion']), esp['id'])
+                    self.cmbUsoEspP.addItem(str(esp['descripcion']), esp['id'])'''
 
     def event_CambioTipoUsoSuelo(self):
 
@@ -2782,7 +2779,6 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
             #self.lbSupConstrFP.setText(str(0) if data['supConstFraccion'] is None else str(data['supConstFraccion']))
             self.lbSupConstrP.setText(str(0) if data['supConstFraccion'] is None else str(data['supConstFraccion']))
             self.lbNvlFraccP.setText(str(1) if data['numNivel'] is None else str(data['numNivel']))
-            self.leNombreP.setText('' if data['nombre'] is None else str(data['nombre']))
             self.leNvlUbicaP.setText('' if data['nvlUbica'] is None else str(data['nvlUbica']))
             self.leAnioConsP.setText('' if data['anioConstruccion'] is None else str(data['anioConstruccion']))
 
@@ -2795,20 +2791,20 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
                 self.cmbUsoConstrP.setCurrentIndex(0)
 
             # uso especifico
-            if data['idCatUsoEspecifico'] != None:
+            '''if data['idCatUsoEspecifico'] != None:
                 index = self.cmbUsoEspP.findData(data['idCatUsoEspecifico'])
                 if index >= 0:
                     self.cmbUsoEspP.setCurrentIndex(index)
             else:
-                self.cmbUsoEspP.setCurrentIndex(0)
+                self.cmbUsoEspP.setCurrentIndex(0)'''
 
             # destino
-            if data['idCatDestino'] != None:
+            '''if data['idCatDestino'] != None:
                 index = self.cmbDestinoP.findData(data['idCatDestino'])
                 if index >= 0:
                     self.cmbDestinoP.setCurrentIndex(index)
             else:
-                self.cmbDestinoP.setCurrentIndex(0)
+                self.cmbDestinoP.setCurrentIndex(0)'''
 
             # estado de construccion
             if data['idCatEstadoConstruccion'] != None:
