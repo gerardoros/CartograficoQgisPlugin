@@ -6260,7 +6260,7 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
 
         clave = ''
 
-        if len(cveCata) == 10:
+        if len(cveCata) == 16:
             clave += cveCata[0:3] + '-'
             clave += cveCata[3:5] + '-'
             clave += cveCata[5:8] + '-'
