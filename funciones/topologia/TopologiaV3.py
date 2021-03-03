@@ -369,7 +369,7 @@ class TopologiaV3:
 #################################################################################################################
     def validarTopologiaManualRef(self):
     
-        if self.capaEnEdicion != '':
+        if self.ACA.capaEnEdicion != '':
 
             self.todoEnOrdenRef = True
             QSettings().setValue("posibleGuardarRef", "False")

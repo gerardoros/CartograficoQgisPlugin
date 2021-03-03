@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1252</width>
-    <height>883</height>
+    <height>882</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -3874,7 +3874,7 @@ height:24px
                    <x>0</x>
                    <y>0</y>
                    <width>726</width>
-                   <height>741</height>
+                   <height>740</height>
                   </rect>
                  </property>
                  <widget class="QWidget" name="widget_8" native="true">
@@ -6391,7 +6391,7 @@ background : rgb(250,238,224);
                    <x>0</x>
                    <y>0</y>
                    <width>726</width>
-                   <height>741</height>
+                   <height>740</height>
                   </rect>
                  </property>
                  <layout class="QGridLayout" name="gridLayout_24">
@@ -8270,7 +8270,7 @@ height:24px
                    <x>0</x>
                    <y>0</y>
                    <width>726</width>
-                   <height>741</height>
+                   <height>740</height>
                   </rect>
                  </property>
                  <layout class="QGridLayout" name="gridLayout_30">
@@ -10443,7 +10443,7 @@ background : rgb(250,238,224);
                 <x>6</x>
                 <y>9</y>
                 <width>711</width>
-                <height>731</height>
+                <height>751</height>
                </rect>
               </property>
               <property name="toolTip">
@@ -10504,11 +10504,14 @@ background : rgb(250,238,224);
                <widget class="QScrollArea" name="scrollArea_11">
                 <property name="geometry">
                  <rect>
-                  <x>0</x>
+                  <x>-10</x>
                   <y>0</y>
-                  <width>701</width>
-                  <height>701</height>
+                  <width>721</width>
+                  <height>711</height>
                  </rect>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">background : rgb(255, 255, 255);</string>
                 </property>
                 <property name="widgetResizable">
                  <bool>true</bool>
@@ -10517,525 +10520,25 @@ background : rgb(250,238,224);
                  <property name="geometry">
                   <rect>
                    <x>0</x>
-                   <y>0</y>
-                   <width>699</width>
-                   <height>699</height>
+                   <y>-437</y>
+                   <width>702</width>
+                   <height>1146</height>
                   </rect>
                  </property>
-                 <widget class="QGroupBox" name="groupBox_14">
-                  <property name="geometry">
-                   <rect>
-                    <x>10</x>
-                    <y>10</y>
-                    <width>681</width>
-                    <height>681</height>
-                   </rect>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <family>Arial</family>
-                    <pointsize>12</pointsize>
-                    <weight>75</weight>
-                    <bold>true</bold>
-                   </font>
-                  </property>
-                  <property name="title">
-                   <string>Terreno</string>
-                  </property>
-                  <widget class="QGroupBox" name="groupBox_15">
-                   <property name="geometry">
-                    <rect>
-                     <x>20</x>
-                     <y>30</y>
-                     <width>651</width>
-                     <height>111</height>
-                    </rect>
-                   </property>
-                   <property name="font">
-                    <font>
-                     <family>Arial</family>
-                     <pointsize>12</pointsize>
-                     <weight>75</weight>
-                     <bold>true</bold>
-                    </font>
-                   </property>
-                   <property name="title">
-                    <string>Valor unitario de suelo</string>
-                   </property>
-                   <widget class="QLabel" name="label_212">
-                    <property name="geometry">
-                     <rect>
-                      <x>20</x>
-                      <y>30</y>
-                      <width>61</width>
-                      <height>16</height>
-                     </rect>
+                 <layout class="QVBoxLayout" name="verticalLayout_3">
+                  <item>
+                   <widget class="QGroupBox" name="groupBox_14">
+                    <property name="minimumSize">
+                     <size>
+                      <width>681</width>
+                      <height>591</height>
+                     </size>
                     </property>
-                    <property name="font">
-                     <font>
-                      <family>Arial</family>
-                      <pointsize>12</pointsize>
-                      <weight>75</weight>
-                      <bold>true</bold>
-                     </font>
-                    </property>
-                    <property name="text">
-                     <string>Código</string>
-                    </property>
-                   </widget>
-                   <widget class="QLabel" name="label_213">
-                    <property name="geometry">
-                     <rect>
-                      <x>100</x>
-                      <y>30</y>
-                      <width>101</width>
-                      <height>16</height>
-                     </rect>
-                    </property>
-                    <property name="font">
-                     <font>
-                      <family>Arial</family>
-                      <pointsize>12</pointsize>
-                      <weight>75</weight>
-                      <bold>true</bold>
-                     </font>
-                    </property>
-                    <property name="text">
-                     <string>Frente Base</string>
-                    </property>
-                   </widget>
-                   <widget class="QLabel" name="label_214">
-                    <property name="geometry">
-                     <rect>
-                      <x>220</x>
-                      <y>30</y>
-                      <width>101</width>
-                      <height>16</height>
-                     </rect>
-                    </property>
-                    <property name="font">
-                     <font>
-                      <family>Arial</family>
-                      <pointsize>12</pointsize>
-                      <weight>75</weight>
-                      <bold>true</bold>
-                     </font>
-                    </property>
-                    <property name="text">
-                     <string>Fondo Base</string>
-                    </property>
-                   </widget>
-                   <widget class="QLabel" name="label_215">
-                    <property name="geometry">
-                     <rect>
-                      <x>352</x>
-                      <y>29</y>
-                      <width>81</width>
-                      <height>16</height>
-                     </rect>
-                    </property>
-                    <property name="font">
-                     <font>
-                      <family>Arial</family>
-                      <pointsize>12</pointsize>
-                      <weight>75</weight>
-                      <bold>true</bold>
-                     </font>
-                    </property>
-                    <property name="text">
-                     <string>Área Base</string>
-                    </property>
-                   </widget>
-                   <widget class="QLabel" name="label_216">
-                    <property name="geometry">
-                     <rect>
-                      <x>470</x>
-                      <y>29</y>
-                      <width>41</width>
-                      <height>16</height>
-                     </rect>
-                    </property>
-                    <property name="font">
-                     <font>
-                      <family>Arial</family>
-                      <pointsize>12</pointsize>
-                      <weight>75</weight>
-                      <bold>true</bold>
-                     </font>
-                    </property>
-                    <property name="text">
-                     <string>Valor</string>
-                    </property>
-                   </widget>
-                   <widget class="QLabel" name="label_217">
-                    <property name="geometry">
-                     <rect>
-                      <x>20</x>
-                      <y>60</y>
-                      <width>71</width>
-                      <height>16</height>
-                     </rect>
-                    </property>
-                    <property name="font">
-                     <font>
-                      <family>Arial</family>
-                      <pointsize>12</pointsize>
-                     </font>
-                    </property>
-                    <property name="text">
-                     <string>TextLabel</string>
-                    </property>
-                   </widget>
-                   <widget class="QLabel" name="label_218">
-                    <property name="geometry">
-                     <rect>
-                      <x>120</x>
-                      <y>60</y>
-                      <width>71</width>
-                      <height>16</height>
-                     </rect>
-                    </property>
-                    <property name="font">
-                     <font>
-                      <family>Arial</family>
-                      <pointsize>12</pointsize>
-                     </font>
-                    </property>
-                    <property name="text">
-                     <string>TextLabel</string>
-                    </property>
-                   </widget>
-                   <widget class="QLabel" name="label_219">
-                    <property name="geometry">
-                     <rect>
-                      <x>230</x>
-                      <y>60</y>
-                      <width>71</width>
-                      <height>16</height>
-                     </rect>
-                    </property>
-                    <property name="font">
-                     <font>
-                      <family>Arial</family>
-                      <pointsize>12</pointsize>
-                     </font>
-                    </property>
-                    <property name="text">
-                     <string>TextLabel</string>
-                    </property>
-                   </widget>
-                   <widget class="QLabel" name="label_220">
-                    <property name="geometry">
-                     <rect>
-                      <x>360</x>
-                      <y>60</y>
-                      <width>71</width>
-                      <height>16</height>
-                     </rect>
-                    </property>
-                    <property name="font">
-                     <font>
-                      <family>Arial</family>
-                      <pointsize>12</pointsize>
-                     </font>
-                    </property>
-                    <property name="text">
-                     <string>TextLabel</string>
-                    </property>
-                   </widget>
-                   <widget class="QLabel" name="label_221">
-                    <property name="geometry">
-                     <rect>
-                      <x>470</x>
-                      <y>60</y>
-                      <width>71</width>
-                      <height>16</height>
-                     </rect>
-                    </property>
-                    <property name="font">
-                     <font>
-                      <family>Arial</family>
-                      <pointsize>12</pointsize>
-                     </font>
-                    </property>
-                    <property name="text">
-                     <string>TextLabel</string>
-                    </property>
-                   </widget>
-                  </widget>
-                  <widget class="QGroupBox" name="groupBox_16">
-                   <property name="geometry">
-                    <rect>
-                     <x>20</x>
-                     <y>149</y>
-                     <width>651</width>
-                     <height>61</height>
-                    </rect>
-                   </property>
-                   <property name="font">
-                    <font>
-                     <family>Arial</family>
-                     <pointsize>12</pointsize>
-                     <weight>75</weight>
-                     <bold>true</bold>
-                    </font>
-                   </property>
-                   <property name="title">
-                    <string>Banda de valor</string>
-                   </property>
-                   <widget class="QLabel" name="label_222">
-                    <property name="geometry">
-                     <rect>
-                      <x>250</x>
-                      <y>30</y>
-                      <width>71</width>
-                      <height>16</height>
-                     </rect>
-                    </property>
-                    <property name="font">
-                     <font>
-                      <family>Arial</family>
-                      <pointsize>12</pointsize>
-                     </font>
-                    </property>
-                    <property name="text">
-                     <string>TextLabel</string>
-                    </property>
-                   </widget>
-                   <widget class="QLabel" name="label_223">
-                    <property name="geometry">
-                     <rect>
-                      <x>20</x>
-                      <y>31</y>
-                      <width>61</width>
-                      <height>16</height>
-                     </rect>
-                    </property>
-                    <property name="font">
-                     <font>
-                      <family>Arial</family>
-                      <pointsize>12</pointsize>
-                      <weight>75</weight>
-                      <bold>true</bold>
-                     </font>
-                    </property>
-                    <property name="text">
-                     <string>Código</string>
-                    </property>
-                   </widget>
-                   <widget class="QLabel" name="label_224">
-                    <property name="geometry">
-                     <rect>
-                      <x>90</x>
-                      <y>30</y>
-                      <width>71</width>
-                      <height>16</height>
-                     </rect>
-                    </property>
-                    <property name="font">
-                     <font>
-                      <family>Arial</family>
-                      <pointsize>12</pointsize>
-                     </font>
-                    </property>
-                    <property name="text">
-                     <string>TextLabel</string>
-                    </property>
-                   </widget>
-                   <widget class="QLabel" name="label_225">
-                    <property name="geometry">
-                     <rect>
-                      <x>190</x>
-                      <y>30</y>
-                      <width>41</width>
-                      <height>16</height>
-                     </rect>
-                    </property>
-                    <property name="font">
-                     <font>
-                      <family>Arial</family>
-                      <pointsize>12</pointsize>
-                      <weight>75</weight>
-                      <bold>true</bold>
-                     </font>
-                    </property>
-                    <property name="text">
-                     <string>Valor</string>
-                    </property>
-                   </widget>
-                  </widget>
-                  <widget class="QGroupBox" name="groupBox_17">
-                   <property name="geometry">
-                    <rect>
-                     <x>20</x>
-                     <y>220</y>
-                     <width>651</width>
-                     <height>80</height>
-                    </rect>
-                   </property>
-                   <property name="font">
-                    <font>
-                     <family>Arial</family>
-                     <pointsize>12</pointsize>
-                     <weight>75</weight>
-                     <bold>true</bold>
-                    </font>
-                   </property>
-                   <property name="title">
-                    <string>Superficie</string>
-                   </property>
-                   <widget class="QLabel" name="label_226">
-                    <property name="geometry">
-                     <rect>
-                      <x>430</x>
-                      <y>30</y>
-                      <width>71</width>
-                      <height>16</height>
-                     </rect>
-                    </property>
-                    <property name="font">
-                     <font>
-                      <family>Arial</family>
-                      <pointsize>12</pointsize>
-                     </font>
-                    </property>
-                    <property name="text">
-                     <string>TextLabel</string>
-                    </property>
-                   </widget>
-                   <widget class="QLabel" name="label_227">
-                    <property name="geometry">
-                     <rect>
-                      <x>20</x>
-                      <y>20</y>
-                      <width>81</width>
-                      <height>41</height>
-                     </rect>
-                    </property>
-                    <property name="font">
-                     <font>
-                      <family>Arial</family>
-                      <pointsize>12</pointsize>
-                      <weight>75</weight>
-                      <bold>true</bold>
-                     </font>
-                    </property>
-                    <property name="text">
-                     <string>Terreno
- Privativo</string>
-                    </property>
-                   </widget>
-                   <widget class="QLabel" name="label_228">
-                    <property name="geometry">
-                     <rect>
-                      <x>190</x>
-                      <y>20</y>
-                      <width>71</width>
-                      <height>41</height>
-                     </rect>
-                    </property>
-                    <property name="font">
-                     <font>
-                      <family>Arial</family>
-                      <pointsize>12</pointsize>
-                      <weight>75</weight>
-                      <bold>true</bold>
-                     </font>
-                    </property>
-                    <property name="text">
-                     <string>Terreno 
-Común</string>
-                    </property>
-                   </widget>
-                   <widget class="QLabel" name="label_229">
-                    <property name="geometry">
-                     <rect>
-                      <x>270</x>
-                      <y>30</y>
-                      <width>71</width>
-                      <height>16</height>
-                     </rect>
-                    </property>
-                    <property name="font">
-                     <font>
-                      <family>Arial</family>
-                      <pointsize>12</pointsize>
-                     </font>
-                    </property>
-                    <property name="text">
-                     <string>TextLabel</string>
-                    </property>
-                   </widget>
-                   <widget class="QLabel" name="label_230">
-                    <property name="geometry">
-                     <rect>
-                      <x>110</x>
-                      <y>30</y>
-                      <width>71</width>
-                      <height>16</height>
-                     </rect>
-                    </property>
-                    <property name="font">
-                     <font>
-                      <family>Arial</family>
-                      <pointsize>12</pointsize>
-                     </font>
-                    </property>
-                    <property name="text">
-                     <string>TextLabel</string>
-                    </property>
-                   </widget>
-                   <widget class="QLabel" name="label_231">
-                    <property name="geometry">
-                     <rect>
-                      <x>350</x>
-                      <y>20</y>
-                      <width>71</width>
-                      <height>41</height>
-                     </rect>
-                    </property>
-                    <property name="font">
-                     <font>
-                      <family>Arial</family>
-                      <pointsize>12</pointsize>
-                      <weight>75</weight>
-                      <bold>true</bold>
-                     </font>
-                    </property>
-                    <property name="text">
-                     <string>Terreno 
-Total</string>
-                    </property>
-                   </widget>
-                  </widget>
-                  <widget class="QGroupBox" name="groupBox_18">
-                   <property name="geometry">
-                    <rect>
-                     <x>20</x>
-                     <y>310</y>
-                     <width>651</width>
-                     <height>261</height>
-                    </rect>
-                   </property>
-                   <property name="font">
-                    <font>
-                     <family>Arial</family>
-                     <pointsize>12</pointsize>
-                     <weight>75</weight>
-                     <bold>true</bold>
-                    </font>
-                   </property>
-                   <property name="title">
-                    <string>Factores</string>
-                   </property>
-                   <widget class="QGroupBox" name="groupBox_19">
-                    <property name="geometry">
-                     <rect>
-                      <x>19</x>
-                      <y>19</y>
-                      <width>301</width>
-                      <height>231</height>
-                     </rect>
+                    <property name="maximumSize">
+                     <size>
+                      <width>681</width>
+                      <height>591</height>
+                     </size>
                     </property>
                     <property name="font">
                      <font>
@@ -11048,12 +10551,1107 @@ Total</string>
                     <property name="title">
                      <string>Terreno</string>
                     </property>
-                    <widget class="QLabel" name="label_232">
+                    <widget class="QGroupBox" name="groupBox_15">
                      <property name="geometry">
                       <rect>
-                       <x>10</x>
-                       <y>21</y>
-                       <width>61</width>
+                       <x>20</x>
+                       <y>30</y>
+                       <width>651</width>
+                       <height>111</height>
+                      </rect>
+                     </property>
+                     <property name="font">
+                      <font>
+                       <family>Arial</family>
+                       <pointsize>12</pointsize>
+                       <weight>75</weight>
+                       <bold>true</bold>
+                      </font>
+                     </property>
+                     <property name="title">
+                      <string>Valor unitario de suelo</string>
+                     </property>
+                     <widget class="QLabel" name="label_212">
+                      <property name="geometry">
+                       <rect>
+                        <x>20</x>
+                        <y>30</y>
+                        <width>61</width>
+                        <height>16</height>
+                       </rect>
+                      </property>
+                      <property name="font">
+                       <font>
+                        <family>Arial</family>
+                        <pointsize>12</pointsize>
+                        <weight>75</weight>
+                        <bold>true</bold>
+                       </font>
+                      </property>
+                      <property name="text">
+                       <string>Código</string>
+                      </property>
+                     </widget>
+                     <widget class="QLabel" name="label_213">
+                      <property name="geometry">
+                       <rect>
+                        <x>100</x>
+                        <y>30</y>
+                        <width>101</width>
+                        <height>16</height>
+                       </rect>
+                      </property>
+                      <property name="font">
+                       <font>
+                        <family>Arial</family>
+                        <pointsize>12</pointsize>
+                        <weight>75</weight>
+                        <bold>true</bold>
+                       </font>
+                      </property>
+                      <property name="text">
+                       <string>Frente Base</string>
+                      </property>
+                     </widget>
+                     <widget class="QLabel" name="label_214">
+                      <property name="geometry">
+                       <rect>
+                        <x>220</x>
+                        <y>30</y>
+                        <width>101</width>
+                        <height>16</height>
+                       </rect>
+                      </property>
+                      <property name="font">
+                       <font>
+                        <family>Arial</family>
+                        <pointsize>12</pointsize>
+                        <weight>75</weight>
+                        <bold>true</bold>
+                       </font>
+                      </property>
+                      <property name="text">
+                       <string>Fondo Base</string>
+                      </property>
+                     </widget>
+                     <widget class="QLabel" name="label_215">
+                      <property name="geometry">
+                       <rect>
+                        <x>352</x>
+                        <y>29</y>
+                        <width>81</width>
+                        <height>16</height>
+                       </rect>
+                      </property>
+                      <property name="font">
+                       <font>
+                        <family>Arial</family>
+                        <pointsize>12</pointsize>
+                        <weight>75</weight>
+                        <bold>true</bold>
+                       </font>
+                      </property>
+                      <property name="text">
+                       <string>Área Base</string>
+                      </property>
+                     </widget>
+                     <widget class="QLabel" name="label_216">
+                      <property name="geometry">
+                       <rect>
+                        <x>470</x>
+                        <y>29</y>
+                        <width>41</width>
+                        <height>16</height>
+                       </rect>
+                      </property>
+                      <property name="font">
+                       <font>
+                        <family>Arial</family>
+                        <pointsize>12</pointsize>
+                        <weight>75</weight>
+                        <bold>true</bold>
+                       </font>
+                      </property>
+                      <property name="text">
+                       <string>Valor</string>
+                      </property>
+                     </widget>
+                     <widget class="QLabel" name="label_217">
+                      <property name="geometry">
+                       <rect>
+                        <x>20</x>
+                        <y>60</y>
+                        <width>71</width>
+                        <height>16</height>
+                       </rect>
+                      </property>
+                      <property name="font">
+                       <font>
+                        <family>Arial</family>
+                        <pointsize>12</pointsize>
+                       </font>
+                      </property>
+                      <property name="text">
+                       <string>0.00000</string>
+                      </property>
+                     </widget>
+                     <widget class="QLabel" name="label_218">
+                      <property name="geometry">
+                       <rect>
+                        <x>120</x>
+                        <y>60</y>
+                        <width>71</width>
+                        <height>16</height>
+                       </rect>
+                      </property>
+                      <property name="font">
+                       <font>
+                        <family>Arial</family>
+                        <pointsize>12</pointsize>
+                       </font>
+                      </property>
+                      <property name="text">
+                       <string>0.00000</string>
+                      </property>
+                     </widget>
+                     <widget class="QLabel" name="label_219">
+                      <property name="geometry">
+                       <rect>
+                        <x>230</x>
+                        <y>60</y>
+                        <width>71</width>
+                        <height>16</height>
+                       </rect>
+                      </property>
+                      <property name="font">
+                       <font>
+                        <family>Arial</family>
+                        <pointsize>12</pointsize>
+                       </font>
+                      </property>
+                      <property name="text">
+                       <string>0.00000</string>
+                      </property>
+                     </widget>
+                     <widget class="QLabel" name="label_220">
+                      <property name="geometry">
+                       <rect>
+                        <x>360</x>
+                        <y>60</y>
+                        <width>71</width>
+                        <height>16</height>
+                       </rect>
+                      </property>
+                      <property name="font">
+                       <font>
+                        <family>Arial</family>
+                        <pointsize>12</pointsize>
+                       </font>
+                      </property>
+                      <property name="text">
+                       <string>0.00000</string>
+                      </property>
+                     </widget>
+                     <widget class="QLabel" name="label_221">
+                      <property name="geometry">
+                       <rect>
+                        <x>470</x>
+                        <y>60</y>
+                        <width>71</width>
+                        <height>16</height>
+                       </rect>
+                      </property>
+                      <property name="font">
+                       <font>
+                        <family>Arial</family>
+                        <pointsize>12</pointsize>
+                       </font>
+                      </property>
+                      <property name="text">
+                       <string>0.00000</string>
+                      </property>
+                     </widget>
+                    </widget>
+                    <widget class="QGroupBox" name="groupBox_16">
+                     <property name="geometry">
+                      <rect>
+                       <x>20</x>
+                       <y>149</y>
+                       <width>651</width>
+                       <height>61</height>
+                      </rect>
+                     </property>
+                     <property name="font">
+                      <font>
+                       <family>Arial</family>
+                       <pointsize>12</pointsize>
+                       <weight>75</weight>
+                       <bold>true</bold>
+                      </font>
+                     </property>
+                     <property name="title">
+                      <string>Banda de valor</string>
+                     </property>
+                     <widget class="QLabel" name="label_222">
+                      <property name="geometry">
+                       <rect>
+                        <x>250</x>
+                        <y>30</y>
+                        <width>71</width>
+                        <height>16</height>
+                       </rect>
+                      </property>
+                      <property name="font">
+                       <font>
+                        <family>Arial</family>
+                        <pointsize>12</pointsize>
+                       </font>
+                      </property>
+                      <property name="text">
+                       <string>0.00000</string>
+                      </property>
+                     </widget>
+                     <widget class="QLabel" name="label_223">
+                      <property name="geometry">
+                       <rect>
+                        <x>20</x>
+                        <y>31</y>
+                        <width>61</width>
+                        <height>16</height>
+                       </rect>
+                      </property>
+                      <property name="font">
+                       <font>
+                        <family>Arial</family>
+                        <pointsize>12</pointsize>
+                        <weight>75</weight>
+                        <bold>true</bold>
+                       </font>
+                      </property>
+                      <property name="text">
+                       <string>Código</string>
+                      </property>
+                     </widget>
+                     <widget class="QLabel" name="label_224">
+                      <property name="geometry">
+                       <rect>
+                        <x>90</x>
+                        <y>30</y>
+                        <width>71</width>
+                        <height>16</height>
+                       </rect>
+                      </property>
+                      <property name="font">
+                       <font>
+                        <family>Arial</family>
+                        <pointsize>12</pointsize>
+                       </font>
+                      </property>
+                      <property name="text">
+                       <string>0.00000</string>
+                      </property>
+                     </widget>
+                     <widget class="QLabel" name="label_225">
+                      <property name="geometry">
+                       <rect>
+                        <x>190</x>
+                        <y>30</y>
+                        <width>41</width>
+                        <height>16</height>
+                       </rect>
+                      </property>
+                      <property name="font">
+                       <font>
+                        <family>Arial</family>
+                        <pointsize>12</pointsize>
+                        <weight>75</weight>
+                        <bold>true</bold>
+                       </font>
+                      </property>
+                      <property name="text">
+                       <string>Valor</string>
+                      </property>
+                     </widget>
+                    </widget>
+                    <widget class="QGroupBox" name="groupBox_17">
+                     <property name="geometry">
+                      <rect>
+                       <x>20</x>
+                       <y>220</y>
+                       <width>651</width>
+                       <height>80</height>
+                      </rect>
+                     </property>
+                     <property name="font">
+                      <font>
+                       <family>Arial</family>
+                       <pointsize>12</pointsize>
+                       <weight>75</weight>
+                       <bold>true</bold>
+                      </font>
+                     </property>
+                     <property name="title">
+                      <string>Superficie</string>
+                     </property>
+                     <widget class="QLabel" name="label_226">
+                      <property name="geometry">
+                       <rect>
+                        <x>430</x>
+                        <y>30</y>
+                        <width>71</width>
+                        <height>16</height>
+                       </rect>
+                      </property>
+                      <property name="font">
+                       <font>
+                        <family>Arial</family>
+                        <pointsize>12</pointsize>
+                       </font>
+                      </property>
+                      <property name="text">
+                       <string>0.00000</string>
+                      </property>
+                     </widget>
+                     <widget class="QLabel" name="label_227">
+                      <property name="geometry">
+                       <rect>
+                        <x>20</x>
+                        <y>20</y>
+                        <width>81</width>
+                        <height>41</height>
+                       </rect>
+                      </property>
+                      <property name="font">
+                       <font>
+                        <family>Arial</family>
+                        <pointsize>12</pointsize>
+                        <weight>75</weight>
+                        <bold>true</bold>
+                       </font>
+                      </property>
+                      <property name="text">
+                       <string>Terreno
+ Privativo</string>
+                      </property>
+                     </widget>
+                     <widget class="QLabel" name="label_228">
+                      <property name="geometry">
+                       <rect>
+                        <x>190</x>
+                        <y>20</y>
+                        <width>71</width>
+                        <height>41</height>
+                       </rect>
+                      </property>
+                      <property name="font">
+                       <font>
+                        <family>Arial</family>
+                        <pointsize>12</pointsize>
+                        <weight>75</weight>
+                        <bold>true</bold>
+                       </font>
+                      </property>
+                      <property name="text">
+                       <string>Terreno 
+Común</string>
+                      </property>
+                     </widget>
+                     <widget class="QLabel" name="label_229">
+                      <property name="geometry">
+                       <rect>
+                        <x>270</x>
+                        <y>30</y>
+                        <width>71</width>
+                        <height>16</height>
+                       </rect>
+                      </property>
+                      <property name="font">
+                       <font>
+                        <family>Arial</family>
+                        <pointsize>12</pointsize>
+                       </font>
+                      </property>
+                      <property name="text">
+                       <string>0.00000</string>
+                      </property>
+                     </widget>
+                     <widget class="QLabel" name="label_230">
+                      <property name="geometry">
+                       <rect>
+                        <x>110</x>
+                        <y>30</y>
+                        <width>71</width>
+                        <height>16</height>
+                       </rect>
+                      </property>
+                      <property name="font">
+                       <font>
+                        <family>Arial</family>
+                        <pointsize>12</pointsize>
+                       </font>
+                      </property>
+                      <property name="text">
+                       <string>0.00000</string>
+                      </property>
+                     </widget>
+                     <widget class="QLabel" name="label_231">
+                      <property name="geometry">
+                       <rect>
+                        <x>350</x>
+                        <y>20</y>
+                        <width>71</width>
+                        <height>41</height>
+                       </rect>
+                      </property>
+                      <property name="font">
+                       <font>
+                        <family>Arial</family>
+                        <pointsize>12</pointsize>
+                        <weight>75</weight>
+                        <bold>true</bold>
+                       </font>
+                      </property>
+                      <property name="text">
+                       <string>Terreno 
+Total</string>
+                      </property>
+                     </widget>
+                    </widget>
+                    <widget class="QGroupBox" name="groupBox_18">
+                     <property name="geometry">
+                      <rect>
+                       <x>20</x>
+                       <y>310</y>
+                       <width>651</width>
+                       <height>231</height>
+                      </rect>
+                     </property>
+                     <property name="font">
+                      <font>
+                       <family>Arial</family>
+                       <pointsize>12</pointsize>
+                       <weight>75</weight>
+                       <bold>true</bold>
+                      </font>
+                     </property>
+                     <property name="title">
+                      <string>Factores</string>
+                     </property>
+                     <widget class="QGroupBox" name="groupBox_19">
+                      <property name="geometry">
+                       <rect>
+                        <x>19</x>
+                        <y>19</y>
+                        <width>301</width>
+                        <height>171</height>
+                       </rect>
+                      </property>
+                      <property name="font">
+                       <font>
+                        <family>Arial</family>
+                        <pointsize>12</pointsize>
+                        <weight>75</weight>
+                        <bold>true</bold>
+                       </font>
+                      </property>
+                      <property name="title">
+                       <string>Terreno</string>
+                      </property>
+                      <widget class="QLabel" name="label_232">
+                       <property name="geometry">
+                        <rect>
+                         <x>10</x>
+                         <y>31</y>
+                         <width>61</width>
+                         <height>16</height>
+                        </rect>
+                       </property>
+                       <property name="font">
+                        <font>
+                         <family>Arial</family>
+                         <pointsize>12</pointsize>
+                         <weight>75</weight>
+                         <bold>true</bold>
+                        </font>
+                       </property>
+                       <property name="text">
+                        <string>Frente</string>
+                       </property>
+                      </widget>
+                      <widget class="QLabel" name="label_233">
+                       <property name="geometry">
+                        <rect>
+                         <x>80</x>
+                         <y>30</y>
+                         <width>71</width>
+                         <height>16</height>
+                        </rect>
+                       </property>
+                       <property name="font">
+                        <font>
+                         <family>Arial</family>
+                         <pointsize>12</pointsize>
+                        </font>
+                       </property>
+                       <property name="text">
+                        <string>0.00000</string>
+                       </property>
+                      </widget>
+                      <widget class="QLabel" name="label_234">
+                       <property name="geometry">
+                        <rect>
+                         <x>10</x>
+                         <y>51</y>
+                         <width>61</width>
+                         <height>16</height>
+                        </rect>
+                       </property>
+                       <property name="font">
+                        <font>
+                         <family>Arial</family>
+                         <pointsize>12</pointsize>
+                         <weight>75</weight>
+                         <bold>true</bold>
+                        </font>
+                       </property>
+                       <property name="text">
+                        <string>Fondo</string>
+                       </property>
+                      </widget>
+                      <widget class="QLabel" name="label_235">
+                       <property name="geometry">
+                        <rect>
+                         <x>80</x>
+                         <y>50</y>
+                         <width>71</width>
+                         <height>16</height>
+                        </rect>
+                       </property>
+                       <property name="font">
+                        <font>
+                         <family>Arial</family>
+                         <pointsize>12</pointsize>
+                        </font>
+                       </property>
+                       <property name="text">
+                        <string>0.00000</string>
+                       </property>
+                      </widget>
+                      <widget class="QLabel" name="label_236">
+                       <property name="geometry">
+                        <rect>
+                         <x>10</x>
+                         <y>70</y>
+                         <width>101</width>
+                         <height>21</height>
+                        </rect>
+                       </property>
+                       <property name="font">
+                        <font>
+                         <family>Arial</family>
+                         <pointsize>12</pointsize>
+                         <weight>75</weight>
+                         <bold>true</bold>
+                        </font>
+                       </property>
+                       <property name="text">
+                        <string>Área Inscrita</string>
+                       </property>
+                      </widget>
+                      <widget class="QLabel" name="label_237">
+                       <property name="geometry">
+                        <rect>
+                         <x>110</x>
+                         <y>70</y>
+                         <width>71</width>
+                         <height>16</height>
+                        </rect>
+                       </property>
+                       <property name="font">
+                        <font>
+                         <family>Arial</family>
+                         <pointsize>12</pointsize>
+                        </font>
+                       </property>
+                       <property name="text">
+                        <string>0.00000</string>
+                       </property>
+                      </widget>
+                      <widget class="QLabel" name="label_238">
+                       <property name="geometry">
+                        <rect>
+                         <x>10</x>
+                         <y>91</y>
+                         <width>61</width>
+                         <height>16</height>
+                        </rect>
+                       </property>
+                       <property name="font">
+                        <font>
+                         <family>Arial</family>
+                         <pointsize>12</pointsize>
+                         <weight>75</weight>
+                         <bold>true</bold>
+                        </font>
+                       </property>
+                       <property name="text">
+                        <string>Altura</string>
+                       </property>
+                      </widget>
+                      <widget class="QLabel" name="label_239">
+                       <property name="geometry">
+                        <rect>
+                         <x>80</x>
+                         <y>90</y>
+                         <width>71</width>
+                         <height>16</height>
+                        </rect>
+                       </property>
+                       <property name="font">
+                        <font>
+                         <family>Arial</family>
+                         <pointsize>12</pointsize>
+                        </font>
+                       </property>
+                       <property name="text">
+                        <string>0.00000</string>
+                       </property>
+                      </widget>
+                      <widget class="QLabel" name="label_240">
+                       <property name="geometry">
+                        <rect>
+                         <x>10</x>
+                         <y>111</y>
+                         <width>131</width>
+                         <height>16</height>
+                        </rect>
+                       </property>
+                       <property name="font">
+                        <font>
+                         <family>Arial</family>
+                         <pointsize>12</pointsize>
+                         <weight>75</weight>
+                         <bold>true</bold>
+                        </font>
+                       </property>
+                       <property name="text">
+                        <string>S. aprovechable</string>
+                       </property>
+                      </widget>
+                      <widget class="QLabel" name="label_241">
+                       <property name="geometry">
+                        <rect>
+                         <x>140</x>
+                         <y>110</y>
+                         <width>70</width>
+                         <height>16</height>
+                        </rect>
+                       </property>
+                       <property name="font">
+                        <font>
+                         <family>Arial</family>
+                         <pointsize>12</pointsize>
+                        </font>
+                       </property>
+                       <property name="text">
+                        <string>0.00000</string>
+                       </property>
+                      </widget>
+                      <widget class="QLabel" name="label_242">
+                       <property name="geometry">
+                        <rect>
+                         <x>10</x>
+                         <y>131</y>
+                         <width>81</width>
+                         <height>16</height>
+                        </rect>
+                       </property>
+                       <property name="font">
+                        <font>
+                         <family>Arial</family>
+                         <pointsize>12</pointsize>
+                         <weight>75</weight>
+                         <bold>true</bold>
+                        </font>
+                       </property>
+                       <property name="text">
+                        <string>Ubicación</string>
+                       </property>
+                      </widget>
+                      <widget class="QLabel" name="label_243">
+                       <property name="geometry">
+                        <rect>
+                         <x>100</x>
+                         <y>130</y>
+                         <width>71</width>
+                         <height>16</height>
+                        </rect>
+                       </property>
+                       <property name="font">
+                        <font>
+                         <family>Arial</family>
+                         <pointsize>12</pointsize>
+                        </font>
+                       </property>
+                       <property name="text">
+                        <string>[          ]</string>
+                       </property>
+                      </widget>
+                     </widget>
+                     <widget class="QGroupBox" name="groupBox_20">
+                      <property name="geometry">
+                       <rect>
+                        <x>330</x>
+                        <y>20</y>
+                        <width>301</width>
+                        <height>171</height>
+                       </rect>
+                      </property>
+                      <property name="font">
+                       <font>
+                        <family>Arial</family>
+                        <pointsize>12</pointsize>
+                        <weight>75</weight>
+                        <bold>true</bold>
+                       </font>
+                      </property>
+                      <property name="title">
+                       <string>Factores Merito/Demerito</string>
+                      </property>
+                      <widget class="QLabel" name="label_244">
+                       <property name="geometry">
+                        <rect>
+                         <x>100</x>
+                         <y>129</y>
+                         <width>80</width>
+                         <height>16</height>
+                        </rect>
+                       </property>
+                       <property name="font">
+                        <font>
+                         <family>Arial</family>
+                         <pointsize>12</pointsize>
+                        </font>
+                       </property>
+                       <property name="text">
+                        <string>1.00000</string>
+                       </property>
+                      </widget>
+                      <widget class="QLabel" name="label_245">
+                       <property name="geometry">
+                        <rect>
+                         <x>90</x>
+                         <y>29</y>
+                         <width>71</width>
+                         <height>16</height>
+                        </rect>
+                       </property>
+                       <property name="font">
+                        <font>
+                         <family>Arial</family>
+                         <pointsize>12</pointsize>
+                        </font>
+                       </property>
+                       <property name="text">
+                        <string>1.00000</string>
+                       </property>
+                      </widget>
+                      <widget class="QLabel" name="label_246">
+                       <property name="geometry">
+                        <rect>
+                         <x>20</x>
+                         <y>50</y>
+                         <width>61</width>
+                         <height>16</height>
+                        </rect>
+                       </property>
+                       <property name="font">
+                        <font>
+                         <family>Arial</family>
+                         <pointsize>12</pointsize>
+                         <weight>75</weight>
+                         <bold>true</bold>
+                        </font>
+                       </property>
+                       <property name="text">
+                        <string>Fondo</string>
+                       </property>
+                      </widget>
+                      <widget class="QLabel" name="label_247">
+                       <property name="geometry">
+                        <rect>
+                         <x>110</x>
+                         <y>109</y>
+                         <width>71</width>
+                         <height>16</height>
+                        </rect>
+                       </property>
+                       <property name="font">
+                        <font>
+                         <family>Arial</family>
+                         <pointsize>12</pointsize>
+                        </font>
+                       </property>
+                       <property name="text">
+                        <string>1.00000</string>
+                       </property>
+                      </widget>
+                      <widget class="QLabel" name="label_248">
+                       <property name="geometry">
+                        <rect>
+                         <x>90</x>
+                         <y>89</y>
+                         <width>71</width>
+                         <height>16</height>
+                        </rect>
+                       </property>
+                       <property name="font">
+                        <font>
+                         <family>Arial</family>
+                         <pointsize>12</pointsize>
+                        </font>
+                       </property>
+                       <property name="text">
+                        <string>1.00000</string>
+                       </property>
+                      </widget>
+                      <widget class="QLabel" name="label_249">
+                       <property name="geometry">
+                        <rect>
+                         <x>20</x>
+                         <y>70</y>
+                         <width>71</width>
+                         <height>16</height>
+                        </rect>
+                       </property>
+                       <property name="font">
+                        <font>
+                         <family>Arial</family>
+                         <pointsize>12</pointsize>
+                         <weight>75</weight>
+                         <bold>true</bold>
+                        </font>
+                       </property>
+                       <property name="text">
+                        <string>Irregular</string>
+                       </property>
+                      </widget>
+                      <widget class="QLabel" name="label_250">
+                       <property name="geometry">
+                        <rect>
+                         <x>20</x>
+                         <y>110</y>
+                         <width>91</width>
+                         <height>16</height>
+                        </rect>
+                       </property>
+                       <property name="font">
+                        <font>
+                         <family>Arial</family>
+                         <pointsize>12</pointsize>
+                         <weight>75</weight>
+                         <bold>true</bold>
+                        </font>
+                       </property>
+                       <property name="text">
+                        <string>Topografia</string>
+                       </property>
+                      </widget>
+                      <widget class="QLabel" name="label_251">
+                       <property name="geometry">
+                        <rect>
+                         <x>20</x>
+                         <y>30</y>
+                         <width>61</width>
+                         <height>16</height>
+                        </rect>
+                       </property>
+                       <property name="font">
+                        <font>
+                         <family>Arial</family>
+                         <pointsize>12</pointsize>
+                         <weight>75</weight>
+                         <bold>true</bold>
+                        </font>
+                       </property>
+                       <property name="text">
+                        <string>Frente</string>
+                       </property>
+                      </widget>
+                      <widget class="QLabel" name="label_252">
+                       <property name="geometry">
+                        <rect>
+                         <x>90</x>
+                         <y>70</y>
+                         <width>71</width>
+                         <height>16</height>
+                        </rect>
+                       </property>
+                       <property name="font">
+                        <font>
+                         <family>Arial</family>
+                         <pointsize>12</pointsize>
+                        </font>
+                       </property>
+                       <property name="text">
+                        <string>1.00000</string>
+                       </property>
+                      </widget>
+                      <widget class="QLabel" name="label_253">
+                       <property name="geometry">
+                        <rect>
+                         <x>20</x>
+                         <y>90</y>
+                         <width>61</width>
+                         <height>21</height>
+                        </rect>
+                       </property>
+                       <property name="font">
+                        <font>
+                         <family>Arial</family>
+                         <pointsize>12</pointsize>
+                         <weight>75</weight>
+                         <bold>true</bold>
+                        </font>
+                       </property>
+                       <property name="text">
+                        <string>Área</string>
+                       </property>
+                      </widget>
+                      <widget class="QLabel" name="label_254">
+                       <property name="geometry">
+                        <rect>
+                         <x>20</x>
+                         <y>130</y>
+                         <width>71</width>
+                         <height>16</height>
+                        </rect>
+                       </property>
+                       <property name="font">
+                        <font>
+                         <family>Arial</family>
+                         <pointsize>12</pointsize>
+                         <weight>75</weight>
+                         <bold>true</bold>
+                        </font>
+                       </property>
+                       <property name="text">
+                        <string>Posición</string>
+                       </property>
+                      </widget>
+                      <widget class="QLabel" name="label_255">
+                       <property name="geometry">
+                        <rect>
+                         <x>90</x>
+                         <y>49</y>
+                         <width>71</width>
+                         <height>16</height>
+                        </rect>
+                       </property>
+                       <property name="font">
+                        <font>
+                         <family>Arial</family>
+                         <pointsize>12</pointsize>
+                        </font>
+                       </property>
+                       <property name="text">
+                        <string>1.00000</string>
+                       </property>
+                      </widget>
+                      <widget class="QLabel" name="label_256">
+                       <property name="geometry">
+                        <rect>
+                         <x>20</x>
+                         <y>150</y>
+                         <width>91</width>
+                         <height>16</height>
+                        </rect>
+                       </property>
+                       <property name="font">
+                        <font>
+                         <family>Arial</family>
+                         <pointsize>12</pointsize>
+                         <weight>75</weight>
+                         <bold>true</bold>
+                        </font>
+                       </property>
+                       <property name="text">
+                        <string>Restricción</string>
+                       </property>
+                      </widget>
+                      <widget class="QLabel" name="label_257">
+                       <property name="geometry">
+                        <rect>
+                         <x>110</x>
+                         <y>149</y>
+                         <width>71</width>
+                         <height>16</height>
+                        </rect>
+                       </property>
+                       <property name="font">
+                        <font>
+                         <family>Arial</family>
+                         <pointsize>12</pointsize>
+                        </font>
+                       </property>
+                       <property name="text">
+                        <string>1.00000</string>
+                       </property>
+                      </widget>
+                     </widget>
+                     <widget class="QLabel" name="label_258">
+                      <property name="geometry">
+                       <rect>
+                        <x>560</x>
+                        <y>199</y>
+                        <width>71</width>
+                        <height>16</height>
+                       </rect>
+                      </property>
+                      <property name="font">
+                       <font>
+                        <family>Arial</family>
+                        <pointsize>12</pointsize>
+                       </font>
+                      </property>
+                      <property name="styleSheet">
+                       <string notr="true">color:rgb(0, 170, 0);</string>
+                      </property>
+                      <property name="text">
+                       <string>1.00000</string>
+                      </property>
+                     </widget>
+                     <widget class="QLabel" name="label_259">
+                      <property name="geometry">
+                       <rect>
+                        <x>400</x>
+                        <y>200</y>
+                        <width>161</width>
+                        <height>16</height>
+                       </rect>
+                      </property>
+                      <property name="font">
+                       <font>
+                        <family>Arial</family>
+                        <pointsize>12</pointsize>
+                        <weight>75</weight>
+                        <bold>true</bold>
+                       </font>
+                      </property>
+                      <property name="styleSheet">
+                       <string notr="true">color:rgb(0, 170, 0);</string>
+                      </property>
+                      <property name="text">
+                       <string>Factor Resultante</string>
+                      </property>
+                     </widget>
+                    </widget>
+                    <widget class="QLabel" name="label_262">
+                     <property name="geometry">
+                      <rect>
+                       <x>190</x>
+                       <y>561</y>
+                       <width>161</width>
                        <height>16</height>
                       </rect>
                      </property>
@@ -11066,35 +11664,16 @@ Total</string>
                       </font>
                      </property>
                      <property name="text">
-                      <string>Código</string>
+                      <string>V. C. Terreno Común</string>
                      </property>
                     </widget>
-                    <widget class="QLabel" name="label_233">
+                    <widget class="QLabel" name="label_260">
                      <property name="geometry">
                       <rect>
-                       <x>80</x>
-                       <y>20</y>
-                       <width>71</width>
-                       <height>16</height>
-                      </rect>
-                     </property>
-                     <property name="font">
-                      <font>
-                       <family>Arial</family>
-                       <pointsize>12</pointsize>
-                      </font>
-                     </property>
-                     <property name="text">
-                      <string>TextLabel</string>
-                     </property>
-                    </widget>
-                    <widget class="QLabel" name="label_234">
-                     <property name="geometry">
-                      <rect>
-                       <x>10</x>
-                       <y>41</y>
-                       <width>61</width>
-                       <height>16</height>
+                       <x>190</x>
+                       <y>541</y>
+                       <width>181</width>
+                       <height>20</height>
                       </rect>
                      </property>
                      <property name="font">
@@ -11106,14 +11685,14 @@ Total</string>
                       </font>
                      </property>
                      <property name="text">
-                      <string>Código</string>
+                      <string>V. C. Terreno Privativo</string>
                      </property>
                     </widget>
-                    <widget class="QLabel" name="label_235">
+                    <widget class="QLabel" name="label_263">
                      <property name="geometry">
                       <rect>
-                       <x>80</x>
-                       <y>40</y>
+                       <x>370</x>
+                       <y>560</y>
                        <width>71</width>
                        <height>16</height>
                       </rect>
@@ -11124,36 +11703,18 @@ Total</string>
                        <pointsize>12</pointsize>
                       </font>
                      </property>
-                     <property name="text">
-                      <string>TextLabel</string>
-                     </property>
-                    </widget>
-                    <widget class="QLabel" name="label_236">
-                     <property name="geometry">
-                      <rect>
-                       <x>10</x>
-                       <y>61</y>
-                       <width>61</width>
-                       <height>16</height>
-                      </rect>
-                     </property>
-                     <property name="font">
-                      <font>
-                       <family>Arial</family>
-                       <pointsize>12</pointsize>
-                       <weight>75</weight>
-                       <bold>true</bold>
-                      </font>
+                     <property name="styleSheet">
+                      <string notr="true">color: rgb(0, 85, 255);</string>
                      </property>
                      <property name="text">
-                      <string>Código</string>
+                      <string>1.00000</string>
                      </property>
                     </widget>
-                    <widget class="QLabel" name="label_237">
+                    <widget class="QLabel" name="label_261">
                      <property name="geometry">
                       <rect>
-                       <x>80</x>
-                       <y>60</y>
+                       <x>370</x>
+                       <y>540</y>
                        <width>71</width>
                        <height>16</height>
                       </rect>
@@ -11164,139 +11725,28 @@ Total</string>
                        <pointsize>12</pointsize>
                       </font>
                      </property>
-                     <property name="text">
-                      <string>TextLabel</string>
-                     </property>
-                    </widget>
-                    <widget class="QLabel" name="label_238">
-                     <property name="geometry">
-                      <rect>
-                       <x>10</x>
-                       <y>81</y>
-                       <width>61</width>
-                       <height>16</height>
-                      </rect>
-                     </property>
-                     <property name="font">
-                      <font>
-                       <family>Arial</family>
-                       <pointsize>12</pointsize>
-                       <weight>75</weight>
-                       <bold>true</bold>
-                      </font>
+                     <property name="styleSheet">
+                      <string notr="true">color: rgb(0, 85, 255);</string>
                      </property>
                      <property name="text">
-                      <string>Código</string>
-                     </property>
-                    </widget>
-                    <widget class="QLabel" name="label_239">
-                     <property name="geometry">
-                      <rect>
-                       <x>80</x>
-                       <y>80</y>
-                       <width>71</width>
-                       <height>16</height>
-                      </rect>
-                     </property>
-                     <property name="font">
-                      <font>
-                       <family>Arial</family>
-                       <pointsize>12</pointsize>
-                      </font>
-                     </property>
-                     <property name="text">
-                      <string>TextLabel</string>
-                     </property>
-                    </widget>
-                    <widget class="QLabel" name="label_240">
-                     <property name="geometry">
-                      <rect>
-                       <x>10</x>
-                       <y>101</y>
-                       <width>61</width>
-                       <height>16</height>
-                      </rect>
-                     </property>
-                     <property name="font">
-                      <font>
-                       <family>Arial</family>
-                       <pointsize>12</pointsize>
-                       <weight>75</weight>
-                       <bold>true</bold>
-                      </font>
-                     </property>
-                     <property name="text">
-                      <string>Código</string>
-                     </property>
-                    </widget>
-                    <widget class="QLabel" name="label_241">
-                     <property name="geometry">
-                      <rect>
-                       <x>80</x>
-                       <y>100</y>
-                       <width>71</width>
-                       <height>16</height>
-                      </rect>
-                     </property>
-                     <property name="font">
-                      <font>
-                       <family>Arial</family>
-                       <pointsize>12</pointsize>
-                      </font>
-                     </property>
-                     <property name="text">
-                      <string>TextLabel</string>
-                     </property>
-                    </widget>
-                    <widget class="QLabel" name="label_242">
-                     <property name="geometry">
-                      <rect>
-                       <x>10</x>
-                       <y>121</y>
-                       <width>61</width>
-                       <height>16</height>
-                      </rect>
-                     </property>
-                     <property name="font">
-                      <font>
-                       <family>Arial</family>
-                       <pointsize>12</pointsize>
-                       <weight>75</weight>
-                       <bold>true</bold>
-                      </font>
-                     </property>
-                     <property name="text">
-                      <string>Código</string>
-                     </property>
-                    </widget>
-                    <widget class="QLabel" name="label_243">
-                     <property name="geometry">
-                      <rect>
-                       <x>80</x>
-                       <y>120</y>
-                       <width>71</width>
-                       <height>16</height>
-                      </rect>
-                     </property>
-                     <property name="font">
-                      <font>
-                       <family>Arial</family>
-                       <pointsize>12</pointsize>
-                      </font>
-                     </property>
-                     <property name="text">
-                      <string>TextLabel</string>
+                      <string>1.00000</string>
                      </property>
                     </widget>
                    </widget>
-                   <widget class="QGroupBox" name="groupBox_20">
-                    <property name="geometry">
-                     <rect>
-                      <x>330</x>
-                      <y>20</y>
-                      <width>301</width>
-                      <height>231</height>
-                     </rect>
+                  </item>
+                  <item>
+                   <widget class="QGroupBox" name="groupBox_21">
+                    <property name="minimumSize">
+                     <size>
+                      <width>681</width>
+                      <height>531</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>681</width>
+                      <height>531</height>
+                     </size>
                     </property>
                     <property name="font">
                      <font>
@@ -11307,53 +11757,404 @@ Total</string>
                      </font>
                     </property>
                     <property name="title">
-                     <string>Factores Merito/Demerito</string>
+                     <string>Construcción</string>
                     </property>
-                    <widget class="QLabel" name="label_244">
-                     <property name="geometry">
-                      <rect>
-                       <x>90</x>
-                       <y>120</y>
-                       <width>71</width>
-                       <height>16</height>
-                      </rect>
-                     </property>
-                     <property name="font">
-                      <font>
-                       <family>Arial</family>
-                       <pointsize>12</pointsize>
-                      </font>
-                     </property>
-                     <property name="text">
-                      <string>TextLabel</string>
-                     </property>
-                    </widget>
-                    <widget class="QLabel" name="label_245">
-                     <property name="geometry">
-                      <rect>
-                       <x>90</x>
-                       <y>20</y>
-                       <width>71</width>
-                       <height>16</height>
-                      </rect>
-                     </property>
-                     <property name="font">
-                      <font>
-                       <family>Arial</family>
-                       <pointsize>12</pointsize>
-                      </font>
-                     </property>
-                     <property name="text">
-                      <string>TextLabel</string>
-                     </property>
-                    </widget>
-                    <widget class="QLabel" name="label_246">
+                    <widget class="QGroupBox" name="groupBox_22">
                      <property name="geometry">
                       <rect>
                        <x>20</x>
-                       <y>41</y>
-                       <width>61</width>
-                       <height>16</height>
+                       <y>30</y>
+                       <width>651</width>
+                       <height>211</height>
+                      </rect>
+                     </property>
+                     <property name="font">
+                      <font>
+                       <family>Arial</family>
+                       <pointsize>12</pointsize>
+                       <weight>75</weight>
+                       <bold>true</bold>
+                      </font>
+                     </property>
+                     <property name="title">
+                      <string>Propio</string>
+                     </property>
+                     <widget class="QLabel" name="label_264">
+                      <property name="geometry">
+                       <rect>
+                        <x>20</x>
+                        <y>180</y>
+                        <width>221</width>
+                        <height>20</height>
+                       </rect>
+                      </property>
+                      <property name="font">
+                       <font>
+                        <family>Arial</family>
+                        <pointsize>12</pointsize>
+                        <weight>75</weight>
+                        <bold>true</bold>
+                       </font>
+                      </property>
+                      <property name="text">
+                       <string>Total Construccón Privativa</string>
+                      </property>
+                     </widget>
+                     <widget class="QLabel" name="label_265">
+                      <property name="geometry">
+                       <rect>
+                        <x>340</x>
+                        <y>180</y>
+                        <width>221</width>
+                        <height>20</height>
+                       </rect>
+                      </property>
+                      <property name="font">
+                       <font>
+                        <family>Arial</family>
+                        <pointsize>12</pointsize>
+                        <weight>75</weight>
+                        <bold>true</bold>
+                       </font>
+                      </property>
+                      <property name="text">
+                       <string>Valor Construcción Privativa</string>
+                      </property>
+                     </widget>
+                     <widget class="QLabel" name="label_269">
+                      <property name="geometry">
+                       <rect>
+                        <x>240</x>
+                        <y>180</y>
+                        <width>71</width>
+                        <height>21</height>
+                       </rect>
+                      </property>
+                      <property name="font">
+                       <font>
+                        <family>Arial</family>
+                        <pointsize>12</pointsize>
+                       </font>
+                      </property>
+                      <property name="styleSheet">
+                       <string notr="true">color: rgb(0, 85, 255);</string>
+                      </property>
+                      <property name="text">
+                       <string>0.00</string>
+                      </property>
+                     </widget>
+                     <widget class="QLabel" name="label_270">
+                      <property name="geometry">
+                       <rect>
+                        <x>570</x>
+                        <y>180</y>
+                        <width>70</width>
+                        <height>21</height>
+                       </rect>
+                      </property>
+                      <property name="font">
+                       <font>
+                        <family>Arial</family>
+                        <pointsize>12</pointsize>
+                       </font>
+                      </property>
+                      <property name="styleSheet">
+                       <string notr="true">color: rgb(0, 85, 255);</string>
+                      </property>
+                      <property name="text">
+                       <string>$0.00</string>
+                      </property>
+                     </widget>
+                     <widget class="QTableWidget" name="tableWidget_2">
+                      <property name="geometry">
+                       <rect>
+                        <x>10</x>
+                        <y>30</y>
+                        <width>631</width>
+                        <height>141</height>
+                       </rect>
+                      </property>
+                      <property name="styleSheet">
+                       <string notr="true">QHeaderView::section
+{
+background-color: rgb(238,225,200);
+color : rgb(52, 42, 24 );
+text-align: right;
+font-size:12px;
+height:24px
+}</string>
+                      </property>
+                      <attribute name="horizontalHeaderDefaultSectionSize">
+                       <number>78</number>
+                      </attribute>
+                      <attribute name="verticalHeaderCascadingSectionResizes">
+                       <bool>true</bool>
+                      </attribute>
+                      <attribute name="verticalHeaderDefaultSectionSize">
+                       <number>100</number>
+                      </attribute>
+                      <attribute name="verticalHeaderShowSortIndicator" stdset="0">
+                       <bool>true</bool>
+                      </attribute>
+                      <attribute name="verticalHeaderStretchLastSection">
+                       <bool>false</bool>
+                      </attribute>
+                      <column>
+                       <property name="text">
+                        <string>Valor</string>
+                       </property>
+                      </column>
+                      <column>
+                       <property name="text">
+                        <string>Sup. Construcción</string>
+                       </property>
+                      </column>
+                      <column>
+                       <property name="text">
+                        <string>Tipología</string>
+                       </property>
+                      </column>
+                      <column>
+                       <property name="text">
+                        <string>VUC</string>
+                       </property>
+                      </column>
+                      <column>
+                       <property name="text">
+                        <string>Factor</string>
+                       </property>
+                      </column>
+                      <column>
+                       <property name="text">
+                        <string>Edad</string>
+                       </property>
+                      </column>
+                      <column>
+                       <property name="text">
+                        <string>GRAD. DE CONSERV.</string>
+                       </property>
+                       <property name="textAlignment">
+                        <set>AlignLeading|AlignVCenter</set>
+                       </property>
+                      </column>
+                      <column>
+                       <property name="text">
+                        <string>NIVEL</string>
+                       </property>
+                      </column>
+                     </widget>
+                    </widget>
+                    <widget class="QGroupBox" name="groupBox_23">
+                     <property name="geometry">
+                      <rect>
+                       <x>20</x>
+                       <y>240</y>
+                       <width>651</width>
+                       <height>211</height>
+                      </rect>
+                     </property>
+                     <property name="font">
+                      <font>
+                       <family>Arial</family>
+                       <pointsize>12</pointsize>
+                       <weight>75</weight>
+                       <bold>true</bold>
+                      </font>
+                     </property>
+                     <property name="title">
+                      <string>Común</string>
+                     </property>
+                     <widget class="QLabel" name="label_276">
+                      <property name="geometry">
+                       <rect>
+                        <x>20</x>
+                        <y>180</y>
+                        <width>41</width>
+                        <height>16</height>
+                       </rect>
+                      </property>
+                      <property name="font">
+                       <font>
+                        <family>Arial</family>
+                        <pointsize>12</pointsize>
+                       </font>
+                      </property>
+                      <property name="styleSheet">
+                       <string notr="true">color: rgb(0, 85, 255);</string>
+                      </property>
+                      <property name="text">
+                       <string>0.00</string>
+                      </property>
+                     </widget>
+                     <widget class="QTableWidget" name="tableWidget_3">
+                      <property name="geometry">
+                       <rect>
+                        <x>10</x>
+                        <y>30</y>
+                        <width>631</width>
+                        <height>141</height>
+                       </rect>
+                      </property>
+                      <property name="styleSheet">
+                       <string notr="true">QHeaderView::section
+{
+background-color: rgb(238,225,200);
+color : rgb(52, 42, 24 );
+text-align: right;
+font-size:12px;
+height:24px
+}</string>
+                      </property>
+                      <attribute name="horizontalHeaderDefaultSectionSize">
+                       <number>78</number>
+                      </attribute>
+                      <attribute name="verticalHeaderCascadingSectionResizes">
+                       <bool>false</bool>
+                      </attribute>
+                      <attribute name="verticalHeaderShowSortIndicator" stdset="0">
+                       <bool>false</bool>
+                      </attribute>
+                      <attribute name="verticalHeaderStretchLastSection">
+                       <bool>false</bool>
+                      </attribute>
+                      <column>
+                       <property name="text">
+                        <string>Valor</string>
+                       </property>
+                      </column>
+                      <column>
+                       <property name="text">
+                        <string>Sup. Construcción</string>
+                       </property>
+                      </column>
+                      <column>
+                       <property name="text">
+                        <string>Tipología</string>
+                       </property>
+                      </column>
+                      <column>
+                       <property name="text">
+                        <string>VUC</string>
+                       </property>
+                      </column>
+                      <column>
+                       <property name="text">
+                        <string>Factor</string>
+                       </property>
+                      </column>
+                      <column>
+                       <property name="text">
+                        <string>Edad</string>
+                       </property>
+                      </column>
+                      <column>
+                       <property name="text">
+                        <string>GRAD. DE CONSERV.</string>
+                       </property>
+                       <property name="textAlignment">
+                        <set>AlignLeading|AlignVCenter</set>
+                       </property>
+                      </column>
+                      <column>
+                       <property name="text">
+                        <string>NIVEL</string>
+                       </property>
+                      </column>
+                     </widget>
+                     <widget class="QLabel" name="label_271">
+                      <property name="geometry">
+                       <rect>
+                        <x>290</x>
+                        <y>180</y>
+                        <width>41</width>
+                        <height>21</height>
+                       </rect>
+                      </property>
+                      <property name="font">
+                       <font>
+                        <family>Arial</family>
+                        <pointsize>12</pointsize>
+                       </font>
+                      </property>
+                      <property name="styleSheet">
+                       <string notr="true">color: rgb(0, 85, 255);</string>
+                      </property>
+                      <property name="text">
+                       <string>0.00</string>
+                      </property>
+                     </widget>
+                     <widget class="QLabel" name="label_266">
+                      <property name="geometry">
+                       <rect>
+                        <x>350</x>
+                        <y>180</y>
+                        <width>221</width>
+                        <height>20</height>
+                       </rect>
+                      </property>
+                      <property name="font">
+                       <font>
+                        <family>Arial</family>
+                        <pointsize>12</pointsize>
+                        <weight>75</weight>
+                        <bold>true</bold>
+                       </font>
+                      </property>
+                      <property name="text">
+                       <string>Total Construccón Común</string>
+                      </property>
+                     </widget>
+                     <widget class="QLabel" name="label_267">
+                      <property name="geometry">
+                       <rect>
+                        <x>80</x>
+                        <y>180</y>
+                        <width>201</width>
+                        <height>20</height>
+                       </rect>
+                      </property>
+                      <property name="font">
+                       <font>
+                        <family>Arial</family>
+                        <pointsize>12</pointsize>
+                        <weight>75</weight>
+                        <bold>true</bold>
+                       </font>
+                      </property>
+                      <property name="text">
+                       <string>Total Construccón Común</string>
+                      </property>
+                     </widget>
+                     <widget class="QLabel" name="label_272">
+                      <property name="geometry">
+                       <rect>
+                        <x>560</x>
+                        <y>180</y>
+                        <width>70</width>
+                        <height>21</height>
+                       </rect>
+                      </property>
+                      <property name="font">
+                       <font>
+                        <family>Arial</family>
+                        <pointsize>12</pointsize>
+                       </font>
+                      </property>
+                      <property name="styleSheet">
+                       <string notr="true">color: rgb(0, 85, 255);</string>
+                      </property>
+                      <property name="text">
+                       <string>$0.00</string>
+                      </property>
+                     </widget>
+                    </widget>
+                    <widget class="QLabel" name="label_268">
+                     <property name="geometry">
+                      <rect>
+                       <x>110</x>
+                       <y>481</y>
+                       <width>251</width>
+                       <height>20</height>
                       </rect>
                      </property>
                      <property name="font">
@@ -11365,14 +12166,103 @@ Total</string>
                       </font>
                      </property>
                      <property name="text">
-                      <string>Código</string>
+                      <string>Valor Catastral de Construcción</string>
                      </property>
                     </widget>
-                    <widget class="QLabel" name="label_247">
+                    <widget class="QLabel" name="label_273">
                      <property name="geometry">
                       <rect>
-                       <x>90</x>
-                       <y>100</y>
+                       <x>110</x>
+                       <y>501</y>
+                       <width>161</width>
+                       <height>16</height>
+                      </rect>
+                     </property>
+                     <property name="font">
+                      <font>
+                       <family>Arial</family>
+                       <pointsize>12</pointsize>
+                       <weight>75</weight>
+                       <bold>true</bold>
+                      </font>
+                     </property>
+                     <property name="styleSheet">
+                      <string notr="true">color:rgb(0, 170, 0);</string>
+                     </property>
+                     <property name="text">
+                      <string>Valor Catastral</string>
+                     </property>
+                    </widget>
+                    <widget class="QLabel" name="label_274">
+                     <property name="geometry">
+                      <rect>
+                       <x>590</x>
+                       <y>500</y>
+                       <width>71</width>
+                       <height>16</height>
+                      </rect>
+                     </property>
+                     <property name="font">
+                      <font>
+                       <family>Arial</family>
+                       <pointsize>12</pointsize>
+                      </font>
+                     </property>
+                     <property name="styleSheet">
+                      <string notr="true">color:rgb(0, 170, 0);</string>
+                     </property>
+                     <property name="text">
+                      <string>0.00</string>
+                     </property>
+                    </widget>
+                    <widget class="QLabel" name="label_275">
+                     <property name="geometry">
+                      <rect>
+                       <x>590</x>
+                       <y>480</y>
+                       <width>71</width>
+                       <height>16</height>
+                      </rect>
+                     </property>
+                     <property name="font">
+                      <font>
+                       <family>Arial</family>
+                       <pointsize>12</pointsize>
+                      </font>
+                     </property>
+                     <property name="styleSheet">
+                      <string notr="true">color: rgb(0, 85, 255);</string>
+                     </property>
+                     <property name="text">
+                      <string>0.00</string>
+                     </property>
+                    </widget>
+                    <widget class="QLabel" name="label_277">
+                     <property name="geometry">
+                      <rect>
+                       <x>110</x>
+                       <y>461</y>
+                       <width>211</width>
+                       <height>20</height>
+                      </rect>
+                     </property>
+                     <property name="font">
+                      <font>
+                       <family>Arial</family>
+                       <pointsize>12</pointsize>
+                       <weight>75</weight>
+                       <bold>true</bold>
+                      </font>
+                     </property>
+                     <property name="text">
+                      <string>Valor Catastral de Terreno</string>
+                     </property>
+                    </widget>
+                    <widget class="QLabel" name="label_278">
+                     <property name="geometry">
+                      <rect>
+                       <x>590</x>
+                       <y>460</y>
                        <width>71</width>
                        <height>16</height>
                       </rect>
@@ -11384,849 +12274,12 @@ Total</string>
                       </font>
                      </property>
                      <property name="text">
-                      <string>TextLabel</string>
-                     </property>
-                    </widget>
-                    <widget class="QLabel" name="label_248">
-                     <property name="geometry">
-                      <rect>
-                       <x>90</x>
-                       <y>80</y>
-                       <width>71</width>
-                       <height>16</height>
-                      </rect>
-                     </property>
-                     <property name="font">
-                      <font>
-                       <family>Arial</family>
-                       <pointsize>12</pointsize>
-                      </font>
-                     </property>
-                     <property name="text">
-                      <string>TextLabel</string>
-                     </property>
-                    </widget>
-                    <widget class="QLabel" name="label_249">
-                     <property name="geometry">
-                      <rect>
-                       <x>20</x>
-                       <y>61</y>
-                       <width>61</width>
-                       <height>16</height>
-                      </rect>
-                     </property>
-                     <property name="font">
-                      <font>
-                       <family>Arial</family>
-                       <pointsize>12</pointsize>
-                       <weight>75</weight>
-                       <bold>true</bold>
-                      </font>
-                     </property>
-                     <property name="text">
-                      <string>Código</string>
-                     </property>
-                    </widget>
-                    <widget class="QLabel" name="label_250">
-                     <property name="geometry">
-                      <rect>
-                       <x>20</x>
-                       <y>101</y>
-                       <width>61</width>
-                       <height>16</height>
-                      </rect>
-                     </property>
-                     <property name="font">
-                      <font>
-                       <family>Arial</family>
-                       <pointsize>12</pointsize>
-                       <weight>75</weight>
-                       <bold>true</bold>
-                      </font>
-                     </property>
-                     <property name="text">
-                      <string>Código</string>
-                     </property>
-                    </widget>
-                    <widget class="QLabel" name="label_251">
-                     <property name="geometry">
-                      <rect>
-                       <x>20</x>
-                       <y>21</y>
-                       <width>61</width>
-                       <height>16</height>
-                      </rect>
-                     </property>
-                     <property name="font">
-                      <font>
-                       <family>Arial</family>
-                       <pointsize>12</pointsize>
-                       <weight>75</weight>
-                       <bold>true</bold>
-                      </font>
-                     </property>
-                     <property name="text">
-                      <string>Código</string>
-                     </property>
-                    </widget>
-                    <widget class="QLabel" name="label_252">
-                     <property name="geometry">
-                      <rect>
-                       <x>90</x>
-                       <y>60</y>
-                       <width>71</width>
-                       <height>16</height>
-                      </rect>
-                     </property>
-                     <property name="font">
-                      <font>
-                       <family>Arial</family>
-                       <pointsize>12</pointsize>
-                      </font>
-                     </property>
-                     <property name="text">
-                      <string>TextLabel</string>
-                     </property>
-                    </widget>
-                    <widget class="QLabel" name="label_253">
-                     <property name="geometry">
-                      <rect>
-                       <x>20</x>
-                       <y>81</y>
-                       <width>61</width>
-                       <height>16</height>
-                      </rect>
-                     </property>
-                     <property name="font">
-                      <font>
-                       <family>Arial</family>
-                       <pointsize>12</pointsize>
-                       <weight>75</weight>
-                       <bold>true</bold>
-                      </font>
-                     </property>
-                     <property name="text">
-                      <string>Código</string>
-                     </property>
-                    </widget>
-                    <widget class="QLabel" name="label_254">
-                     <property name="geometry">
-                      <rect>
-                       <x>20</x>
-                       <y>121</y>
-                       <width>61</width>
-                       <height>16</height>
-                      </rect>
-                     </property>
-                     <property name="font">
-                      <font>
-                       <family>Arial</family>
-                       <pointsize>12</pointsize>
-                       <weight>75</weight>
-                       <bold>true</bold>
-                      </font>
-                     </property>
-                     <property name="text">
-                      <string>Código</string>
-                     </property>
-                    </widget>
-                    <widget class="QLabel" name="label_255">
-                     <property name="geometry">
-                      <rect>
-                       <x>90</x>
-                       <y>40</y>
-                       <width>71</width>
-                       <height>16</height>
-                      </rect>
-                     </property>
-                     <property name="font">
-                      <font>
-                       <family>Arial</family>
-                       <pointsize>12</pointsize>
-                      </font>
-                     </property>
-                     <property name="text">
-                      <string>TextLabel</string>
-                     </property>
-                    </widget>
-                    <widget class="QLabel" name="label_256">
-                     <property name="geometry">
-                      <rect>
-                       <x>20</x>
-                       <y>141</y>
-                       <width>61</width>
-                       <height>16</height>
-                      </rect>
-                     </property>
-                     <property name="font">
-                      <font>
-                       <family>Arial</family>
-                       <pointsize>12</pointsize>
-                       <weight>75</weight>
-                       <bold>true</bold>
-                      </font>
-                     </property>
-                     <property name="text">
-                      <string>Código</string>
-                     </property>
-                    </widget>
-                    <widget class="QLabel" name="label_257">
-                     <property name="geometry">
-                      <rect>
-                       <x>90</x>
-                       <y>140</y>
-                       <width>71</width>
-                       <height>16</height>
-                      </rect>
-                     </property>
-                     <property name="font">
-                      <font>
-                       <family>Arial</family>
-                       <pointsize>12</pointsize>
-                      </font>
-                     </property>
-                     <property name="text">
-                      <string>TextLabel</string>
+                      <string>0.00</string>
                      </property>
                     </widget>
                    </widget>
-                  </widget>
-                 </widget>
-                </widget>
-               </widget>
-              </widget>
-              <widget class="QWidget" name="tab_4">
-               <attribute name="title">
-                <string>Detalle Preproducción</string>
-               </attribute>
-               <widget class="QGroupBox" name="groupBox_3">
-                <property name="geometry">
-                 <rect>
-                  <x>10</x>
-                  <y>10</y>
-                  <width>681</width>
-                  <height>681</height>
-                 </rect>
-                </property>
-                <property name="font">
-                 <font>
-                  <family>Arial</family>
-                  <pointsize>12</pointsize>
-                  <weight>75</weight>
-                  <bold>true</bold>
-                 </font>
-                </property>
-                <property name="title">
-                 <string>Terreno</string>
-                </property>
-                <widget class="QGroupBox" name="groupBox_8">
-                 <property name="geometry">
-                  <rect>
-                   <x>20</x>
-                   <y>30</y>
-                   <width>651</width>
-                   <height>111</height>
-                  </rect>
-                 </property>
-                 <property name="font">
-                  <font>
-                   <family>Arial</family>
-                   <pointsize>12</pointsize>
-                   <weight>75</weight>
-                   <bold>true</bold>
-                  </font>
-                 </property>
-                 <property name="title">
-                  <string>Valor unitario de suelo</string>
-                 </property>
-                 <widget class="QLabel" name="label_18">
-                  <property name="geometry">
-                   <rect>
-                    <x>20</x>
-                    <y>30</y>
-                    <width>61</width>
-                    <height>16</height>
-                   </rect>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <family>Arial</family>
-                    <pointsize>12</pointsize>
-                    <weight>75</weight>
-                    <bold>true</bold>
-                   </font>
-                  </property>
-                  <property name="text">
-                   <string>Código</string>
-                  </property>
-                 </widget>
-                 <widget class="QLabel" name="label_19">
-                  <property name="geometry">
-                   <rect>
-                    <x>100</x>
-                    <y>30</y>
-                    <width>101</width>
-                    <height>16</height>
-                   </rect>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <family>Arial</family>
-                    <pointsize>12</pointsize>
-                    <weight>75</weight>
-                    <bold>true</bold>
-                   </font>
-                  </property>
-                  <property name="text">
-                   <string>Frente Base</string>
-                  </property>
-                 </widget>
-                 <widget class="QLabel" name="label_23">
-                  <property name="geometry">
-                   <rect>
-                    <x>220</x>
-                    <y>30</y>
-                    <width>101</width>
-                    <height>16</height>
-                   </rect>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <family>Arial</family>
-                    <pointsize>12</pointsize>
-                    <weight>75</weight>
-                    <bold>true</bold>
-                   </font>
-                  </property>
-                  <property name="text">
-                   <string>Fondo Base</string>
-                  </property>
-                 </widget>
-                 <widget class="QLabel" name="label_24">
-                  <property name="geometry">
-                   <rect>
-                    <x>352</x>
-                    <y>29</y>
-                    <width>81</width>
-                    <height>16</height>
-                   </rect>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <family>Arial</family>
-                    <pointsize>12</pointsize>
-                    <weight>75</weight>
-                    <bold>true</bold>
-                   </font>
-                  </property>
-                  <property name="text">
-                   <string>Área Base</string>
-                  </property>
-                 </widget>
-                 <widget class="QLabel" name="label_25">
-                  <property name="geometry">
-                   <rect>
-                    <x>470</x>
-                    <y>29</y>
-                    <width>41</width>
-                    <height>16</height>
-                   </rect>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <family>Arial</family>
-                    <pointsize>12</pointsize>
-                    <weight>75</weight>
-                    <bold>true</bold>
-                   </font>
-                  </property>
-                  <property name="text">
-                   <string>Valor</string>
-                  </property>
-                 </widget>
-                 <widget class="QLabel" name="label_26">
-                  <property name="geometry">
-                   <rect>
-                    <x>20</x>
-                    <y>60</y>
-                    <width>71</width>
-                    <height>16</height>
-                   </rect>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <family>Arial</family>
-                    <pointsize>12</pointsize>
-                   </font>
-                  </property>
-                  <property name="text">
-                   <string>TextLabel</string>
-                  </property>
-                 </widget>
-                 <widget class="QLabel" name="label_27">
-                  <property name="geometry">
-                   <rect>
-                    <x>120</x>
-                    <y>60</y>
-                    <width>71</width>
-                    <height>16</height>
-                   </rect>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <family>Arial</family>
-                    <pointsize>12</pointsize>
-                   </font>
-                  </property>
-                  <property name="text">
-                   <string>TextLabel</string>
-                  </property>
-                 </widget>
-                 <widget class="QLabel" name="label_28">
-                  <property name="geometry">
-                   <rect>
-                    <x>230</x>
-                    <y>60</y>
-                    <width>71</width>
-                    <height>16</height>
-                   </rect>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <family>Arial</family>
-                    <pointsize>12</pointsize>
-                   </font>
-                  </property>
-                  <property name="text">
-                   <string>TextLabel</string>
-                  </property>
-                 </widget>
-                 <widget class="QLabel" name="label_29">
-                  <property name="geometry">
-                   <rect>
-                    <x>360</x>
-                    <y>60</y>
-                    <width>71</width>
-                    <height>16</height>
-                   </rect>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <family>Arial</family>
-                    <pointsize>12</pointsize>
-                   </font>
-                  </property>
-                  <property name="text">
-                   <string>TextLabel</string>
-                  </property>
-                 </widget>
-                 <widget class="QLabel" name="label_38">
-                  <property name="geometry">
-                   <rect>
-                    <x>470</x>
-                    <y>60</y>
-                    <width>71</width>
-                    <height>16</height>
-                   </rect>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <family>Arial</family>
-                    <pointsize>12</pointsize>
-                   </font>
-                  </property>
-                  <property name="text">
-                   <string>TextLabel</string>
-                  </property>
-                 </widget>
-                </widget>
-                <widget class="QGroupBox" name="groupBox_9">
-                 <property name="geometry">
-                  <rect>
-                   <x>20</x>
-                   <y>149</y>
-                   <width>651</width>
-                   <height>61</height>
-                  </rect>
-                 </property>
-                 <property name="font">
-                  <font>
-                   <family>Arial</family>
-                   <pointsize>12</pointsize>
-                   <weight>75</weight>
-                   <bold>true</bold>
-                  </font>
-                 </property>
-                 <property name="title">
-                  <string>Banda de valor</string>
-                 </property>
-                 <widget class="QLabel" name="label_185">
-                  <property name="geometry">
-                   <rect>
-                    <x>250</x>
-                    <y>30</y>
-                    <width>71</width>
-                    <height>16</height>
-                   </rect>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <family>Arial</family>
-                    <pointsize>12</pointsize>
-                   </font>
-                  </property>
-                  <property name="text">
-                   <string>TextLabel</string>
-                  </property>
-                 </widget>
-                 <widget class="QLabel" name="label_186">
-                  <property name="geometry">
-                   <rect>
-                    <x>20</x>
-                    <y>31</y>
-                    <width>61</width>
-                    <height>16</height>
-                   </rect>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <family>Arial</family>
-                    <pointsize>12</pointsize>
-                    <weight>75</weight>
-                    <bold>true</bold>
-                   </font>
-                  </property>
-                  <property name="text">
-                   <string>Código</string>
-                  </property>
-                 </widget>
-                 <widget class="QLabel" name="label_200">
-                  <property name="geometry">
-                   <rect>
-                    <x>90</x>
-                    <y>30</y>
-                    <width>71</width>
-                    <height>16</height>
-                   </rect>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <family>Arial</family>
-                    <pointsize>12</pointsize>
-                   </font>
-                  </property>
-                  <property name="text">
-                   <string>TextLabel</string>
-                  </property>
-                 </widget>
-                 <widget class="QLabel" name="label_201">
-                  <property name="geometry">
-                   <rect>
-                    <x>190</x>
-                    <y>30</y>
-                    <width>41</width>
-                    <height>16</height>
-                   </rect>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <family>Arial</family>
-                    <pointsize>12</pointsize>
-                    <weight>75</weight>
-                    <bold>true</bold>
-                   </font>
-                  </property>
-                  <property name="text">
-                   <string>Valor</string>
-                  </property>
-                 </widget>
-                </widget>
-                <widget class="QGroupBox" name="groupBox_10">
-                 <property name="geometry">
-                  <rect>
-                   <x>20</x>
-                   <y>220</y>
-                   <width>651</width>
-                   <height>80</height>
-                  </rect>
-                 </property>
-                 <property name="font">
-                  <font>
-                   <family>Arial</family>
-                   <pointsize>12</pointsize>
-                   <weight>75</weight>
-                   <bold>true</bold>
-                  </font>
-                 </property>
-                 <property name="title">
-                  <string>Superficie</string>
-                 </property>
-                 <widget class="QLabel" name="label_202">
-                  <property name="geometry">
-                   <rect>
-                    <x>430</x>
-                    <y>30</y>
-                    <width>71</width>
-                    <height>16</height>
-                   </rect>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <family>Arial</family>
-                    <pointsize>12</pointsize>
-                   </font>
-                  </property>
-                  <property name="text">
-                   <string>TextLabel</string>
-                  </property>
-                 </widget>
-                 <widget class="QLabel" name="label_203">
-                  <property name="geometry">
-                   <rect>
-                    <x>20</x>
-                    <y>20</y>
-                    <width>81</width>
-                    <height>41</height>
-                   </rect>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <family>Arial</family>
-                    <pointsize>12</pointsize>
-                    <weight>75</weight>
-                    <bold>true</bold>
-                   </font>
-                  </property>
-                  <property name="text">
-                   <string>Terreno
- Privativo</string>
-                  </property>
-                 </widget>
-                 <widget class="QLabel" name="label_204">
-                  <property name="geometry">
-                   <rect>
-                    <x>190</x>
-                    <y>20</y>
-                    <width>71</width>
-                    <height>41</height>
-                   </rect>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <family>Arial</family>
-                    <pointsize>12</pointsize>
-                    <weight>75</weight>
-                    <bold>true</bold>
-                   </font>
-                  </property>
-                  <property name="text">
-                   <string>Terreno 
-Común</string>
-                  </property>
-                 </widget>
-                 <widget class="QLabel" name="label_205">
-                  <property name="geometry">
-                   <rect>
-                    <x>270</x>
-                    <y>30</y>
-                    <width>71</width>
-                    <height>16</height>
-                   </rect>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <family>Arial</family>
-                    <pointsize>12</pointsize>
-                   </font>
-                  </property>
-                  <property name="text">
-                   <string>TextLabel</string>
-                  </property>
-                 </widget>
-                 <widget class="QLabel" name="label_206">
-                  <property name="geometry">
-                   <rect>
-                    <x>110</x>
-                    <y>30</y>
-                    <width>71</width>
-                    <height>16</height>
-                   </rect>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <family>Arial</family>
-                    <pointsize>12</pointsize>
-                   </font>
-                  </property>
-                  <property name="text">
-                   <string>TextLabel</string>
-                  </property>
-                 </widget>
-                 <widget class="QLabel" name="label_207">
-                  <property name="geometry">
-                   <rect>
-                    <x>350</x>
-                    <y>20</y>
-                    <width>71</width>
-                    <height>41</height>
-                   </rect>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <family>Arial</family>
-                    <pointsize>12</pointsize>
-                    <weight>75</weight>
-                    <bold>true</bold>
-                   </font>
-                  </property>
-                  <property name="text">
-                   <string>Terreno 
-Total</string>
-                  </property>
-                 </widget>
-                </widget>
-                <widget class="QGroupBox" name="groupBox_11">
-                 <property name="geometry">
-                  <rect>
-                   <x>20</x>
-                   <y>310</y>
-                   <width>651</width>
-                   <height>261</height>
-                  </rect>
-                 </property>
-                 <property name="font">
-                  <font>
-                   <family>Arial</family>
-                   <pointsize>12</pointsize>
-                   <weight>75</weight>
-                   <bold>true</bold>
-                  </font>
-                 </property>
-                 <property name="title">
-                  <string>Factores</string>
-                 </property>
-                 <widget class="QGroupBox" name="groupBox_12">
-                  <property name="geometry">
-                   <rect>
-                    <x>19</x>
-                    <y>19</y>
-                    <width>301</width>
-                    <height>231</height>
-                   </rect>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <family>Arial</family>
-                    <pointsize>12</pointsize>
-                    <weight>75</weight>
-                    <bold>true</bold>
-                   </font>
-                  </property>
-                  <property name="title">
-                   <string>GroupBox</string>
-                  </property>
-                  <widget class="QLabel" name="label_208">
-                   <property name="geometry">
-                    <rect>
-                     <x>10</x>
-                     <y>21</y>
-                     <width>61</width>
-                     <height>16</height>
-                    </rect>
-                   </property>
-                   <property name="font">
-                    <font>
-                     <family>Arial</family>
-                     <pointsize>12</pointsize>
-                     <weight>75</weight>
-                     <bold>true</bold>
-                    </font>
-                   </property>
-                   <property name="text">
-                    <string>Código</string>
-                   </property>
-                  </widget>
-                  <widget class="QLabel" name="label_209">
-                   <property name="geometry">
-                    <rect>
-                     <x>80</x>
-                     <y>20</y>
-                     <width>71</width>
-                     <height>16</height>
-                    </rect>
-                   </property>
-                   <property name="font">
-                    <font>
-                     <family>Arial</family>
-                     <pointsize>12</pointsize>
-                    </font>
-                   </property>
-                   <property name="text">
-                    <string>TextLabel</string>
-                   </property>
-                  </widget>
-                  <widget class="QLabel" name="label_210">
-                   <property name="geometry">
-                    <rect>
-                     <x>10</x>
-                     <y>41</y>
-                     <width>61</width>
-                     <height>16</height>
-                    </rect>
-                   </property>
-                   <property name="font">
-                    <font>
-                     <family>Arial</family>
-                     <pointsize>12</pointsize>
-                     <weight>75</weight>
-                     <bold>true</bold>
-                    </font>
-                   </property>
-                   <property name="text">
-                    <string>Código</string>
-                   </property>
-                  </widget>
-                  <widget class="QLabel" name="label_211">
-                   <property name="geometry">
-                    <rect>
-                     <x>80</x>
-                     <y>40</y>
-                     <width>71</width>
-                     <height>16</height>
-                    </rect>
-                   </property>
-                   <property name="font">
-                    <font>
-                     <family>Arial</family>
-                     <pointsize>12</pointsize>
-                    </font>
-                   </property>
-                   <property name="text">
-                    <string>TextLabel</string>
-                   </property>
-                  </widget>
-                 </widget>
-                 <widget class="QGroupBox" name="groupBox_13">
-                  <property name="geometry">
-                   <rect>
-                    <x>330</x>
-                    <y>20</y>
-                    <width>301</width>
-                    <height>231</height>
-                   </rect>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <family>Arial</family>
-                    <pointsize>12</pointsize>
-                    <weight>75</weight>
-                    <bold>true</bold>
-                   </font>
-                  </property>
-                  <property name="title">
-                   <string>GroupBox</string>
-                  </property>
-                 </widget>
+                  </item>
+                 </layout>
                 </widget>
                </widget>
               </widget>
@@ -12290,7 +12343,7 @@ Total</string>
                <x>0</x>
                <y>0</y>
                <width>481</width>
-               <height>750</height>
+               <height>749</height>
               </rect>
              </property>
              <property name="styleSheet">

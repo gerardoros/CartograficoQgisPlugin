@@ -1422,15 +1422,136 @@ class menu:
         self.dlg.mGroupBox_19.setTitle('Horizontales Num    ')
         self.dlg.mGroupBox_20.setTitle('Verticales    ')
         self.dlg.mGroupBox_21.setTitle('Cves Verticales   ')
-        self.TPG.DFS = self.DFS
-        self.TPG.DBJ = self.DBJ
-        self.TPG.ELM = self.ELM
-        self.TPG.DFS = self.DFS
-        self.TPG.CMS = self.CMS
-        self.todoEnOrden = True
-        if self.todoEnOrden:
-            self.TPG.validarTopologiaManualRef()
-            self.manual()
+        if self.ACA.capaEnEdicion != '':
+
+            self.todoEnOrdenRef = True
+            QSettings().setValue("posibleGuardarRef", "False")
+
+            #self.dockwidget.tablaErrores.clearContents()
+            #self.dockwidget.tablaErrores.setRowCount(0)
+            #for row in range(0, self.dockwidget.tablaErrores.rowCount()):
+                #self.dockwidget.tablaErrores.removeRow(row)
+
+            root = QgsProject.instance().layerTreeRoot()
+
+            group = root.findGroup('ERRORES DE TOPOLOGIA')
+            if not group is None:
+                for child in group.children():
+                    dump = child.dump()
+                    id = dump.split("=")[-1].strip()
+                    QgsProject.instance().removeMapLayer(id)
+                root.removeChildNode(group)
+
+            for layer in iface.mapCanvas().layers():
+                layer.triggerRepaint()
+
+            root.insertGroup(0, 'ERRORES DE TOPOLOGIA')
+
+            if self.siendoEditada('Municipios'):
+                errorGeomInvalid = self.validarPoligonosInvalidosRef('Municipios')
+                if errorGeomInvalid != None:
+                    self.erroresRestantes.append(errorGeomInvalid)
+
+            elif self.siendoEditada('Sectores'):
+                errorGeomInvalid = self.validarPoligonosInvalidosRef('Sectores')
+                if errorGeomInvalid != None:
+                    self.erroresRestantes.append(errorGeomInvalid)
+
+                errorGeomInvalid = self.validarPoligonosInvalidosRef('Municipios')
+                if errorGeomInvalid != None:
+                    self.erroresRestantes.append(errorGeomInvalid)
+
+            elif self.siendoEditada('Calles'):
+                errorGeomInvalid = self.validarPoligonosInvalidosRef('Calles')
+                if errorGeomInvalid != None:
+                    self.erroresRestantes.append(errorGeomInvalid)
+
+            elif self.siendoEditada('Colonias'):
+                errorGeomInvalid = self.validarPoligonosInvalidosRef('Colonias')
+                if errorGeomInvalid != None:
+                    self.erroresRestantes.append(errorGeomInvalid)
+
+            elif self.siendoEditada('Codigo Postal'):
+                errorGeomInvalid = self.validarPoligonosInvalidosRef('Codigo Postal')
+                if errorGeomInvalid != None:
+                    self.erroresRestantes.append(errorGeomInvalid)
+
+            elif self.siendoEditada('Area de Valor'):
+                errorGeomInvalid = self.validarPoligonosInvalidosRef('Area de Valor')
+                if errorGeomInvalid != None:
+                    self.erroresRestantes.append(errorGeomInvalid)
+
+
+            if self.todoEnOrdenRef:
+                self.reglasManualesRef()
+
+                if(self.todoEnOrdenRef): #Topologia en orden
+                    self.UTI.mostrarAlerta("La topologia es correcta", QMessageBox().Information, "Comprobador de topología")
+                    QSettings().setValue("posibleGuardarRef", "True")
+                    root = QgsProject.instance().layerTreeRoot()
+                    #Si todo esta bien, borramos el grupo de errores
+                    group = root.findGroup('ERRORES DE TOPOLOGIA')
+                    if not group is None:
+                        for child in group.children():
+                            dump = child.dump()
+                            id = dump.split("=")[-1].strip()
+                            QgsProject.instance().removeMapLayer(id)
+                        root.removeChildNode(group)
+
+                    # se manda a guardar a los servicios
+                    self.preguntarGuardarRef()
+
+                else: #Cuando hay errrpres
+                    self.UTI.mostrarAlerta("Se han detectado errores de topologia", QMessageBox().Critical, "Comprobador de topología")
+                    self.VET = errores_topologicos.errores_topologicos(iface, self.erroresPredio, self.erroresManzana, self.erroresConstrucciones, self.erroresRestantes)
+                    self.VET.run()
+                    return
+            else:
+                self.UTI.mostrarAlerta("El comprobador de topología no puede proceder hasta que se corrijan las geometrias inválidas", QMessageBox().Critical, "Comprobador de topología")
+
+        else:
+            self.UTI.mostrarAlerta("Debes tener en edicion una capa de referencia para validar la topologia de referencia", QMessageBox().Critical, "Comprobador de topología")
+    def reglasManualesRef(self):
+
+        if self.siendoEditada('Municipios'):
+            capa = QgsProject.instance().mapLayer(self.ACA.obtenerIdCapa('Municipios'))
+            errorLongiud = self.validarLongitudCampo(capa, 'Clave', 3)
+            if errorLongiud != None:
+                self.erroresRestantes.append(errorLongiud)
+        
+        if self.siendoEditada('Sectores'):
+
+            self.validarClavesNoRepetida('Sectores')
+
+            # que todos los sectores esten dentro de los municipios
+            errorInlucsion = self.validarInclusionRef('Sectores', 'Municipios')
+            if errorInlucsion != None:
+                self.erroresRestantes.append(errorInlucsion)
+
+            # longitud en los campos
+            capa = QgsProject.instance().mapLayer(self.ACA.obtenerIdCapa('Sectores'))
+            errorLongiud = self.validarLongitudCampo(capa, 'clave', 2)
+            if errorLongiud != None:
+                self.erroresRestantes.append(errorLongiud)
+
+            # las claves no sean invalidas
+            claveFiltro = QSettings().value("cveMpio")
+            tipo = 'SECTOR'
+
+            errorClaves = self.validarClavesInvalidas(capa = capa, claveFiltro = claveFiltro, tipo = tipo)
+            if errorClaves != None:
+                self.erroresRestantes.append(errorClaves)
+        
+        capaTraducida = self.ACA.traducirIdCapa(self.ACA.capaEnEdicion)
+
+        errorCampos = self.validarCamposRef(capaTraducida)
+        if errorCampos != None:
+            self.erroresRestantes.append(errorCampos)
+        errorInlucsion = self.validarInterseccionesRef(capaTraducida, capaTraducida)
+        if errorInlucsion != None:
+            self.erroresRestantes.append(errorInlucsion)
+    def siendoEditada(self, nombreCapa):
+        return self.ACA.obtenerIdCapa(nombreCapa) == QSettings().value("capaRefEdicion")
     def llenaTablaErrores(self):
         if self.TPG.reglas.cuentaError > 0:
             manzanasTotales = self.xManzana.featureCount()
@@ -1632,6 +1753,44 @@ class menu:
         
         self.TPG.reglas.validarCantidadAreasInscritas()
         self.llenaTablaErrores()
+    def validarInclusionRef(self, nombreObjetos, nombreContenedor):
+        errorInclusion = self.TPG.reglas.validarInclusionRef(nombreObjetos, nombreContenedor)
+        self.llenaTablaErrores()
+        return errorInclusion
+
+##########################################################################
+
+    def validarPoligonosInvalidosRef(self, nombreCapa):
+        
+        error = self.TPG.reglas.validarPoligonosInvalidosRef(nombreCapa)
+        self.llenaTablaErrores()
+        return error
+
+####################################################################################
+
+    def validarCamposRef(self, nombreCapa):
+        error = self.TPG.reglas.validarCamposRef(nombreCapa)
+        self.llenaTablaErrores()
+        return error
+
+####################################################################################
+
+    def validarInterseccionesRef(self, nombreCapa1, nombreCapa2):
+        error = self.TPG.reglas.validarInterseccionesRef(nombreCapa1, nombreCapa2)
+        self.llenaTablaErrores()
+        return error
+    def preguntarGuardarRef(self):
+        mensaje = "La topologia es correcta, ¿deseas guardar los cambios de la capa de referencia?"
+        respuesta = QMessageBox.question(iface.mainWindow(), "Guardar Cambios", mensaje, QMessageBox.Yes, QMessageBox.No)
+
+        if respuesta == QMessageBox.Yes:
+            self.ACA.guardarCapaReferencia()
+            self.dlg.comboCapasEdicion.setEnabled(True)
+            self.dlg.botonActivarEdicion.setEnabled(True)
+            self.dlg.botonActivarEdicion.setText('Activar Edicion de \nReferencia')
+            self.dlg.botonActualizarRef.setEnabled(False)
+            self.dlg.botonCancelarReferencia.setEnabled(False)
+            self.vaciarTablitaRef()
     def manual(self):
         self.ACA.obtenerXCapas()
         self.validarClavesNoRepetida('manzana')
@@ -3771,7 +3930,7 @@ class menu:
                             self.dlg.mGroupBox_6.setGeometry(11,967,481,169)
     def validarEdicionRef(self):
 
-        nombreCapa = self.ACA.traducirIdCapa( self.capaActiva.id())
+        nombreCapa = self.traducirIdCapa( self.capaActiva.id())
         feat = self.capaActiva.selectedFeatures()[0]
         banderaCompleta = True
         claveAnterior = ''
@@ -4276,7 +4435,59 @@ class menu:
         self.capaActiva.commitChanges()
         self.capaActiva.setReadOnly(False)
         return banderaCompleta
+    def traducirIdCapa(self, idCapa):
 
+        if QSettings().value('xManzana') == idCapa:
+            return 'manzana'
+        elif QSettings().value('xPredGeom') == idCapa:
+            return 'predios.geom'
+        elif QSettings().value('xPredNum') == idCapa:
+            return 'predios.num'
+        elif QSettings().value('xConst') == idCapa:
+            return 'construcciones'
+        elif QSettings().value('xHoriGeom') == idCapa:
+            return 'horizontales.geom'
+        elif QSettings().value('xHoriNum') == idCapa:
+            return 'horizontales.num'
+        elif QSettings().value('xVert') == idCapa:
+            return 'verticales'
+        elif QSettings().value('xCvesVert') == idCapa:
+            return 'cves_verticales'
+
+        elif QSettings().value('xAreaValor') == idCapa:
+            return 'Area de Valor'
+        elif QSettings().value('xZonaUno') == idCapa:
+            return 'Zona Uno'
+        elif QSettings().value('xZonaDos') == idCapa:
+            return 'Zona Dos'
+        elif QSettings().value('xCP') == idCapa:
+            return 'Codigo Postal'
+        elif QSettings().value('xColonia') == idCapa:
+            return 'Colonias'
+        elif QSettings().value('xCorrValor') == idCapa:
+            return 'Corredor de Valor'
+        elif QSettings().value('xCalle') == idCapa:
+            return 'Calles'
+        elif QSettings().value('xSector') == idCapa:
+            return 'Sectores'
+        elif QSettings().value('xLocal') == idCapa:
+            return 'Localidades'
+        elif QSettings().value('xSeccion') == idCapa:
+            return 'Secciones'
+        elif QSettings().value('xMunicipio') == idCapa:
+            return 'Municipios'
+        elif QSettings().value('xRegion') == idCapa:
+            return 'Region Catastral'
+        elif QSettings().value('xEstado') == idCapa:
+            return 'Estado'
+        elif QSettings().value('xManzanasRef') == idCapa:
+            return 'Manzanas'
+        elif QSettings().value('xPredRef') == idCapa:
+            return 'Predios'
+        elif QSettings().value('xConstRef') == idCapa:
+            return 'Construcciones'
+
+        return None
     def consumeWSGeneral1(self, url_cons = "", payload = {}):
 
         url = url_cons
