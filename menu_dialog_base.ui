@@ -23,7 +23,10 @@
    <string>menu</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">QPushButton{
+   <string notr="true">QDialog{
+background : rgb(255,255,255);
+}
+QPushButton{
 background-color: rgb(104, 185, 181);
 color : rgb(255,255,255);
 border-radius : 4px;
@@ -36,7 +39,24 @@ border-radius : 4px;
 QPushButton:disabled {
 background : rgb(42, 124, 120);
 }
-</string>
+QHeaderView::section
+{
+background-color: rgb(104, 185, 181);
+color : rgb(255,255,255 );
+text-align: right;
+font-size:12px;
+height:24px
+}
+QComboBox QAbstractItemView::item { max-height: 200; font-family: &quot;Century Gothic&quot;;}
+
+QListView{color: black ; font-family: &quot;Century Gothic&quot;;}
+
+QComboBox{
+background : rgb(188, 228, 226);
+}
+QComboBox:item:selected {
+color: black ;
+}</string>
   </property>
   <widget class="QScrollArea" name="scrollArea">
    <property name="geometry">
@@ -77,7 +97,7 @@ background : rgb(42, 124, 120);
       <x>0</x>
       <y>0</y>
       <width>522</width>
-      <height>1359</height>
+      <height>1509</height>
      </rect>
     </property>
     <property name="sizePolicy">
@@ -91,14 +111,14 @@ background : rgb(42, 124, 120);
       <widget class="QTabWidget" name="tabWidget">
        <property name="minimumSize">
         <size>
-         <width>501</width>
-         <height>1341</height>
+         <width>491</width>
+         <height>1491</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
-         <width>501</width>
-         <height>1341</height>
+         <width>511</width>
+         <height>1491</height>
         </size>
        </property>
        <property name="styleSheet">
@@ -196,8 +216,8 @@ background : rgb(42, 124, 120);
           </property>
           <property name="iconSize">
            <size>
-            <width>30</width>
-            <height>30</height>
+            <width>50</width>
+            <height>50</height>
            </size>
           </property>
          </widget>
@@ -420,8 +440,8 @@ background : rgb(42, 124, 120);
           </property>
           <property name="iconSize">
            <size>
-            <width>30</width>
-            <height>30</height>
+            <width>50</width>
+            <height>50</height>
            </size>
           </property>
          </widget>
@@ -663,8 +683,8 @@ background : rgb(42, 124, 120);
           </property>
           <property name="iconSize">
            <size>
-            <width>30</width>
-            <height>30</height>
+            <width>50</width>
+            <height>50</height>
            </size>
           </property>
          </widget>
@@ -1064,8 +1084,8 @@ background : rgb(42, 124, 120);
           </property>
           <property name="iconSize">
            <size>
-            <width>30</width>
-            <height>30</height>
+            <width>50</width>
+            <height>50</height>
            </size>
           </property>
          </widget>
@@ -1238,6 +1258,12 @@ background : rgb(42, 124, 120);
            <iconset>
             <normaloff>../../../../../../../../../../../Documents/local.ico</normaloff>../../../../../../../../../../../Documents/local.ico</iconset>
           </property>
+          <property name="iconSize">
+           <size>
+            <width>35</width>
+            <height>35</height>
+           </size>
+          </property>
          </widget>
          <widget class="QComboBox" name="comboSector">
           <property name="geometry">
@@ -1247,18 +1273,6 @@ background : rgb(42, 124, 120);
             <width>87</width>
             <height>18</height>
            </rect>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">QComboBox QAbstractItemView::item { max-height: 200; font-family: &quot;Century Gothic&quot;;}
-
-QListView{color: black ; font-family: &quot;Century Gothic&quot;;}
-
-QComboBox{
-background : rgb(250,238,224);
-}
-QComboBox:item:selected {
-color: black ;
-}</string>
           </property>
           <property name="editable">
            <bool>true</bool>
@@ -1272,17 +1286,6 @@ color: black ;
             <width>86</width>
             <height>18</height>
            </rect>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">QComboBox QAbstractItemView::item { min-height: 25; font-family: &quot;Century Gothic&quot;;}
-QListView{color: black ; font-size: 16px; outline:none; font-weight:bold; font-family: &quot;Century Gothic&quot;;}
-
-QComboBox{
-background : rgb(250,238,224);
-}
-QComboBox:item:selected {
-color: black ;
-}</string>
           </property>
           <property name="editable">
            <bool>true</bool>
@@ -1456,8 +1459,8 @@ color: black ;
           </property>
           <property name="iconSize">
            <size>
-            <width>30</width>
-            <height>30</height>
+            <width>50</width>
+            <height>50</height>
            </size>
           </property>
          </widget>
@@ -1814,21 +1817,6 @@ color: black ;
          <property name="accessibleDescription">
           <string>1</string>
          </property>
-         <property name="styleSheet">
-          <string notr="true">QPushButton{
-background : rgb(174, 116, 0);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton::hover{
-background : rgb(104, 69, 13);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton:disabled {
-background: rgb(217, 217, 217)
-}</string>
-         </property>
          <property name="text">
           <string>Limpiar</string>
          </property>
@@ -1849,21 +1837,6 @@ background: rgb(217, 217, 217)
            <weight>75</weight>
            <bold>true</bold>
           </font>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">QPushButton{
-background : rgb(174, 116, 0);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton::hover{
-background : rgb(104, 69, 13);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton:disabled {
-background: rgb(217, 217, 217)
-}</string>
          </property>
          <property name="text">
           <string>Dibujar</string>
@@ -1890,21 +1863,6 @@ background: rgb(217, 217, 217)
            <bold>true</bold>
           </font>
          </property>
-         <property name="styleSheet">
-          <string notr="true">QPushButton{
-background : rgb(174, 116, 0);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton::hover{
-background : rgb(104, 69, 13);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton:disabled {
-background: rgb(217, 217, 217)
-}</string>
-         </property>
          <property name="text">
           <string>Eliminar</string>
          </property>
@@ -1928,21 +1886,6 @@ background: rgb(217, 217, 217)
            <bold>true</bold>
           </font>
          </property>
-         <property name="styleSheet">
-          <string notr="true">QPushButton{
-background : rgb(174, 116, 0);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton::hover{
-background : rgb(104, 69, 13);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton:disabled {
-background: rgb(217, 217, 217)
-}</string>
-         </property>
          <property name="text">
           <string>Abrir Cedula</string>
          </property>
@@ -1963,21 +1906,6 @@ background: rgb(217, 217, 217)
            <weight>75</weight>
            <bold>true</bold>
           </font>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">QPushButton{
-background : rgb(174, 116, 0);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton::hover{
-background : rgb(104, 69, 13);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton:disabled {
-background: rgb(217, 217, 217)
-}</string>
          </property>
          <property name="text">
           <string>Ubicar</string>
@@ -2015,18 +1943,6 @@ background: rgb(217, 217, 217)
            <height>18</height>
           </rect>
          </property>
-         <property name="styleSheet">
-          <string notr="true">QComboBox QAbstractItemView::item { max-height: 200; font-family: &quot;Century Gothic&quot;;}
-
-QListView{color: black ; font-family: &quot;Century Gothic&quot;;}
-
-QComboBox{
-background : rgb(250,238,224);
-}
-QComboBox:item:selected {
-color: black ;
-}</string>
-         </property>
          <property name="editable">
           <bool>true</bool>
          </property>
@@ -2058,17 +1974,6 @@ color: black ;
            <width>86</width>
            <height>18</height>
           </rect>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">QComboBox QAbstractItemView::item { min-height: 25; font-family: &quot;Century Gothic&quot;;}
-QListView{color: black ; font-size: 16px; outline:none; font-weight:bold; font-family: &quot;Century Gothic&quot;;}
-
-QComboBox{
-background : rgb(250,238,224);
-}
-QComboBox:item:selected {
-color: black ;
-}</string>
          </property>
          <property name="editable">
           <bool>true</bool>
@@ -2129,21 +2034,6 @@ color: black ;
             <weight>75</weight>
             <bold>true</bold>
            </font>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">QPushButton{
-background : rgb(174, 116, 0);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton::hover{
-background : rgb(104, 69, 13);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton:disabled {
-background: rgb(217, 217, 217)
-}</string>
           </property>
           <property name="text">
            <string>Guardar</string>
@@ -2279,6 +2169,9 @@ background: rgb(217, 217, 217)
            <bold>true</bold>
           </font>
          </property>
+         <property name="styleSheet">
+          <string notr="true"/>
+         </property>
          <property name="title">
           <string>Marcador de vertices</string>
          </property>
@@ -2362,21 +2255,6 @@ background: rgb(217, 217, 217)
             <bold>true</bold>
            </font>
           </property>
-          <property name="styleSheet">
-           <string notr="true">QPushButton{
-background : rgb(174, 116, 0);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton::hover{
-background : rgb(104, 69, 13);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton:disabled {
-background: rgb(217, 217, 217)
-}</string>
-          </property>
           <property name="text">
            <string>Recargar
 marcadores</string>
@@ -2433,17 +2311,6 @@ marcadores</string>
             <height>22</height>
            </rect>
           </property>
-          <property name="styleSheet">
-           <string notr="true">QComboBox QAbstractItemView::item { min-height: 25; font-family: &quot;Century Gothic&quot;;}
-QListView{color: black ; font-size: 16px; outline:none; font-weight:bold; font-family: &quot;Century Gothic&quot;;}
-
-QComboBox{
-background : rgb(250,238,224);
-}
-QComboBox:item:selected {
-color: black ;
-}</string>
-          </property>
          </widget>
          <widget class="QCheckBox" name="checkTodasGeom_2">
           <property name="geometry">
@@ -2481,21 +2348,6 @@ color: black ;
           <property name="accessibleDescription">
            <string>1</string>
           </property>
-          <property name="styleSheet">
-           <string notr="true">QPushButton{
-background : rgb(174, 116, 0);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton::hover{
-background : rgb(104, 69, 13);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton:disabled {
-background: rgb(217, 217, 217)
-}</string>
-          </property>
           <property name="text">
            <string>Cargar capa
 de Referencia</string>
@@ -2518,21 +2370,6 @@ de Referencia</string>
           </property>
           <property name="accessibleDescription">
            <string>1</string>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">QPushButton{
-background : rgb(174, 116, 0);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton::hover{
-background : rgb(104, 69, 13);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton:disabled {
-background: rgb(217, 217, 217)
-}</string>
           </property>
           <property name="text">
            <string>Limpiar
@@ -2596,21 +2433,6 @@ referencias</string>
             <bold>true</bold>
            </font>
           </property>
-          <property name="styleSheet">
-           <string notr="true">QPushButton{
-background : rgb(174, 116, 0);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton::hover{
-background : rgb(104, 69, 13);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton:disabled {
-background: rgb(217, 217, 217)
-}</string>
-          </property>
           <property name="text">
            <string>Actualizar Servicios</string>
           </property>
@@ -2623,17 +2445,6 @@ background: rgb(217, 217, 217)
             <width>191</width>
             <height>22</height>
            </rect>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">QComboBox QAbstractItemView::item { min-height: 25; font-family: &quot;Century Gothic&quot;;}
-QListView{color: black ; font-size: 16px; outline:none; font-weight:bold; font-family: &quot;Century Gothic&quot;;}
-
-QComboBox{
-background : rgb(250,238,224);
-}
-QComboBox:item:selected {
-color: black ;
-}</string>
           </property>
           <item>
            <property name="text">
@@ -2686,21 +2497,6 @@ color: black ;
             <bold>true</bold>
            </font>
           </property>
-          <property name="styleSheet">
-           <string notr="true">QPushButton{
-background : rgb(174, 116, 0);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton::hover{
-background : rgb(104, 69, 13);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton:disabled {
-background: rgb(217, 217, 217)
-}</string>
-          </property>
           <property name="text">
            <string>Activar Edicion de 
 Referencia</string>
@@ -2714,16 +2510,6 @@ Referencia</string>
             <width>391</width>
             <height>111</height>
            </rect>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">QHeaderView::section
-{
-background-color: rgb(238,225,200);
-color : rgb(52, 42, 24 );
-text-align: right;
-font-size:12px;
-height:24px
-}</string>
           </property>
           <column>
            <property name="text">
@@ -2763,16 +2549,6 @@ height:24px
             <width>257</width>
             <height>101</height>
            </rect>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">QHeaderView::section
-{
-background-color: rgb(238,225,200);
-color : rgb(52, 42, 24 );
-text-align: right;
-font-size:12px;
-height:24px
-}</string>
           </property>
           <column>
            <property name="text">
@@ -2819,21 +2595,6 @@ height:24px
             <bold>true</bold>
            </font>
           </property>
-          <property name="styleSheet">
-           <string notr="true">QPushButton{
-background : rgb(174, 116, 0);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton::hover{
-background : rgb(104, 69, 13);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton:disabled {
-background: rgb(217, 217, 217)
-}</string>
-          </property>
           <property name="text">
            <string>Actualizar datos</string>
           </property>
@@ -2872,21 +2633,6 @@ background: rgb(217, 217, 217)
             <bold>true</bold>
            </font>
           </property>
-          <property name="styleSheet">
-           <string notr="true">QPushButton{
-background : rgb(174, 116, 0);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton::hover{
-background : rgb(104, 69, 13);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton:disabled {
-background: rgb(217, 217, 217)
-}</string>
-          </property>
           <property name="text">
            <string>Cancelar Cambios</string>
           </property>
@@ -2910,6 +2656,26 @@ background: rgb(217, 217, 217)
            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;---&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
          </widget>
+        </widget>
+        <widget class="QPushButton" name="btnPredioNoCat">
+         <property name="geometry">
+          <rect>
+           <x>230</x>
+           <y>100</y>
+           <width>111</width>
+           <height>31</height>
+          </rect>
+         </property>
+         <property name="font">
+          <font>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>Predios no 
+cartografiados</string>
+         </property>
         </widget>
        </widget>
        <widget class="QWidget" name="tab_4">
@@ -2965,16 +2731,6 @@ background: rgb(217, 217, 217)
             <width>461</width>
             <height>261</height>
            </rect>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">QHeaderView::section
-{
-background-color: rgb(238,225,200);
-color : rgb(52, 42, 24 );
-text-align: right;
-font-size:12px;
-height:24px
-}</string>
           </property>
           <property name="autoScrollMargin">
            <number>16</number>
@@ -3129,9 +2885,6 @@ height:24px
             <width>481</width>
             <height>481</height>
            </rect>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">background : rgb(250,238,224)</string>
           </property>
           <property name="widgetResizable">
            <bool>true</bool>
@@ -3601,21 +3354,6 @@ QCheckBox::indicator {
                 <bold>true</bold>
                </font>
               </property>
-              <property name="styleSheet">
-               <string notr="true">QPushButton{
-background : rgb(174, 116, 0);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton::hover{
-background : rgb(104, 69, 13);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton:disabled {
-background: rgb(217, 217, 217)
-}</string>
-              </property>
               <property name="text">
                <string>Agregar Roles</string>
               </property>
@@ -3634,18 +3372,6 @@ background: rgb(217, 217, 217)
                 <width>16777215</width>
                 <height>250</height>
                </size>
-              </property>
-              <property name="styleSheet">
-               <string notr="true">QTableWidget {background-color: white;}
-QHeaderView::section
-{
-background-color: rgb(238,225,200);
-color : rgb(52, 42, 24 );
-text-align: right;
-font-size:12px;
-height:24px
-}
-QHeaderView {background-color: white;}</string>
               </property>
               <property name="sizeAdjustPolicy">
                <enum>QAbstractScrollArea::AdjustToContents</enum>
@@ -3687,21 +3413,6 @@ QHeaderView {background-color: white;}</string>
                 <bold>true</bold>
                </font>
               </property>
-              <property name="styleSheet">
-               <string notr="true">QPushButton{
-background : rgb(174, 116, 0);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton::hover{
-background : rgb(104, 69, 13);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton:disabled {
-background: rgb(217, 217, 217)
-}</string>
-              </property>
               <property name="text">
                <string>Guardar</string>
               </property>
@@ -3727,21 +3438,6 @@ background: rgb(217, 217, 217)
                 <bold>true</bold>
                </font>
               </property>
-              <property name="styleSheet">
-               <string notr="true">QPushButton{
-background : rgb(174, 116, 0);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton::hover{
-background : rgb(104, 69, 13);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton:disabled {
-background: rgb(217, 217, 217)
-}</string>
-              </property>
               <property name="text">
                <string>Cancelar</string>
               </property>
@@ -3759,9 +3455,6 @@ background: rgb(217, 217, 217)
             <height>155</height>
            </rect>
           </property>
-          <property name="styleSheet">
-           <string notr="true">background : rgb(250,238,224)</string>
-          </property>
           <property name="widgetResizable">
            <bool>true</bool>
           </property>
@@ -3775,46 +3468,6 @@ background: rgb(217, 217, 217)
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_4">
-            <item row="3" column="3">
-             <widget class="QPushButton" name="btnCancelar_5">
-              <property name="minimumSize">
-               <size>
-                <width>130</width>
-                <height>30</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>130</width>
-                <height>30</height>
-               </size>
-              </property>
-              <property name="font">
-               <font>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
-              <property name="styleSheet">
-               <string notr="true">QPushButton{
-background : rgb(174, 116, 0);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton::hover{
-background : rgb(104, 69, 13);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton:disabled {
-background: rgb(217, 217, 217)
-}</string>
-              </property>
-              <property name="text">
-               <string>Cancelar</string>
-              </property>
-             </widget>
-            </item>
             <item row="0" column="0" colspan="4">
              <widget class="QLabel" name="lbDatoUsuario">
               <property name="minimumSize">
@@ -3956,7 +3609,7 @@ background: rgb(217, 217, 217)
               </property>
              </widget>
             </item>
-            <item row="3" column="2">
+            <item row="3" column="3">
              <widget class="QPushButton" name="btnAceptar_3">
               <property name="minimumSize">
                <size>
@@ -3976,21 +3629,6 @@ background: rgb(217, 217, 217)
                 <bold>true</bold>
                </font>
               </property>
-              <property name="styleSheet">
-               <string notr="true">QPushButton{
-background : rgb(174, 116, 0);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton::hover{
-background : rgb(104, 69, 13);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton:disabled {
-background: rgb(217, 217, 217)
-}</string>
-              </property>
               <property name="text">
                <string>Aceptar</string>
               </property>
@@ -4002,7 +3640,7 @@ background: rgb(217, 217, 217)
          <widget class="QPushButton" name="btGuardar">
           <property name="geometry">
            <rect>
-            <x>10</x>
+            <x>200</x>
             <y>950</y>
             <width>150</width>
             <height>30</height>
@@ -4027,21 +3665,6 @@ background: rgb(217, 217, 217)
             <weight>75</weight>
             <bold>true</bold>
            </font>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">QPushButton{
-background : rgb(174, 116, 0);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton::hover{
-background : rgb(104, 69, 13);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton:disabled {
-background: rgb(217, 217, 217)
-}</string>
           </property>
           <property name="text">
            <string>Guardar</string>
@@ -4122,16 +3745,6 @@ QWidget:item:selected
              <family>Century Gothic</family>
             </font>
            </property>
-           <property name="styleSheet">
-            <string notr="true">QHeaderView::section
-{
-background-color: rgb(238,225,200);
-color : rgb(52, 42, 24 );
-text-align: right;
-font-size:12px;
-height:24px
-}</string>
-           </property>
            <attribute name="horizontalHeaderDefaultSectionSize">
             <number>149</number>
            </attribute>
@@ -4155,16 +3768,6 @@ height:24px
              <family>Century Gothic</family>
             </font>
            </property>
-           <property name="styleSheet">
-            <string notr="true">QHeaderView::section
-{
-background-color: rgb(238,225,200);
-color : rgb(52, 42, 24 );
-text-align: right;
-font-size:12px;
-height:24px
-}</string>
-           </property>
            <attribute name="horizontalHeaderDefaultSectionSize">
             <number>170</number>
            </attribute>
@@ -4180,54 +3783,6 @@ height:24px
            </column>
           </widget>
          </widget>
-         <widget class="QPushButton" name="btCerrar">
-          <property name="geometry">
-           <rect>
-            <x>180</x>
-            <y>950</y>
-            <width>150</width>
-            <height>30</height>
-           </rect>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>150</width>
-            <height>30</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>150</width>
-            <height>30</height>
-           </size>
-          </property>
-          <property name="font">
-           <font>
-            <family>MS Shell Dlg 2</family>
-            <pointsize>8</pointsize>
-            <weight>75</weight>
-            <bold>true</bold>
-           </font>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">QPushButton{
-background : rgb(174, 116, 0);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton::hover{
-background : rgb(104, 69, 13);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton:disabled {
-background: rgb(217, 217, 217)
-}</string>
-          </property>
-          <property name="text">
-           <string>Cerrar</string>
-          </property>
-         </widget>
         </widget>
        </widget>
        <widget class="QWidget" name="tab_5">
@@ -4240,19 +3795,19 @@ background: rgb(217, 217, 217)
            <x>0</x>
            <y>0</y>
            <width>511</width>
-           <height>1271</height>
+           <height>1481</height>
           </rect>
          </property>
          <property name="minimumSize">
           <size>
            <width>511</width>
-           <height>1271</height>
+           <height>1481</height>
           </size>
          </property>
          <property name="maximumSize">
           <size>
            <width>511</width>
-           <height>1271</height>
+           <height>1481</height>
           </size>
          </property>
          <property name="font">
@@ -4281,19 +3836,19 @@ background: rgb(217, 217, 217)
             <x>0</x>
             <y>30</y>
             <width>481</width>
-            <height>1221</height>
+            <height>1441</height>
            </rect>
           </property>
           <property name="minimumSize">
            <size>
             <width>481</width>
-            <height>1221</height>
+            <height>1441</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
             <width>481</width>
-            <height>1221</height>
+            <height>1441</height>
            </size>
           </property>
           <property name="widgetResizable">
@@ -4305,7 +3860,7 @@ background: rgb(217, 217, 217)
              <x>0</x>
              <y>0</y>
              <width>479</width>
-             <height>1219</height>
+             <height>1439</height>
             </rect>
            </property>
            <widget class="Line" name="line_5">
@@ -4361,21 +3916,6 @@ background: rgb(217, 217, 217)
               <weight>75</weight>
               <bold>true</bold>
              </font>
-            </property>
-            <property name="styleSheet">
-             <string notr="true">QPushButton{
-background : rgb(174, 116, 0);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton::hover{
-background : rgb(104, 69, 13);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton:disabled {
-background: rgb(217, 217, 217)
-}</string>
             </property>
             <property name="text">
              <string>Validar
@@ -4891,25 +4431,37 @@ topologia</string>
               <bold>true</bold>
              </font>
             </property>
-            <property name="styleSheet">
-             <string notr="true">QPushButton{
-background : rgb(174, 116, 0);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton::hover{
-background : rgb(104, 69, 13);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton:disabled {
-background: rgb(217, 217, 217)
-}</string>
-            </property>
             <property name="text">
              <string>Validar topología
 (Referencia)</string>
             </property>
+           </widget>
+           <widget class="QTableWidget" name="tablaErrores">
+            <property name="geometry">
+             <rect>
+              <x>10</x>
+              <y>1220</y>
+              <width>411</width>
+              <height>202</height>
+             </rect>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>411</width>
+              <height>202</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>411</width>
+              <height>202</height>
+             </size>
+            </property>
+            <column>
+             <property name="text">
+              <string>Error</string>
+             </property>
+            </column>
            </widget>
           </widget>
          </widget>
@@ -4995,21 +4547,6 @@ background: rgb(217, 217, 217)
             <bold>true</bold>
            </font>
           </property>
-          <property name="styleSheet">
-           <string notr="true">QPushButton{
-background : rgb(174, 116, 0);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton::hover{
-background : rgb(104, 69, 13);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton:disabled {
-background: rgb(217, 217, 217)
-}</string>
-          </property>
           <property name="text">
            <string>Fusionar</string>
           </property>
@@ -5085,14 +4622,6 @@ background: rgb(217, 217, 217)
             <height>22</height>
            </rect>
           </property>
-          <property name="styleSheet">
-           <string notr="true">QComboBox QAbstractItemView::item { min-height: 25; font-family: &quot;Century Gothic&quot;;}
-QListView{color: black ; font-size: 16px; outline:none; font-weight:bold; font-family: &quot;Century Gothic&quot;;}
-QListView::item:selected { color: white; background-color:  rgb(250,238,224); font-family: &quot;Century Gothic&quot;;}
-QComboBox{
-background : rgb(250,238,224);
-}</string>
-          </property>
          </widget>
          <widget class="QLabel" name="label_37">
           <property name="geometry">
@@ -5147,21 +4676,6 @@ background : rgb(250,238,224);
             <bold>true</bold>
            </font>
           </property>
-          <property name="styleSheet">
-           <string notr="true">QPushButton{
-background : rgb(174, 116, 0);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton::hover{
-background : rgb(104, 69, 13);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton:disabled {
-background: rgb(217, 217, 217)
-}</string>
-          </property>
           <property name="text">
            <string>Finalizar
 Fusion</string>
@@ -5183,21 +4697,6 @@ Fusion</string>
             <weight>75</weight>
             <bold>true</bold>
            </font>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">QPushButton{
-background : rgb(174, 116, 0);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton::hover{
-background : rgb(104, 69, 13);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton:disabled {
-background: rgb(217, 217, 217)
-}</string>
           </property>
           <property name="text">
            <string>Cancelar
@@ -5381,14 +4880,6 @@ Fusion</string>
             <height>31</height>
            </rect>
           </property>
-          <property name="styleSheet">
-           <string notr="true">QComboBox QAbstractItemView::item { min-height: 25; font-family: &quot;Century Gothic&quot;;}
-QListView{color: black ; font-size: 16px; outline:none; font-weight:bold; font-family: &quot;Century Gothic&quot;;}
-QListView::item:selected { color: white; background-color:  rgb(250,238,224); font-family: &quot;Century Gothic&quot;;}
-QComboBox{
-background : rgb(250,238,224);
-}</string>
-          </property>
          </widget>
          <widget class="QPushButton" name="btnCargarPredio">
           <property name="geometry">
@@ -5406,21 +4897,6 @@ background : rgb(250,238,224);
             <weight>75</weight>
             <bold>true</bold>
            </font>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">QPushButton{
-background : rgb(174, 116, 0);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton::hover{
-background : rgb(104, 69, 13);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton:disabled {
-background: rgb(217, 217, 217)
-}</string>
           </property>
           <property name="text">
            <string>Cargar 
@@ -5462,21 +4938,6 @@ Subdivision</string>
             <bold>true</bold>
            </font>
           </property>
-          <property name="styleSheet">
-           <string notr="true">QPushButton{
-background : rgb(174, 116, 0);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton::hover{
-background : rgb(104, 69, 13);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton:disabled {
-background: rgb(217, 217, 217)
-}</string>
-          </property>
           <property name="text">
            <string>Dibujar
 Cortes</string>
@@ -5499,21 +4960,6 @@ Cortes</string>
             <bold>true</bold>
            </font>
           </property>
-          <property name="styleSheet">
-           <string notr="true">QPushButton{
-background : rgb(174, 116, 0);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton::hover{
-background : rgb(104, 69, 13);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton:disabled {
-background: rgb(217, 217, 217)
-}</string>
-          </property>
           <property name="text">
            <string>Editar
 Cortes</string>
@@ -5535,22 +4981,6 @@ Cortes</string>
             <weight>75</weight>
             <bold>true</bold>
            </font>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">QPushButton{
-background : rgb(174, 116, 0);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton::hover{
-background : rgb(104, 69, 13);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton:disabled {
-background: rgb(217, 217, 217)
-}
-</string>
           </property>
           <property name="text">
            <string>Eliminar
@@ -5592,21 +5022,6 @@ Cortes</string>
             <bold>true</bold>
            </font>
           </property>
-          <property name="styleSheet">
-           <string notr="true">QPushButton{
-background : rgb(174, 116, 0);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton::hover{
-background : rgb(104, 69, 13);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton:disabled {
-background: rgb(217, 217, 217)
-}</string>
-          </property>
           <property name="text">
            <string>Calcular
 Areas</string>
@@ -5628,21 +5043,6 @@ Areas</string>
             <weight>75</weight>
             <bold>true</bold>
            </font>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">QPushButton{
-background : rgb(174, 116, 0);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton::hover{
-background : rgb(104, 69, 13);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton:disabled {
-background: rgb(217, 217, 217)
-}</string>
           </property>
           <property name="text">
            <string>subdividir</string>
@@ -5774,21 +5174,6 @@ background: rgb(217, 217, 217)
             <bold>true</bold>
            </font>
           </property>
-          <property name="styleSheet">
-           <string notr="true">QPushButton{
-background : rgb(174, 116, 0);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton::hover{
-background : rgb(104, 69, 13);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton:disabled {
-background: rgb(217, 217, 217)
-}</string>
-          </property>
           <property name="text">
            <string>Asignar Clave</string>
           </property>
@@ -5807,21 +5192,6 @@ background: rgb(217, 217, 217)
             <weight>75</weight>
             <bold>true</bold>
            </font>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">QPushButton{
-background : rgb(174, 116, 0);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton::hover{
-background : rgb(104, 69, 13);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton:disabled {
-background: rgb(217, 217, 217)
-}</string>
           </property>
           <property name="text">
            <string>Seleccionar</string>
@@ -5882,21 +5252,6 @@ background: rgb(217, 217, 217)
             <bold>true</bold>
            </font>
           </property>
-          <property name="styleSheet">
-           <string notr="true">QPushButton{
-background : rgb(174, 116, 0);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton::hover{
-background : rgb(104, 69, 13);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton:disabled {
-background: rgb(217, 217, 217)
-}</string>
-          </property>
           <property name="text">
            <string>Cancelar
  Subdivision</string>
@@ -5931,6 +5286,403 @@ background: rgb(217, 217, 217)
         <attribute name="title">
          <string>Page</string>
         </attribute>
+        <widget class="QGroupBox" name="groupBox_2">
+         <property name="geometry">
+          <rect>
+           <x>0</x>
+           <y>10</y>
+           <width>491</width>
+           <height>241</height>
+          </rect>
+         </property>
+         <property name="font">
+          <font>
+           <family>Arial</family>
+           <pointsize>12</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="title">
+          <string>Carga Masiva</string>
+         </property>
+         <widget class="QLineEdit" name="fldArchivo">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="geometry">
+           <rect>
+            <x>20</x>
+            <y>150</y>
+            <width>451</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="font">
+           <font>
+            <family>Century Gothic</family>
+            <pointsize>10</pointsize>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">background: rgb(255,255,255)</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_59">
+          <property name="geometry">
+           <rect>
+            <x>250</x>
+            <y>50</y>
+            <width>191</width>
+            <height>16</height>
+           </rect>
+          </property>
+          <property name="font">
+           <font>
+            <family>Arial</family>
+            <pointsize>12</pointsize>
+            <weight>75</weight>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="text">
+           <string>Cartografia Base</string>
+          </property>
+         </widget>
+         <widget class="QComboBox" name="comboBase">
+          <property name="geometry">
+           <rect>
+            <x>250</x>
+            <y>80</y>
+            <width>221</width>
+            <height>22</height>
+           </rect>
+          </property>
+          <property name="editable">
+           <bool>false</bool>
+          </property>
+          <item>
+           <property name="text">
+            <string>--seleccionar--</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Municipios</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Sectores</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Calles</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Colonias</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Codigo Postal</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Area de Valor</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Corredor de Valor</string>
+           </property>
+          </item>
+         </widget>
+         <widget class="QComboBox" name="ComboManza">
+          <property name="geometry">
+           <rect>
+            <x>20</x>
+            <y>80</y>
+            <width>221</width>
+            <height>22</height>
+           </rect>
+          </property>
+          <property name="editable">
+           <bool>false</bool>
+          </property>
+          <item>
+           <property name="text">
+            <string>--seleccionar--</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Manzanas</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Predios</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Construcciones</string>
+           </property>
+          </item>
+         </widget>
+         <widget class="QLabel" name="label_58">
+          <property name="geometry">
+           <rect>
+            <x>20</x>
+            <y>50</y>
+            <width>191</width>
+            <height>16</height>
+           </rect>
+          </property>
+          <property name="font">
+           <font>
+            <family>Arial</family>
+            <pointsize>12</pointsize>
+            <weight>75</weight>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="text">
+           <string>Cartografia de Manzana</string>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="btnProcesar">
+          <property name="geometry">
+           <rect>
+            <x>360</x>
+            <y>190</y>
+            <width>111</width>
+            <height>41</height>
+           </rect>
+          </property>
+          <property name="font">
+           <font>
+            <family>Century Gothic</family>
+            <pointsize>12</pointsize>
+            <weight>75</weight>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="text">
+           <string>Procesar</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_57">
+          <property name="geometry">
+           <rect>
+            <x>20</x>
+            <y>120</y>
+            <width>191</width>
+            <height>16</height>
+           </rect>
+          </property>
+          <property name="font">
+           <font>
+            <family>Arial</family>
+            <pointsize>12</pointsize>
+            <weight>75</weight>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="text">
+           <string>Archivo a Cargar</string>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="btnCargar">
+          <property name="geometry">
+           <rect>
+            <x>240</x>
+            <y>190</y>
+            <width>111</width>
+            <height>41</height>
+           </rect>
+          </property>
+          <property name="font">
+           <font>
+            <family>Century Gothic</family>
+            <pointsize>12</pointsize>
+            <weight>75</weight>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="text">
+           <string>Cargar 
+archivo</string>
+          </property>
+         </widget>
+        </widget>
+        <widget class="QLabel" name="label_60">
+         <property name="geometry">
+          <rect>
+           <x>20</x>
+           <y>260</y>
+           <width>301</width>
+           <height>16</height>
+          </rect>
+         </property>
+         <property name="font">
+          <font>
+           <family>Arial</family>
+           <pointsize>12</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>---</string>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_61">
+         <property name="geometry">
+          <rect>
+           <x>20</x>
+           <y>290</y>
+           <width>301</width>
+           <height>20</height>
+          </rect>
+         </property>
+         <property name="font">
+          <font>
+           <family>Arial</family>
+           <pointsize>12</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>---</string>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_62">
+         <property name="geometry">
+          <rect>
+           <x>20</x>
+           <y>320</y>
+           <width>301</width>
+           <height>16</height>
+          </rect>
+         </property>
+         <property name="font">
+          <font>
+           <family>Arial</family>
+           <pointsize>12</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>---</string>
+         </property>
+        </widget>
+        <widget class="QTableWidget" name="tbwEstatus">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>360</y>
+           <width>481</width>
+           <height>192</height>
+          </rect>
+         </property>
+         <property name="autoScrollMargin">
+          <number>20</number>
+         </property>
+         <attribute name="horizontalHeaderDefaultSectionSize">
+          <number>119</number>
+         </attribute>
+         <column>
+          <property name="text">
+           <string>Nombre</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Id</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Estatus</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Estatus de Observación</string>
+          </property>
+         </column>
+        </widget>
+        <widget class="QLabel" name="label_63">
+         <property name="geometry">
+          <rect>
+           <x>330</x>
+           <y>260</y>
+           <width>161</width>
+           <height>16</height>
+          </rect>
+         </property>
+         <property name="font">
+          <font>
+           <family>Arial</family>
+           <pointsize>12</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>---</string>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_64">
+         <property name="geometry">
+          <rect>
+           <x>330</x>
+           <y>320</y>
+           <width>161</width>
+           <height>16</height>
+          </rect>
+         </property>
+         <property name="font">
+          <font>
+           <family>Arial</family>
+           <pointsize>12</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>---</string>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_65">
+         <property name="geometry">
+          <rect>
+           <x>330</x>
+           <y>290</y>
+           <width>161</width>
+           <height>20</height>
+          </rect>
+         </property>
+         <property name="font">
+          <font>
+           <family>Arial</family>
+           <pointsize>12</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>---</string>
+         </property>
+        </widget>
        </widget>
        <widget class="QWidget" name="tab_8">
         <attribute name="title">
@@ -6038,8 +5790,7 @@ background: rgb(217, 217, 217)
     </font>
    </property>
    <property name="text">
-    <string>Asignación 
-de padron</string>
+    <string/>
    </property>
    <property name="iconSize">
     <size>
@@ -6093,7 +5844,7 @@ de padron</string>
     </font>
    </property>
    <property name="text">
-    <string>Topología</string>
+    <string/>
    </property>
    <property name="iconSize">
     <size>
@@ -6264,7 +6015,7 @@ División</string>
     <string notr="true"/>
    </property>
    <property name="text">
-    <string>Documentos</string>
+    <string/>
    </property>
    <property name="iconSize">
     <size>
@@ -6365,11 +6116,6 @@ revision</string>
      <width>121</width>
      <height>51</height>
     </rect>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">QPushButton {
-background-color: rgb(42, 124, 120);
-}</string>
    </property>
    <property name="text">
     <string/>

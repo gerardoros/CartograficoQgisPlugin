@@ -56,7 +56,28 @@
       </size>
      </property>
      <property name="styleSheet">
-      <string notr="true">background : rgb(250,238,224)</string>
+      <string notr="true">QPushButton{
+background-color: rgb(104, 185, 181);
+color : rgb(255,255,255);
+border-radius : 4px;
+}
+QPushButton::hover{
+background: rgb(188, 228, 226);
+color : rgb(255,255,255);
+border-radius : 4px;
+}
+QPushButton:disabled {
+background : rgb(42, 124, 120);
+}
+QHeaderView::section
+{
+background-color: rgb(104, 185, 181);
+color : rgb(255,255,255 );
+text-align: right;
+font-size:12px;
+height:24px
+}
+</string>
      </property>
      <property name="widgetResizable">
       <bool>true</bool>
@@ -90,21 +111,6 @@
            <weight>75</weight>
            <bold>true</bold>
           </font>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">QPushButton{
-background : rgb(174, 116, 0);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton::hover{
-background : rgb(104, 69, 13);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton:disabled {
-background: rgb(217, 217, 217)
-}</string>
          </property>
          <property name="text">
           <string>Aceptar</string>
@@ -158,21 +164,6 @@ background: rgb(217, 217, 217)
            <bold>true</bold>
           </font>
          </property>
-         <property name="styleSheet">
-          <string notr="true">QPushButton{
-background : rgb(174, 116, 0);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton::hover{
-background : rgb(104, 69, 13);
-color : rgb(255, 255, 255);
-border-radius : 4px;
-}
-QPushButton:disabled {
-background: rgb(217, 217, 217)
-}</string>
-         </property>
          <property name="text">
           <string>Cancelar</string>
          </property>
@@ -210,18 +201,6 @@ background: rgb(217, 217, 217)
        </item>
        <item row="2" column="0" colspan="4">
         <widget class="QTableWidget" name="twDefinir">
-         <property name="styleSheet">
-          <string notr="true">QTableWidget {background-color: white;}
-QHeaderView::section
-{
-background-color: rgb(238,225,200);
-color : rgb(52, 42, 24 );
-text-align: right;
-font-size:12px;
-height:24px
-}
-QHeaderView {background-color: white;}</string>
-         </property>
          <property name="autoScrollMargin">
           <number>16</number>
          </property>

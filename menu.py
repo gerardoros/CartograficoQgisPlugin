@@ -31,6 +31,7 @@ from .resources import *
 from .menu_dialog import menuDialog
 from .funciones.estatusClave import EstatusClaves_dialog
 from .funciones.adminusers.usuariosEdicionVer import usuariosEdicionVer
+from .funciones.adminusers.cambioClave_Usuario import cambioClave_Usuario
 from .funciones.generar_documentos.cert_cve_catastral_dialog import CertCveCatastralDialog
 from .funciones.generar_documentos.cert_cve_catastral import CertCveCatastral
 from .funciones.generar_documentos.cert_cve_valor import CertCveValor
@@ -45,6 +46,7 @@ from .funciones.fusiondivision.VentanaFusionV3 import VentanaFusionV3
 from .funciones.fusiondivision.VentanaClavesV3 import VentanaClavesV3
 from .funciones.eliminacion import EliminacionV3
 from .funciones.dibujo.VentanaDibujoV3 import VentanaDibujoV3
+from .funciones.adminusers import AdminUsers
 import os.path
 from qgis.utils import iface, loadPlugin, startPlugin, reloadPlugin
 from inspect import getframeinfo, stack
@@ -99,6 +101,7 @@ import re
 from qgis.core import *
 from .funciones.topologia.reglasQG3 import Reglas
 from .Solicitud import Solicitud
+from .funciones.predio_no_cart.Predio_No_Cart import Predio_No_Cart
 #from ..busquedas.periodo.periodo import predio
 
 #from ..busquedas.busqueda_catastral import busqueda_Catastral
@@ -116,7 +119,7 @@ from .Solicitud import Solicitud
 class menu:
     """QGIS Plugin Implementation."""
 
-    def __init__(self, iface):
+    def __init__(self, iface, usuario = None):
         """Constructor.
 
         :param iface: An interface instance that will be passed to this class
@@ -127,10 +130,11 @@ class menu:
 
         # Save reference to the QGIS interface
         self.iface = iface
-
+        self.usuario = usuario
         self.CFG = Configuracion.Configuracion()
         self.UTI = utilidades.Utilidad()
-
+        var = QSettings().value('datoUsuario')
+        self.CC = cambioClave_Usuario(CFG = self.CFG, UTI = self.UTI, usuario = var,  nuevo = True)
         self.ACA = ActualizacionCatastralV3.ActualizacionCatastralV3(iface)
         self.ACA.UTI = self.UTI
         self.UTI.CFG = self.CFG
@@ -141,6 +145,10 @@ class menu:
         self.CMS = Integracion.Integracion(iface)
         self.TPG = TopologiaV3.TopologiaV3(iface, self.ACA, self.CFG, self.UTI)
         self.reglas = Reglas(self.ACA, CFG = self.CFG, UTI = self.UTI)
+        self.ADU = AdminUsers.AdminUsers(iface)
+
+        self.ADU.CFG = self.CFG
+        self.ADU.UTI = self.UTI
         # initialize plugin directory
         self.plugin_dir = os.path.dirname(__file__)
         # initialize locale
@@ -202,7 +210,19 @@ class menu:
         self.dlg.btnSeleccionar_5.clicked.connect(self.fun21)
 
         self.dlg.fldCveCat_5.textChanged.connect(self.fun22)
-
+        self.dlg.twOperaciones.clicked.connect(self.traerOperaciones)
+        self.dlg.btGuardar.clicked.connect(self.editarOperaciones)
+        #self.dlg.btCerrar.clicked.connect(self.event_cancelar)
+        self.dlg.twOperaciones.setEditTriggers(QtWidgets.QTableWidget.NoEditTriggers)
+        self.dlg.twOperaciones_2.hideColumn(1)
+        self._seleccionados = []
+        self.nuevo = True
+        #self.CFG = CFG
+        #self.UTI = UTI
+        self.headers = {'Content-Type': 'application/json'}
+        self.usuarios = []
+        self.roles = []
+        self.Cart = 'Predio Cartografiado'
         #validaciones
         rx = QRegExp("[a-zA-Z0-9]{31}")
         val = QRegExpValidator(rx)
@@ -269,7 +289,10 @@ class menu:
         val = QRegExpValidator(rx)
         self.dlg.fldCveCat.setValidator(val)
 
-        self.dlg.btCodnadas.setIcon(QtGui.QIcon(':/plugins/Master/icons/local.ico'))
+        self.dlg.btCodnadas.setIcon(QtGui.QIcon(':/plugins/Master/icons/local.png'))
+        self.dlg.btnConsulta.setIcon(QtGui.QIcon(':/plugins/Master/icons/archivo10.png'))
+        self.dlg.btnAsigPad.setIcon(QtGui.QIcon(':/plugins/Master/icons/archivo11.png'))
+        self.dlg.btnTopologia.setIcon(QtGui.QIcon(':/plugins/Master/icons/archivo16.png'))
         self.dlg.btCodnadas.clicked.connect(self.fun6)
         self.dlg.btnUbicar.clicked.connect(self.fun6)
         self.dlg.btnLimpiar.clicked.connect(self.funlimpiar)
@@ -307,6 +330,11 @@ class menu:
         self.dlg.botonCancelarReferencia.clicked.connect(self.rollbackCapa)
         self.dlg.botonActualizarRef.clicked.connect(self.actualizarFeatureRef)
         self.dlg.botonValidarRef.clicked.connect(self.validarRef)
+        self.dlg.btnAceptar_3.clicked.connect(self.cambiarcontra)
+        self.dlg.btnPredioNoCat.clicked.connect(self.llamarPredioNoCat)
+        self.dlg.btnProcesar.clicked.connect(self.procesarARCH)
+        self.dlg.btnCargar.clicked.connect(self.abrirCarga)
+        self.procesar()
         self.cve_cat_len = 16
         self.dlg.lista = {}
         self.cursorRedondo = QCursor(QPixmap(["16 16 3 1",
@@ -329,11 +357,11 @@ class menu:
                                 "    ++.....+    ",
                                 "      ++.++     ",
                                 "       +.+      "]))
-        self.dlg.btnBrowse.setIcon(QtGui.QIcon(':/plugins/Master/icons/browse.png'))
-        self.dlg.btnBrowse_2.setIcon(QtGui.QIcon(':/plugins/Master/icons/browse.png'))
-        self.dlg.btnBrowse_3.setIcon(QtGui.QIcon(':/plugins/Master/icons/browse.png'))
-        self.dlg.btnBrowse_4.setIcon(QtGui.QIcon(':/plugins/Master/icons/browse.png'))
-        self.dlg.btnBrowse_5.setIcon(QtGui.QIcon(':/plugins/Master/icons/browse.png'))
+        self.dlg.btnBrowse.setIcon(QtGui.QIcon(':/plugins/Master/icons/archivo7.png'))
+        self.dlg.btnBrowse_2.setIcon(QtGui.QIcon(':/plugins/Master/icons/archivo7.png'))
+        self.dlg.btnBrowse_3.setIcon(QtGui.QIcon(':/plugins/Master/icons/archivo7.png'))
+        self.dlg.btnBrowse_4.setIcon(QtGui.QIcon(':/plugins/Master/icons/archivo7.png'))
+        self.dlg.btnBrowse_5.setIcon(QtGui.QIcon(':/plugins/Master/icons/archivo7.png'))
 
         self.botones()
         #self.colapsar()    
@@ -366,6 +394,7 @@ class menu:
         decode = jwt.decode(token, verify=False)
         #print(decode)
         resultado = self.consumeWSGeneral(url_cons = self.CFG.url_MA_getInfoUser + str(decode['user_name']))
+        print(resultado)
         #print(resultado)
         if not resultado:
             return
@@ -563,6 +592,7 @@ class menu:
         #con la referencia hecha (self.ACA == ActualizacionCatastralV3....) solo mandas a llamar el metodo que ocupas
         self.ACA.obtenerXCapas() #-------- como aqui
         self.ACA.vaciarCapa(self.mem_layer)
+        self.llenarOperaciones()
         #y no le pases self como parametro
         #self.ACA.obtenerXCapas(self) ------- esto es incorrecto
         #porque los metodos de self.ACA ya contienen la refrencia a su propia clase
@@ -591,7 +621,7 @@ class menu:
         self.obtenerSectoresPorMunicipio()
         self.obtenerSectoresPorMunicipio2()
         self.ELM.agregarFuncionEliminar()
-        self.funedicionatributos()
+        self.funedicionatributos()                                          
         '''for count in range(self.dlg.comboSector.count()):
             #print (self.dlg.comboSector.itemText(count))
             self.zona.append(self.dlg.comboSector.itemText(count))
@@ -688,6 +718,52 @@ class menu:
             # Do something useful here - delete the line containing pass and
             # substitute with your code.
             pass
+    def procesarARCH(self):
+        self.CMS.UTI = self.UTI
+        self.CMS.ACA = self.ACA
+        self.CMS.corregirLineas()
+    def procesar(self):
+        self.dlg.ComboManza.currentTextChanged.connect(self.procesar1)
+        self.dlg.comboBase.currentTextChanged.connect(self.procesar2)
+       
+    def procesar1(self):
+        if self.dlg.ComboManza.currentIndex() == 0:
+            self.dlg.label_60.setText('---')
+            self.dlg.label_61.setText('---')
+            self.dlg.label_62.setText('---')
+        else:
+            com1 = self.dlg.ComboManza.currentText()
+            
+            self.dlg.label_60.setText('Total de ' + com1 + ' actualizadas')
+            self.dlg.label_61.setText('Nuevas ' + com1)
+            self.dlg.label_62.setText(com1 + ' con error')
+            
+        '''self.dlg.lbEstatusCedula_4.setText(texto)
+
+        if estado == "ok": # abriendo
+            self.dlg.lbEstatusCedula_4.setStyleSheet('color: green')
+        elif estado == "error": # Seleccione un solo predio
+            self.dlg.lbEstatusCedula_4.setStyleSheet('color: red')
+        else:
+            self.dlg.lbEstatusCedula_4.setStyleSheet('color: black')'''
+    def procesar2(self):
+        if self.dlg.comboBase.currentIndex() == 0:
+            self.dlg.label_60.setText('---')
+            self.dlg.label_61.setText('---')
+            self.dlg.label_62.setText('---')
+        else:
+            com2 = self.dlg.comboBase.currentText()
+
+            self.dlg.label_60.setText('Total de ' + com2 + ' actualizadas')
+            self.dlg.label_61.setText('Nuevas ' + com2)
+            self.dlg.label_62.setText(com2 + ' con error')
+    def abrirCarga(self):
+        self.CMS.abrirCarga()
+        ruta = self.CMS.fileName
+        self.dlg.fldArchivo.setText(str(ruta))
+    def llamarPredioNoCat(self):
+        self.dlg.obj = Predio_No_Cart(self.iface, CFG = self.CFG, UTI = self.UTI, nuevo = True)
+        self.dlg.obj.run()
     def tablaref(self, nameCapa):
         idCapa = self.obtenerIdCapa(nameCapa)
         capaAPintar = QgsProject.instance().mapLayer(idCapa)
@@ -968,14 +1044,57 @@ class menu:
         self.dlg.botonActualizarServiciosCalles.setVisible(False)
         self.dlg.tituloServiciosCalles.setVisible(False)
     def menus(self):
-        self.dlg.obj = Solicitud(self.iface)
+        self.dlg.obj = Solicitud(self.iface, CFG = self.CFG, UTI = self.UTI, nuevo = True)
         self.dlg.obj.run()
         self.solicitudes()
+    def llenarOperaciones(self):
+        self.dlg.twOperaciones.clearContents()
+        self.dlg.twOperaciones.setRowCount(0)
+        self.usuarios = self.consumeWSGeneral(url_cons = self.CFG.url_AU_getAllAuthorities)
 
+        if not self.usuarios:
+             return
+
+                # mostrar usuarios en tabla
+        self.dlg.twOperaciones.setRowCount(len(self.usuarios))
+        for x in range(0, len(self.usuarios)):
+            
+            item2 = QTableWidgetItem(self.usuarios[x])
+            self.dlg.twOperaciones.setItem(x, 0, item2)
+    def cambiarcontra(self):
+        contra1 = self.dlg.leRol_3.text()
+        contra2 = self.dlg.leRol_2.text()
+        self.CC.event_aceptar(contra1, contra2)
     def usuarioguardar(self):
         self.nuevo = True
-        self.UE = usuariosEdicionVer.event_aceptar(self, self.nuevo)
+        self.UE = usuariosEdicionVer.event_aceptar(self, nuevo = True)
+    def llenaRoles(self, roles = []):
+        # llena roles
+        self.dlg.twRoles.setRowCount(len(roles))
+
+        for i in range(0, len(roles)):
+            
+            btnRol = QtWidgets.QPushButton('Quitar')
+            btnRol.setEnabled(True)
+            btnRol.setStyleSheet('''QPushButton{
+                               background-color: rgb(104, 185, 181);
+                                    color : rgb(255,255,255);
+                                    border-radius : 4px;
+                                }
+                                QPushButton::disabled {
+                                background : rgb(187, 129, 13);
+                                color : rgb(245,245,245);
+                                border: 1px solid #adb2b5;
+                                }''')
+
+            self.dlg.twRoles.setItem(i, 0, QtWidgets.QTableWidgetItem(roles[i]['rol']))
+            self.dlg.twRoles.setItem(i, 1, QtWidgets.QTableWidgetItem(roles[i]['opreaciones']))
+            self.dlg.twRoles.setCellWidget(i, 2, btnRol)
+            btnRol.clicked.connect(self.event_currentPositionButtonPressed2)
+
     def tablausuario(self, index):
+        self.ADU.CFG = self.CFG
+        self.ADU.UTI = self.UTI
         if index == 0:
 
             # remover todos
@@ -1006,24 +1125,24 @@ class menu:
 
 
                 btnVer.setStyleSheet('''QPushButton{
-                                    background : rgb(174, 116, 0);
-                                    color : rgb(255, 255, 255);
-                                    font-weight: bold;
+                                    background-color: rgb(104, 185, 181);
+                                    color : rgb(255,255,255);
+                                    border-radius : 4px;
                                     }
                                     QPushButton::disabled {
-                                    background : rgb(187, 129, 13);
+                                    background : rgb(42, 124, 120);
                                     color : rgb(245,245,245);
                                     border: 1px solid #adb2b5;
                                     }''')
 
                 
                 btnEdi.setStyleSheet('''QPushButton{
-                                    background : rgb(174, 116, 0);
-                                    color : rgb(255, 255, 255);
-                                    font-weight: bold;
+                                    background-color: rgb(104, 185, 181);
+                                    color : rgb(255,255,255);
+                                    border-radius : 4px;
                                     }
                                     QPushButton::disabled {
-                                    background : rgb(187, 129, 13);
+                                    background : rgb(42, 124, 120);
                                     color : rgb(245,245,245);
                                     border: 1px solid #adb2b5;
                                     }''')
@@ -1034,9 +1153,57 @@ class menu:
                 self.dlg.twUsuarios.setItem(i, 3, QtWidgets.QTableWidgetItem(auth))
                 self.dlg.twUsuarios.setCellWidget(i, 4, btnVer)
                 self.dlg.twUsuarios.setCellWidget(i, 5, btnEdi)
+                btnVer.clicked.connect(self.event_currentPositionButtonPressed)
+                btnEdi.clicked.connect(self.event_currentPositionButtonPressed)
+                btnElim.clicked.connect(self.event_currentPositionButtonPressed)
     def agregarroles(self):
         self.UE = usuariosEdicionVer.event_agregaRoles(self)
+    def event_currentPositionButtonPressed(self):
+        clickme = QtWidgets.qApp.focusWidget()
+        # or button = self.sender()
+        index = self.dlg.twUsuarios.indexAt(clickme.pos())
+        
+        if index.isValid():
+            item = self.dlg.twUsuarios.item(index.row(), 0)
+            usuario = [x for i, x in enumerate(self.usuarios) if str(x['id']) == item.text()]
+
+            # ver
+            if index.column() == 4:
+
+                obj = usuariosEdicionVer(usuario[0] if len(usuario) > 0 else None, False, False, CFG = self.CFG, UTI = self.UTI)
+                respuesta = obj.exec()
+                pass
+
+            # editar
+            if index.column() == 5:
+                obj = usuariosEdicionVer(usuario[0] if len(usuario) > 0 else None, False, True, CFG = self.CFG, UTI = self.UTI)
+                respuesta = obj.exec()
+                pass
+
+            # eliminar
+            if index.column() == 6:
+                pass
+
+            # regresa un 0 o un 1
+            # 0 = RECHAZADO = CANCELAR
+            # 1 = ACEPTADO  = ACEPTAR
+            if respuesta == 0:
+                return
+
+            # limpiar tabla
+            self.ADU.limpiaTabla()
+
+            self.ADU.event_cambioPestania(0)
+    def event_currentPositionButtonPressed2(self):
+
+        clickme = QtWidgets.qApp.focusWidget()
+        # or button = self.sender()
+        index = self.dlg.twRoles.indexAt(clickme.pos())
+
+        if index.isValid():
+            self.dlg.twRoles.removeRow(index.row())
     def createAlert(self, mensaje, icono = QMessageBox().Critical, titulo = 'Usuarios'):
+
         #Create QMessageBox
         self.msg = QMessageBox()
         #Add message
@@ -1327,7 +1494,7 @@ class menu:
         self.ACA.abrirCedula()
         self.abrirCedula()
         self.cancelaAperturaCedula()
-
+        
     def abrirCedula(self):
         self.cambiarStatusCedula("Seleccione un predio...", "ok")
         self.iface.actionSelect().trigger()
@@ -1755,7 +1922,7 @@ class menu:
         self.llenaTablaErrores()
     def validarInclusionRef(self, nombreObjetos, nombreContenedor):
         errorInclusion = self.TPG.reglas.validarInclusionRef(nombreObjetos, nombreContenedor)
-        self.llenaTablaErrores()
+        self.llenaTablaErrores2()
         return errorInclusion
 
 ##########################################################################
@@ -1763,21 +1930,21 @@ class menu:
     def validarPoligonosInvalidosRef(self, nombreCapa):
         
         error = self.TPG.reglas.validarPoligonosInvalidosRef(nombreCapa)
-        self.llenaTablaErrores()
+        self.llenaTablaErrores2()
         return error
 
 ####################################################################################
 
     def validarCamposRef(self, nombreCapa):
         error = self.TPG.reglas.validarCamposRef(nombreCapa)
-        self.llenaTablaErrores()
+        self.llenaTablaErrores2()
         return error
 
 ####################################################################################
 
     def validarInterseccionesRef(self, nombreCapa1, nombreCapa2):
         error = self.TPG.reglas.validarInterseccionesRef(nombreCapa1, nombreCapa2)
-        self.llenaTablaErrores()
+        self.llenaTablaErrores2()
         return error
     def preguntarGuardarRef(self):
         mensaje = "La topologia es correcta, ¿deseas guardar los cambios de la capa de referencia?"
@@ -1860,6 +2027,15 @@ class menu:
         
         #self.validarCamposDuplicados(self.xManzana, self.xPredGeom, 'clave')
         self.TPG.validarCamposDuplicados(self.xPredGeom, self.xConst, 'nom_volumen')
+    def llenaTablaErrores2(self):
+        header = self.dlg.tablaErrores.horizontalHeader()
+        header.setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeToContents)
+        if self.TPG.reglas.cuentaError > 0:
+            self.todoEnOrden = False
+            self.todoEnOrdenRef = False
+            self.dlg.tablaErrores.insertRow(self.dlg.tablaErrores.rowCount())
+            item = QTableWidgetItem(self.reglas.stringError)
+            self.dlg.tablaErrores.setItem(self.dlg.tablaErrores.rowCount()-1, 0 , item)
     def fusion(self):
         self.dlg.comboBox.clear()
         self.DFS.CFG = self.CFG
@@ -4488,6 +4664,88 @@ class menu:
             return 'Construcciones'
 
         return None
+    def traerOperaciones(self):
+        #self.createAlert("Si conecto", QMessageBox().Information, "Si se hizo")
+        self.dlg.twOperaciones_2.clearContents()
+        self.dlg.twOperaciones_2.setRowCount(0)
+
+
+
+        row = self.dlg.twOperaciones.currentRow()
+        rol = self.dlg.twOperaciones.item(row,0)
+
+        #print('---------------')
+        #print(rol.text())
+        #print(self.CFG.url_AU_getAllRole + rol.text())
+        #print('---------------')
+
+
+        self.roles = self.consumeWSGeneral(url_cons = self.CFG.url_AU_getAllRole + rol.text())
+        #print(self.roles)
+        if not self.roles:
+             return
+
+                # mostrar usuarios en tabla
+        self.dlg.twOperaciones_2.setRowCount(len(self.roles))
+        for x in range(0, len(self.roles)):
+            
+
+           
+            check = QTableWidgetItem(self.roles[x]['nombre'])
+
+            #check = QTableWidgetItem(self.roles[x]['asignado'])
+            check.setFlags(QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled)
+            if self.roles[x]['asignado'] == False:
+                check.setCheckState(QtCore.Qt.Unchecked)
+            else:
+                check.setCheckState(QtCore.Qt.Checked)
+
+            #self.dlg.twOperaciones_2.setItem(x,0,check)
+            
+            self.dlg.twOperaciones_2.setItem(x, 0, check)
+            self.dlg.twOperaciones_2.setItem(x, 1, QtWidgets.QTableWidgetItem(str(self.roles[x]['id'])))
+
+
+    def editarOperaciones(self):
+
+        if self.dlg.twOperaciones_2.rowCount() > 0:
+
+
+            row_2 = self.dlg.twOperaciones.currentRow()
+            rol = self.dlg.twOperaciones.item(row_2,0)
+            # obtenemos el numero total de registros en el qtablewidget
+            allRows = self.dlg.twOperaciones_2.rowCount()
+
+            # inicializamos variable (lista) donde se agregan el texto de los registros activos por check
+            self._seleccionados = []
+
+            # se itera los registros del qtablewidget
+            for row in range(0, allRows):
+
+                # se obtiene el item segun la iteracion
+                # el registro (row) en la posicion 0 (columna 0) 
+                # en este ejmplo solo se cuenta con una columna por eso la posicion 0
+                item = self.dlg.twOperaciones_2.item(row, 0)
+                item3 = self.dlg.twOperaciones_2.item(row, 1)
+
+                # se verifica que el checkbox este seleccionado
+                if item.checkState() == 2: # True
+                    self._seleccionados.append(item3.text())
+
+            
+            envio = {}
+            envio['permisos'] = self._seleccionados
+            envio['rol'] = rol.text()
+            resp = self.guardarOperacion(nuevo = self.nuevo, url = (self.CFG.url_AU_actualizarOperaciones), envio = envio)
+                
+            if resp == 'OK':
+                self.createAlert('Operaciones Asignadas Correctamente', QMessageBox().Information)
+            else:
+                return
+            
+            #self.dlg.accept()       
+            print(envio)  
+
     def consumeWSGeneral1(self, url_cons = "", payload = {}):
 
         url = url_cons
@@ -4554,6 +4812,75 @@ class menu:
             return
         #print(json.loads(data.decode("utf-8")))
         return json.loads(data.decode("utf-8"))
+
+    def guardaUsuario(self, nuevo = False, url = '', envio = {}):
+        data = ""
+        
+        # envio - el objeto de tipo dict, es el json que se va a guardar
+        # se debe hacer la conversion para que sea aceptado por el servicio web
+        jsonEnv = json.dumps(envio)
+        
+        try:
+            # header para obtener el token
+            self.headers['Authorization'] = self.UTI.obtenerToken()
+
+            if nuevo:
+                response = requests.post(url, headers = self.headers, data = jsonEnv)
+                print(response)
+            else:
+
+                # ejemplo con put, url, header y body o datos a enviar
+                response = requests.put(url, headers = self.headers, data = jsonEnv)
+
+        except requests.exceptions.RequestException as e:
+            self.createAlert("Error de servidor, 'guardaUsuario()' '" + str(e) + "'", QMessageBox().Critical, "Error de servidor")
+            return str(e)
+
+        if response.status_code == 403:
+            self.createAlert('Sin Permisos para ejecutar la accion', QMessageBox().Critical, "Usuarios")
+            return None
+ 
+           
+        elif response.status_code >= 300:
+            #self.createAlert('Error en peticion "guardaUsuario()":\n' + response.text, QMessageBox().Critical, "Error de servidor")
+            if response.text[170:188] == '"error.userexists"':
+                self.createAlert('El usuario ya existe', QMessageBox().Critical, "Usuarios")
+            if response.text[179:198] == '"error.emailexists"':
+                self.createAlert('El correo electrónico ya existe', QMessageBox().Critical, "Usuarios")
+            return response.text
+
+        return 'OK'   
+    def guardarOperacion(self, nuevo = False, url = '', envio = {}):
+        data = ""
+        
+        # envio - el objeto de tipo dict, es el json que se va a guardar
+        # se debe hacer la conversion para que sea aceptado por el servicio web
+        jsonEnv = json.dumps(envio)
+        
+        try:
+            # header para obtener el token
+            self.headers['Authorization'] = self.UTI.obtenerToken()
+
+            if nuevo:
+                response = requests.put(url, headers = self.headers, data = jsonEnv)
+           
+
+                # ejemplo con put, url, header y body o datos a enviar
+               
+
+        except requests.exceptions.RequestException as e:
+            self.createAlert("Error de servidor, 'guardarOperacion()' '" + str(e) + "'", QMessageBox().Critical, "Error de servidor")
+            return str(e)
+
+        if response.status_code == 403:
+            self.createAlert('Sin Permisos para ejecutar la accion', QMessageBox().Critical, "Operaciones")
+            return None
+           
+        elif response.status_code >= 300:
+            self.createAlert('Error en peticion "guardarOperacion()":\n' + response.text, QMessageBox().Critical, "Error de servidor")
+            return response.text
+
+        return 'OK'
 
             #print("actualizarCapaActiva : False")
 '''class AdvancedMapTool(QgsMapToolAdvancedDigitizing):

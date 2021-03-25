@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/plugins/Predio_No_Cart" >
+        <file>icon.png</file>
+    </qresource>
+</RCC>

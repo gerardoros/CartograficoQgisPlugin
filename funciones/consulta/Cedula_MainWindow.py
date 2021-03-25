@@ -132,7 +132,7 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
 
         self.cargandoRevision = cargandoRevision
 
-        self.lbNombrePPad.setText('')
+        '''self.lbNombrePPad.setText('')
         self.lbRazonSocPPad.setText('')
         self.lbCallePPad.setText('')
         self.lbColoniaPPad.setText('')
@@ -165,7 +165,7 @@ class CedulaMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
         self.lbCodPosPPred.setText('')
         self.lbMunicipioPPred.setText('')
         self.lbEstadoPPred.setText('')
-        self.lbPaisPPred.setText('')
+        self.lbPaisPPred.setText('')'''
 
         self.usuarioLogeado = 'jaz'
         self.adelanteRevision = False

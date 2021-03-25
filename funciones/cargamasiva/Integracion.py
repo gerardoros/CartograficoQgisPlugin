@@ -39,7 +39,7 @@ from PyQt5.QtGui import *
 from PyQt5 import QtGui
 import json, requests, os
 import sys
-
+import os, json, requests, sys, datetime, base64, time, hashlib
 class Integracion:
     """QGIS Plugin Implementation."""
 
@@ -53,6 +53,7 @@ class Integracion:
         """
         # Save reference to the QGIS interface
         self.iface = iface
+        
         # initialize plugin directory
         self.plugin_dir = os.path.dirname(__file__)
         # initialize locale
@@ -85,6 +86,7 @@ class Integracion:
         self.dlg.btnProcesar.setEnabled(False)
         # Declare instance attributes
         self.todoEnOrden = False
+        self.fileName = None
         '''
         self.actions = []
         self.menu = self.tr(u'&Integracion')
@@ -562,21 +564,33 @@ class Integracion:
 
     def abrirCarga(self):
         #self.archivo = QtGui.QFileDialog.getOpenFileName(self, 'Abir Archivo')
-        
-        options = QFileDialog.Options()
+        dlg = QFileDialog()
+        options = dlg.Options()
+        dlg.setFileMode(QFileDialog.AnyFile)
         #options |= QFileDialog.DontUseNativeDialog
-        fileName, _ = QFileDialog.getOpenFileName(self.dlg,"QFileDialog.getOpenFileName()", "","DGN Files (*.dgn)", options=options)
-
-        if fileName:
-            self.archivo = fileName
+        self.fileName, _ = QFileDialog.getOpenFileName(self.dlg,"QFileDialog.getOpenFileName()", "","GEOJSON Files (*.geojson)", options=options)
+        '''x = ''
+        BLOCKSIZE = 65536
+        path = QFileDialog.getOpenFileName(self.dlg, 'Subir imagen', os.getenv('HOME'), 'Image tiles(*.geojson)')
+        if path !=('',''):
+            hasher = hashlib.md5(open(path[0],'rb').read()).hexdigest().upper()
+            with open(path[0], "rb") as path:
+                encoded_string = base64.b64encode(path.read())
+                x= encoded_string.decode("utf-8")
+                print(x)
+                print(path)
+                print(hasher)'''
+        print(self.fileName)
+        if self.fileName:
+            self.archivo = self.fileName
             self.esperandoCarga = True
             iface.addVectorLayer(self.archivo, "NUEVACAPA", "ogr")
 
-
+            #print(self.archivo.fileMode())
 
         iface.mapCanvas().refreshAllLayers()
-        if self.capaLineas != None and self.capaPuntos != None:
-            self.dlg.btnProcesar.setEnabled(True)
+        #if self.capaLineas != None and self.capaPuntos != None:
+        self.dlg.btnProcesar.setEnabled(True)
 
 ###############################################################################################################
 

@@ -11,9 +11,12 @@
     <file>icons/AsigCampo.png</file>
     <file>icons/AsigPadron.png</file>
     <file>icons/AsigRevision.png</file>
-    <file>icons/local.ico</file>
-    <file>icons/browse.png</file>
+    <file>icons/local.png</file>
+    <file>icons/archivo7.png</file>
     <file>icons/menu1.png</file>
     <file>icons/menu2.png</file>
+    <file>icons/archivo10.png</file>
+    <file>icons/archivo11.png</file>
+    <file>icons/archivo16.png</file>
   </qresource>
 </RCC>

@@ -5,8 +5,10 @@ class Configuracion():
     def __init__(self):
         
         #Direccion IP del servidor
-        self.servidorIP = 'http://192.168.0.25:8080/'
+        self.servidorIP = 'https://thesmartflat.cianet.mx/plugincarto/api/'
+        #self.servidorIP = 'http://localhost:5432/'
         #self.servidorIP = 'http://192.168.0.96:8080/'
+        #self.servidorIP = 'http://192.168.0.69:8784/'#192.168.0.69:8784
         #self.servidorIP = 'https://thesmartflat.cianet.mx/cartografico/api/'
 
         #Combos de localidades, sectores y manzanas/combo/municipios/
@@ -48,7 +50,7 @@ class Configuracion():
         #Guardado
         self.urlGuardadoRef = self.servidorIP + 'featureswkn/api/etables/'
         self.urlGuardadoCon = self.servidorIP + 'featureswkn/api/manzana/'
-        self.urlGuardadoConClaves = self.servidorIP + 'featureswkn/api/manzana/claves/'
+        self.urlGuardadoConClaves = self.servidorIP + 'featureswkn/api/manzana/'
         self.urlGuardadoRefClaves = self.servidorIP + 'featureswkn/api/etables/claves/'
         
         #SRID
@@ -188,3 +190,11 @@ class Configuracion():
         self.urlCargarCapaByName = self.servidorIP + 'busquedasimplewkn/api/cartografico/get-geojson-by-name/'
         self.urlConmutar = self.servidorIP + 'featureswkn/api/update-layer'
 
+        #solicitud
+        self.url_AU_getAllTramites = self.servidorIP + 'busquedasimplewkn/api/consulta/get-all-tramites'
+        self.url_AU_getAllRequisitos = self.servidorIP + 'busquedasimplewkn/api/consulta/get-all-requisitos-by-tramide/'
+        self.url_AU_getAllDatospre = self.servidorIP + 'busquedasimplewkn/api/consulta/get-data-predio/by-cvecat-or-propietario'
+        self.urlGuardarTramites = self.servidorIP + 'busquedasimplewkn/api/consulta/save-new-tramite/'
+        self.urlOptenerTramites = self.servidorIP + 'busquedasimplewkn/api/consulta/get-data-tramites/by-folio-or-solicitante/'
+        self.urlActualizarTramite = self.servidorIP + 'busquedasimplewkn/api/consulta/update-tramite/'
+        self.urlObtenertodo = self.servidorIP + 'busquedasimplewkn/api/consulta/get-data-predio/by-cvecat-or-propietario-nocarto'

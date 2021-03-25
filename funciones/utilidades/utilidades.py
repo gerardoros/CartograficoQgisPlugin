@@ -223,9 +223,9 @@ class Utilidad:
 			
 			#Formato para solicitar la peticion
 			m = {}
-			m['features'] = self.listaAGuardar
-			m['claves'] = QSettings().value('clavesEstatus')
-
+			m = self.listaAGuardar
+			#m['claves'] = QSettings().value('clavesEstatus')
+			#print(m['claves'])
 			#jsonParaGuardarAtributos = json.dumps(self.listaAGuardar)
 			jsonParaGuardarAtributos = json.dumps(m)
 
@@ -281,7 +281,7 @@ class Utilidad:
 				grupoErrores.insertChildNode(0, capaError)
 
 			else:
-				self.mostrarAlerta("No se ha podido conectar al servidor v2\n" + str(response.json()[0]['mensaje']), QMessageBox.Critical, "Guardar Cambios v2")
+				self.mostrarAlerta("No se ha podido conectar al servidor v2\n" + str(response.json()), QMessageBox.Critical, "Guardar Cambios v2")
 				#Error al guardar datos
 			
 			#except ValueError:

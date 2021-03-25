@@ -66,9 +66,9 @@ class usuariosEdicionVer(QtWidgets.QDialog, FORM_CLASS):
         if self.usuario:
             self.llenaUsuario(self.usuario)
 
-        self.twRoles.setEditTriggers(QtWidgets.QTableWidget.NoEditTriggers)
-        self.twRoles.setSortingEnabled(True)
-        self.twRoles.setColumnWidth(1,349)
+        self.dlg.twRoles.setEditTriggers(QtWidgets.QTableWidget.NoEditTriggers)
+        self.dlg.twRoles.setSortingEnabled(True)
+        self.dlg.twRoles.setColumnWidth(1,349)
         
         self.cargada = True
 
@@ -79,10 +79,10 @@ class usuariosEdicionVer(QtWidgets.QDialog, FORM_CLASS):
 
         clickme = QtWidgets.qApp.focusWidget()
         # or button = self.sender()
-        index = self.twRoles.indexAt(clickme.pos())
+        index = self.dlg.twRoles.indexAt(clickme.pos())
 
         if index.isValid():
-            self.twRoles.removeRow(index.row())
+            self.dlg.twRoles.removeRow(index.row())
 
     def event_agregaRoles(self):
 
@@ -159,11 +159,11 @@ class usuariosEdicionVer(QtWidgets.QDialog, FORM_CLASS):
         # lista de los roles actuales
         rolesAct = []
 
-        if self.twRoles.rowCount() > 0:
-            allRows = self.twRoles.rowCount()
+        if self.dlg.twRoles.rowCount() > 0:
+            allRows = self.dlg.twRoles.rowCount()
             for row in range(0, allRows):
-                item = self.twRoles.item(row, 0)
-                item2 = self.twRoles.item(row, 1)
+                item = self.dlg.twRoles.item(row, 0)
+                item2 = self.dlg.twRoles.item(row, 1)
 
                 m = {}
                 m['rol'] = item.text()
@@ -184,11 +184,11 @@ class usuariosEdicionVer(QtWidgets.QDialog, FORM_CLASS):
         print(rolesNuevos)
 
         # limpiar qTableWidget
-        self.twRoles.clearContents()
-        self.twRoles.setRowCount(0)
+        self.dlg.twRoles.clearContents()
+        self.dlg.twRoles.setRowCount(0)
             
-        for row in range(0, self.twRoles.rowCount()):        
-            self.twRoles.removeRow(row) 
+        for row in range(0, self.dlg.twRoles.rowCount()):        
+            self.dlg.twRoles.removeRow(row) 
 
         # se agrega a la lista
         self.llenaRoles(rolesNuevos)
@@ -240,9 +240,9 @@ class usuariosEdicionVer(QtWidgets.QDialog, FORM_CLASS):
 
         roles = []
 
-        allRows = self.twRoles.rowCount()
+        allRows = self.dlg.twRoles.rowCount()
         for row in range(0, allRows):
-            item = self.twRoles.item(row, 0)
+            item = self.dlg.twRoles.item(row, 0)
             roles.append(item.text())
 
         envio = {}
@@ -263,7 +263,7 @@ class usuariosEdicionVer(QtWidgets.QDialog, FORM_CLASS):
         else:
             return
 
-        self.accept()
+        #self.accept()
 
     # -- cancelar la fusion de fracciones
     def event_cancelar(self):
@@ -319,7 +319,7 @@ class usuariosEdicionVer(QtWidgets.QDialog, FORM_CLASS):
         
     def llenaRoles(self, roles = []):
         # llena roles
-        self.twRoles.setRowCount(len(roles))
+        self.dlg.twRoles.setRowCount(len(roles))
 
         for i in range(0, len(roles)):
             
@@ -336,9 +336,9 @@ class usuariosEdicionVer(QtWidgets.QDialog, FORM_CLASS):
                                 border: 1px solid #adb2b5;
                                 }''')
 
-            self.twRoles.setItem(i, 0, QtWidgets.QTableWidgetItem(roles[i]['rol']))
-            self.twRoles.setItem(i, 1, QtWidgets.QTableWidgetItem(roles[i]['opreaciones']))
-            self.twRoles.setCellWidget(i, 2, btnRol)
+            self.dlg.twRoles.setItem(i, 0, QtWidgets.QTableWidgetItem(roles[i]['rol']))
+            self.dlg.twRoles.setItem(i, 1, QtWidgets.QTableWidgetItem(roles[i]['opreaciones']))
+            self.dlg.twRoles.setCellWidget(i, 2, btnRol)
 
             btnRol.clicked.connect(self.event_currentPositionButtonPressed)
     # --- M E T O D O S   Dialog ---

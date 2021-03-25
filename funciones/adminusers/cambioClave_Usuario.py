@@ -59,16 +59,18 @@ class cambioClave_Usuario(QtWidgets.QDialog, FORM_CLASS):
     # --- E V E N T O S   Dialog ---
 
     # -- aceptar el cambio la fusion de fracciones
-    def event_aceptar(self):
-        texto = self.leRol.text()
-        texto_2 = self.leRol_2.text()
+    def event_aceptar(self, contra1, contra2):
+        #texto = self.leRol.text()
+        #texto_2 = self.leRol_2.text()
+        texto = contra1
+        texto_2 = contra2
         if texto == texto_2:
             if texto == '':
                 self.createAlert('Llene los campos.')
                 return
 
            
-            resp = self.cambiarContraseña(nuevo = self.nuevo, url = (self.CFG.url_AU_actualizarContrasena), texto = self.leRol.text())
+            resp = self.cambiarContraseña(nuevo = self.nuevo, url = (self.CFG.url_AU_actualizarContrasena), texto = contra1)
             #print(envio)
             if resp == 'OK':
                 self.createAlert('Contraseña actualizada con exito', QMessageBox().Information)
