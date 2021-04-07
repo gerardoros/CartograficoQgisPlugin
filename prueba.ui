@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QPushButton" name="pushButton">
+    <property name="geometry">
+     <rect>
+      <x>280</x>
+      <y>100</y>
+      <width>75</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>PushButton</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>220</x>
+      <y>160</y>
+      <width>47</width>
+      <height>13</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>TextLabel</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>800</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuuno">
+    <property name="title">
+     <string>uno</string>
+    </property>
+    <addaction name="actiondos"/>
+    <addaction name="actiontres"/>
+   </widget>
+   <widget class="QMenu" name="menudos">
+    <property name="title">
+     <string>dos</string>
+    </property>
+    <addaction name="actionuno"/>
+   </widget>
+   <addaction name="menuuno"/>
+   <addaction name="menudos"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="actiondos">
+   <property name="text">
+    <string>dos</string>
+   </property>
+  </action>
+  <action name="actiontres">
+   <property name="text">
+    <string>tres</string>
+   </property>
+  </action>
+  <action name="actionuno">
+   <property name="text">
+    <string>uno</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

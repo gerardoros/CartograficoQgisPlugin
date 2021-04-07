@@ -1,0 +1,9 @@
+<RCC>
+  <qresource prefix="/plugins/AdminUsers">
+    <file>icons/check_disabled.png</file>
+    <file>icons/uncheck_disable.png</file>
+    <file>icons/check.png</file>
+    <file>icons/uncheck.png</file>
+    <file>icon.png</file>
+  </qresource>
+</RCC>

@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/plugins/periodo" >
+        <file>icon.png</file>
+        <file>icons/atras.ico</file>
+        <file>icons/adelante.ico</file>
+        <file>icons/print.ico</file>
+    </qresource>
+</RCC>
